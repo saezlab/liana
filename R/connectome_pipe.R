@@ -59,7 +59,6 @@ omni_resources <- omni_list %>%
     setNames(omni_list)
 
 
-
 # Function to call connectome with customer databases from OmniPath
 # returns a filtered connectome df
 call_connectome <- function(omni_db,
