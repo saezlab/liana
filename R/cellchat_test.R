@@ -88,11 +88,20 @@ cellchat <- computeCommunProbPathway(cellchat)
 
 
 
-#  CellChat x OmniPath
+
+
 
 # Connectome_Omni Pipe ----
+seurat_object <- readRDS("output/pbmc3k_processed.rds")
+
+cellchat.omni <- createCellChat(object = seurat_object,
+                                group.by = "ident")
+
 # OmniPath
-op_resource <- omni_resources[["connectomeDB2020"]]
+op_resource <- omni_resources[["CellChatDB"]]
+
+# load CellChatDB
+CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
 
 # Overwrite with Omni
 interaction_input <- CellChatDB$interaction
@@ -118,13 +127,25 @@ xx_interactions <-  op_resource %>%
     unite("interaction_name", c(ligand, receptor), remove = FALSE) %>%
     mutate_at(vars(everything()), ~ replace(., is.na(.), "")) %>%
     select(all_of(cellchat_cols)) %>%
-    as.data.frame()
+    mutate("interaction_name2" = interaction_name) %>%
+    distinct_at(.vars="interaction_name2", .keep_all = TRUE) %>%
+    column_to_rownames("interaction_name2")
 
 
 
 # Compare now
 head(xx_interactions)
 head(interaction_input)
+
+
+# Substitute proteins with Complexes
+# op_complexes <- OmnipathR::import_omnipath_complexes()
+# head(op_complexes)
+# glimpse(op_complexes)
+
+
+# cellchat_complexes <- CellChatDB$complex
+# head(cellchat_complexes)
 
 
 # Run with Omni DB
@@ -136,16 +157,8 @@ summary(as.factor(interaction_input$annotation))
 summary(as.factor(CellChatDB.omni$interaction$annotation))
 
 
-
-# Create cellchat object
-cellchat.omni <- createCellChat(object = seurat_object,
-                           group.by = "ident")
-
-
-
-
 ## use a subset of CellChatDB for cell-cell communication analysis
-CellChatDB.use.omni <- subsetDB(CellChatDB.omni, "ligand-receptor")
+CellChatDB.use.omni <- subsetDB(CellChatDB.omni)
 # use all CellChatDB for cell-cell communication analysis
 # CellChatDB.use <- CellChatDB # simply use the default CellChatDB
 
@@ -164,16 +177,21 @@ cellchat.omni <- identifyOverExpressedGenes(cellchat.omni)
 cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
 
 
+
 ## Compute the communication probability and infer cellular communication network
 # i.e. project gene expression data onto protein-protein interaction (PPI) network.
 # Specifically, a diffusion process is used to smooth genes’ expression values
 # based on their neighbors’ defined in a high-confidence
 # experimentally validated protein-protein network
 # cellchat.omni <- projectData(cellchat.omni, PPI.human)
-cellchat.omni <- computeCommunProb(cellchat.omni, raw.use = TRUE)
+cellchat.omni <- computeCommunProb(cellchat.omni,
+                                   raw.use = TRUE,
+                                   seed = 0)
 
 # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
-cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 10)
+# cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 10)
+
+?computeCommunProb
 
 # Extract the inferred cellular communication network as a data frame
 df.omni <- subsetCommunication(cellchat.omni)
