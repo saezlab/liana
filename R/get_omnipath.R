@@ -3,18 +3,18 @@ library(OmnipathR)
 
 omni_list <- list(
     'CellChatDB',
-    # 'CellPhoneDB',
-    # 'Ramilowski2015',
-    # 'Baccin2019',
-    # 'LRdb',
-    # 'Kirouac2010',
-    # 'ICELLNET',
-    # 'iTALK',
-    # 'EMBRACE',
-    # 'HPMR',
-    # 'Guide2Pharma',
+    'CellPhoneDB',
+    'Ramilowski2015',
+    'Baccin2019',
+    'LRdb',
+    'Kirouac2010',
+    'ICELLNET',
+    'iTALK',
+    'EMBRACE',
+    'HPMR',
+    'Guide2Pharma',
     'connectomeDB2020',
-    # 'talklr',
+    'talklr',
     'CellTalkDB',
     'OmniPath'
 )
@@ -34,7 +34,7 @@ setClass("OmniCriteria",
 # Get a list with dataframes of omnipath resources
 omni_resources <- omni_list %>%
     map(function(x){
-        print(x)
+        message(x)
 
         if(x!="OmniPath"){
             x_obj = methods::new("OmniCriteria",

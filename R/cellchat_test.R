@@ -36,7 +36,6 @@ cellchat <- createCellChat(object = seurat_object,
 CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
 showDatabaseCategory(CellChatDB)
 
-
 # Show the structure of the database
 dplyr::glimpse(CellChatDB$interaction)
 
@@ -97,11 +96,12 @@ seurat_object <- readRDS("output/pbmc3k_processed.rds")
 cellchat.omni <- createCellChat(object = seurat_object,
                                 group.by = "ident")
 
-# OmniPath
-op_resource <- omni_resources[["CellChatDB"]]
-
 # load CellChatDB
 CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
+
+
+# OmniPath
+op_resource <- omni_resources[["talklr"]]
 
 # Overwrite with Omni
 interaction_input <- CellChatDB$interaction
@@ -110,65 +110,131 @@ interaction_input <- CellChatDB$interaction
 head(op_resource)
 head(interaction_input)
 
-cellchat_cols <- names(interaction_input)
 
-xx_interactions <-  op_resource %>%
+# get complexes and interactions from omnipath
+complex_interactions <- op_resource %>%
     select("ligand" = source_genesymbol,
            "receptor" = target_genesymbol,
-                  "evidence" = sources,
-                  category_intercell_source,
-                  category_intercell_target
-                  ) %>%
-           unite("annotation",
-                 c(category_intercell_source, category_intercell_target),
-                 sep="-") %>%
+           "evidence" = sources,
+           category_intercell_source,
+           category_intercell_target,
+           genesymbol_intercell_source,
+           genesymbol_intercell_target,
+           is_directed,
+           is_stimulation,
+           is_inhibition
+           ) %>%
+    unite("annotation",
+          c(category_intercell_source, category_intercell_target),
+          sep="-") %>%
+    # join with CellChat resource for additional fields
     left_join(interaction_input %>%
                   select(-c(evidence, annotation))) %>%
     unite("interaction_name", c(ligand, receptor), remove = FALSE) %>%
+    mutate_at(vars(everything()), ~ replace(., is.na(.), ""))
+
+
+# Get OmniPath directed info
+omni_directions <- complex_interactions %>%
+    select(interaction_name,
+           is_directed,
+           is_stimulation,
+           is_inhibition,
+           co_A_receptor,
+           co_I_receptor) %>%
+    mutate(direction = pmap(., function(interaction_name,
+                                is_directed,
+                                is_stimulation,
+                                is_inhibition,
+                                co_A_receptor,
+                                co_I_receptor){
+        suppressMessages(message(interaction_name))
+        if(co_A_receptor=="" & co_I_receptor==""){
+            if(is_directed==1){
+                if(is_stimulation==1 & is_inhibition==1){
+                    return("Both")
+                } else if(is_stimulation==1){
+                    return("Stimulation")
+                } else if(is_inhibition==1){
+                    return("Inhibition")
+                }
+            }
+        } else{
+            return(NA)
+        }
+    })) %>% unnest(direction)
+
+
+omni_interactions <- complex_interactions %>%
+    select(all_of(names(interaction_input))) %>%
+    # set LR interactions as rowname
+    left_join(., (omni_directions %>%
+                      select(interaction_name,
+                             direction))) %>%
     mutate_at(vars(everything()), ~ replace(., is.na(.), "")) %>%
-    select(all_of(cellchat_cols)) %>%
+    mutate(co_A_receptor = ifelse(.data$co_A_receptor == "" & (direction == "Stimulation") | (direction == "both"),
+                                  "Stimulation", .data$co_A_receptor),
+           co_I_receptor = ifelse(.data$co_I_receptor == "" & (direction == "Inhibition") | (direction == "both"),
+                                  "Inhibition", .data$co_I_receptor)) %>%
     mutate("interaction_name2" = interaction_name) %>%
-    distinct_at(.vars="interaction_name2", .keep_all = TRUE) %>%
-    column_to_rownames("interaction_name2")
+        distinct_at(.vars="interaction_name2", .keep_all = TRUE) %>%
+        column_to_rownames("interaction_name2")
 
 
 
-# Compare now
-head(xx_interactions)
-head(interaction_input)
-
-
-# Substitute proteins with Complexes
-# op_complexes <- OmnipathR::import_omnipath_complexes()
-# head(op_complexes)
-# glimpse(op_complexes)
-
-
-# cellchat_complexes <- CellChatDB$complex
-# head(cellchat_complexes)
-
-
-# Run with Omni DB
-CellChatDB.omni <- CellChatDB
-CellChatDB.omni$interaction <- xx_interactions
-
-
+# show summaries
 summary(as.factor(interaction_input$annotation))
-summary(as.factor(CellChatDB.omni$interaction$annotation))
+summary(as.factor(omni_interactions$annotation))
 
 
-## use a subset of CellChatDB for cell-cell communication analysis
-CellChatDB.use.omni <- subsetDB(CellChatDB.omni)
-# use all CellChatDB for cell-cell communication analysis
-# CellChatDB.use <- CellChatDB # simply use the default CellChatDB
+
+
+# Get Omni Complexes
+omni_complexes <- complex_interactions %>%
+    filter(str_detect(genesymbol_intercell_source, "COMPLEX") |
+               str_detect(genesymbol_intercell_target, "COMPLEX")) %>%
+    select(genesymbol_intercell_source,
+           genesymbol_intercell_target)
+
+# Convert to CellChat format
+omni_complexes <- union(omni_complexes$genesymbol_intercell_source,
+                        omni_complexes$genesymbol_intercell_target) %>%
+    str_subset(pattern = "COMPLEX") %>%
+    str_replace(pattern = "COMPLEX:", "") %>%
+    enframe() %>%
+    separate(col=value, sep="_",
+             into = c("subunit_1", "subunit_2",
+                      "subunit_3", "subunit_4"), remove=FALSE) %>%
+    mutate_at(vars(everything()), ~ replace(., is.na(.), "")) %>%
+    select(-name) %>%
+    column_to_rownames("value")
+
+
+
+
+
+# Replace Default DB with OmniPath Resource
+# Here, I filter ECM, as when I don't an error is encountered
+# both with mine and their dataset (they too filter for secreted signaling only)
+CellChatDB.omni <- CellChatDB
+CellChatDB.omni$interaction <- complex_interactions %>%
+    select(-c(genesymbol_intercell_source,
+              genesymbol_intercell_target)) %>%
+    filter(annotation!="ecm-receptor")
+
+CellChatDB.omni$complex <- omni_complexes
+
 
 ## set the used database in the object
-cellchat.omni@DB <- CellChatDB.use.omni
+cellchat.omni@DB <- CellChatDB.omni
 
+## use a subset of CellChatDB for cell-cell communication analysis
+
+## set the used database in the object
 
 ## subset the expression data of signaling genes
 cellchat.omni <- subsetData(cellchat.omni)
-# future::plan("multiprocess", workers = 4) # do parallel
+future::plan("multiprocess", workers = 4) # do parallel
 
 # To infer the cell state-specific communications,
 # we identify over-expressed ligands or receptors in one cell group and then
@@ -183,35 +249,27 @@ cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
 # Specifically, a diffusion process is used to smooth genes’ expression values
 # based on their neighbors’ defined in a high-confidence
 # experimentally validated protein-protein network
-# cellchat.omni <- projectData(cellchat.omni, PPI.human)
+cellchat.omni <- projectData(cellchat.omni, PPI.human)
 cellchat.omni <- computeCommunProb(cellchat.omni,
-                                   raw.use = TRUE,
-                                   seed = 0)
+                                   raw.use=T)
 
 # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
-# cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 10)
+cellchat.omni <- filterCommunication(cellchat.omni,
+                                     min.cells = 10)
 
-?computeCommunProb
 
 # Extract the inferred cellular communication network as a data frame
-df.omni <- subsetCommunication(cellchat.omni)
+df.omni <- subsetCommunication(cellchat.omni,
+                               thresh= 0.05)
+?subsetCommunication
 
 head(df.omni)
 
+# !!! It is worth noting that our results seem to overestimate the LR hits
+# from the CellChat Package - this is likely due to differences into the
+# curation effort that went into identifying co-inhibitors and co-activators
+# Information about how and which fields of the DB are used is lacking
+# and as such without further information it would be difficult to reproduce
+# I submitted an issue to their GH to provide more info about the DB
 
-
-
-
-
-
-
-
-
-# Update
-# CellChatDB <- list()
-# CellChatDB$interaction <- interaction_input
-# CellChatDB$complex <- complex_input
-# CellChatDB$cofactor <- cofactor_input
-# CellChatDB$geneInfo <- geneInfo
-
-
+# Maybe we keep its won dataset and benchmark it only with it versus the other tools
