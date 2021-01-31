@@ -59,7 +59,7 @@ new.cluster.ids <- c("Naive CD4 T", "Memory CD4 T", "CD14+ Mono", "B", "CD8 T", 
 names(new.cluster.ids) <- levels(pbmc)
 pbmc <- RenameIdents(pbmc, new.cluster.ids)
 
-saveRDS(pbmc, file = "output/pbmc3k_processed.rds")
+saveRDS(pbmc, file = "input/pbmc3k_processed.rds")
 
 ```
 

@@ -11,7 +11,7 @@ library(OmnipathR)
 # Default DB for connectome is Ramilowski
 
 # Install data and load
-pbmc3k <- readRDS("output/pbmc3k_processed.rds")
+pbmc3k <- readRDS("input/pbmc3k_processed.rds")
 
 table(Idents(pbmc3k))
 Idents(pbmc3k)

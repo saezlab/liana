@@ -7,19 +7,17 @@ options(stringsAsFactors = FALSE)
 
 
 # Connectome_Omni Pipe ----
-seurat_object <- readRDS("output/pbmc3k_processed.rds")
+seurat_object <- readRDS("input/pbmc3k_processed.rds")
 
 cellchat.omni <- createCellChat(object = seurat_object,
                                 group.by = "ident")
 future::plan("multiprocess", workers = 4) # do parallel
 
 
+
+
 # load CellChatDB
 CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
-
-
-op_resource <- omni_resources$CellChatDB
-
 
 # Iterate over omni resources
 cellchat_results <- omni_resources %>%
@@ -27,7 +25,7 @@ cellchat_results <- omni_resources %>%
     setNames(names(omni_resources))
 
 
-# saveRDS(cellchat_results, "output/cellchat_results.RDS")
+saveRDS(cellchat_results, "output/cellchat_results.RDS")
 
 
 # pass cellchat object and DB

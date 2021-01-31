@@ -16,7 +16,7 @@ options(stringsAsFactors = FALSE)
 # library(Seurat)
 # library(OmnipathR)
 
-seurat_object <- readRDS("output/pbmc3k_processed.rds")
+seurat_object <- readRDS("input/pbmc3k_processed.rds")
 
 
 # Create cellchat object

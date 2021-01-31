@@ -12,7 +12,7 @@ library(tidyverse)
 reticulate::use_python("/home/dbdimitrov/anaconda3/bin/python")
 
 # Load data and convert to anndata
-pbmc3k <- readRDS("output/pbmc3k_processed.rds")
+pbmc3k <- readRDS("input/pbmc3k_processed.rds")
 
 # prep data for transfer
 exprs <- GetAssayData(pbmc3k)
