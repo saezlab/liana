@@ -11,8 +11,8 @@ library(ggalluvial)
 library(igraph)
 library(tidyverse)
 library(OmnipathR)
-
 options(stringsAsFactors = FALSE)
+
 # library(Seurat)
 # library(OmnipathR)
 
