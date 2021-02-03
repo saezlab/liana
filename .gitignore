@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+*.DS_Store
 .Rproj.user
 .Rhistory
 .RData
