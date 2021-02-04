@@ -91,7 +91,7 @@ top_interactions <- interaction_go_summary %>%
 plot_data <- interaction_go_summary %>%
     filter(gs_name %in% top_interactions)
 
-# xd <- interaction_go_summary %>%
+# plot_data <- interaction_go_summary %>%
 #     pivot_wider(id_cols = gs_name, names_from = name, values_from = n) %>%
 #     mutate_at(vars(everything()), ~ replace(., is.na(.), 0)) %>%
 #     arrange(desc(OmniPath)) %>%
@@ -101,3 +101,10 @@ plot_data <- interaction_go_summary %>%
 
 ggplot(plot_data, aes(fill=gs_name, y=n, x=name)) +
     geom_bar(position="stack", stat="identity")
+
+# These go terms are far too general and in this case
+# in order to fill many NAs, I look at GO terms true for either the
+# source or target (which means that GOs are likely to be false for either,
+# since they generally match only one).
+# Looking at ligs and receptors seperately results in ~50% NAs, while I already
+# look at ~50 GO terms... a bit pointless.
