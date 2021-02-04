@@ -87,17 +87,8 @@ top_interactions <- interaction_go_summary %>%
     top_n(10) %>%
     pull(gs_name)
 
-
 plot_data <- interaction_go_summary %>%
     filter(gs_name %in% top_interactions)
-
-# plot_data <- interaction_go_summary %>%
-#     pivot_wider(id_cols = gs_name, names_from = name, values_from = n) %>%
-#     mutate_at(vars(everything()), ~ replace(., is.na(.), 0)) %>%
-#     arrange(desc(OmniPath)) %>%
-#     column_to_rownames("gs_name") %>%
-#     filter(sum(.$omnipath) < 100) %>%
-#     rownames_to_column("gs_name")
 
 ggplot(plot_data, aes(fill=gs_name, y=n, x=name)) +
     geom_bar(position="stack", stat="identity")
@@ -108,3 +99,23 @@ ggplot(plot_data, aes(fill=gs_name, y=n, x=name)) +
 # since they generally match only one).
 # Looking at ligs and receptors seperately results in ~50% NAs, while I already
 # look at ~50 GO terms... a bit pointless.
+
+
+# Cell Signalling Specific GOs
+# msigdb <- import_omnipath_annotations(resource = 'MSigDB', wide = TRUE)
+BiocManager::install("GOfuncR")
+
+library("GOfuncR")
+
+# Get Cell Communication GOs and manually filter
+ccc_gos <- GOfuncR::get_child_nodes("GO:0007154") %>%
+    filter(distance <= 3) %>%
+    select(child_go_id, child_name, distance) %>%
+    filter(!grepl("cell communication", child_name)) %>%
+    filter(!grepl("pollen", child_name))
+
+
+# This would certainly be a useful thing to look at but we need more context
+# i.e. if we are looking at a specific case study, we could use
+# child GO terms of (e.g. kidney development, immune response, etc)
+# to see which resource might be most approriate.
