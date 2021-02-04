@@ -3,6 +3,7 @@ library(dplyr)
 library(stringr)
 library(assertthat)
 
+
 resources <- c('CellPhoneDB', 'Ramilowski2015', 'Baccin2019', 'LRdb', 
                'Kirouac2010', 'ICELLNET','iTALK','EMBRACE','HPMR',
                'Guide2Pharma', 'CellTalkDB', 'connectomeDB2020', 'talklr',
@@ -64,6 +65,5 @@ create_lr_networks <- function(resources){
 }
 
 networks <- create_lr_networks(resources)
-#saveRDS(networks, "./networks.RData")
-
+saveRDS(networks, "./R/networks.RData")
 
