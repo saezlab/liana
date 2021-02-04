@@ -49,11 +49,8 @@ omni_resources <- omni_list %>%
                 transmitter_param = x_obj@transmitter_param,
                 receiver_param = x_obj@receiver_param)
         } else{
-            import_intercell_network()  %>%
-                filter(category_intercell_source == "ligand",
-                       category_intercell_target == "receptor")
+            import_intercell_network(transmitter_param=list(category="ligand"),
+                                     receiver_param=list(category="receptor"))
         }
     }) %>%
     setNames(omni_list)
-
-

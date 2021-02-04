@@ -6,14 +6,17 @@ library(tidyverse)
 options(stringsAsFactors = FALSE)
 
 
+### !!! Double check and remove complexes in resources which
+# do not consider complexes (i.e. pass only single symbols without _)
+# (filter COMPLEX:)
+
+
 # Connectome_Omni Pipe ----
 seurat_object <- readRDS("input/pbmc3k_processed.rds")
 
 cellchat.omni <- createCellChat(object = seurat_object,
                                 group.by = "ident")
-future::plan("multiprocess", workers = 4) # do parallel
-
-
+# future::plan("multiprocess", workers = 4) # do parallel
 
 
 # load CellChatDB
@@ -25,7 +28,9 @@ cellchat_results <- omni_resources %>%
     setNames(names(omni_resources))
 
 
-saveRDS(cellchat_results, "output/cellchat_results.RDS")
+
+
+# saveRDS(cellchat_results, "output/cellchat_results.RDS")
 
 
 # pass cellchat object and DB
@@ -153,6 +158,8 @@ call_cellchat <- function(op_resource, cellchat_object){
     CellChatDB.omni <- CellChatDB
     CellChatDB.omni$interaction <- omni_interactions %>%
         filter(annotation!="ecm-receptor")
+    levels(as.factor(omni_interactions$annotation))
+
     CellChatDB.omni$complex <- omni_complexes
 
     ## set the used database in the object
