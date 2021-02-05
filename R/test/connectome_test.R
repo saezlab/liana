@@ -23,18 +23,26 @@ genes <- connectome.genes[connectome.genes %in% rownames(pbmc3k)]
 pbmc3k <- ScaleData(pbmc3k, features = genes)
 
 
+
 # HERE NOTE p.values
 pbmc3k.con <- CreateConnectome(pbmc3k,
                               species = 'human', # Only relevant for default LR resource
                               min.cells.per.ident = 75,
                               p.values = F,
                               calculate.DOR = F)
+
+
+
+
 # Filter
 pbmc3k.con2 <- FilterConnectome(pbmc3k.con,
                                 min.pct = 0.1,
                                 min.z = 0.25,
                                 max.p = 0.05,
                                 remove.na = T)
+
+levels(as.factor(pbmc3k.con$mode))
+
 
 pbmc3k.con2
 
@@ -78,6 +86,8 @@ pbmc3k.cust2 <- FilterConnectome(pbmc3k.cust,
                                 min.z = 0.25,
                                 max.p = 0.05,
                                 remove.na = T)
+
+
 
 
 

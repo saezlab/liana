@@ -1,7 +1,7 @@
 library(msigdbr)
 library(tidyverse)
 
-# Hallmark GOs from MSig
+# Hallmark GOs from MSig -------------------------------------------------------
 h_gene_sets = msigdbr(species = "Homo sapiens", category = "H")
 go_format <- h_gene_sets %>%
     select("symbol" = human_gene_symbol,
@@ -101,7 +101,7 @@ ggplot(plot_data, aes(fill=gs_name, y=n, x=name)) +
 # look at ~50 GO terms... a bit pointless.
 
 
-# Cell Signalling Specific GOs
+# Cell Signalling Specific GOs ------------------------------------------------
 # msigdb <- import_omnipath_annotations(resource = 'MSigDB', wide = TRUE)
 BiocManager::install("GOfuncR")
 
@@ -119,3 +119,16 @@ ccc_gos <- GOfuncR::get_child_nodes("GO:0007154") %>%
 # i.e. if we are looking at a specific case study, we could use
 # child GO terms of (e.g. kidney development, immune response, etc)
 # to see which resource might be most approriate.
+
+# Look at hierarchy and manually pick the most approriate terms:
+# http://www.informatics.jax.org/vocab/gene_ontology/GO:0007154
+
+
+
+
+
+# Pathway annotations from OmniPath
+netpath_pathways <- import_omnipath_annotations(resource = 'NetPath', wide = TRUE)
+# msigdb <- import_omnipath_annotations(resource = 'MSigDB', wide = TRUE) %>% filter(collection == 'hallmark')
+signor_pathways <- import_omnipath_annotations(resource = 'SIGNOR', wide = TRUE)
+signalink_pathways <- import_omnipath_annotations(resource = 'SignaLink_pathway', wide = TRUE)

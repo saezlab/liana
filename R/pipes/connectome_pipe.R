@@ -14,13 +14,13 @@ Idents(pbmc3k)
 
 # Function to call connectome with customer databases from OmniPath
 # returns a filtered connectome df
-call_connectome <- function(omni_db,
+call_connectome <- function(op_resource,
                             seurat_obj=pbmc3k,
                             ...){
     # Format db to connectome
-    lr_db <- omni_db %>%
+    lr_db <- op_resource %>%
         select("source_genesymbol" ,"target_genesymbol") %>%
-        mutate(mode = "xxx") %>%
+        mutate(mode = "UNCAT") %>% # mode refers to interaction categories
         arrange(.$source_genesymbol) %>%
         as.data.frame()
 
@@ -40,7 +40,7 @@ call_connectome <- function(omni_db,
 # get connectome results
 connectome_results <- omni_resources %>%
     map(function(x){
-        conn <- call_connectome(omni_db=x,
+        conn <- call_connectome(op_resource=x,
                                 seurat_obj = pbmc3k,
                                 # optional args passed to createConnectom
                                 LR.database = 'custom',
@@ -56,5 +56,5 @@ connectome_results <- omni_resources %>%
 
 
 # Save results
-saveRDS(connectome_results, "output/connectome_res.RDS")
+# saveRDS(connectome_results, "output/connectome_res.RDS")
 
