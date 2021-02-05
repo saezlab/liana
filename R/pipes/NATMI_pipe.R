@@ -13,25 +13,26 @@ seurat_object <- readRDS("input/pbmc3k_processed.rds")
 #           row.names = F)
 
 # Save OmniPath to appropriate CSVs ----
-# omni_list %>%
-#     map(function(x){
-#         write.csv(omni_resources[[x]] %>%
-#                                   reform_to_NATMI(),
-#                               file = str_glue("input/omnipath_NATMI/{x}.csv"),
-#                               row.names = FALSE)
-#         })
-#
-#
-# # reform_to_NATMI <-
-# reform_to_NATMI <- function(op_resource){
-#     op_resource <- op_resource %>%
-#         select("Ligand gene symbol" = source_genesymbol,
-#                "Receptor gene symbol" = target_genesymbol) %>%
-#         as.data.frame()
-#
-#     return(op_resource)
-# }
-# Then Copied them to the NATMI DB location
+omni_list %>%
+    map(function(x){
+        write.csv(omni_resources[[x]] %>%
+                                  reform_to_NATMI(),
+                              file = str_glue("input/omnipath_NATMI/{x}.csv"),
+                              row.names = FALSE)
+        })
+
+
+# reform_to_NATMI <-
+reform_to_NATMI <- function(op_resource){
+    op_resource <- op_resource %>%
+        select("Ligand gene symbol" = source_genesymbol,
+               "Receptor gene symbol" = target_genesymbol) %>%
+        as.data.frame()
+
+    return(op_resource)
+}
+
+# Then Copy them to the NATMI DB location
 
 
 # Call from R
