@@ -1,17 +1,24 @@
-# Explore Pipe results
+#### Explore Pipe results
 
 # Load prerequisites
 library(tidyverse)
 library(Seurat)
+library(reticulate)
+
 # library(SeuratData
 
-# load seurat object
+
+# load python repl
+reticulate::repl_python()
+
+# load test seurat object
 seurat_object <- readRDS("input/pbmc3k_processed.rds")
 table(Idents(seurat_object))
 
 # Get Omni Resrouces
 source("./R/utils/get_omnipath.R")
 omni_resources <- get_omni_resources()
+
 
 # 1. CellChat ---------------------------------------------------------------
 # Call cellchat and iterate over omni resources
@@ -70,3 +77,31 @@ connectome_default <- call_connectome_default(seurat_object = seurat_object,
 
 
 # 3. NATMI ---------------------------------------------------------------------
+# Extract data from Seurat Object
+write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
+                                            assay = "RNA",
+                                            slot = "data"))) - 1),
+          file = "input/test_em.csv",
+          row.names = TRUE)
+write.csv(Idents(object = seurat_object)  %>%
+              enframe(name="barcode", value="annotation"),
+          file = "input/test_metadata.csv",
+          row.names = FALSE)
+
+# save OmniPath Resource to NATMI format
+omni_to_NATMI(omni_resources,
+              omni_path = "input/omnipath_NATMI")
+
+
+# call NATMI
+natmi_results <- call_natmi(omni_resources,
+                            omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+                            natmi_path = "~/Repos/NATMI",
+                            em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
+                            ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
+                            output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test")
+
+
+
+
+

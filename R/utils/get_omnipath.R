@@ -1,11 +1,9 @@
 #' Function to call OmniPath resources
-#' @param filter_complex bool whether to filter complexes from omnipath
-#' intercell resources
 #' @return A list with intercellular resources from OmniPath
-get_omni_resources <- function(filter_complex = FALSE){
+get_omni_resources <- function(){
 
-    library(tidyverse)
-    library(OmnipathR)
+    require(tidyverse)
+    require(OmnipathR)
 
     omni_list <- list(
         'CellChatDB',
@@ -59,15 +57,6 @@ get_omni_resources <- function(filter_complex = FALSE){
             }
         }) %>%
         setNames(omni_list)
-
-    if(filter_complex){
-        omni_resources <- omni_resources %>%
-            map(function(op_resource){
-                op_resource %>%
-                    filter(entity_type_intercell_source != "complex",
-                           entity_type_intercell_target != "complex")
-            })
-        }
 
     return(omni_resources)
 }
