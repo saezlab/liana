@@ -1,6 +1,6 @@
 #' Connectome x Omni Pipe function
 #' @param op_resource OmniPath Intercell Resource DN
-#' @param seurat_object Seurat object
+#' @param seurat_object Seurat object as input
 #' @param use_omni_resource whether to use Omni resources or run the analysis
 #' with the default DB
 #' @param exclude_anns Annotation criteria to be excluded

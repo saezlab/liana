@@ -3,10 +3,11 @@
 # Load prerequisites
 library(tidyverse)
 library(Seurat)
+# library(SeuratData
 
 # load seurat object
 seurat_object <- readRDS("input/pbmc3k_processed.rds")
-
+table(Idents(seurat_object))
 
 # Get Omni Resrouces
 source("./R/utils/get_omnipath.R")
@@ -38,5 +39,34 @@ cellchat_default <- call_cellchat(op_resource = NULL,
 # I opened a Github issue about this and confirmed that what I've done is correct.
 
 
+# 2.Connectome
+connectome_results <- omni_resources %>%
+    map(function(op_resource){
+        conn <- call_connectome(op_resource,
+                                seurat_object,
+                                # optional args passed to createConnectom
+                                LR.database = 'custom',
+                                min.cells.per.ident = 75,
+                                p.values = FALSE,
+                                calculate.DOR = FALSE)
+    })  %>%
+    setNames(names(omni_resources)) %>%
+    map(function(conn_res) conn_res %>%
+            FilterConnectome(.,
+                             min.pct = 0.1,
+                             min.z = 0.25,
+                             remove.na = TRUE))
 
 
+connectome_default <- call_connectome_default(seurat_object = seurat_object,
+                                              min.cells.per.ident = 75,
+                                              p.values = FALSE,
+                                              calculate.DOR = FALSE) %>%
+    FilterConnectome(.,
+                     min.pct = 0.1,
+                     min.z = 0.25,
+                     remove.na = TRUE)
+
+
+
+# 3. NATMI ---------------------------------------------------------------------
