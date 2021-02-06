@@ -1,5 +1,5 @@
 ---
-title: "squidpy_pipe"
+title: "squidpy_test"
 author: "Daniel Dimitrov"
 date: "1/27/2021"
 output: html_document
@@ -35,7 +35,7 @@ import re
 ```{python setup_squidpy}
 
 intercell_resources = [
-    # 'CellChatDB',
+    'CellChatDB',
     'CellPhoneDB',
     'Ramilowski2015',
     'Baccin2019',
@@ -53,7 +53,7 @@ intercell_resources = [
 ]
 
 # define function to map over all resources
-def call_sp_resource(op_resource, **kwargs):
+def get_omni_resources(op_resource, **kwargs):
     try:
         res_filt = None if op_resource == "OmniPath" else op_resource
         y = sp.gr.ligrec(adata_seurat, "seurat_annotations",
@@ -69,7 +69,7 @@ def call_sp_resource(op_resource, **kwargs):
 
 
 def get_ligrec( resource_list ):
-    return dict(map( lambda x: (x, call_sp_resource(x)), resource_list ))
+    return dict(map( lambda x: (x, get_omni_resources(x)), resource_list ))
 
 
 ```
@@ -102,7 +102,7 @@ def reformat(x):
 
 
 def get_ligrec( resource_list ):
-    return dict(map( lambda x: (x, call_sp_resource(x)), resource_list ))
+    return dict(map( lambda x: (x, get_omni_resources(x)), resource_list ))
 
 squidpy_pvalues = list(map(lambda x: reformat(squidpy_res[x].pvalues), intercell_resources))
 squidpy_means = list(map(lambda x: reformat(squidpy_res[x].means), intercell_resources))

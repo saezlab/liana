@@ -94,6 +94,7 @@ omni_to_NATMI(omni_resources,
 
 
 # call NATMI
+py_set_seed(1004)
 natmi_results <- call_natmi(omni_resources,
                             omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
                             natmi_path = "~/Repos/NATMI",
@@ -103,5 +104,63 @@ natmi_results <- call_natmi(omni_resources,
 
 
 
+# 4. Squidpy -------------------------------------------------------------------
+library(reticulate)
+library(tidyverse)
+reticulate::use_python("/home/dbdimitrov/anaconda3/bin/python")
+reticulate::source_python("R/pipes/squidpy_source.py")
+py$pd <- reticulate::import("pandas")
+
+# prep data for transfer
+exprs <- GetAssayData(seurat_object)
+meta <- seurat_object[[]]
+feature_meta <- GetAssay(seurat_object)[[]]
+embedding <- Embeddings(seurat_object, "umap")
+
+# Get Omni Resrouces
+source("./R/utils/get_omnipath.R")
+
+# Call Squidpy
+reticulate::source_python("R/pipes/squidpy_source.py")
+py_set_seed(1004)
+py$squidpy_results <- py$call_squidpy(names(omni_resources)[-1], # -CellChatDB returns None
+                                      exprs,
+                                      meta,
+                                      feature_meta,
+                                      embedding)
 
 
+
+
+
+squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources)[-1]) #*
+squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources)[-1]) #*
+
+
+# reformat squidpy function r
+squidpy_reformat <- function(.name,
+                             .pval_list,
+                             .mean_list){
+    x_pval <- .pval_list[[.name]] %>%
+        py_to_r() %>%
+        pivot_longer(cols = 3:ncol(.),
+                     values_to="pvalue",
+                     names_to="pair")
+
+    x_mean <- .mean_list[[.name]] %>%
+        py_to_r() %>%
+        pivot_longer(cols = 3:ncol(.),
+                     values_to = "means",
+                     names_to = "pair")
+
+    return(left_join(x_pval, x_mean))
+}
+
+
+
+squidpy_results <- map(names(omni_resources)[-1], #*
+                       function(x)
+                           squidpy_reformat(.name=x,
+                                            .pval_list = squidpy_pvalues,
+                                            .mean_list = squidpy_means)) %>%
+    setNames(names(omni_resources)[-1]) #*
