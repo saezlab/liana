@@ -1,16 +1,17 @@
 #' Connectome x Omni Pipe function
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
-#' @param use_omni_resource whether to use Omni resources or run the analysis
-#' with the default DB
 #' @param exclude_anns Annotation criteria to be excluded
+#' @param nboot number of bootstraps to calculate p-value
+#' @param .format bool whether to format output
 #' @inheritDotParams CellChat::subsetCommunication
 #' @return A DF of intercellular communication network
 call_cellchat <- function(op_resource,
                           seurat_object,
-                          use_omni_resource = TRUE,
+                          .format = TRUE,
                           exclude_anns = c("ecm-receptor",
                                            "cell_surface_ligand-receptor"),
+                          nboot = 100,
                           ...
                           ){
     library(CellChat)
@@ -26,7 +27,7 @@ call_cellchat <- function(op_resource,
     # load CellChatDB
     CellChatDB.omni <- CellChatDB.human
 
-    if(use_omni_resource){
+    if(!is.null(op_resource)){
 
         # get complexes and interactions from omnipath
         complex_interactions <- op_resource %>%
@@ -167,7 +168,8 @@ call_cellchat <- function(op_resource,
     # However, this might be too time-consuming and irrelevant.
     # cellchat.omni <- projectData(cellchat.omni, PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use=TRUE)
+                                       raw.use=TRUE,
+                                       nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
     cellchat.omni <- filterCommunication(cellchat.omni,
@@ -176,5 +178,16 @@ call_cellchat <- function(op_resource,
 
     # Extract the inferred cellular communication network
     df.omni <- subsetCommunication(cellchat.omni, ...)
+
+    if(.format){
+        df.omni <- df.omni %>%
+            select(source,
+                   target,
+                   ligand,
+                   receptor,
+                   prob,
+                   pval)
+    }
+
     return(df.omni)
 }

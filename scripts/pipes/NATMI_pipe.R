@@ -5,6 +5,7 @@
 #' @param em_path expression matrix path
 #' @param ann_path annotations (i.e. clusters) path
 #' @param output_path NATMI output path
+#' @param .format bool whether to format output
 #' @return DF with NATMI results
 #' @details This function will take omnipath resources saved to csvs and copy them to the
 #' NATMI dbs folder, then it will natively call the python modules of NATMI
@@ -21,12 +22,21 @@
 #'   --idType IDTYPE       symbol (default) | entrez(https://www.ncbi.nlm.nih.gov/gene) | ensembl(https://www.ensembl.org/) | uniprot(https://www.uniprot.org/) | hgnc(https://www.genenames.org/) | mgi(http://www.informatics.jax.org/mgihome/nomen/index.shtml) | custom(gene identifier used in the expression matrix)
 #'   --coreNum CORENUM     the number of CPU cores used, default is one
 #'   --out OUT             the path to save the analysis results
+#'
+#' Stat details:
+#' 1) The mean-expression edge weights are calculated by multiplying the mean-expression level of the ligand in the
+#'   sending cell type by the mean expression of the receptor in the target cell type (no discriminatory information)
+#' 2) The specificity-based edge weights, help identify the most specific edges in the network
+#'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
+#'  divided by the sum of the mean expression of that ligand/receptor across all cell types
+
 call_natmi <- function(omni_resources,
                omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
                natmi_path = "~/Repos/NATMI",
                em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
                ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-               output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test"){
+               output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+               .format = TRUE){
 
 
     library(rprojroot)
@@ -70,7 +80,16 @@ call_natmi <- function(omni_resources,
         separate(value, into = c("resource", "file"), remove = FALSE) %>%
         mutate(value =  value %>% map(function(csv)
             read_csv(str_glue("{output_path}/{csv}")))) %>%
-        select(resource, "result" = value)
+        select(resource, "result" = value) %>%
+        mutate(result = ifelse(.format, result %>% map(function(df){
+            df %>% select(source = `Sending cluster`,
+                          target = `Target cluster`,
+                          ligand = `Ligand symbol`,
+                          receptor = `Receptor symbol`,
+                          edge_avg_expr = `Edge average expression weight`,
+                          edge_specificity = `Edge average expression derived specificity`)
+        }), result)) %>%
+        deframe()
 
     return(natmi_results)
 }
