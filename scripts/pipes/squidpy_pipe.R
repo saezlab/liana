@@ -37,7 +37,10 @@ call_squidpyR <- function(seurat_object,
                                                 .mean_list = squidpy_means)) %>%
         setNames(names(omni_resources)[-1]) %>% #*
         # swap positions for means and pvalue
-        map(function(x) x %>% select(1:3, means, pvalue))
+        map(function(x) x %>% select(1:3, means, pvalue) %>%
+                rename(ligand = source,
+                       receptor = target) %>%
+                separate(pair, sep = "_", into=c("source", "target")))
 
 
     return(squidpy_results)

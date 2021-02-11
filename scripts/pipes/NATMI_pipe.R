@@ -81,7 +81,7 @@ call_natmi <- function(omni_resources,
         mutate(value =  value %>% map(function(csv)
             read_csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
-        mutate(result = ifelse(.format, result %>% map(function(df){
+        mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
             df %>% select(source = `Sending cluster`,
                           target = `Target cluster`,
                           ligand = `Ligand symbol`,
