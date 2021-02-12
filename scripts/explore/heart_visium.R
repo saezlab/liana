@@ -19,6 +19,11 @@ fibrosis_seurat@images$slice1@coordinates
 Seurat::GetAssay(fibrosis_seurat)
 Seurat::DefaultAssay(fibrosis_seurat) <- "SCT"
 Idents(fibrosis_seurat) <- fibrosis_seurat@meta.data$lt_id
+# convert labels to factor (SquidPy)
+fibrosis_seurat@meta.data$lt_id <- as.factor(fibrosis_seurat@meta.data$lt_id)
+fibrosis_seurat <-RenameAssays(fibrosis_seurat, "Spatial" = "RNA")
+
+
 
 
 # 1. CellChat ------------------------------------------------------------------
@@ -83,7 +88,8 @@ connectome_results <- omni_resources %>%
                                 LR.database = 'custom',
                                 min.cells.per.ident = 1,
                                 p.values = TRUE,
-                                calculate.DOR = FALSE)
+                                calculate.DOR = FALSE,
+                                assay = 'SCT')
     })  %>%
     setNames(names(omni_resources))
 
@@ -98,10 +104,6 @@ connectome_default <- call_connectome(op_resource = NULL,
 
 # 4. Squidpy -------------------------------------------------------------------
 source("scripts/pipes/squidpy_pipe.R")
-
-# convert labels to factor
-fibrosis_seurat@meta.data$lt_id <- as.factor(fibrosis_seurat@meta.data$lt_id)
-
 # call squidpy
 squidpy_results <- call_squidpyR(seurat_object = fibrosis_seurat,
                                  omni_resources = omni_resources,

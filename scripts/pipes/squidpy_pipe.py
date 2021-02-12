@@ -4,7 +4,7 @@ import squidpy as sp
 import re
 
 
-def get_squidpy_res(op_resource, adata_seurat, ident):
+def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
     """ Helper function to map over each resource and call the CellPhoneDB implementation of SquidPy
      Parameters
         ----------
@@ -24,7 +24,8 @@ def get_squidpy_res(op_resource, adata_seurat, ident):
                          interactions_params={"resources": res_filt},
                          transmitter_params={"categories": "ligand", "resources": res_filt},
                          receiver_params={"categories": "receptor", "resources": res_filt},
-                         threshold=0.1, seed=1004, n_perms=100, n_jobs=1)
+                         kwargs)
+                         # threshold=0.1, seed=1004, n_perms=10000, n_jobs=1)
         return y
     except ValueError:
         print(op_resource)
