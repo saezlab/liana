@@ -6,7 +6,8 @@
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
-                          .seed = 1004){
+                          .seed = 1004,
+                          ident = "seurat_annotations"){
 
     # prep seurat data for transfer
     exprs <- GetAssayData(seurat_object)
@@ -24,7 +25,8 @@ call_squidpyR <- function(seurat_object,
                                           exprs,
                                           meta,
                                           feature_meta,
-                                          embedding)
+                                          embedding,
+                                          ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources)[-1]) #*
     squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources)[-1]) #*

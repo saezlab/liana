@@ -23,17 +23,17 @@ source("scripts/pipes/cellchat_pipe.R")
 cellchat_results <- omni_resources %>%
     map(function(x) call_cellchat(x,
                                   seurat_object,
-                                  nboot = 1000,
-                                  thresh = 0.05)) %>%
+                                  nboot = 100,
+                                  exclude_anns = c(),
+                                  thresh = 1)) %>%
     setNames(names(omni_resources))
 
 
 cellchat_default <- call_cellchat(op_resource = NULL,
                                   seurat_object = seurat_object,
-                                  exclude_anns = c("ECM-Receptor",
-                                                   "Cell-Cell Contact"),
-                                  nboot = 1000,
-                                  thresh = 0.05)
+                                  exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
+                                  nboot = 100,
+                                  thresh = 1)
 
 cellchat_results <- append(cellchat_results,
                            list(cellchat_def = cellchat_default))
@@ -54,7 +54,7 @@ connectome_results <- omni_resources %>%
     map(function(op_resource){
         conn <- call_connectome(op_resource,
                                 seurat_object,
-                                # optional args passed to createConnectom
+                                # optional args passed to createConnectome
                                 LR.database = 'custom',
                                 min.cells.per.ident = 1,
                                 p.values = TRUE,
@@ -105,68 +105,8 @@ natmi_results <- call_natmi(omni_resources,
 source("scripts/pipes/squidpy_pipe.R")
 squidpy_results <- call_squidpyR(seurat_object = seurat_object,
                                omni_resources = omni_resources,
-                               python_path = "/home/dbdimitrov/anaconda3/bin/python")
+                               python_path = "/home/dbdimitrov/anaconda3/bin/python",
+                               ident = "seurat_clusters")
 
-
-
-
-
-# 5. Combine results and plot -------------------------------------------------
-# saveRDS(cellchat_results, "output/pbmc3k/cellchat_results.rds")
-# saveRDS(connectome_results, "output/pbmc3k/connectome_results.rds")
-# saveRDS(natmi_results, "output/pbmc3k/natmi_results.rds")
-# saveRDS(squidpy_results, "output/pbmc3k/squidpy_results.rds")
-
-omnipath_LRs <- list("cellchat" = cellchat_results$OmniPath,
-                     "connectome" = connectome_results$OmniPath,
-                     "natmi" = natmi_results$OmniPath,
-                     "squidpy" = squidpy_results$OmniPath) %>%
-    map(function(x) x %>% filter(!(.$source==.$target))) # filter autocrine
-
-
-
-# Already filtered
-omnipath_LRs$cellchat
-
-# Already filtered
-omnipath_LRs$connectome
-
-
-
-# I would've used edge_specificity, but this is more similar to what they do
-# to compare with CellPhoneDB
-# they used an arbitrry threshold to filter
-omnipath_LRs$natmi <- omnipath_LRs$natmi %>%
-    mutate(top5p = ntile(edge_avg_expr, 100)) %>%
-    filter(top5p > 95)
-
-
-omnipath_LRs$squidpy <- omnipath_LRs$squidpy %>%
-    filter(pvalue < 0.05)
-
-
-
-# Default LRs
-default_LRs <- list("cellchat_def" = cellchat_results$cellchat_def,
-                    "cellchat_omni" = cellchat_results$CellChatDB,
-                    "connectome_def" = connectome_results$connectome_def,
-                    "connectome_omni" = connectome_results$connectomeDB2020,
-                    "natmi" = natmi_results$lrc2p,
-                    "squidpy" = squidpy_results$CellPhoneDB) %>%
-    map(function(x) x %>% filter(!(.$source==.$target)))
-
-
-
-default_LRs$natmi <- default_LRs$natmi %>%
-    mutate(top5p = ntile(edge_avg_expr, 100)) %>%
-    filter(top5p > 95)
-
-
-default_LRs$squidpy <- default_LRs$squidpy %>%
-    filter(pvalue < 0.05)
-
-
-#
-library(UpSetR)
 
 

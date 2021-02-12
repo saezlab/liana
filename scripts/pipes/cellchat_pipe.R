@@ -12,6 +12,7 @@ call_cellchat <- function(op_resource,
                           exclude_anns = c("ecm-receptor",
                                            "cell_surface_ligand-receptor"),
                           nboot = 100,
+                          assay = "SCT",
                           ...
                           ){
     library(CellChat)
@@ -19,16 +20,20 @@ call_cellchat <- function(op_resource,
     library(ggalluvial)
     library(igraph)
 
-    # initialize object
-    cellchat.omni <- createCellChat(object = seurat_object,
-                                    group.by = "ident")
+    data.input <- GetAssayData(seurat_object, assay = assay, slot = "data") # normalized data matrix
+    labels <- Idents(seurat_object)
+    meta <- data.frame(group = labels, row.names = names(labels)) # create a dataframe of the cell labels
+
+    cellchat.omni <- createCellChat(object = data.input,
+                               meta = meta,
+                               group.by = "group")
+
     # future::plan("multiprocess", workers = 4) # do parallel
 
     # load CellChatDB
     CellChatDB.omni <- CellChatDB.human
 
     if(!is.null(op_resource)){
-
         # get complexes and interactions from omnipath
         complex_interactions <- op_resource %>%
             select("ligand" = source_genesymbol,
