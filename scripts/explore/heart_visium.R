@@ -21,6 +21,7 @@ Seurat::DefaultAssay(fibrosis_seurat) <- "SCT"
 Idents(fibrosis_seurat) <- fibrosis_seurat@meta.data$lt_id
 # convert labels to factor (SquidPy)
 fibrosis_seurat@meta.data$lt_id <- as.factor(fibrosis_seurat@meta.data$lt_id)
+# Connectom fix
 fibrosis_seurat <-RenameAssays(fibrosis_seurat, "Spatial" = "RNA")
 
 
