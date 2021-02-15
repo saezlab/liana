@@ -21,23 +21,23 @@ call_squidpyR <- function(seurat_object,
     # Call Squidpy
     reticulate::source_python("scripts/pipes/squidpy_pipe.py")
     py_set_seed(.seed)
-    py$squidpy_results <- py$call_squidpy(names(omni_resources)[-1], # -CellChatDB returns None
+    py$squidpy_results <- py$call_squidpy(names(omni_resources),
                                           exprs,
                                           meta,
                                           feature_meta,
                                           embedding,
                                           ident)
 
-    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources)[-1]) #*
-    squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources)[-1]) #*
+    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
+    squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
 
 
-    squidpy_results <- map(names(omni_resources)[-1], #*
+    squidpy_results <- map(names(omni_resources),
                            function(x)
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means)) %>%
-        setNames(names(omni_resources)[-1]) %>% #*
+        setNames(names(omni_resources)) %>% #*
         # swap positions for means and pvalue
         map(function(x) x %>% select(1:3, means, pvalue) %>%
                 rename(ligand = source,

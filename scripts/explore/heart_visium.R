@@ -3,12 +3,12 @@ library(tidyverse)
 library(Seurat)
 library(reticulate)
 
-# load fibrosis slide
-fibrosis_seurat <- readRDS("input/processed_visium/157772.rds")
-
 # Get Omni
 source("scripts/utils/get_omnipath.R")
 omni_resources <- get_omni_resources()
+
+# load fibrosis slide
+fibrosis_seurat <- readRDS("input/processed_visium/157772.rds")
 
 # Take a look
 fibrosis_seurat@assays
@@ -16,14 +16,15 @@ fibrosis_seurat@meta.data
 fibrosis_seurat@images$slice1@coordinates
 
 # Check Assays
-Seurat::GetAssay(fibrosis_seurat)
 Seurat::DefaultAssay(fibrosis_seurat) <- "SCT"
 Idents(fibrosis_seurat) <- fibrosis_seurat@meta.data$lt_id
+
 # convert labels to factor (SquidPy)
 fibrosis_seurat@meta.data$lt_id <- as.factor(fibrosis_seurat@meta.data$lt_id)
 # Connectom fix
 fibrosis_seurat <-RenameAssays(fibrosis_seurat, "Spatial" = "RNA")
-
+# fibrosis_seurat@assays$RNA <- fibrosis_seurat@assays$Spatial
+# Also, there seems to be an issue with Seurat > 3.1.5 :|
 
 
 
@@ -105,8 +106,10 @@ connectome_default <- call_connectome(op_resource = NULL,
 
 # 4. Squidpy -------------------------------------------------------------------
 source("scripts/pipes/squidpy_pipe.R")
+
 # call squidpy
 squidpy_results <- call_squidpyR(seurat_object = fibrosis_seurat,
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  ident = "lt_id")
+

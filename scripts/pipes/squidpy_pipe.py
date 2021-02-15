@@ -24,8 +24,7 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
                          interactions_params={"resources": res_filt},
                          transmitter_params={"categories": "ligand", "resources": res_filt},
                          receiver_params={"categories": "receptor", "resources": res_filt},
-                         kwargs)
-                         # threshold=0.1, seed=1004, n_perms=10000, n_jobs=1)
+                         threshold=0.1, seed=1004, n_perms=10000, n_jobs=1) # should replace with kwargs and elipses
         return y
     except ValueError:
         print(op_resource)
