@@ -26,6 +26,7 @@ call_connectome <- function(op_resource,
             select("source_genesymbol", "target_genesymbol") %>%
             mutate(mode = "UNCAT") %>% # mode refers to interaction categories
             arrange(.$source_genesymbol) %>%
+            distinct() %>%
             as.data.frame()
 
 

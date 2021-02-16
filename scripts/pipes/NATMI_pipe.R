@@ -110,6 +110,7 @@ omni_to_NATMI <- function(omni_resources,
                                  entity_type_intercell_target != "complex") %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
+                          distinct() %>%
                           as.data.frame(),
                       file = str_glue("{omni_path}/{x}.csv"),
                       row.names = FALSE)

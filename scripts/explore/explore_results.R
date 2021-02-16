@@ -16,6 +16,10 @@ table(Idents(seurat_object))
 source("scripts/utils/get_omnipath.R")
 omni_resources <- get_omni_resources()
 
+# Get Random DB
+source("scripts/utils/shuffle_omnipath.R")
+op_random <- shuffle_omnipath(omni_resources$OmniPath)
+
 
 # 1. CellChat ---------------------------------------------------------------
 # Call cellchat and iterate over omni resources
@@ -25,7 +29,8 @@ cellchat_results <- omni_resources %>%
                                   seurat_object,
                                   nboot = 100,
                                   exclude_anns = c(),
-                                  thresh = 1)) %>%
+                                  thresh = 1,
+                                  assay = "RNA")) %>%
     setNames(names(omni_resources))
 
 
@@ -33,10 +38,20 @@ cellchat_default <- call_cellchat(op_resource = NULL,
                                   seurat_object = seurat_object,
                                   exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
                                   nboot = 100,
-                                  thresh = 1)
+                                  thresh = 1,
+                                  assay = "RNA")
 
 cellchat_results <- append(cellchat_results,
                            list(cellchat_def = cellchat_default))
+
+
+# Try with Shuffled DB
+cellchat_random <- call_cellchat(op_random,
+                                 seurat_object,
+                                 nboot = 100,
+                                 exclude_anns = c(),
+                                 thresh = 1,
+                                 assay = "RNA")
 
 # Conclusions:
 # Good idea, takes multiple things into considerations that other packages ignore
@@ -73,6 +88,16 @@ connectome_default <- call_connectome(op_resource = NULL,
 connectome_results <- append(connectome_results,
                            list(connectome_def = connectome_default))
 
+connectome_random <- call_connectome(op_random,
+                                     seurat_object,
+                                     LR.database = 'custom',
+                                     min.cells.per.ident = 1,
+                                     p.values = TRUE,
+                                     calculate.DOR = FALSE)
+
+
+
+
 # 3. NATMI ---------------------------------------------------------------------
 # Extract data from Seurat Object
 # write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
@@ -85,13 +110,16 @@ connectome_results <- append(connectome_results,
 #           file = "input/test_metadata.csv",
 #           row.names = FALSE)
 
+source("scripts/pipes/NATMI_pipe.R")
+
 # save OmniPath Resource to NATMI format
-# omni_to_NATMI(omni_resources,
-#               omni_path = "input/omnipath_NATMI")
+omni_plus_random <- append(omni_resources,
+                           list("Random" = op_random))
+omni_to_NATMI(omni_plus_random,
+              omni_path = "input/omnipath_NATMI")
 
 
 # call NATMI
-source("scripts/pipes/NATMI_pipe.R")
 py_set_seed(1004)
 natmi_results <- call_natmi(omni_resources,
                             omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
