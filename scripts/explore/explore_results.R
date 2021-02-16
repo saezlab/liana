@@ -121,7 +121,7 @@ omni_to_NATMI(omni_plus_random,
 
 # call NATMI
 py_set_seed(1004)
-natmi_results <- call_natmi(omni_resources,
+natmi_results <- call_natmi(omni_plus_random,
                             omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
                             natmi_path = "~/Repos/NATMI",
                             em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
