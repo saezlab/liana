@@ -5,8 +5,6 @@ library(reticulate)
 
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat.rds")
-# convert labels to factor (SquidPy)
-# breast_cancer@meta.data$lt_id <- as.factor(breast_cancer@meta.data$lt_id)
 
 # Get Omni Resrouces
 source("scripts/utils/get_omnipath.R")
@@ -16,17 +14,22 @@ omni_resources <- get_omni_resources()
 # source("scripts/utils/shuffle_omnipath.R")
 # op_random <- shuffle_omnipath(omni_resources$OmniPath)
 
-# call squidpy
-source("scripts/pipes/squidpy_pipe.R")
-
-
+source("scripts/utils/bench_robust.R")
 # DBs to Bench
 db_list <- list("CellChatDB" = omni_resources$CellChatDB,
                 "CellTalkDB" = omni_resources$CellTalkDB)
 
-# Run with Full Data
+# Define Subsampling
+# subsampling <- c(1, 0.8, 0.6, 0.4)
 subsampling <- c(1, 0.75, 0.5)
-subsampled_res <- bench_robust(subsampling,
+
+# 1. Squidpy -------------------------------------------------------------------
+source("scripts/pipes/squidpy_pipe.R")
+
+# convert labels to factor (SquidPy)
+# breast_cancer@meta.data$lt_id <- as.factor(breast_cancer@meta.data$lt_id)
+
+squidpy_res <- bench_robust(subsampling,
              call_squidpyR,
              seurat_object = breast_cancer,
              omni_resources= db_list,
@@ -36,58 +39,30 @@ subsampled_res <- bench_robust(subsampling,
     enframe(value="lr_res") %>%
     mutate(name = str_glue("{name}_subsamp_{rep(subsampling, each = length(db_list))}"))
 
-res <- subsampled_res %>%
+squidpy_sub <- squidpy_res %>%
     filter(str_detect(name, "CellChatDB"))
+squidpy_sub
 
-
-# Define Truth
-ground <- squidpy_default$CellChatDB %>%
+# Define Truth using full data set
+ground <- squidpy_sub[1,]$lr_res[[1]] %>%
     mutate(truth = if_else(pvalue > 0.05 | is.na(pvalue), 0, 1)) %>%
     unite(ligand, receptor, source, target, col = "interaction") %>%
     select(interaction, truth)
 
-# negative vastly more than positve - need to downsample
+# negative vastly more than positve - need to downsample for PR
 summary(as.factor(ground$truth))
 
 
 # Prepare for ROC
-case1 <- squidpy_sub80$CellChatDB  %>%
-    unite(ligand, receptor, source, target, col = "interaction") %>%
-    mutate(sub = 0.8)
-
-case2 <- squidpy_sub40$CellChatDB %>%
-    unite(ligand, receptor, source, target, col = "interaction") %>%
-    mutate(sub = 0.4)
-
-cases <- list("sub_0.8" = case1,
-              "sub_0.4" = case2) %>%
-    enframe(name = "subsample", value = "lr_results")
+roc_res <- squidpy_sub %>%
+    filter(!str_detect(name, "_1")) %>% # keep only subsampled
+    mutate(roc = lr_res %>% map(function(df) calc_curve(df, ground))) # get roc
 
 
-df <- cases %>%
-    mutate("roc_prep" = lr_results %>% map(function(case){
-        left_join(ground, case) %>%
-        mutate(response = case_when(truth == 1 ~ 1,
-                                    truth == 0 ~ 0)) %>%
-            mutate(predictor = abs((pvalue))) %>%
-            filter(!is.na(predictor)) %>%
-            select(interaction, response, predictor) %>%
-            mutate(response = as.factor(response))
-    }))
-
-xd <- df %>% mutate(roc = roc_prep %>%
-                  map(function(case) calc_curve(case)))
-
-
-xd <- xd %>%
-    select(subsample, roc) %>%
-    unnest(roc)
-
-
-
-ggplot(xd, aes(x = 1-specificity,
+ggplot(roc_res %>%
+           unnest(roc), aes(x = 1-specificity,
                y = sensitivity,
-               colour = subsample)) +
+               colour = name)) +
     geom_line() +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
     xlab("FPR (1-specificity)") +
@@ -95,63 +70,58 @@ ggplot(xd, aes(x = 1-specificity,
 
 
 
+# 2. CellChat ------------------------------------------------------------------
+source("scripts/pipes/cellchat_pipe.R")
+cellchat_default <- call_cellchat(op_resource = NULL,
+                                  seurat_object = breast_cancer,
+                                  exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
+                                  nboot = 100,
+                                  thresh = 1,
+                                  assay = "SCT")
+
+# DBs to Bench
+db_list <- list("Ramilowski2015" = omni_resources$Ramilowski2015)
 
 
-#
-# df <- left_join(ground, cases) %>%
-#     mutate(response = case_when(truth == 1 ~ 1,
-#                                 truth == 0 ~ 0)) %>%
-#     mutate(predictor = abs(log2(pvalue))) %>%
-#     filter(!is.na(predictor)) %>%
-#     select(interaction, response, predictor)
-# df$response = factor(df$response, levels = c(1, 0))
-#
-# df
+cellchat_res <- bench_robust(subsampling,
+                            lr_call = call_cellchat,
+                            op_resource = omni_resources$Ramilowski2015,
+                            seurat_object = call_cellchat,
+                            exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
+                            nboot = 100,
+                            thresh = 1,
+                            assay = "SCT") %>%
+    enframe(value="lr_res") %>%
+    mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
 
 
-# ROC
-library(yardstick)
-res_col_1 <- "sensitivity"
-res_col_2 <- "specificity"
-curve_fun = yardstick::roc_curve
-auc_fun = yardstick::roc_auc
+# Define Truth using full data set
+ground <- cellchat_res[1,]$lr_res[[1]] %>%
+    mutate(truth = if_else(pval > 0.05 | is.na(pval), 0, 1)) %>%
+    unite(ligand, receptor, source, target, col = "interaction") %>%
+    select(interaction, truth)
 
-cn = df %>% filter(.data$response == 0)
-cp = df %>% filter(.data$response == 1)
-
-r = df %>%
-    curve_fun(.data$response, .data$predictor)
-auc = df %>%
-    auc_fun(.data$response, .data$predictor)
-
-res = tibble({{ res_col_1 }} := r %>% pull(res_col_1),
-             {{ res_col_2 }} := r %>% pull(res_col_2),
-             th = r$.threshold,
-             auc = auc$.estimate,
-             n = length(which(res$response == 1)),
-             cp = nrow(cp),
-             cn = nrow(cn)) %>%
-    arrange(!!res_col_1, !!res_col_2)
+# negative vastly more than positve - need to downsample for PR
+summary(as.factor(ground$truth))
 
 
-
-
-
-
-
-
-calc_curve(df)
-
-#'
-bc_sub80 <- seurat_subsample(seurat_object = breast_cancer)
+# Prepare for ROC
+roc_res <- cellchat_res %>%
+    filter(!str_detect(name, "_1")) %>% # keep only subsampled
+    mutate(roc = lr_res %>% map(function(df)
+        calc_curve(df, ground, predictor_metric = "pval"))) # get roc
 
 
 
-cases %>%
-    mutate(roc = p)
+ggplot(roc_res %>%
+           unnest(roc), aes(x = 1-specificity,
+                            y = sensitivity,
+                            colour = name)) +
+    geom_line() +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    xlab("FPR (1-specificity)") +
+    ylab("TPR (sensitivity)")
 
 
 
-
-
-
+# 3. NATMI

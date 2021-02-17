@@ -21,32 +21,23 @@ bench_robust <- function(subsampling,
 
 
 
-#' Helper function used to prepare `activity` elements or \link{decouple}
-#' outputs for \link{calc_curve}. This is done by keeping only the the perturbed
-#' or predicted `sources` (or TFs) and assigning the `score` (or statistical
-#' method results e.g. Normalized Enrichment Score) as the `predictor`.
+#' Helper function used to
 #'
-#' @param df `activity` column elements - i.e. `decouple()` output.
-#' @param filter_tn logical flag indicating if unnecessary negatives should
-#' be filtered out
+#' @param df
+#' @param ground "Ground Truth" - i.e. results considered significant
+#' when using the whole dataset (no subsampling)
 #'
-#' @return tidy data frame with meta information for each experiment and the
-#'   response and the predictor value which are required for ROC and
-#'   PR curve analysis
-prepare_for_roc = function(df) {
+#' @return tidy data frame with meta information for each subsampling
+prepare_for_roc = function(df, ground, predictor_metric) {
     res = df %>%
-        dplyr::mutate(response = case_when(.data$tf == .data$target ~ 1,
-                                           .data$tf != .data$target ~ 0),
-                      predictor =  .data$score*sign)
-    res$response = factor(res$response, levels = c(1, 0))
-
-    if (filter_tn == TRUE) {
-        z = intersect(res$tf, res$target)
-        res = res %>%
-            filter(.data$tf %in% z, .data$target %in% z)
-    }
-    res %>%
-        select(.data$tf, .data$id, .data$response, .data$predictor)
+        unite(ligand, receptor, source, target, col = "interaction") %>%
+        left_join(ground, .) %>%
+        mutate(response = case_when(truth == 1 ~ 1,
+                                    truth == 0 ~ 0)) %>%
+        mutate(predictor = abs(.[[predictor_metric]])) %>%
+        filter(!is.na(predictor)) %>%
+        select(interaction, response, predictor) %>%
+        mutate(response = as.factor(response))
 }
 
 
@@ -90,7 +81,7 @@ seurat_subsample <- function(seurat_object,
 #'    results from the `run_benchmark()` function. Each of the elements
 #'    in `activity` are results from runs of the \link{decouple} wrapper.
 #'
-#' @param df run_benchmark roc column provided as input
+#' @param df
 #' @param downsampling logical flag indicating if the number of Negatives
 #'    should be downsampled to the number of Positives
 #' @param times integer showing the number of downsampling
@@ -103,6 +94,8 @@ seurat_subsample <- function(seurat_object,
 #'    and coverage in the case of ROC.
 #' @import yardstick
 calc_curve = function(df,
+                      ground,
+                      predictor_metric = "pvalue",
                       downsampling = FALSE,
                       times = 1000,
                       curve = "ROC",
@@ -121,8 +114,8 @@ calc_curve = function(df,
         auc_fun = yardstick::roc_auc
     }
 
-    # df = df %>%
-    #     prepare_for_roc(., filter_tn = TRUE)
+    df = df %>%
+        prepare_for_roc(., ground, predictor_metric)
 
 
     if (sum(which(df$response == 0)) == nrow(df)){
