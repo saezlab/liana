@@ -8,6 +8,9 @@
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
+#' @param .subsampling_pipe bool whether ran as part of the robustness pipe:
+#' if true, we use Seurat object name to modify output and input, so that
+#' each subsampling is saved to a different dir
 #' @return DF with NATMI results
 #' @details This function will take omnipath resources saved to csvs and copy them to the
 #' NATMI dbs folder, then it will natively call the python modules of NATMI
@@ -43,10 +46,17 @@ call_natmi <- function(omni_resources,
                        output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
                        .format = TRUE,
                        .write_data = FALSE,
-                       .default_run = FALSE){
+                       .default_run = FALSE,
+                       .subsampling_pipe = FALSE){
 
     library(rprojroot)
     project_rootdir <- find_rstudio_root_file()
+
+    if(.subsampling_pipe){
+        em_path = str_split_helper(em_path, seurat_object@project.name)
+        ann_path = str_split_helper(ann_path, seurat_object@project.name)
+        output_path = str_glue("{output_path}/{seurat_object@project.name}")
+    }
 
     if(.write_data){
         message(str_glue("Writing EM to {em_path}"))
@@ -64,7 +74,6 @@ call_natmi <- function(omni_resources,
 
     message(str_glue("Output to be saved and read from {output_path}"))
     dir.create(file.path(output_path))
-
 
     # copy OmniPath resources to NATMI dir
     file.copy(list.files(omnidbs_path, "*.csv$",
@@ -99,24 +108,7 @@ call_natmi <- function(omni_resources,
     setwd(project_rootdir)
 
     # load results
-    natmi_results <- list.files(output_path,
-                                all.files = TRUE,
-                                recursive = TRUE,
-                                pattern ="Edges_") %>%
-        enframe() %>%
-        separate(value, into = c("resource", "file"), remove = FALSE) %>%
-        mutate(value =  value %>% map(function(csv)
-            read_csv(str_glue("{output_path}/{csv}")))) %>%
-        select(resource, "result" = value) %>%
-        mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
-            df %>% select(source = `Sending cluster`,
-                          target = `Target cluster`,
-                          ligand = `Ligand symbol`,
-                          receptor = `Receptor symbol`,
-                          edge_avg_expr = `Edge average expression weight`,
-                          edge_specificity = `Edge average expression derived specificity`)
-        }), result)) %>%
-        deframe()
+    natmi_results <- FormatNatmi(output_path, .format)
 
     return(natmi_results)
 }
@@ -142,4 +134,41 @@ omni_to_NATMI <- function(omni_resources,
                       file = str_glue("{omni_path}/{x}.csv"),
                       row.names = FALSE)
         })
+}
+
+
+#' Helper function to load NATMI results from folder and format appropriately
+#' @param output_path NATMI output path
+#' @param .format bool whether to format output
+#' @return A list of NATMI results per resource loaded from the output directory
+FormatNatmi <- function(output_path, .format){
+    list.files(output_path,
+               all.files = TRUE,
+               recursive = TRUE,
+               pattern ="Edges_") %>%
+        enframe() %>%
+        separate(value, into = c("resource", "file"), remove = FALSE) %>%
+        mutate(value =  value %>% map(function(csv)
+            read_csv(str_glue("{output_path}/{csv}")))) %>%
+        select(resource, "result" = value) %>%
+        mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
+            df %>% select(source = `Sending cluster`,
+                          target = `Target cluster`,
+                          ligand = `Ligand symbol`,
+                          receptor = `Receptor symbol`,
+                          edge_avg_expr = `Edge average expression weight`,
+                          edge_specificity = `Edge average expression derived specificity`)
+        }), result)) %>%
+        deframe()
+}
+
+
+#' Helper function to split and format strings for subsampling
+#' @param path path to CSV (em/annotations) to split and format to the
+#' current subsampling taken from a seurat object project name
+#' @param project_name seurat object project name
+#' @return Path to save subsampling EM and Annotations
+str_split_helper <- function(path, project_name){
+    split_path <- str_split(path, pattern = "\\.", n = 2)[[1]][1]
+    str_glue("{split_path}_{project_name}.csv")
 }

@@ -6,6 +6,14 @@ library(reticulate)
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat.rds")
 
+# Fix for NATMI
+clust.anns <- c("c0", "c1","c2",
+                "c3","c4","c5",
+                "c6", "c7", "c8",
+                "c9", "c10", "c11")
+names(clust.anns) <- levels(breast_cancer)
+breast_cancer <- RenameIdents(breast_cancer, clust.anns)
+
 # Get Omni Resrouces
 source("scripts/utils/get_omnipath.R")
 omni_resources <- get_omni_resources()
@@ -22,6 +30,7 @@ db_list <- list("CellChatDB" = omni_resources$CellChatDB,
 # Define Subsampling
 # subsampling <- c(1, 0.8, 0.6, 0.4)
 subsampling <- c(1, 0.75, 0.5)
+
 
 # 1. Squidpy -------------------------------------------------------------------
 source("scripts/pipes/squidpy_pipe.R")
@@ -87,7 +96,7 @@ db_list <- list("Ramilowski2015" = omni_resources$Ramilowski2015)
 cellchat_res <- bench_robust(subsampling,
                             lr_call = call_cellchat,
                             op_resource = omni_resources$Ramilowski2015,
-                            seurat_object = call_cellchat,
+                            seurat_object = breast_cancer,
                             exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
                             nboot = 100,
                             thresh = 1,
@@ -126,14 +135,6 @@ ggplot(roc_res %>%
 
 
 # 3. NATMI ---------------------------------------------------------------------
-clust.anns <- c("c0", "c1","c2",
-                "c3","c4","c5",
-                "c6", "c7", "c8",
-                "c9", "c10", "c11")
-names(clust.anns) <- levels(breast_cancer)
-breast_cancer <- RenameIdents(breast_cancer, clust.anns)
-
-
 # call NATMI
 source("scripts/pipes/NATMI_pipe.R")
 reticulate::repl_python()
@@ -144,7 +145,7 @@ py_set_seed(1004)
 #               omni_path = "input/omnipath_NATMI")
 
 
-db_list <- list("CellChatDB" = omni_resources$Kirouac2010)
+db_list <- list("CellChatDB" = omni_resources$CellChatDB)
 
 natmi_results <- call_natmi(db_list,
                             seurat_object = breast_cancer,
@@ -153,4 +154,15 @@ natmi_results <- call_natmi(db_list,
                             em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_em.csv",
                             ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_metadata.csv",
                             output_path = "~/Repos/ligrec_decoupleR/output/bc_natmi_test",
-                            .write_data = FALSE)
+                            .write_data = TRUE,
+                            .subsampling_pipe = TRUE)
+
+
+natmi_res <- bench_robust(subsampling,
+                             lr_call = call_natmi,
+
+                             ) %>%
+    enframe(value="lr_res") %>%
+    mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
+
+

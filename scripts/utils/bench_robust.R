@@ -9,8 +9,10 @@ bench_robust <- function(subsampling,
                          ...){
 
     map(subsampling, function(ss){
-        seurat_subsample(breast_cancer, subsampling = ss)
-    }) %>% map(function(seurat_sub){
+        seurat_subsample(seurat_object, subsampling = ss)
+    }) %>% map2(.x = ., .y = subsampling, .f = function(seurat_sub, ss){
+        message(str_glue("Subsampling: {ss}"))
+        breast_cancer@project.name <- str_glue("subsample_{ss}")
         do.call(lr_call,
                 list(seurat_sub,
                      ...))
