@@ -1,11 +1,16 @@
-library(UpSetR)
-library(grid)
-source("./R/generate_figures/support_functions.R")
+# This script generates upset plots to look at the overlap of ligands and
+# receptors contained in each resource. Note that here we restrict our search to
+# interactions with sources annotated in OmniPath as ligands and targets
+# annotated in OmniPath as receptors, rather than the entire intercell network.
 
+require(UpSetR)
+require(grid)
+require(purrr)
+source("./R/generate_figures/support_functions.R")
 ligrec_interaction_list <- readRDS("./R/networks.RData")
 
-# Doing this by uniprot ID, but it could also be done by gene ID
-ligands_omnipath_uniprot <- unique(ligrec_interaction_list$Omnipath$source) %>% 
+# List of unique ligands in Omnipath by UNIPROT ID
+ligands_OmniPath_uniprot <- unique(ligrec_interaction_list$OmniPath$source) %>% 
   as.data.frame %>% 
   setNames("uniprot") %>%
   tibble::rowid_to_column() 
@@ -13,11 +18,11 @@ ligands_omnipath_uniprot <- unique(ligrec_interaction_list$Omnipath$source) %>%
 ligands_list <- names(ligrec_interaction_list) %>% 
   map(function(x){
     message(x)
-    if(x!="Omnipath" & typeof(ligrec_interaction_list[[x]]) == "list"){
+    if(x!="OmniPath" & typeof(ligrec_interaction_list[[x]]) == "list"){
       ligands <- unique(ligrec_interaction_list[[x]]$source) %>% as.data.frame %>% setNames("uniprot") %>%
-        left_join(ligands_omnipath_uniprot, by = "uniprot")
-    } else if(x == "Omnipath"){
-      ligands_omnipath_uniprot
+        left_join(ligands_OmniPath_uniprot, by = "uniprot")
+    } else if(x == "OmniPath"){
+      ligands_OmniPath_uniprot
     } else {
       integer(0)
     }
@@ -29,7 +34,7 @@ grid.text("Ligands by Uniprot ID",x = 0.65, y=0.95, gp=gpar(fontsize=10))
 
 # Same for receptors
 
-receptors_omnipath_uniprot <- unique(ligrec_interaction_list$Omnipath$target) %>% 
+receptors_OmniPath_uniprot <- unique(ligrec_interaction_list$OmniPath$target) %>% 
   as.data.frame %>%
   setNames("uniprot") %>%
   tibble::rowid_to_column()
@@ -37,11 +42,11 @@ receptors_omnipath_uniprot <- unique(ligrec_interaction_list$Omnipath$target) %>
 receptors_list <- names(ligrec_interaction_list) %>% 
   map(function(x){
     message(x)
-    if(x!="Omnipath" & typeof(ligrec_interaction_list[[x]]) == "list"){
+    if(x!="OmniPath" & typeof(ligrec_interaction_list[[x]]) == "list"){
       receptors <- unique(ligrec_interaction_list[[x]]$target) %>% as.data.frame %>% setNames("uniprot") %>%
-        left_join(receptors_omnipath_uniprot, by = "uniprot")
-    } else if(x == "Omnipath"){
-      receptors_omnipath_uniprot
+        left_join(receptors_OmniPath_uniprot, by = "uniprot")
+    } else if(x == "OmniPath"){
+      receptors_OmniPath_uniprot
     } else {
       integer(0)
     }

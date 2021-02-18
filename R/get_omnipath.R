@@ -1,6 +1,8 @@
 library(tidyverse)
 library(OmnipathR)
 
+import_intercell_network()
+
 omni_list <- list(
     'CellChatDB',
     'CellPhoneDB',

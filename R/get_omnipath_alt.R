@@ -1,28 +1,40 @@
-library(OmnipathR)
-library(dplyr)
-library(stringr)
-library(assertthat)
+require(OmnipathR)
+require(dplyr)
+require(stringr)
+require(assertthat)
 
-
-resources <- c('CellPhoneDB', 'Ramilowski2015', 'Baccin2019', 'LRdb', 
-               'Kirouac2010', 'ICELLNET','iTALK','EMBRACE','HPMR',
-               'Guide2Pharma', 'CellTalkDB', 'connectomeDB2020', 'talklr',
-               'MatrixDB', 'Adhesome', 'CellChatDB', 'Omnipath') 
+omni_list <- list(
+  'CellChatDB',
+  'CellPhoneDB',
+  'Ramilowski2015',
+  'Baccin2019',
+  'LRdb',
+  'Kirouac2010',
+  'ICELLNET',
+  'iTALK',
+  'EMBRACE',
+  'HPMR',
+  'Guide2Pharma',
+  'connectomeDB2020',
+  'talklr',
+  'CellTalkDB',
+  'OmniPath'
+)
 
 # Collect all ligrec interactions from all resources
 all_ligrec_interactions <- import_intercell_network(transmitter_param = list(categories = 'ligand'),
                                                     receiver_param = list(categories = 'receptor'))
 
 # Remove complexes, check for duplicates, and give all interactions a unique label to enable UpSet plot:
-omnipath_ligrec_interactions <- all_ligrec_interactions %>% 
+OmniPath_ligrec_interactions <- all_ligrec_interactions %>% 
   dplyr::filter(entity_type_intercell_source != 'complex' & entity_type_intercell_target != 'complex') %>%
   distinct() %>%
   tibble::rowid_to_column()
 
 #' create_lr_networks
 #'
-#' @param resources The list of resources for which to retrieve ligand-receptor
-#'   interactions, including 'Omnipath' if desired.
+#' @param omni_list The list of resources for which to retrieve ligand-receptor
+#'   interactions, including 'OmniPath' if desired.
 #'
 #' @return A list of dataframes with the ligand-receptor interactions contained
 #'   in each resource
@@ -31,12 +43,12 @@ omnipath_ligrec_interactions <- all_ligrec_interactions %>%
 #' @examples
 create_lr_networks <- function(resources){
   # Check resource names are valid:
-  stopifnot("One or more invalid resource names"=all(resources %in% c(intersect(get_interaction_resources(), get_intercell_resources()), 'Omnipath')))
+  stopifnot("One or more invalid resource names"=all(resources %in% c(intersect(get_interaction_resources(), get_intercell_resources()), 'OmniPath')))
   
   get_network <- function(resource){
     cat("Collecting interactions for: ", resource, "\n")
-    if(resource == 'Omnipath'){
-      return(omnipath_ligrec_interactions)
+    if(resource == 'OmniPath'){
+      return(OmniPath_ligrec_interactions)
     }
     # Try statement because of bug in import_intercell_network
     # 'MatrixDB', 'Adhesome', "CellChatDB" throw error (0 intercellular communication role records).
@@ -51,8 +63,8 @@ create_lr_networks <- function(resources){
         dplyr::filter(entity_type_intercell_source != 'complex' & entity_type_intercell_target != 'complex') %>%
         distinct() %>%
         dplyr::select(-c(database_intercell_source, database_intercell_target))
-      # Retrieve unique id amongst all omnipath interactions to enable UpSet plot:
-      intercell_network_id <-  suppressMessages(dplyr::inner_join(omnipath_ligrec_interactions, intercell_network))#, by=merge_columns)
+      # Retrieve unique id amongst all OmniPath interactions to enable UpSet plot:
+      intercell_network_id <-  suppressMessages(dplyr::inner_join(OmniPath_ligrec_interactions, intercell_network))#, by=merge_columns)
       # Assert that no interactions are removed in this process:
       assertthat::validate_that(nrow(intercell_network) == nrow(intercell_network_id), 
                                 msg="Some interactions may have been removed when assigning ID")
@@ -64,6 +76,6 @@ create_lr_networks <- function(resources){
   return(intercell_networks)
 }
 
-networks <- create_lr_networks(resources)
+networks <- create_lr_networks(omni_list)
 saveRDS(networks, "./R/networks.RData")
 

@@ -3,9 +3,20 @@ library(OmnipathR)
 annotations <- import_omnipath_annotations(resources = names(ligrec_interaction_list), wide = TRUE)
 information_in_each_resource <- lapply(names(annotations), function(x){
   message(x)
-  print(colnames(annotations[[x]]))
-})
+  message(colnames(annotations[[x]]))
+  return(colnames(annotations[[x]]))
+}) %>% setNames(names(annotations))
 
+library(qdapTools)
+annotations_in_resource <- mtabulate(information_in_each_resource) %>% as.data.frame()
+df <- annotations_in_resource %>%
+  tibble::rownames_to_column() %>%
+  tidyr::gather(colname, value, -rowname)
+
+ggplot(df, aes(x = colname, y = rowname, fill = value)) +
+  geom_tile()  + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
+  labs(x = "Annotation", y = "Resource")
 
 # Possibilities for categories:
 adhesome_mainclasses <- levels(as.factor(annotations$Adhesome$mainclass))

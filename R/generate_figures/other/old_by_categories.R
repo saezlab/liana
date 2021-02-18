@@ -3,6 +3,8 @@ library(UpSetR)
 source("./R/generate_figures/support_functions.R")
 ligrec_interaction_list <- readRDS("./R/networks.RData")
 
+omnipath <- ligrec_interaction_list$Omnipath
+
 # Finding actual categories:
 
 omnipath_annotations <- import_omnipath_annotations(resources = names(ligrec_interaction_list))
@@ -12,7 +14,41 @@ omnipath_annotations_wider <- omnipath_annotations %>%
   summarise_all(funs(toString(unique(na.omit(.))))) %>%
   mutate_all(na_if,"")
 
-location <- omnipath_annotations_wider %>% dplyr::select(uniprot, location)
+
+role <- dplyr::select(omnipath_annotations_wider, c(uniprot, role))
+location <- dplyr::select(omnipath_annotations_wider, c(uniprot, location))
+mainclass <- dplyr::select(omnipath_annotations_wider, c(uniprot, mainclass))
+receptor_class <- dplyr::select(omnipath_annotations_wider, c(uniprot, receptor_class))
+# ... to be completed
+
+add_omnipath_rc <- omnipath %>% 
+  left_join(receptor_class, by = c("target"="uniprot")) %>% 
+  group_by(receptor_class) %>% summarise(n = n()) %>%
+  dplyr::mutate(sources = "Omnipath")
+
+data_receptor_class <- omnipath %>% 
+  left_join(receptor_class, by = c("target"="uniprot")) %>%
+  tidyr::separate_rows(sources, sep = ";") %>%
+  dplyr::filter(sources %in% names(ligrec_interaction_list)) %>% 
+  group_by(sources, receptor_class) %>%
+  summarise(n = n()) %>%
+  ungroup %>%
+  tidyr::complete(sources, receptor_class, fill = list(n = 0))
+
+data_receptor_class_omnipath <- rbind(data_receptor_class, add_omnipath_rc)
+
+# Stacked plot
+ggplot(data_receptor_class, aes(fill=receptor_class, y=n, x=sources)) + 
+  geom_bar(position="stack", stat="identity") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
+  labs(x = "Resource", y = "Number of interactions", fill = "Receptor Class")
+
+# Stacked plot
+ggplot(data_receptor_class_omnipath, aes(fill=receptor_class, y=n, x=sources)) + 
+  geom_bar(position="stack", stat="identity") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
+  labs(x = "Resource", y = "Number of interactions", fill = "Receptor Class")
+########
 
 cellphonedb <- ligrec_interaction_list$CellPhoneDB %>% dplyr::select(rowid, category_intercell_source, 
                                                                      category_intercell_target, source, target,
