@@ -6,11 +6,16 @@
 #' @param ann_path annotations (i.e. clusters) path
 #' @param output_path NATMI output path
 #' @param .format bool whether to format output
+#' @param .write_data bool whether Extract data from Seurat Object
+#' @param .default_run bool whether to run default DBs or not
 #' @return DF with NATMI results
 #' @details This function will take omnipath resources saved to csvs and copy them to the
 #' NATMI dbs folder, then it will natively call the python modules of NATMI
 #' in the NATMI dir and save the output into a specified directory.
 #' It will then load and format the output to a DF.
+#'
+#' NB! Please stick to full paths.
+#'
 #' NATMI Arguments:
 #'   --interDB INTERDB
 #'                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension
@@ -29,18 +34,37 @@
 #' 2) The specificity-based edge weights, help identify the most specific edges in the network
 #'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
 #'  divided by the sum of the mean expression of that ligand/receptor across all cell types
-
 call_natmi <- function(omni_resources,
-               omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-               natmi_path = "~/Repos/NATMI",
-               em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-               ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-               output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-               .format = TRUE){
-
+                       seurat_object = NULL,
+                       omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+                       natmi_path = "~/Repos/NATMI",
+                       em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
+                       ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
+                       output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+                       .format = TRUE,
+                       .write_data = FALSE,
+                       .default_run = FALSE){
 
     library(rprojroot)
     project_rootdir <- find_rstudio_root_file()
+
+    if(.write_data){
+        message(str_glue("Writing EM to {em_path}"))
+        write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
+                                                    assay = "SCT",
+                                                    slot = "data"))) - 1),
+                  file = em_path,
+                  row.names = TRUE)
+        message(str_glue("Writing Annotations to {ann_path}"))
+        write.csv(Idents(seurat_object)  %>%
+                      enframe(name="barcode", value="annotation"),
+                  file = ann_path,
+                  row.names = FALSE)
+    }
+
+    message(str_glue("Output to be saved and read from {output_path}"))
+    dir.create(file.path(output_path))
+
 
     # copy OmniPath resources to NATMI dir
     file.copy(list.files(omnidbs_path, "*.csv$",
@@ -52,9 +76,12 @@ call_natmi <- function(omni_resources,
     setwd(natmi_path)
 
     # append default resources to OmniPath ones
-    omni_list <- append(as.list(names(omni_resources)),
-                        list("lrc2p", "lrc2a"))
-
+    if(.default_run){
+        omni_list <- append(as.list(names(omni_resources)),
+                            list("lrc2p", "lrc2a"))
+    } else{
+        omni_list <- as.list(names(omni_resources))
+    }
 
     # submit native sys requests
     omni_list %>% map(function(resource){

@@ -56,7 +56,8 @@ summary(as.factor(ground$truth))
 # Prepare for ROC
 roc_res <- squidpy_sub %>%
     filter(!str_detect(name, "_1")) %>% # keep only subsampled
-    mutate(roc = lr_res %>% map(function(df) calc_curve(df, ground))) # get roc
+    mutate(roc = lr_res %>% map(function(df)
+        calc_curve(df, ground, predictor_metric = "pvalue"))) # get roc
 
 
 ggplot(roc_res %>%
@@ -124,4 +125,32 @@ ggplot(roc_res %>%
 
 
 
-# 3. NATMI
+# 3. NATMI ---------------------------------------------------------------------
+clust.anns <- c("c0", "c1","c2",
+                "c3","c4","c5",
+                "c6", "c7", "c8",
+                "c9", "c10", "c11")
+names(clust.anns) <- levels(breast_cancer)
+breast_cancer <- RenameIdents(breast_cancer, clust.anns)
+
+
+# call NATMI
+source("scripts/pipes/NATMI_pipe.R")
+reticulate::repl_python()
+py_set_seed(1004)
+
+# save OmniPath Resource to NATMI format
+# omni_to_NATMI(omni_resources,
+#               omni_path = "input/omnipath_NATMI")
+
+
+db_list <- list("CellChatDB" = omni_resources$Kirouac2010)
+
+natmi_results <- call_natmi(db_list,
+                            seurat_object = breast_cancer,
+                            omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+                            natmi_path = "~/Repos/NATMI",
+                            em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_em.csv",
+                            ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_metadata.csv",
+                            output_path = "~/Repos/ligrec_decoupleR/output/bc_natmi_test",
+                            .write_data = FALSE)
