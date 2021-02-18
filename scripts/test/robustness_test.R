@@ -4,19 +4,22 @@ library(Seurat)
 library(reticulate)
 
 # Load Data
-breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat.rds")
+breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
+
 
 # Fix for NATMI
 clust.anns <- c("c0", "c1","c2",
                 "c3","c4","c5",
                 "c6", "c7", "c8",
-                "c9", "c10", "c11")
+                "c9", "c10", "c11", "c12")
 names(clust.anns) <- levels(breast_cancer)
 breast_cancer <- RenameIdents(breast_cancer, clust.anns)
 
 # Get Omni Resrouces
-source("scripts/utils/get_omnipath.R")
-omni_resources <- get_omni_resources()
+# source("scripts/utils/get_omnipath.R")
+# omni_resources <- get_omni_resources()
+# saveRDS(omni_resources, "input/omni_resources.rds")
+omni_resources <-readRDS("input/omni_resources.rds")
 
 # Get Random DB
 # source("scripts/utils/shuffle_omnipath.R")
@@ -145,17 +148,6 @@ py_set_seed(1004)
 
 db_list <- list("CellChatDB" = omni_resources$CellChatDB)
 
-natmi_results <- call_natmi(db_list,
-                            seurat_object = breast_cancer,
-                            omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-                            natmi_path = "~/Repos/NATMI",
-                            em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_em.csv",
-                            ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/breast_cancer_metadata.csv",
-                            output_path = "~/Repos/ligrec_decoupleR/output/bc_natmi_test",
-                            .write_data = TRUE,
-                            .subsampling_pipe = TRUE)
-
-
 natmi_res <- bench_robust(subsampling,
                           lr_call = call_natmi,
                           omni_resources= db_list,
@@ -166,9 +158,7 @@ natmi_res <- bench_robust(subsampling,
                           ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_ann.csv",
                           output_path = "~/Repos/ligrec_decoupleR/output/bc_natmi_subsample",
                           .write_data = TRUE,
-                          .subsampling_pipe = TRUE) # %>%
-    # enframe(value="lr_res") %>%
-    # mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
+                          .subsampling_pipe = TRUE)
 
 natmi_sub <- natmi_res %>%
     enframe(value="lr_res") %>%
@@ -210,26 +200,97 @@ ggplot(roc_res %>%
 # 4. Connectome ----------------------------------------------------------------
 source("scripts/pipes/connectome_pipe.R")
 
-# Connectom fix
-breast_cancer@assays$RNA <- breast_cancer@assays$Spatial
+# Freezes with exec/do.call
 
-connectome_results <- omni_resources %>%
-    map(function(op_resource){
-        conn <- call_connectome(op_resource,
-                                breast_cancer,
-                                # optional args passed to createConnectome
-                                LR.database = 'custom',
-                                min.cells.per.ident = 1,
-                                p.values = TRUE,
-                                calculate.DOR = FALSE,
-                                assay = 'SCT')
-    })  %>%
-    setNames(names(omni_resources))
+# Connectome fix - does not work with Seurat4 object
+# Requires RNA instead of Spatial as raw counts
+db_list <- list("Default" = NULL)
 
-connectome_default <- call_connectome(op_resource = NULL,
-                                      seurat_object = breast_cancer,
-                                      min.cells.per.ident = 1,
-                                      p.values = TRUE,
-                                      calculate.DOR = FALSE,
-                                      .format = TRUE,
-                                      assay = 'SCT')
+seurat_subsets <- map(subsampling, function(ss){
+    seurat_object = seurat_subsample(breast_cancer, subsampling = ss)
+    })
+
+
+connectome_res <- seurat_subsets %>%
+    map(function(seurat_sub){
+        call_connectome(seurat_object = seurat_sub,
+                        op_resource = NULL,
+                        min.cells.per.ident = 1,
+                        p.values = TRUE,
+                        calculate.DOR = FALSE,
+                        .format = FALSE,
+                        assay = 'SCT')
+    }) %>%
+    enframe(value="lr_res") %>%
+    mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
+
+
+
+# connectome_results <- omni_resources %>%
+#     map(function(op_resource){
+#         conn <- call_connectome(op_resource,
+#                                 breast_cancer,
+#                                 # optional args passed to createConnectome
+#                                 min.cells.per.ident = 1,
+#                                 p.values = TRUE,
+#                                 calculate.DOR = FALSE,
+#                                 assay = 'SCT')
+#     })  %>%
+#     setNames(names(omni_resources))
+
+
+# Freezes and hangs for me on Seurat::ScaleData when called from exec/do.call
+# connectome_res <- bench_robust(subsampling = subsampling,
+#                                lr_call = call_connectome,
+#                                op_resource = omni_resources$CellChatDB,
+#                                seurat_object = breast_cancer,
+#                                min.cells.per.ident = 1,
+#                                p.values = FALSE,
+#                                calculate.DOR = FALSE,
+#                                .format = FALSE,
+#                                assay = 'SCT')
+
+glimpse(connectome_sub[1,]$lr_res[[1]])
+
+ground <- connectome_sub[1,]$lr_res[[1]] %>%
+    mutate(top_ntile = ntile(weight_sc, 1000)) %>%
+    mutate(truth = if_else((p_val_adj.lig <= 0.05 & p_val_adj.rec <= 0.05) &
+                               top_ntile > 995 &
+                               (percent.source > 0.1 & percent.target > 0.1),
+                           1,
+                           0)) %>%
+    unite(ligand, receptor, source, target, col = "interaction") %>%
+    select(interaction, truth) %>%
+    na.omit()
+
+summary(as.factor(ground$truth))
+
+
+# attempt to keep the same proportion of hits as other tools
+summary(as.factor(ground$truth))
+connectome_res$lr_res[[2]]
+
+# Prepare for ROC
+roc_res <- connectome_res %>%
+    dplyr::filter(!str_detect(name, "_1")) %>% # keep only subsampled
+    mutate(roc = lr_res %>% map(function(.df){
+        .df %>%
+            na.omit() %>%
+            calc_curve(., ground, predictor_metric = "weight_sc") # get roc
+    }))
+
+
+xd <- connectome_res$lr_res[[1]]
+
+
+
+ggplot(roc_res %>%
+           unnest(roc), aes(x = 1-specificity,
+                            y = sensitivity,
+                            colour = name)) +
+    geom_line() +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    xlab("FPR (1-specificity)") +
+    ylab("TPR (sensitivity)")
+
+

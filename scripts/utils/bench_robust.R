@@ -8,14 +8,12 @@ bench_robust <- function(subsampling,
                          seurat_object,
                          ...){
 
+    .args <- list(...)
+
     map(subsampling, function(ss){
-        seurat_subsample(seurat_object, subsampling = ss)
-    }) %>% map2(.x = ., .y = subsampling, .f = function(seurat_sub, ss){
-        message(str_glue("Subsampling: {ss}"))
-        seurat_sub@project.name <- str_glue("subsample_{ss}")
-        do.call(lr_call,
-                list(seurat_sub,
-                     ...))
+        exec(.fn = lr_call,
+             seurat_object = seurat_subsample(seurat_object, subsampling = ss),
+             !!!.args)
     })
 }
 
@@ -33,7 +31,7 @@ prepare_for_roc = function(df, ground, predictor_metric) {
         left_join(ground, .) %>%
         mutate(response = case_when(truth == 1 ~ 1,
                                     truth == 0 ~ 0)) %>%
-        mutate(predictor = abs(.[[predictor_metric]])) %>%
+        mutate(predictor = .[[predictor_metric]]) %>%
         filter(!is.na(predictor)) %>%
         select(interaction, response, predictor) %>%
         mutate(response = as.factor(response))
@@ -49,12 +47,6 @@ seurat_subsample <- function(seurat_object,
                              .idents = "seurat_clusters",
                              .seed=1004){
 
-
-    seurat_object@meta.data %>%
-        as_tibble() %>%
-        group_by(.data[[.idents]]) %>%
-        summarise(n=n())
-
     set.seed(.seed)
 
     features_to_keep <- seurat_object@meta.data %>%
@@ -68,7 +60,11 @@ seurat_subsample <- function(seurat_object,
         }) %>%
         unlist()
 
-    return(seurat_object[,features_to_keep])
+    seurat_sub <- seurat_object[,features_to_keep]
+    message(str_glue("Subsampling: {subsampling}"))
+    seurat_sub@project.name <- str_glue("subsample_{subsampling}")
+
+    return(seurat_sub)
 }
 
 
