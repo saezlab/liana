@@ -12,15 +12,12 @@ bench_robust <- function(subsampling,
         seurat_subsample(seurat_object, subsampling = ss)
     }) %>% map2(.x = ., .y = subsampling, .f = function(seurat_sub, ss){
         message(str_glue("Subsampling: {ss}"))
-        breast_cancer@project.name <- str_glue("subsample_{ss}")
+        seurat_sub@project.name <- str_glue("subsample_{ss}")
         do.call(lr_call,
                 list(seurat_sub,
                      ...))
     })
 }
-
-
-
 
 
 #' Helper function used to
@@ -175,4 +172,3 @@ calc_curve = function(df,
 
     return(res)
 }
-

@@ -37,7 +37,6 @@ source("scripts/pipes/squidpy_pipe.R")
 
 # convert labels to factor (SquidPy)
 # breast_cancer@meta.data$lt_id <- as.factor(breast_cancer@meta.data$lt_id)
-
 squidpy_res <- bench_robust(subsampling,
              call_squidpyR,
              seurat_object = breast_cancer,
@@ -62,7 +61,7 @@ ground <- squidpy_sub[1,]$lr_res[[1]] %>%
 summary(as.factor(ground$truth))
 
 
-# Prepare for ROC
+# Get ROC
 roc_res <- squidpy_sub %>%
     filter(!str_detect(name, "_1")) %>% # keep only subsampled
     mutate(roc = lr_res %>% map(function(df)
@@ -144,7 +143,6 @@ py_set_seed(1004)
 # omni_to_NATMI(omni_resources,
 #               omni_path = "input/omnipath_NATMI")
 
-
 db_list <- list("CellChatDB" = omni_resources$CellChatDB)
 
 natmi_results <- call_natmi(db_list,
@@ -159,10 +157,79 @@ natmi_results <- call_natmi(db_list,
 
 
 natmi_res <- bench_robust(subsampling,
-                             lr_call = call_natmi,
+                          lr_call = call_natmi,
+                          omni_resources= db_list,
+                          seurat_object = breast_cancer,
+                          omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+                          natmi_path = "~/Repos/NATMI",
+                          em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_em.csv",
+                          ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_ann.csv",
+                          output_path = "~/Repos/ligrec_decoupleR/output/bc_natmi_subsample",
+                          .write_data = TRUE,
+                          .subsampling_pipe = TRUE) # %>%
+    # enframe(value="lr_res") %>%
+    # mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
 
-                             ) %>%
+natmi_sub <- natmi_res %>%
     enframe(value="lr_res") %>%
     mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
 
+xd <- natmi_res %>%
+    map(function(x) pull(x)) %>%
+    enframe(value="lr_res") %>%
+    mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
 
+# Define Truth using full data set
+ground <- natmi_sub[1,]$lr_res[[1]][[1]] %>%
+    mutate(top_ntile = ntile(edge_avg_expr, 100)) %>%
+    mutate(truth = if_else(top_ntile > 20 & edge_specificity > 0.05, 1, 0)) %>%
+    unite(ligand, receptor, source, target, col = "interaction") %>%
+    select(interaction, truth)
+
+# attempt to keep the same proportion of hits as other tools
+summary(as.factor(ground$truth))
+
+# Prepare for ROC
+roc_res <- natmi_sub %>%
+    dplyr::filter(!str_detect(name, "_1")) %>% # keep only subsampled
+    mutate(roc = lr_res %>% map(function(.df)
+        calc_curve(.df, ground, predictor_metric = "edge_avg_expr"))) # get roc
+
+
+ggplot(roc_res %>%
+           unnest(roc), aes(x = 1-specificity,
+                            y = sensitivity,
+                            colour = name)) +
+    geom_line() +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    xlab("FPR (1-specificity)") +
+    ylab("TPR (sensitivity)")
+
+
+
+# 4. Connectome ----------------------------------------------------------------
+source("scripts/pipes/connectome_pipe.R")
+
+# Connectom fix
+breast_cancer@assays$RNA <- breast_cancer@assays$Spatial
+
+connectome_results <- omni_resources %>%
+    map(function(op_resource){
+        conn <- call_connectome(op_resource,
+                                breast_cancer,
+                                # optional args passed to createConnectome
+                                LR.database = 'custom',
+                                min.cells.per.ident = 1,
+                                p.values = TRUE,
+                                calculate.DOR = FALSE,
+                                assay = 'SCT')
+    })  %>%
+    setNames(names(omni_resources))
+
+connectome_default <- call_connectome(op_resource = NULL,
+                                      seurat_object = breast_cancer,
+                                      min.cells.per.ident = 1,
+                                      p.values = TRUE,
+                                      calculate.DOR = FALSE,
+                                      .format = TRUE,
+                                      assay = 'SCT')

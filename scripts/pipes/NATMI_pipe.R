@@ -73,7 +73,7 @@ call_natmi <- function(omni_resources,
     }
 
     message(str_glue("Output to be saved and read from {output_path}"))
-    dir.create(file.path(output_path))
+    dir.create(file.path(output_path), recursive = TRUE)
 
     # copy OmniPath resources to NATMI dir
     file.copy(list.files(omnidbs_path, "*.csv$",
