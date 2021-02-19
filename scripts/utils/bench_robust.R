@@ -31,7 +31,7 @@ prepare_for_roc = function(df, ground, predictor_metric) {
         left_join(ground, .) %>%
         mutate(response = case_when(truth == 1 ~ 1,
                                     truth == 0 ~ 0)) %>%
-        mutate(predictor = abs(.[[predictor_metric]])) %>%
+        mutate(predictor = .[[predictor_metric]]) %>%
         filter(!is.na(predictor)) %>%
         select(interaction, response, predictor) %>%
         mutate(response = as.factor(response))

@@ -227,24 +227,6 @@ natmi_rp <- natmi_roc %>%
 natmi_rp
 
 
-
-
-# auroc_tibble %>%
-#     select(.data$statistic, .data$auc, .data$filter_crit,
-#            .data$set_name, .data$bench_name) %>%
-#     unite("name_lvl", .data$set_name, .data$bench_name, .data$filter_crit) %>%
-#     pivot_wider(names_from = .data$name_lvl, values_from = .data$auc) %>%
-#     column_to_rownames(var = "statistic")  %>%
-#     pheatmap(.,
-#              cluster_rows = FALSE,
-#              cluster_cols = FALSE,
-#              treeheight_col = 0,
-#              treeheight_row = 0,
-#              display_numbers = TRUE,
-#              silent = TRUE)
-
-
-
 # 4. Connectome ----------------------------------------------------------------
 source("scripts/pipes/connectome_pipe.R")
 
@@ -260,91 +242,64 @@ seurat_subsets <- map(subsampling, function(ss){
     seurat_object = seurat_subsample(breast_cancer, subsampling = ss)
 })
 
-
 connectome_res <- seurat_subsets %>%
     map(function(seurat_sub){
-        call_connectome(seurat_object = seurat_sub,
-                        op_resource = NULL,
-                        min.cells.per.ident = 1,
-                        p.values = TRUE,
-                        calculate.DOR = FALSE,
-                        .format = FALSE,
-                        assay = 'SCT')
+        db_list_conn %>% map(function(db)
+            call_connectome(seurat_object = seurat_sub,
+                            op_resource = db,
+                            min.cells.per.ident = 10,
+                            p.values = TRUE,
+                            calculate.DOR = FALSE,
+                            .format = FALSE,
+                            assay = 'SCT')
+            )
+    })
+# saveRDS(connectome_res, "output/benchmark/connectome_res.rds")
+connectome_res <- readRDS("output/benchmark/connectome_res.rds")
+
+
+conn_sub <- connectome_res %>%
+    purrr::flatten() %>%
+    enframe(name = "resource", value="lr_res") %>%
+    mutate(name = str_glue("{rep(names(db_list_conn), times = length(subsampling))}_subsamp_{rep(subsampling, each = length(db_list_conn))}"))
+
+
+conn_ground <-  conn_sub %>%
+    filter(str_detect(name, "subsamp_1")) %>%
+    select(resource, lr_res) %>%
+    deframe() %>%
+    map(function(ground){
+        ground %>%
+            mutate(top_ntile = ntile(weight_sc, 100)) %>%
+            mutate(truth = if_else(top_ntile == 100 & !is.na(top_ntile), 1, 0)) %>%
+            unite(ligand, receptor, source, target, col = "interaction") %>%
+            select(interaction, truth)
     }) %>%
-    enframe(value="lr_res") %>%
-    mutate(name = str_glue("subsamp_{rep(subsampling, each = length(db_list))}"))
+    enframe(name = "resource", value = "truth")
+
+summary(as.factor(conn_ground$truth[[1]]$truth))
+
+conn_roc <- left_join(conn_sub, conn_ground, by = "resource") %>%
+    rowwise() %>%
+    mutate(roc = list(calc_curve(lr_res %>% na.omit() %>%
+                                     mutate(weight_sc = weight_sc * -1),
+                                 truth,
+                                 predictor_metric = "weight_sc")))
 
 
-
-# connectome_results <- omni_resources %>%
-#     map(function(op_resource){
-#         conn <- call_connectome(op_resource,
-#                                 breast_cancer,
-#                                 # optional args passed to createConnectome
-#                                 min.cells.per.ident = 1,
-#                                 p.values = TRUE,
-#                                 calculate.DOR = FALSE,
-#                                 assay = 'SCT')
-#     })  %>%
-#     setNames(names(omni_resources))
-
-
-# Freezes and hangs for me on Seurat::ScaleData when called from exec/do.call
-# connectome_res <- bench_robust(subsampling = subsampling,
-#                                lr_call = call_connectome,
-#                                op_resource = omni_resources$CellChatDB,
-#                                seurat_object = breast_cancer,
-#                                min.cells.per.ident = 1,
-#                                p.values = FALSE,
-#                                calculate.DOR = FALSE,
-#                                .format = FALSE,
-#                                assay = 'SCT')
-
-glimpse(connectome_sub[1,]$lr_res[[1]])
-
-ground <- connectome_sub[1,]$lr_res[[1]] %>%
-    mutate(top_ntile = ntile(weight_sc, 1000)) %>%
-    mutate(truth = if_else((p_val_adj.lig <= 0.05 & p_val_adj.rec <= 0.05) &
-                               top_ntile > 995 &
-                               (percent.source > 0.1 & percent.target > 0.1),
-                           1,
-                           0)) %>%
-    unite(ligand, receptor, source, target, col = "interaction") %>%
-    select(interaction, truth) %>%
-    na.omit()
-
-summary(as.factor(ground$truth))
-
-
-# attempt to keep the same proportion of hits as other tools
-summary(as.factor(ground$truth))
-connectome_res$lr_res[[2]]
-
-# Prepare for ROC
-roc_res <- connectome_res %>%
-    dplyr::filter(!str_detect(name, "_1")) %>% # keep only subsampled
-    mutate(roc = lr_res %>% map(function(.df){
-        .df %>%
-            na.omit() %>%
-            calc_curve(., ground, predictor_metric = "weight_sc") # get roc
-    }))
-
-
-xd <- connectome_res$lr_res[[1]]
-
-
-
-ggplot(roc_res %>%
-           unnest(roc), aes(x = 1-specificity,
-                            y = sensitivity,
-                            colour = name)) +
+conn_rp <- conn_roc %>%
+    # unite(resource, subsample, col = "name") %>%
+    select(name, roc) %>%
+    unnest(roc) %>%
+    ggplot(., aes(x = 1-specificity,
+                  y = sensitivity,
+                  colour = name)) +
     geom_line() +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
     xlab("FPR (1-specificity)") +
     ylab("TPR (sensitivity)")
 
-
-
+conn_rp
 
 
 
@@ -371,12 +326,28 @@ cellchat_heat <- cellchat_roc %>%
     mutate(alg = "cellchat") %>%
     unite(col = "key", alg, subsample)
 
+conn_roc
+
+conn_heat <- conn_roc %>%
+    mutate(name = str_replace(name, "_", "xx")) %>%
+    separate(name, into=c("resource", "subsample"), sep = "xx") %>%
+    mutate(subsample = str_replace(subsample, "\\.", ",")) %>%
+    mutate(alg = "conn") %>%
+    unite(col = "key", alg, subsample) %>%
+    select(key, roc, resource)
+
+
 
 natmi_heat
 squidpy_heat
 cellchat_heat
+conn_heat
 
-heat_data <- bind_rows(squidpy_heat, cellchat_heat, natmi_heat)
+heat_data <- readRDS("output/benchmark/heat_data.rds")
+# heat_data <- bind_rows(squidpy_heat, cellchat_heat, natmi_heat)
+heat_data <- bind_rows(heat_data, conn_heat)
+# saveRDS(heat_data ,"output/benchmark/heat_data.rds")
+
 
 library(pheatmap)
 heatp <- heat_data %>%
