@@ -3,7 +3,6 @@
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
 #' @param assay
-#' @param genes_cutoff highly variable genes top_n cutoff
 #' @param stats stats considered to select top_n
 #' @return An unfiltered iTALK df sorted by relevance
 #'
@@ -41,27 +40,23 @@ call_sca <- function(op_resource,
   labels <- Idents(seurat_object)
 
   # Compute interactions between cell clusters
-  signal <-
-    cell_signaling(
-      data = input_data,
-      genes = row.names(input_data),
-      cluster = as.numeric(labels),
-      c.names = levels(Idents(seurat_object)),
-      s.score = 0.05,
-      species = 'homo sapiens',
-      LRdb = op_resource,
-      write = FALSE
+  signal <- cell_signaling(data = input_data,
+                           genes = row.names(input_data),
+                           cluster = as.numeric(labels),
+                           c.names = levels(Idents(seurat_object)),
+                           species = 'homo sapiens',
+                           LRdb = op_resource,
+                           write = FALSE,
+                           ...
     )
 
   # Compute intercellular gene networks
-  sca_res <-
-    inter_network(
-      data = input_data,
-      signal = signal,
-      genes = row.names(input_data),
-      cluster = as.numeric(labels),
-      c.names = levels(Idents(seurat_object)),
-      write = FALSE
+  sca_res <- inter_network(data = input_data,
+                           signal = signal,
+                           genes = row.names(input_data),
+                           cluster = as.numeric(labels),
+                           c.names = levels(Idents(seurat_object)),
+                           write = FALSE
     )
 
 

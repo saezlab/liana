@@ -39,6 +39,8 @@ call_italk <- function(op_resource,
       select(Pair.Name, Ligand.ApprovedSymbol, Ligand.Name,
              Receptor.ApprovedSymbol, Receptor.Name, Classification) %>%
       as.data.frame()
+  } else{
+    op_resource = LRdb
   }
 
   # create a dataframe of the cell labels

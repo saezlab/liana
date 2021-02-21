@@ -316,31 +316,35 @@ conn_rp
 # 5. iTalk ----------------------------------------------------------------
 op_resource <- omni_resources$LRdb
 
-tmp <- call_italk(op_resource,
+italk_res <- call_italk(op_resource,
                   breast_cancer,
                   assay = 'SCT',
                   .format = FALSE)
 
 
-tmp <- call_italk(NULL,
-                  breast_cancer,
-                  assay = 'SCT',
-                  .format = FALSE)
+italk_default <- call_italk(NULL,
+                            breast_cancer,
+                            assay = 'SCT',
+                            .format = FALSE)
 
 
 # 6. SCA
 sca_res <- call_sca(op_resource,
                    breast_cancer,
                    assay='SCT',
-                   .format=TRUE)
+                   .format=TRUE,
+                   s.score = 0,
+                   logFC = log2(0.25))
 
 
-load("~/Repos/SingleCellSignalR_v1/SingleCellSignalR/data/LRdb.rda")
+load("input/LRdb.rda")
 sca_default <- call_sca(op_resource = LRdb,
                        breast_cancer,
                        assay='SCT',
                        .format=TRUE,
-                       .default_db = TRUE)
+                       .default_db = TRUE,
+                       s.score = 0,
+                       logFC = log2(0.25))
 
 
 
