@@ -11,6 +11,7 @@ source('../pipes/iTALK_pipe.R')
 
 seurat_object <- readRDS('/home/james/sciebo/LR_Benchmark/data/pbmc3k_processed.rds')
 str(seurat_object)
+
 ### First Test
 if(F){
   dataset <- get_omni_resources()

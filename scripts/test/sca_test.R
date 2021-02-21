@@ -7,3 +7,11 @@ source('/home/james/sciebo/Cell_Cell_Investigation-master/scripts/utils/get_omni
 seurat_object <- readRDS('/home/james/sciebo/LR_Benchmark/data/pbmc3k_processed.rds')
 sel <- dataset$CellChatDB
 sca_res = call_sca(sel,seurat_object,assay='RNA',.format=TRUE)
+
+
+load("~/Repos/SingleCellSignalR_v1/SingleCellSignalR/data/LRdb.rda")
+sca_default <- call_sca(op_resource = LRdb,
+                        breast_cancer,
+                        assay='SCT',
+                        .format=TRUE,
+                        .default_db = TRUE)

@@ -2,11 +2,12 @@
 library(tidyverse)
 library(Seurat)
 library(reticulate)
+
 source("scripts/utils/bench_robust.R")
+sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
 
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
-
 
 # Fix for NATMI
 clust.anns <- c("c0", "c1","c2",
@@ -208,7 +209,8 @@ summary(as.factor(natmi_ground$truth[[1]]$truth))
 
 natmi_roc <- left_join(natmi_sub, natmi_ground, by = "resource") %>%
     rowwise() %>%
-    mutate(roc = list(calc_curve(lr_res, truth, predictor_metric = "edge_specificity")))
+    mutate(roc = list(calc_curve(lr_res, truth,
+                                 predictor_metric = "edge_specificity")))
 # saveRDS(natmi_roc, "output/benchmark/natmi_roc.rds")
 
 
@@ -228,8 +230,6 @@ natmi_rp
 
 
 # 4. Connectome ----------------------------------------------------------------
-source("scripts/pipes/connectome_pipe.R")
-
 # Freezes with exec/do.call
 
 # Connectome fix - does not work with Seurat4 object
@@ -237,6 +237,16 @@ source("scripts/pipes/connectome_pipe.R")
 db_list_conn <- list("Default" = NULL,
                      "OmniPath" = omni_resources$OmniPath,
                      "Ramilowski2015" = omni_resources$Ramilowski2015)
+
+
+call_connectome(seurat_object = breast_cancer,
+                op_resource =  op_resource,
+                min.cells.per.ident = 10,
+                p.values = TRUE,
+                calculate.DOR = FALSE,
+                .format = FALSE,
+                assay = 'SCT')
+
 
 seurat_subsets <- map(subsampling, function(ss){
     seurat_object = seurat_subsample(breast_cancer, subsampling = ss)
@@ -281,7 +291,8 @@ summary(as.factor(conn_ground$truth[[1]]$truth))
 
 conn_roc <- left_join(conn_sub, conn_ground, by = "resource") %>%
     rowwise() %>%
-    mutate(roc = list(calc_curve(lr_res %>% na.omit() %>%
+    mutate(roc = list(calc_curve(lr_res %>%
+                                     na.omit() %>%
                                      mutate(weight_sc = weight_sc * -1),
                                  truth,
                                  predictor_metric = "weight_sc")))
@@ -302,8 +313,40 @@ conn_rp <- conn_roc %>%
 conn_rp
 
 
+# 5. iTalk ----------------------------------------------------------------
+op_resource <- omni_resources$LRdb
 
-# 5. Combine Results ------
+tmp <- call_italk(op_resource,
+                  breast_cancer,
+                  assay = 'SCT',
+                  .format = FALSE)
+
+
+tmp <- call_italk(NULL,
+                  breast_cancer,
+                  assay = 'SCT',
+                  .format = FALSE)
+
+
+# 6. SCA
+sca_res <- call_sca(op_resource,
+                   breast_cancer,
+                   assay='SCT',
+                   .format=TRUE)
+
+
+load("~/Repos/SingleCellSignalR_v1/SingleCellSignalR/data/LRdb.rda")
+sca_default <- call_sca(op_resource = LRdb,
+                       breast_cancer,
+                       assay='SCT',
+                       .format=TRUE,
+                       .default_db = TRUE)
+
+
+
+
+
+# 7. Combine Results ------
 squidpy_heat <- squidpy_roc %>%
     select(resource, subsample, roc) %>%
     ungroup()  %>%
