@@ -18,30 +18,11 @@ bench_robust <- function(subsampling,
 }
 
 
-#' Helper function used to
-#'
-#' @param df
-#' @param ground "Ground Truth" - i.e. results considered significant
-#' when using the whole dataset (no subsampling)
-#'
-#' @return tidy data frame with meta information for each subsampling
-prepare_for_roc = function(df, ground, predictor_metric) {
-    res = df %>%
-        unite(ligand, receptor, source, target, col = "interaction") %>%
-        left_join(ground, .) %>%
-        mutate(response = case_when(truth == 1 ~ 1,
-                                    truth == 0 ~ 0)) %>%
-        mutate(predictor = .[[predictor_metric]]) %>%
-        filter(!is.na(predictor)) %>%
-        select(interaction, response, predictor) %>%
-        mutate(response = as.factor(response))
-}
-
-
-
-
-
-#' Helper Function to subsample Seurat object to fraction of cells by type
+#' Function to subsample Seurat object to fraction of cells by type
+#' @param seurat_object Processed Seurat object with sc data
+#' @param subsampling Value used to subsample cell clusters
+#' @param .idents name of the idents
+#' @param .seed Integer used to set the RNG seed
 seurat_subsample <- function(seurat_object,
                              subsampling = 0.8,
                              .idents = "seurat_clusters",
@@ -68,103 +49,76 @@ seurat_subsample <- function(seurat_object,
 }
 
 
-
-
-#' This function takes the elements of the `activity` column and calculates
-#'    precision-recall and ROC curves (depending on `curve`).
-#' The `activity` column is populated with the output for each stat method and
-#'    results from the `run_benchmark()` function. Each of the elements
-#'    in `activity` are results from runs of the \link{decouple} wrapper.
+#' Helper function used to format robustness results
+#' @param lr_res Unformatted robustness results
+#' @param db_list list of the OmniPath resources/dbs used in the subsampling
+#' @param subsampling Vector of values used in the subsampling
+#' @param .res_order bool whether the results are ordered by resource and
+#' subsampling (e.g. OmniPath 1, OmniPath 0.8, OmniPath 0.6)
 #'
-#' @param df
-#' @param downsampling logical flag indicating if the number of Negatives
-#'    should be downsampled to the number of Positives
-#' @param times integer showing the number of downsampling
-#' @param curve whether to return a Precision-Recall Curve ("PR") or ROC ("ROC")
-#' @param seed An integer to set the RNG state for random number generation. Use
-#'    NULL for random number generation.
-#'
-#' @return tidy data frame with precision, recall, auc, n, cp, cn and coverage
-#'    in the case of PR curve; or sensitivity and specificity, auc, n, cp, cn
-#'    and coverage in the case of ROC.
-#' @import yardstick
-calc_curve = function(df,
-                      ground,
-                      predictor_metric = "pvalue",
-                      downsampling = FALSE,
-                      times = 1000,
-                      curve = "ROC",
-                      seed = 1004){
+#' @return A formatted tidy tibble with DB names and subsampling
+robust_format_res <- function(lr_res,
+                              db_list,
+                              subsampling,
+                              .res_order = TRUE){
 
-    if(curve=="PR"){
-        res_col_1 <- "precision"
-        res_col_2 <- "recall"
-        curve_fun = yardstick::pr_curve
-        auc_fun = yardstick::pr_auc
-    }
-    else if(curve=="ROC"){
-        res_col_1 <- "sensitivity"
-        res_col_2 <- "specificity"
-        curve_fun = yardstick::roc_curve
-        auc_fun = yardstick::roc_auc
+    if(.res_order){
+        .resource <- str_glue("{rep(names(db_list), each = length(subsampling))}_subsamp_{rep(subsampling, times = length(db_list))}")
+    } else{
+        .resource <- str_glue("{rep(names(db_list), times = length(subsampling))}_subsamp_{rep(subsampling, each = length(db_list))}")
     }
 
-    df = df %>%
-        prepare_for_roc(., ground, predictor_metric)
-
-
-    if (sum(which(df$response == 0)) == nrow(df)){
-        return(as_tibble(NULL))
-    }
-
-    cn = df %>% filter(.data$response == 0)
-    cp = df %>% filter(.data$response == 1)
-
-    if (downsampling == TRUE) {
-        num_tp = nrow(cp)
-
-        res = map_df(seq(from=1, to=times, by=1), function(i) {
-            set.seed(seed)
-            df_sub = sample_n(cn, num_tp, replace=TRUE) %>%
-                bind_rows(cp)
-
-            r_sub = df_sub %>%
-                curve_fun(.data$response, .data$predictor)
-
-            auc = df_sub %>%
-                auc_fun(.data$response, .data$predictor) %>%
-                pull(.data$.estimate)
-
-            res_sub = tibble({{ res_col_1 }} := r_sub %>% pull(res_col_1),
-                             {{ res_col_2 }} := r_sub %>% pull(res_col_2),
-                             th = r_sub$.threshold,
-                             auc = auc,
-                             n = length(which(df$response == 1)),
-                             cp = nrow(cp),
-                             cn = nrow(cn),
-                             coverage = feature_coverage) %>%
-                mutate("run" = i)
-
-        })
-        # Get Average AUC
-        res$auc <- sum(res$auc)/length(res$auc)
-        res$cn <- nrow(cp)
-
-    } else {
-        r = df %>%
-            curve_fun(.data$response, .data$predictor)
-        auc = df %>%
-            auc_fun(.data$response, .data$predictor)
-
-        res = tibble({{ res_col_1 }} := r %>% pull(res_col_1),
-                     {{ res_col_2 }} := r %>% pull(res_col_2),
-                     th = r$.threshold,
-                     auc = auc$.estimate,
-                     n = length(which(df$response == 1)),
-                     cp = nrow(cp),
-                     cn = nrow(cn)) %>%
-            arrange(!!res_col_1, !!res_col_2)
-    }
-
-    return(res)
+    lr_res%>%
+        purrr::flatten() %>%
+        enframe(name = "resource", value="lr_res") %>%
+        mutate(resource = .resource) %>%
+        mutate(resource = str_replace(resource, "\\_", "xx")) %>%
+        separate(resource, into = c("resource", "subsample"), sep = "xx")
 }
+
+#' Function used to calculate the ROC curve of each robustness run
+#' @param lr_form_res formatted LR results returned by robust_format_res()
+#' @param predictor_metric Name of the predictor metric used in the
+#' corresponding LR algorithm
+#' @param predictor_thresh Threshold for the predictor metric
+#' (e.g. 0.05 for pvalue)
+#' @param .rank bool: whether to rank statistic by percentage
+#' @return A Formatted tibble with calculated Robustness ROC
+robust_get_roc <- function(lr_form_res,
+                           predictor_metric,
+                           predictor_thresh,
+                           .rank = FALSE){
+    # Get "Ground truth"
+    lr_ground <- lr_form_res %>%
+        filter(subsample == "subsamp_1") %>%
+        select(resource, lr_res) %>%
+        deframe() %>%
+        map(function(ground){
+            ground %>%
+                mutate(predictor = ifelse(rep(!.rank, nrow(ground)),
+                                          .data[[predictor_metric]],
+                                          percent_rank(.data[[predictor_metric]]))) %>%
+                mutate(truth = if_else(predictor <= predictor_thresh &
+                !is.na(predictor), 1, 0)) %>%
+                unite(ligand, receptor, source, target, col = "interaction") %>%
+                select(interaction, truth)
+        }) %>%
+        enframe(name = "resource", value = "truth")
+
+    lr_ground %>%
+        unnest(truth) %>%
+        filter(truth == 1) %>%
+        group_by(resource) %>%
+        summarise(count_truth = n()) %>%
+        print()
+
+    # calculate lr_roc
+    lr_roc <- left_join(lr_form_res, lr_ground, by = "resource") %>%
+        rowwise() %>%
+        mutate(roc = list(calc_curve(lr_res,
+                                     truth,
+                                     predictor_metric = predictor_metric)))
+
+    return(lr_roc)
+}
+

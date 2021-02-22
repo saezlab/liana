@@ -2,35 +2,34 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
-#' @param assay
-#' @param stats stats considered to select top_n
+#' @param assay Seurat assay data to use
+#'
 #' @return An unfiltered iTALK df sorted by relevance
 #'
 #' @details
 #' Stats:
-#' 1) The ‘weight_norm’ edge attribute is derived from the normalized expression
-#'  of the ligand and the receptor in the single-cell data.
-#' 2) The ‘weight_scale’ edge attribute is derived from the z-scores of the ligand
-#'  and the receptor in each edge, and is of higher value when the ligand and receptor
-#'   are more specific to a given pair of cell types
-#' 3) p-val
+#'
 call_sca <- function(op_resource,
                      seurat_object,
                      .format = TRUE,
                      assay = "SCT",
-                     .default_db = FALSE,
                      ...) {
   require(Seurat)
   require(SCAomni)
   require(dplyr)
 
   # Format OmnipathR resource
-  if(!.default_db){
+  if(!is.null(op_resource)){
     op_resource <- op_resource %>%
       select(ligand = source_genesymbol,
              receptor = target_genesymbol,
              source = sources,
              PMIDs = references)
+  } else{
+    if(file.exists("input/LRdb.rda")){ # will change once I convert this into a package
+      load("input/LRdb.rda")
+      op_resource <- LRdb
+    }
   }
 
   # Prepare data from Seurat object

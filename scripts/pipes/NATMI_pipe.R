@@ -31,12 +31,13 @@
 #'   --coreNum CORENUM     the number of CPU cores used, default is one
 #'   --out OUT             the path to save the analysis results
 #'
-#' Stat details:
+#' Stats:
 #' 1) The mean-expression edge weights are calculated by multiplying the mean-expression level of the ligand in the
 #'   sending cell type by the mean expression of the receptor in the target cell type (no discriminatory information)
 #' 2) The specificity-based edge weights, help identify the most specific edges in the network
 #'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
 #'  divided by the sum of the mean expression of that ligand/receptor across all cell types
+#'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
 call_natmi <- function(omni_resources,
                        seurat_object = NULL,
                        omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",

@@ -15,10 +15,9 @@ call_cellchat <- function(op_resource,
                           assay = "SCT",
                           ...
                           ){
-    library(CellChat)
-    library(patchwork)
-    library(ggalluvial)
-    library(igraph)
+    require(CellChat)
+    require(ggalluvial)
+    require(igraph)
 
     data.input <- GetAssayData(seurat_object, assay = assay, slot = "data") # normalized data matrix
     labels <- Idents(seurat_object)

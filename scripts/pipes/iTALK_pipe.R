@@ -10,12 +10,7 @@
 #'
 #' @details
 #' Stats:
-#' 1) The ‘weight_norm’ edge attribute is derived from the normalized expression
-#'  of the ligand and the receptor in the single-cell data.
-#' 2) The ‘weight_scale’ edge attribute is derived from the z-scores of the ligand
-#'  and the receptor in each edge, and is of higher value when the ligand and receptor
-#'   are more specific to a given pair of cell types
-#' 3) p-val
+#'
 call_italk <- function(op_resource,
                        seurat_object,
                        assay = "SCT",
@@ -39,8 +34,6 @@ call_italk <- function(op_resource,
       select(Pair.Name, Ligand.ApprovedSymbol, Ligand.Name,
              Receptor.ApprovedSymbol, Receptor.Name, Classification) %>%
       as.data.frame()
-  } else{
-    op_resource = LRdb
   }
 
   # create a dataframe of the cell labels

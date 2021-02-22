@@ -70,7 +70,6 @@ call_connectome <- function(seurat_object,
             FormatConnectome(
             min.pct = 0.1,
             max.p = 0.05,
-            min.z = 1,
             remove.na = TRUE)
     }
 
