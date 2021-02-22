@@ -3,6 +3,11 @@
 #' @param omni_resources List of OmniPath resources
 #' @param python_path path to python version to use in reticulate
 #' @param .seed used to python seed
+#' @returns A list of Squidpy results for each resource
+#' @details CellPhoneDB v2 algorithm implementation in Python
+#' Stats:
+#' Mean expr
+#' pval
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,

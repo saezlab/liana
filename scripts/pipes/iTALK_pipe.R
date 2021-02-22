@@ -10,7 +10,7 @@
 #'
 #' @details
 #' Stats:
-#'
+#' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 call_italk <- function(op_resource,
                        seurat_object,
                        assay = "SCT",

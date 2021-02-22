@@ -46,15 +46,9 @@ squidpy_res <- bench_robust(subsampling,
                             python_path = "/home/dbdimitrov/anaconda3/bin/python",
                             ident = "seurat_clusters")
 # saveRDS(squidpy_res, "output/benchmark/squidpy_res.rds")
-squidpy_res <- readRDS("output/benchmark/squidpy_res.rds")
-
-# Get Squidpy ROC
-squidpy_roc <- squidpy_res %>%
-    robust_format_res(., db_list_squidy, subsampling, .res_order = FALSE) %>%
-    robust_get_roc(predictor_metric = "pvalue", predictor_value = 0.05)
-
-# ROC plot
-robust_roc_plot(squidpy_roc)
+squidpy_sub <- squidpy_res %>%
+    robust_format_res(., db_list_squidy, subsampling, .res_order = FALSE)
+# saveRDS(squidpy_sub, "output/benchmark/squidpy_sub.rds")
 
 
 # 2. CellChat ------------------------------------------------------------------
@@ -79,14 +73,9 @@ cellchat_res <- db_list_cellchat %>%
 # saveRDS(cellchat_res, "output/benchmark/cellchat_res.rds")
 cellchat_res <- readRDS("output/benchmark/cellchat_res.rds")
 
-
-cellchat_roc <- cellchat_res %>%
-    robust_format_res(., db_list_cellchat, subsampling)  %>%
-    robust_get_roc(predictor_metric = "pval", predictor_thresh = 0.05)
-
-
-robust_roc_plot(cellchat_roc)
-
+cellchat_sub <- cellchat_res %>%
+    robust_format_res(., db_list_cellchat, subsampling)
+# saveRDS(cellchat_sub, "output/benchmark/cellchat_sub.rds")
 
 
 # 3. NATMI ---------------------------------------------------------------------
@@ -121,14 +110,11 @@ natmi_res <- readRDS("output/benchmark/natmi_res.rds") %>%
     map(function(x) x %>% purrr::list_modify("lrc2a" = NULL))
 
 # get NATMI res
-natmi_roc <- natmi_res %>%
+natmi_sub <- natmi_res %>%
     robust_format_res(., list("Default" = NULL) %>% append(db_list_natmi),
-                      subsampling, .res_order = FALSE) %>%
-    robust_get_roc(predictor_metric = "edge_avg_expr",
-                   predictor_thresh = 0.01,
-                   .rank = TRUE)
+                      subsampling, .res_order = FALSE)
+# saveRDS(natmi_sub, "output/benchmark/natmi_sub.rds")
 
-robust_roc_plot(natmi_roc)
 
 
 # 4. Connectome ----------------------------------------------------------------
@@ -155,7 +141,7 @@ connectome_res <- map(subsampling, function(ss){
 # saveRDS(connectome_res, "output/benchmark/connectome_res.rds")
 connectome_res <- readRDS("output/benchmark/connectome_res.rds")
 
-conn_roc <- connectome_res %>%
+conn_sub <- connectome_res %>%
     robust_format_res(., db_list_conn,
                       subsampling,
                       .res_order = FALSE) %>%
@@ -164,26 +150,12 @@ conn_roc <- connectome_res %>%
         FormatConnectome(res,
                          min.pct = 0.1,
                          max.p = 0.05)
-    })) %>%
-    robust_get_roc(predictor_metric = "weight_norm",
-                   predictor_thresh = 0.05,
-                   .rank = TRUE)
-
-conn_roc <- connectome_res %>%
-    robust_format_res(., db_list_conn,
-                      subsampling,
-                      .res_order = FALSE) %>%
-    robust_get_roc(predictor_metric = "weight_norm",
-                   predictor_thresh = 0.001,
-                   .rank = TRUE)
-
+    }))
+# saveRDS(conn_sub, "output/benchmark/connectome_sub.rds")
 
 
 
 # 5. iTALK --------------------------------------------------------------------
-
-
-# Omni x  Ramilowski x iTALK (default)
 db_list_italk <- list("OmniPath" = omni_resources$OmniPath,
                       "Ramilowski2015" = omni_resources$Ramilowski2015,
                       "Default" = NULL)
@@ -201,9 +173,7 @@ italk_res <- db_list_italk %>%
 # saveRDS(italk_res, "output/benchmark/italk_res.rds")
 italk_res <- readRDS("output/benchmark/italk_res.rds")
 
-
-
-italk_roc <- italk_res %>%
+italk_sub <- italk_res %>%
     robust_format_res(., db_list_italk,
                       subsampling,
                       .res_order = TRUE) %>%
@@ -211,10 +181,10 @@ italk_roc <- italk_res %>%
     mutate(lr_res = lr_res %>% map(function(res){
         FormatiTALK(res) %>%
             mutate(weight_comb = weight_to * weight_from)
-    })) %>%
-    robust_get_roc(predictor_metric = "weight_comb",
-                   predictor_thresh = 0.01,
-                   .rank = TRUE)
+    }))
+# saveRDS(italk_sub, "output/benchmark/italk_sub.rds")
+
+
 
 
 
@@ -225,7 +195,6 @@ load("input/LRdb.rda")
 db_list_sca <- list("OmniPath" = omni_resources$OmniPath,
                     "Ramilowski2015" = omni_resources$Ramilowski2015,
                     "Default" = NULL)
-
 
 sca_res <- db_list_sca %>%
     map(function(db)
@@ -239,16 +208,12 @@ sca_res <- db_list_sca %>%
                      logFC = 0.25
         ))
 # saveRDS(sca_res, "output/benchmark/sca_res.rds")
+sca_res <- readRDS("output/benchmark/sca_res.rds")
 
-
-sca_roc <- sca_res %>%
+sca_sub <- sca_res %>%
     robust_format_res(., db_list_sca,
                       subsampling,
-                      .res_order = TRUE) %>%
-    robust_get_roc(predictor_metric = "LRscore",
-                   predictor_thresh = 0.1,
-                   .rank = TRUE)
+                      .res_order = TRUE)
+# saveRDS(sca_sub, "output/benchmark/sca_sub.rds")
 
-
-robust_roc_plot(sca_roc)
 
