@@ -24,7 +24,7 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
                          interactions_params={"resources": res_filt},
                          transmitter_params={"categories": "ligand", "resources": res_filt},
                          receiver_params={"categories": "receptor", "resources": res_filt},
-                         threshold=0.1, seed=1004, n_perms=10000, n_jobs=1) # should replace with kwargs and elipses
+                         threshold=0.1, seed=1004, n_perms=10000, n_jobs=1, corr_method = "fdr_bh") # should replace with kwargs and elipses
         return y
     except ValueError:
         print(op_resource)
@@ -102,7 +102,7 @@ def call_squidpy(intercell_resources,
     # call squidpy
     squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
 
-    squidpy_pvalues = list(map(lambda x: reformat(squidpy_res[x].pvalues), intercell_resources))
-    squidpy_means = list(map(lambda x: reformat(squidpy_res[x].means), intercell_resources))
+    squidpy_pvalues = list(map(lambda x: reformat(squidpy_res[x]["pvalues"]), intercell_resources))
+    squidpy_means = list(map(lambda x: reformat(squidpy_res[x]["means"]), intercell_resources))
 
     return {"pvalues": squidpy_pvalues, "means": squidpy_means}

@@ -1,5 +1,5 @@
 # Robustness Results Analysis
-#' @author Daniel Dimitrov, Saezlab
+#' Daniel Dimitrov, Saezlab
 
 # load prerequisites
 library(tidyverse)
@@ -24,12 +24,12 @@ source("scripts/utils/robust_utils.R")
 # Squidpy
 squidpy_sub <- readRDS("output/benchmark/squidpy_sub.rds")
 squidpy_roc <- squidpy_sub %>%
-    robust_get_roc(predictor_metric = "pvalue", predictor_thresh = 0.05)
+    robust_get_roc(predictor_metric = "pvalue", predictor_thresh = 0.01)
 
 # CellChat
 cellchat_sub <- readRDS("output/benchmark/cellchat_sub.rds")
 cellchat_roc <- cellchat_sub %>%
-    robust_get_roc(predictor_metric = "pval", predictor_thresh = 0.05)
+    robust_get_roc(predictor_metric = "pval", predictor_thresh = 0.01)
 
 # NATMI
 natmi_sub <- readRDS("output/benchmark/natmi_sub.rds")
@@ -60,82 +60,52 @@ sca_roc <- sca_sub %>%
                    .rank = TRUE)
 
 
+# bind to tibble
+roc_tib <- tribble(~alg, ~results,
+        "Squidpy", squidpy_roc,
+        "CellChat", cellchat_roc,
+        "NATMI", natmi_roc,
+        "Connectome", conn_roc,
+        "iTALK", italk_roc,
+        "SCSingalR", sca_roc)
+
 
 # 2. ROC plots -------------------------------------------------------------
-robust_roc_plot(squidpy_roc)
-robust_roc_plot(cellchat_roc)
-robust_roc_plot(natmi_roc)
-robust_roc_plot(conn_roc)
-robust_roc_plot(italk_roc)
-robust_roc_plot(sca_roc)
-
+roc_tib %>%
+    pmap(function(alg, results){
+        message(alg)
+        file_name = paste(str_glue("output/benchmark/robust_plots/{alg}_roc.png"))
+        png(file_name, width = 900, height = 600)
+        print(robust_roc_plot(results))
+        dev.off()
+    })
 
 
 # 3. Combine Results into Heatmap
-squidpy_heat <- squidpy_roc %>%
-    select(resource, subsample, roc) %>%
-    ungroup()  %>%
-    mutate(resource = str_replace(resource, "CellPhoneDB", "Default")) %>%
-    mutate(subsample = str_replace(subsample, "\\.", ",")) %>%
-    mutate(alg = "squidpy") %>%
-    unite(col = "key", alg, subsample)
-squidpy_heat
-
-natmi_heat <- natmi_roc %>%
-    select(resource, subsample, roc) %>%
-    ungroup() %>%
-    mutate(resource = str_replace(resource, "lrc2p", "Default")) %>%
-    mutate(alg = "natmi") %>%
-    unite(col = "key", alg, subsample)
-
-cellchat_heat <- cellchat_roc %>%
-    select(resource, subsample, roc) %>%
-    ungroup() %>%
-    mutate(alg = "cellchat") %>%
-    unite(col = "key", alg, subsample)
-
-conn_roc
-
-conn_heat <- conn_roc %>%
-    mutate(name = str_replace(name, "_", "xx")) %>%
-    separate(name, into=c("resource", "subsample"), sep = "xx") %>%
-    mutate(subsample = str_replace(subsample, "\\.", ",")) %>%
-    mutate(alg = "conn") %>%
-    unite(col = "key", alg, subsample) %>%
-    select(key, roc, resource)
-
-
-
-natmi_heat
-squidpy_heat
-cellchat_heat
-conn_heat
-
-heat_data <- readRDS("output/benchmark/heat_data.rds")
-# heat_data <- bind_rows(squidpy_heat, cellchat_heat, natmi_heat)
-heat_data <- bind_rows(heat_data, conn_heat)
-# saveRDS(heat_data ,"output/benchmark/heat_data.rds")
-
-
 library(pheatmap)
-heatp <- heat_data %>%
+
+roc_heat.d <- roc_tib %>%
+    unnest(results) %>%
+    mutate(resource = str_replace(resource, "CellPhoneDB", "Default"),
+           resource = str_replace(resource, "lrc2p", "Default")) %>%
+    unite(col = "key", alg, subsample) %>%
     filter(!str_detect(key, "subsamp_1")) %>%
     unnest(roc) %>%
     select(key, auc, resource) %>%
     distinct() %>%
     pivot_wider(names_from = resource, values_from = auc) %>%
-    column_to_rownames(var = "key") %>%
-    pheatmap(.,
-             cluster_rows = FALSE,
-             cluster_cols = FALSE,
-             treeheight_col = 0,
-             treeheight_row = 0,
-             display_numbers = TRUE,
-             silent = TRUE)
+    column_to_rownames(var = "key")
 
-heatp
+roc_heat.p <- pheatmap(roc_heat.d,
+                       cluster_rows = FALSE,
+                       cluster_cols = FALSE,
+                       treeheight_col = 0,
+                       treeheight_row = 0,
+                       display_numbers = TRUE,
+                       silent = TRUE)
 
-
-squidpy_roc
-
+file_name = paste(str_glue("output/benchmark/robust_plots/robustness_heat.png"))
+png(file_name, width = 900, height = 600)
+print(roc_heat.p)
+dev.off()
 

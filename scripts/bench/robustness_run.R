@@ -66,7 +66,7 @@ cellchat_res <- db_list_cellchat %>%
                      op_resource = db,
                      seurat_object = breast_cancer,
                      exclude_anns = c(), # "ECM-Receptor", "Cell-Cell Contact"
-                     nboot = 100,
+                     nboot = 1000,
                      thresh = 1,
                      assay = "SCT")
     })
