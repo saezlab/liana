@@ -137,4 +137,3 @@ squidpy_results <- call_squidpyR(seurat_object = seurat_object,
                                ident = "seurat_clusters")
 
 
-

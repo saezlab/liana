@@ -68,8 +68,6 @@ call_connectome <- function(seurat_object,
         # default values are  in their comparison when comp to CellPhoneDB
         conn <- conn %>%
             FormatConnectome(
-            min.pct = 0.1,
-            max.p = 0.05,
             remove.na = TRUE)
     }
 
