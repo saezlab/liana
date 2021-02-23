@@ -89,7 +89,8 @@ py_set_seed(1004)
 #               omni_path = "input/omnipath_NATMI")
 
 db_list_natmi <- list("OmniPath" = omni_resources$OmniPath,
-                      "Ramilowski2015" = omni_resources$Ramilowski2015)
+                      "Ramilowski2015" = omni_resources$Ramilowski2015,
+                      "Default" = NULL)
 
 natmi_res <- bench_robust(subsampling,
                           lr_call = call_natmi,
@@ -101,8 +102,7 @@ natmi_res <- bench_robust(subsampling,
                           ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_ann.csv",
                           output_path = "~/Repos/ligrec_decoupleR/output/benchmark/natmi",
                           .write_data = TRUE,
-                          .subsampling_pipe = TRUE,
-                          .default_run = TRUE)
+                          .subsampling_pipe = TRUE)
 # saveRDS(natmi_res, "output/benchmark/natmi_res.rds")
 
 # load and remove not literature annotated default DB

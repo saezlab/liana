@@ -47,7 +47,6 @@ call_natmi <- function(omni_resources,
                        output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
                        .format = TRUE,
                        .write_data = FALSE,
-                       .default_run = FALSE,
                        .subsampling_pipe = FALSE){
 
     library(rprojroot)
@@ -86,16 +85,17 @@ call_natmi <- function(omni_resources,
     setwd(natmi_path)
 
     # append default resources to OmniPath ones
-    if(.default_run){
+    if("DEFAULT" %in% toupper(names(omni_resources))){
         omni_list <- append(as.list(names(omni_resources)),
                             list("lrc2p", "lrc2a"))
+        omni_list <- omni_list %>% purrr::list_modify("Default" = NULL)
     } else{
         omni_list <- as.list(names(omni_resources))
     }
 
     # submit native sys requests
     omni_list %>% map(function(resource){
-        system(str_glue("python ExtractEdges.py ",
+        system(str_glue("python3 ExtractEdges.py ",
                         "--species human ",
                         "--emFile {em_path} ",
                         "--annFile {ann_path} ",

@@ -26,17 +26,25 @@ source("scripts/utils/shuffle_omnipath.R")
 op_random <- shuffle_omnipath(omni_resources$OmniPath)
 
 
-# Squidpy (benched)
+
+
+# 1. Squidpy -------------------------------------------------------------------
+squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
+                                 omni_resources = omni_resources,
+                                 python_path = "/home/dbdimitrov/anaconda3/bin/python",
+                                 ident = "seurat_clusters")
+saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
+
+
+
 
 # Append shuffled omni db to omni_resources
 omni_resources <- append(list("Random" = op_random,
                               "Default" = NULL),
                          omni_resources)
 
-
-
-# SCA
-sca_res <- omni_resources %>%
+# 2. SCA ----------------------------------------------------------------------
+sca_results <- omni_resources %>%
     map(function(db)
         call_sca(op_resource = db,
                      seurat_object = breast_cancer,
@@ -45,8 +53,26 @@ sca_res <- omni_resources %>%
                      s.score = 0,
                      logFC = 0.25
                  ))
-saveRDS(sca_res, "output/benchmark/main_run/sca_res.rds")
+saveRDS(sca_results, "output/benchmark/main_run/sca_full.rds")
 
+
+# NATMI ------------------------------------------------------------------------
+# save OmniPath Resource to NATMI format
+# omni_to_NATMI(omni_resources = omni_resources,
+              # omni_path = "input/omnipath_NATMI")
+
+# call NATMI
+py_set_seed(1004)
+natmi_results <- call_natmi(omni_resources = omni_resources,
+                            seurat_object = breast_cancer,
+                            omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+                            natmi_path = "~/Repos/NATMI",
+                            em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_em_subsample_1.csv",
+                            ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_ann_subsample_1.csv",
+                            output_path = "~/Repos/ligrec_decoupleR/output/benchmark/natmi_full",
+                            .write_data = FALSE,
+                            .subsampling_pipe = FALSE
+                            )
 
 
 
