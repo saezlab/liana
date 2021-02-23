@@ -20,6 +20,7 @@ call_squidpyR <- function(seurat_object,
     feature_meta <- GetAssay(seurat_object)[[]]
     embedding <- Embeddings(seurat_object, "umap")
 
+
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 

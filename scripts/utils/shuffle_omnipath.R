@@ -59,6 +59,7 @@ shuffle_omnipath <- function(op_resource,
                genesymbol_intercell_target = target_genesymbol,
                entity_type_intercell_target = "protein",
                sources = "RANDOM",
+               references = "BiRewire",
                entity_type_intercell_source = "protein",
                entity_type_intercell_target)
 

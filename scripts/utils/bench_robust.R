@@ -68,7 +68,7 @@ robust_format_res <- function(lr_res,
         .resource <- str_glue("{rep(names(db_list), times = length(subsampling))}_subsamp_{rep(subsampling, each = length(db_list))}")
     }
 
-    lr_res%>%
+    lr_res %>%
         purrr::flatten() %>%
         enframe(name = "resource", value="lr_res") %>%
         mutate(resource = .resource) %>%

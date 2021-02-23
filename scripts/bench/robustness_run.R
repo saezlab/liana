@@ -4,7 +4,7 @@ library(Seurat)
 library(reticulate)
 
 source("scripts/utils/bench_robust.R")
-source("scripts/utils/robust_utils.R")
+source("scripts/utils/robust_roc.R")
 sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
 
 

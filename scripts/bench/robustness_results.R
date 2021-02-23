@@ -11,14 +11,6 @@ source("scripts/utils/robust_utils.R")
 # sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
 
 
-#
-# # Load Omni Resources
-# omni_resources <-readRDS("input/omni_resources.rds")
-#
-# # Define Subsampling
-# subsampling <- c(1, 0.8, 0.6, 0.4)
-
-
 # 1. Load Formatted Subsampling Results and generate ROC
 
 # Squidpy
