@@ -19,7 +19,7 @@ breast_cancer <- RenameIdents(breast_cancer, clust.anns)
 # source("scripts/utils/get_omnipath.R")
 # omni_resources <- get_omni_resources()
 # saveRDS(omni_resources, "input/omni_resources.rds")
-omni_resources <-readRDS("input/omni_resources.rds")
+omni_resources <- readRDS("input/omni_resources.rds")
 
 
 
@@ -31,6 +31,9 @@ op_random <- shuffle_omnipath(omni_resources$OmniPath)
 omni_resources_plus <- append(list("Random" = op_random,
                                    "Default" = NULL),
                               omni_resources)
+
+
+
 
 
 # 1. Squidpy -------------------------------------------------------------------
@@ -66,9 +69,18 @@ cellchat_results <- omni_resources_plus %>%
                                   nboot = 100,
                                   exclude_anns = c(),
                                   thresh = 1,
-                                  assay = "SCT")) %>%
+                                  assay = "Spatial",
+                                  .normalize = TRUE)) %>%
     setNames(names(omni_resources_plus))
 # saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
+
+xd <- call_cellchat(op_resource = NULL,
+              seurat_object = breast_cancer,
+              nboot = 100,
+              exclude_anns = c(),
+              thresh = 1,
+              assay = "SCT",
+              .normalize = FALSE)
 
 
 # 4. SCA ----------------------------------------------------------------------

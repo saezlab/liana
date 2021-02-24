@@ -18,7 +18,7 @@ call_connectome <- function(seurat_object,
                             ...,
                             .format = TRUE,
                             .spatial = TRUE){
-    library(Connectome)
+    require(Connectome)
 
     if(.spatial){
         seurat_object@assays$RNA <- seurat_object@assays$Spatial
@@ -80,6 +80,8 @@ call_connectome <- function(seurat_object,
 #' @inheritDotParams connectome::FilterConnectome
 FormatConnectome <- function(conn,
                              ...){
+    require(Connectome)
+
     conn <- conn %>%
         FilterConnectome(.,
                          ...) %>%

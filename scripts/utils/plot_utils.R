@@ -5,7 +5,7 @@ prepForUpset <- function(named_list){
       named_list[[l_name]] %>%
       select(1:4) %>%
       unite("interaction", source, target,
-            ligand, receptor, sep=".") %>%
+            ligand, receptor, sep="_") %>%
       mutate(!!l_name := 1)
   }) %>% reduce(., full_join) %>%
     mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%

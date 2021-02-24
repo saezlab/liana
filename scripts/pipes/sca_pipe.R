@@ -26,7 +26,8 @@ call_sca <- function(op_resource,
       select(ligand = source_genesymbol,
              receptor = target_genesymbol,
              source = sources,
-             PMIDs = references)
+             PMIDs = references) %>%
+      distinct()
   } else{
     if(file.exists("input/LRdb.rda")){ # will change once I convert this into a package
       load("input/LRdb.rda")
