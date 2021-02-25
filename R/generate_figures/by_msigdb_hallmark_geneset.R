@@ -49,3 +49,28 @@ ggplot(interactions_in_top_categories, aes(fill=geneset, y=n, x=sources)) +
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Interaction geneset (MSigDB, Hallmark)")
 
+# RECEPTOR:
+add_omnipath <- intercell_hallmark_geneset_receptor %>% group_by(geneset) %>% summarise(n = n()) %>%
+  dplyr::mutate(sources = "Omnipath")
+data_w_omnipath <- intercell_hallmark_geneset_receptor %>% tidyr::separate_rows(sources, sep = ";") %>%
+  dplyr::filter(sources %in% omni_list) %>% 
+  group_by(sources, geneset) %>%
+  summarise(n = n()) %>%
+  ungroup %>%
+  rbind(add_omnipath)%>%
+  tidyr::complete(sources, geneset, fill = list(n = 0)) %>%
+  dplyr::filter(!is.na(geneset))
+top_categories <- data_w_omnipath %>% 
+  group_by(geneset) %>%
+  summarise(count = sum(n)) %>%
+  dplyr::slice_max(order_by = count, n = 15)
+interactions_in_top_categories <- data_w_omnipath %>%
+  dplyr::filter(geneset %in% top_categories$geneset)
+
+# Stacked bar plot
+ggplot(interactions_in_top_categories, aes(fill=geneset, y=n, x=sources)) + 
+  geom_bar(position="stack", stat="identity") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
+  labs(x = "Resource", y = "Number of interactions", fill = "Receptor geneset (MSigDB, Hallmark)")
+
+
