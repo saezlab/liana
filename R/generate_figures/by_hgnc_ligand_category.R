@@ -9,7 +9,10 @@ require(ggplot2)
 source("./R/generate_figures/support_functions.R")
 
 omni_list <- get_resource_list()
-omnipath_intercell <- OmnipathR::import_intercell_network()
+# Import intercell network and, since we cannot be
+# sure of annotations attributed to complexes, remove them.
+omnipath_intercell <- OmnipathR::import_intercell_network() %>% 
+  dplyr::filter(!str_detect(source, "COMPLEX") & !str_detect(target, "COMPLEX"))
 
 hgnc_ligand_categories <- import_omnipath_intercell(parent = 'ligand', 
                                                     resources = 'HGNC', 
@@ -55,37 +58,3 @@ ggplot(interactions_in_top_categories, aes(fill=category, y=n, x=sources)) +
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Ligand category (HGNC)")
-
-# The same but without complexes:
-intercell_rm_complex <- omnipath_intercell %>% 
-  dplyr::filter(!str_detect(source, "COMPLEX") & !str_detect(target, "COMPLEX"))
-
-intercell_ligand_category_rm_complex <- left_join(intercell_rm_complex, 
-                                                  hgnc_ligand_categories, 
-                                                  by = c("source" = "uniprot"))
-
-add_omnipath_rm_complex <- intercell_ligand_category_rm_complex %>% 
-  group_by(category) %>% summarise(n = n()) %>%
-  dplyr::mutate(sources = "Omnipath")
-data_w_omnipath_rm_complex <- intercell_ligand_category_rm_complex %>% 
-  tidyr::separate_rows(sources, sep = ";") %>%
-  dplyr::filter(sources %in% omni_list) %>% 
-  group_by(sources, category) %>%
-  summarise(n = n()) %>%
-  ungroup %>%
-  rbind(add_omnipath_rm_complex)%>%
-  tidyr::complete(sources, category, fill = list(n = 0)) %>%
-  dplyr::filter(!is.na(category))
-top_categories <- data_w_omnipath_rm_complex %>% 
-  group_by(category) %>%
-  summarise(count = sum(n)) %>%
-  dplyr::slice_max(order_by = count, n = 15)
-interactions_in_top_categories <- data_w_omnipath_rm_complex %>%
-  dplyr::filter(category %in% top_categories$category)
-
-# Stacked bar plot
-ggplot(interactions_in_top_categories, aes(fill=category, y=n, x=sources)) + 
-  geom_bar(position="stack", stat="identity") + 
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
-  labs(x = "Resource", y = "Number of interactions", 
-       fill = "Ligand category (HGNC)")

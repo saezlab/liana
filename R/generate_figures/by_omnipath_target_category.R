@@ -10,7 +10,10 @@ require(ggplot2)
 source("./R/generate_figures/support_functions.R")
 
 omni_list <- get_resource_list()
-omnipath_intercell <- OmnipathR::import_intercell_network()
+# Import intercell network and, since we cannot be
+# sure of annotations attributed to complexes, remove them.
+omnipath_intercell <- OmnipathR::import_intercell_network() %>% 
+  dplyr::filter(!str_detect(source, "COMPLEX") & !str_detect(target, "COMPLEX"))
 
 # One dataframe representing all of Omnipath intercell
 add_omnipath <- omnipath_intercell %>% 
