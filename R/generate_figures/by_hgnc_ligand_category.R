@@ -64,3 +64,4 @@ ggplot(interactions_in_top_categories, aes(fill=category, y=n, x=sources)) +
   labs(x = "Resource", y = "Number of interactions", fill = "Ligand category (HGNC)")
 
 dev.off()
+
