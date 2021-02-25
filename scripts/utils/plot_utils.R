@@ -19,11 +19,11 @@ prepForUpset <- function(named_list){
 
 plotSaveUset <- function(upset_df, dir){
   up <- upset(upset_df, nsets = ncol(upset_df), order.by = "freq",
-        point.size = 5, line.size = 2, text.scale	= 2,
+        point.size = 7, line.size = 2, text.scale	= 2,
         mainbar.y.label = "Significant Interactions Intersect",
         sets.x.label = "Interactions per tool")
   file_name = paste(str_glue(dir))
-  png(file_name, width = 1200, height = 900)
+  png(file_name, width = 1400, height = 900)
   print(up)
   dev.off()
 }

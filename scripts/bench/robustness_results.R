@@ -101,3 +101,22 @@ png(file_name, width = 1200, height = 900)
 print(roc_heat.p)
 dev.off()
 
+# Cut heat
+roc_heat.cut <- roc_heat.d %>%
+    rownames_to_column("alg_sub") %>%
+    filter(!str_detect(alg_sub, "iTALK|NATMI|Connectome")) %>%
+    column_to_rownames("alg_sub") %>%
+    pheatmap(.,
+             cluster_rows = FALSE,
+             cluster_cols = FALSE,
+             treeheight_col = 0,
+             treeheight_row = 0,
+             display_numbers = TRUE,
+             fontsize = 24,
+             silent = TRUE)
+roc_heat.cut
+
+file_name = paste(str_glue("output/benchmark/robust_plots/robustness_cut_heat.png"))
+png(file_name, width = 1200, height = 900)
+print(roc_heat.cut)
+dev.off()

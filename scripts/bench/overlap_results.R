@@ -35,7 +35,7 @@ squidpy_sig <- squidpy_results %>%
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
-        filter(edge_specificity > 0.05) %>%
+        filter(edge_specificity > 0.03) %>%
         mutate(prank = percent_rank(desc(edge_avg_expr))) %>%
         filter(prank <= 0.1) %>%
             as_tibble()
@@ -65,23 +65,23 @@ conn_sig <- conn_results %>%
     map(function(res){
         res %>% FormatConnectome(max.p = 0.05,
                                  remove.na = TRUE,
-                                 min.z = 0.3) %>%
+                                 min.z = 0.5) %>%
             as_tibble()
     })
 
 
 # Significant Hits
 sig_list <- list("CellChat" = cellchat_sig,
-                    "Squidpy" = squidpy_sig,
-                    "NATMI" = natmi_sig,
-                    "SCA" = sca_sig,
-                    "Connectome" = conn_sig,
-                    "iTALK" = italk_sig)
+                 "Squidpy" = squidpy_sig,
+                 "NATMI" = natmi_sig,
+                 "SCA" = sca_sig,
+                 "Connectome" = conn_sig,
+                 "iTALK" = italk_sig)
 
 binary_prep <- sig_list %>%
   map(function(df) prepForUpset(df))
 
-
+# I. Simple Overlap
 # 1. UpSet Plots and Heatmaps by Tool
 # SquidPy
 plotSaveUset(binary_prep$Squidpy,
@@ -128,6 +128,17 @@ omni_sig <- sig_list %>%
 plotSaveUset(omni_sig,
              "output/benchmark/overlap_plots/omni_sig.png")
 
+# remove CellChat
+sig_list_excl <- sig_list
+sig_list_excl$CellChat <- NULL
+minus_cell_chat <- sig_list_excl %>%
+  map(function(tool)
+    tool %>% pluck("OmniPath")) %>%
+  prepForUpset()
+
+plotSaveUset(minus_cell_chat,
+             "output/benchmark/overlap_plots/omni_minus_cc.png")
+
 
 # 4. Upset Plots Each tool with Ramilowski
 ramilowski_sig <- sig_list %>%
@@ -150,3 +161,17 @@ random_sig <- sig_list %>%
 
 plotSaveUset(random_sig,
              "output/benchmark/overlap_plots/random_sig.png")
+
+
+# II. Overlap Scaled by Sig. Hits from SquidPy
+tmp <- sig_list %>%
+  map(function(db)
+    db %>%
+      pluck("Default")) %>%
+  map(function(tool) tool %>%
+        select(source, target)) %>%
+  enframe() %>%
+  mutate(proportions = value %>%
+           map(function(cols) cols %>%
+                 unite(source, target, col = "pairs"))) %>%
+  select(name, proportions)
