@@ -22,8 +22,7 @@ omni_list <- list(
 )
 
 # Collect all ligrec interactions from all resources
-all_ligrec_interactions <- import_intercell_network(transmitter_param = list(categories = 'ligand'),
-                                                    receiver_param = list(categories = 'receptor'))
+all_ligrec_interactions <- import_intercell_network()
 
 # Remove complexes, check for duplicates, and give all interactions a unique label to enable UpSet plot:
 OmniPath_ligrec_interactions <- all_ligrec_interactions %>% 
@@ -54,9 +53,7 @@ create_lr_networks <- function(resources){
     # 'MatrixDB', 'Adhesome', "CellChatDB" throw error (0 intercellular communication role records).
     try({
       intercell_network <- import_intercell_network(
-        interactions_param = list(resources = resource),
-        transmitter_param = list(resources = resource, categories = 'ligand'),
-        receiver_param = list(resources = resource, categories = 'receptor')
+        interactions_param = list(resources = resource)
       )
       # Remove complexes and any duplicates, remove cols database_intercell_source, database_intercell_target
       intercell_network <- intercell_network %>% 
@@ -78,4 +75,3 @@ create_lr_networks <- function(resources){
 
 networks <- create_lr_networks(omni_list)
 saveRDS(networks, "./R/networks.RData")
-
