@@ -43,11 +43,17 @@ top_categories <- data_w_omnipath %>%
 interactions_in_top_categories <- data_w_omnipath %>%
   dplyr::filter(geneset %in% top_categories$geneset)
 
+pdf(file = "./figures/msigdb_hallmark_interaction.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(interactions_in_top_categories, aes(fill=geneset, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Interaction geneset (MSigDB, Hallmark)")
+
+dev.off()
 
 # RECEPTOR:
 add_omnipath <- intercell_hallmark_geneset_receptor %>% group_by(geneset) %>% summarise(n = n()) %>%
@@ -67,10 +73,15 @@ top_categories <- data_w_omnipath %>%
 interactions_in_top_categories <- data_w_omnipath %>%
   dplyr::filter(geneset %in% top_categories$geneset)
 
+pdf(file = "./figures/msigdb_hallmark_receptor.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(interactions_in_top_categories, aes(fill=geneset, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Receptor geneset (MSigDB, Hallmark)")
 
+dev.off()
 

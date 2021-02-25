@@ -46,11 +46,17 @@ top_categories <- data_w_omnipath %>%
 interactions_in_top_categories <- data_w_omnipath %>%
   dplyr::filter(pathway %in% top_categories$pathway)
 
+pdf(file = "./figures/netpath_interaction.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(interactions_in_top_categories, aes(fill=pathway, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Interaction pathway (NetPath)")
+
+dev.off()
 
 # RECEPTOR:
 add_omnipath <- intercell_pathways_receptor %>% group_by(pathway) %>% summarise(n = n()) %>%
@@ -70,9 +76,15 @@ top_categories <- data_w_omnipath %>%
 interactions_in_top_categories <- data_w_omnipath %>%
   dplyr::filter(pathway %in% top_categories$pathway)
 
+pdf(file = "./figures/netpath_receptor.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(interactions_in_top_categories, aes(fill=pathway, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Receptor pathway (NetPath)")
+
+dev.off()
 

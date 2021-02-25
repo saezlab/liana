@@ -53,8 +53,14 @@ top_categories <- data_w_omnipath %>%
 interactions_in_top_categories <- data_w_omnipath %>%
   dplyr::filter(category %in% top_categories$category)
 
+pdf(file = "./figures/hgnc_ligand.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(interactions_in_top_categories, aes(fill=category, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Ligand category (HGNC)")
+
+dev.off()

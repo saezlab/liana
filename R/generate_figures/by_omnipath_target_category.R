@@ -29,11 +29,17 @@ data_w_omnipath <- omnipath_intercell %>%
   rbind(add_omnipath)%>%
   tidyr::complete(sources, category_intercell_target, fill = list(n = 0))
 
+pdf(file = "./figures/omnipath_category_target.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(data_w_omnipath, aes(fill=category_intercell_target, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Target category")
+
+dev.off()
 
 # Exploring the number of duplicates belonging to each category:
 data <- omnipath_intercell %>% tidyr::separate_rows(sources, sep = ";") %>%

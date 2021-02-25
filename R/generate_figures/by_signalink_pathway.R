@@ -35,11 +35,17 @@ data_w_omnipath <- intercell_pathways %>% tidyr::separate_rows(sources, sep = ";
   dplyr::filter(!is.na(pathway))
 #No need to filter for top categories because there are only 10
 
+pdf(file = "./figures/signalink_interaction.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(data_w_omnipath, aes(fill=pathway, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Interaction pathway (SignaLink)")
+
+dev.off()
 
 # RECEPTOR:
 add_omnipath <- intercell_pathways_receptor %>% group_by(pathway) %>% summarise(n = n()) %>%
@@ -54,9 +60,15 @@ data_w_omnipath <- intercell_pathways_receptor %>% tidyr::separate_rows(sources,
   dplyr::filter(!is.na(pathway))
 #No need to filter for top categories because there are only 10
 
+pdf(file = "./figures/signalink_receptor.pdf",  
+    width = 7,
+    height = 5) 
+
 # Stacked bar plot
 ggplot(data_w_omnipath, aes(fill=pathway, y=n, x=sources)) + 
   geom_bar(position="stack", stat="identity") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + 
   labs(x = "Resource", y = "Number of interactions", fill = "Receptor pathway (SignaLink)")
+
+dev.off()
 
