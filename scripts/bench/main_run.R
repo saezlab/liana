@@ -33,9 +33,6 @@ omni_resources_plus <- append(list("Random" = op_random,
                               omni_resources)
 
 
-
-
-
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
                                  omni_resources = omni_resources,
@@ -69,18 +66,12 @@ cellchat_results <- omni_resources_plus %>%
                                   nboot = 100,
                                   exclude_anns = c(),
                                   thresh = 1,
-                                  assay = "Spatial",
-                                  .normalize = TRUE)) %>%
+                                  assay = "SCT",
+                                  .normalize = FALSE)) %>%
     setNames(names(omni_resources_plus))
 # saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
 
-xd <- call_cellchat(op_resource = NULL,
-              seurat_object = breast_cancer,
-              nboot = 100,
-              exclude_anns = c(),
-              thresh = 1,
-              assay = "SCT",
-              .normalize = FALSE)
+
 
 
 # 4. SCA ----------------------------------------------------------------------

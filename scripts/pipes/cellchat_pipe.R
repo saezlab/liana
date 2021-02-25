@@ -21,8 +21,11 @@ call_cellchat <- function(op_resource,
     require(CellChat)
     require(ggalluvial)
     require(igraph)
+    options(stringsAsFactors = FALSE)
 
-    data.input <- as.matrix(GetAssayData(seurat_object, assay = assay, slot = "data")) # data matrix
+    data.input <- as.matrix(GetAssayData(seurat_object,
+                                         assay = assay,
+                                         slot = "data")) # data matrix
     if(.normalize){
         data.input <- normalizeData(data.input)
     }
@@ -179,7 +182,7 @@ call_cellchat <- function(op_resource,
     # However, this might be too time-consuming and irrelevant.
     cellchat.omni <- projectData(cellchat.omni, PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use=TRUE,
+                                       raw.use=FALSE,
                                        nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups

@@ -7,7 +7,7 @@ library(Seurat)
 library(reticulate)
 
 source("scripts/utils/bench_robust.R")
-source("scripts/utils/robust_utils.R")
+source("scripts/utils/robust_roc.R")
 # sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
 
 
@@ -97,7 +97,7 @@ roc_heat.p <- pheatmap(roc_heat.d,
                        silent = TRUE)
 
 file_name = paste(str_glue("output/benchmark/robust_plots/robustness_heat.png"))
-png(file_name, width = 900, height = 600)
+png(file_name, width = 1200, height = 900)
 print(roc_heat.p)
 dev.off()
 

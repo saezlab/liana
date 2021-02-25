@@ -2,6 +2,7 @@
 library(tidyverse)
 library(UpSetR)
 library(pheatmap)
+library(jaccard)
 source("scripts/utils/plot_utils.R")
 
 
@@ -34,9 +35,9 @@ squidpy_sig <- squidpy_results %>%
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
-            mutate(prank = percent_rank(edge_avg_expr)) %>%
-            filter(prank <= 0.1) %>%
-            filter(edge_specificity > 0.05) %>%
+        filter(edge_specificity > 0.05) %>%
+        mutate(prank = percent_rank(desc(edge_avg_expr))) %>%
+        filter(prank <= 0.1) %>%
             as_tibble()
         })
 
@@ -44,7 +45,7 @@ natmi_sig <- natmi_results %>%
 sca_sig <- sca_results %>%
     map(function(res){
     res %>%
-        filter(LRscore >= 0.6) %>%
+        filter(LRscore >= 0.5) %>%
         as_tibble()
         })
 
@@ -53,7 +54,7 @@ italk_sig <- italk_results %>%
     map(function(res){
         res %>%
             mutate(weight_comb = weight_from * weight_to) %>%
-            mutate(prank = percent_rank(weight_comb)) %>%
+            mutate(prank = percent_rank(desc(weight_comb))) %>%
             filter(prank <= 0.01) %>%
             as_tibble()
     })
@@ -81,13 +82,10 @@ binary_prep <- sig_list %>%
   map(function(df) prepForUpset(df))
 
 
-
 # 1. UpSet Plots and Heatmaps by Tool
-upset(binary_prep$Squidpy, nsets = ncol(binary_prep$Squidpy), order.by = "freq",
-      point.size = 4, line.size = 2, text.scale	= 2,
-      mainbar.y.label = "Significant Interactions",
-      sets.x.label = "Interactions per tool")
-
+# SquidPy
+plotSaveUset(binary_prep$Squidpy,
+             "output/benchmark/overlap_plots/squidpy_upset.png")
 
 heatm_test <- binary_prep$Squidpy %>%
   as_tibble() %>%
@@ -101,95 +99,54 @@ heatm_test <- binary_prep$Squidpy %>%
            silent = TRUE,
            show_rownames = FALSE
            )
-heatm_test
+
+# CellChat
+plotSaveUset(binary_prep$CellChat,
+             "output/benchmark/overlap_plots/cellchat_upset.png")
+
 
 # Meaningless - for the BS/Mean score tools
 
 
 # 2. Upset Plots Each with Default Resource
-xd <- sig_list %>%
+default_sig <- sig_list %>%
   map(function(tool)
     tool %>% pluck("Default")) %>%
   prepForUpset()
 
-
-upset(xd, nsets = ncol(binary_prep$Squidpy), order.by = "freq",
-      point.size = 4, line.size = 2, text.scale	= 2,
-      mainbar.y.label = "Significant Interactions",
-      sets.x.label = "Interactions per tool")
-
-tmp <- xd[[-"CellChat"]] %>%
-  as_tibble() %>%
-  column_to_rownames("interaction") %>%
-  pheatmap(.,
-           cluster_rows = FALSE,
-           cluster_cols = TRUE,
-           treeheight_col = 0,
-           treeheight_row = 0,
-           display_numbers = FALSE,
-           silent = TRUE,
-           show_rownames = FALSE
-  )
-tmp
-
+plotSaveUset(default_sig,
+             "output/benchmark/overlap_plots/default_sig.png")
 
 
 
 # 3. Upset Plots Each tool with OmniPath
-xd <- sig_list %>%
+omni_sig <- sig_list %>%
   map(function(tool)
     tool %>% pluck("OmniPath")) %>%
   prepForUpset()
 
-
-upset(xd, nsets = ncol(binary_prep$Squidpy), order.by = "freq",
-      point.size = 4, line.size = 2, text.scale	= 2,
-      mainbar.y.label = "Significant Interactions",
-      sets.x.label = "Interactions per tool")
-
-tmp <- xd[[-"CellChat"]] %>%
-  as_tibble() %>%
-  column_to_rownames("interaction") %>%
-  pheatmap(.,
-           cluster_rows = FALSE,
-           cluster_cols = TRUE,
-           treeheight_col = 0,
-           treeheight_row = 0,
-           display_numbers = FALSE,
-           silent = TRUE,
-           show_rownames = FALSE
-  )
-tmp
+plotSaveUset(omni_sig,
+             "output/benchmark/overlap_plots/omni_sig.png")
 
 
-# 4. Upset Plots Each tool with Random
-xd <- sig_list %>%
+# 4. Upset Plots Each tool with Ramilowski
+ramilowski_sig <- sig_list %>%
   map(function(tool)
     tool %>% pluck("Ramilowski2015")) %>%
   prepForUpset()
 
-
-upset(xd, nsets = ncol(binary_prep$Squidpy), order.by = "freq",
-      point.size = 4, line.size = 2, text.scale	= 2,
-      mainbar.y.label = "Significant Interactions",
-      sets.x.label = "Interactions per tool")
-
-tmp <- xd[[-"CellChat"]] %>%
-  as_tibble() %>%
-  column_to_rownames("interaction") %>%
-  pheatmap(.,
-           cluster_rows = FALSE,
-           cluster_cols = TRUE,
-           treeheight_col = 0,
-           treeheight_row = 0,
-           display_numbers = FALSE,
-           silent = TRUE,
-           show_rownames = FALSE
-  )
-tmp
+plotSaveUset(ramilowski_sig,
+             "output/benchmark/overlap_plots/ramilowski_sig.png")
 
 
-# 5. Heatmap of Each Tool, Each Resource (Sig Hits)
+# 5. Upset Plots Each tool with Random
+random_sig <- sig_list %>%
+  map(function(tool)
+    tool %>%
+      pluck("Random")) %>%
+  purrr::list_modify("Squidpy" = NULL) %>%
+  prepForUpset()
 
 
-# 6. Heatmap of Each Tool,
+plotSaveUset(random_sig,
+             "output/benchmark/overlap_plots/random_sig.png")
