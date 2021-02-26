@@ -27,6 +27,7 @@ all_ligrec_interactions <- import_intercell_network()
 # Remove complexes, check for duplicates, and give all interactions a unique label to enable UpSet plot:
 OmniPath_ligrec_interactions <- all_ligrec_interactions %>% 
   dplyr::filter(entity_type_intercell_source != 'complex' & entity_type_intercell_target != 'complex') %>%
+  dplyr::select(source,target) %>% 
   distinct() %>%
   tibble::rowid_to_column()
 
@@ -58,10 +59,10 @@ create_lr_networks <- function(resources){
       # Remove complexes and any duplicates, remove cols database_intercell_source, database_intercell_target
       intercell_network <- intercell_network %>% 
         dplyr::filter(entity_type_intercell_source != 'complex' & entity_type_intercell_target != 'complex') %>%
-        distinct() %>%
-        dplyr::select(-c(database_intercell_source, database_intercell_target))
+        dplyr::select(source,target) %>% 
+        distinct()
       # Retrieve unique id amongst all OmniPath interactions to enable UpSet plot:
-      intercell_network_id <-  suppressMessages(dplyr::inner_join(OmniPath_ligrec_interactions, intercell_network))#, by=merge_columns)
+      intercell_network_id <-  suppressMessages(dplyr::inner_join(OmniPath_ligrec_interactions, intercell_network))
       # Assert that no interactions are removed in this process:
       assertthat::validate_that(nrow(intercell_network) == nrow(intercell_network_id), 
                                 msg="Some interactions may have been removed when assigning ID")
