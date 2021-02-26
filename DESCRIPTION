@@ -1,0 +1,47 @@
+Package: intercell
+Type: Package
+Title: Cell-cell communication resources and tools
+Version: 0.0.1
+Authors@R: c(
+    person(
+        given = "Daniel",
+        family = "Dimitrov",
+        role = "aut",
+        email = "daniel.dimitrov@uni-heidelberg.de"
+    ),
+    person(
+        given = "Charlotte",
+        family = "Boys",
+        role = c("aut"),
+        email = "mm228@stud.uni-heidelberg.de"
+    ),
+    person(
+        given = "Denes",
+        family = "Turei",
+        role = c("cre", "aut"),
+        email = "turei.denes@gmail.com",
+        comment = c(ORCID = "0000-0002-7249-9379")
+    ))
+Description: Comparative analysis of cell-cell communication resources and
+    cell-cell communication inference tools.
+License: MIT + file LICENSE
+URL: https://omnipathdb.org/
+BugReports: https://github.com/saezlab/Cell_Cell_Investigation/issues
+Encoding: UTF-8
+VignetteBuilder: knitr
+Depends:
+    R(>= 4.0),
+    graphics,
+    utils,
+    magrittr,
+    purrr,
+    readr,
+    dplyr,
+    rlang,
+    ggplot2,
+    OmnipathR
+Suggests:
+    knitr,
+    rmarkdown,
+    ggplot2
+RoxygenNote: 7.1.1
