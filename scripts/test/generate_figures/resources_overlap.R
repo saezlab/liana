@@ -7,9 +7,13 @@ ligrec_interaction_list <- readRDS("./R/networks.RData")
 upset_input <- make_upset_list(ligrec_interaction_list)
 
 # Upset plot for omnipath and all resources within it:
+pdf(file = "./figures/interactions_upset.pdf",  
+    width = 9,
+    height = 6) 
 upset(fromList(upset_input), order.by = "freq", 
       nsets = length(upset_input), nintersects=30,
       scale.intersections = "log10") # Plots intersections on a log10 scale
+dev.off()
 
 # Upset plot for all non-empty resources within omnipath, excluding omnipath:
 upset(fromList(within(upset_input, rm('OmniPath'))), order.by = "freq", nsets = length(upset_input)-1, nintersects=30)

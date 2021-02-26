@@ -29,8 +29,15 @@ ligands_list <- names(ligrec_interaction_list) %>%
   }) %>% setNames(names(ligrec_interaction_list))
 
 ligands_input <- make_upset_list(ligands_list)
+
+pdf(file = "./figures/ligands_upset.pdf",  
+    width = 9,
+    height = 6) 
+
 upset(fromList(ligands_input), order.by = "freq", nsets = length(ligands_input), nintersects=30)
 grid.text("Ligands by Uniprot ID",x = 0.65, y=0.95, gp=gpar(fontsize=10))
+
+dev.off()
 
 # Same for receptors
 
@@ -53,6 +60,11 @@ receptors_list <- names(ligrec_interaction_list) %>%
   }) %>% setNames(names(ligrec_interaction_list))
 
 receptors_input <- make_upset_list(receptors_list)
+
+pdf(file = "./figures/receptors_upset.pdf",  
+    width = 9,
+    height = 6) 
 upset(fromList(receptors_input), order.by = "freq", nsets = length(receptors_input), nintersects=30)
 grid.text("Receptors by Uniprot ID",x = 0.65, y=0.95, gp=gpar(fontsize=10))
+dev.off()
 
