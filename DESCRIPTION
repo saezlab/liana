@@ -38,6 +38,7 @@ Depends:
     readr,
     dplyr,
     rlang,
+    tidyr,
     ggplot2,
     OmnipathR
 Suggests:
