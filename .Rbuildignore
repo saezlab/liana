@@ -1,3 +1,5 @@
 ^figures*
 ^slides*
 ^scripts*
+^.*\.Rproj$
+^\.Rproj\.user$

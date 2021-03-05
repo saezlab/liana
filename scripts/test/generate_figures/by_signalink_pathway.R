@@ -80,6 +80,7 @@ dev.off()
 
 
 # Each category (lig, rec, interaction) combined -------------------------------
+# OmniPath split by intercell resources
 # receptors reformatted
 recs <- intercell_pathways_receptor %>%
   tidyr::separate_rows(sources, sep = ";") %>%
@@ -110,12 +111,12 @@ interacts <- intercell_pathways %>%
   group_by(sources, pathway) %>%
   summarise(n = n()) %>%
   ungroup() %>%
-  # rbind(add_omnipath) %>%
   tidyr::complete(sources, pathway, fill = list(n = 0)) %>%
   dplyr::filter(!is.na(pathway))  %>%
   mutate(type = "Interaction")
 
 
+# Composite OmniPath
 # omni receptors
 omni_receptor <- intercell_pathways_receptor %>%
   select(source, target, pathway) %>%
@@ -165,3 +166,4 @@ signalink_bar <- ggplot(bind_all, aes(fill=pathway, y=counts, x=type)) +
   facet_wrap( ~ sources, nrow = 1., scales ="free_x") +
   theme(panel.spacing = unit(0.2, "lines"), text = element_text(size=14))
 signalink_bar
+
