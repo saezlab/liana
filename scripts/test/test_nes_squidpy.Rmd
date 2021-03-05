@@ -1,0 +1,79 @@
+---
+title: "squidpy_nes_test"
+author: "Daniel Dimitrov"
+date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+```{r load_renv}
+library(Seurat)
+library(SeuratData)
+library(Connectome)
+library(ggplot2)
+library(reticulate)
+reticulate::use_python("/home/dbdimitrov/anaconda3/bin/python")
+```
+
+
+```{r load_rdata}
+breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
+```
+
+
+```{r seurat_toAnn}
+sc <- import("scanpy")
+DefaultAssay(breast_cancer) <- "Spatial"
+
+adata_seurat <- sc$AnnData(
+    X   = t(as.matrix(GetAssayData(breast_cancer))),
+    obs = breast_cancer[[]],
+    var = GetAssay(breast_cancer)[[]]
+)
+adata_seurat$obsm$update(umap = Embeddings(breast_cancer, "umap"))
+
+
+py$adata_seurat <- adata_seurat
+```
+
+```{python python_env}
+import scanpy as sc
+import squidpy as sp
+import pandas as pd
+import numpy as np
+adata_seurat
+```
+
+
+```{python load_ann}
+adata = sc.read_visium('/home/dbdimitrov/Repos/ligrec_decoupleR/input/human_breast_cancer',
+                       count_file="filtered.h5")
+adata
+```
+
+
+
+```{python reaplce_ann}
+adata.obsm['umap'] = adata_seurat.obsm['umap']
+adata.obs = adata_seurat.obs
+adata
+```
+```{python try_neigh}
+sp.gr.spatial_neighbors(adata)
+neigh_scores = sp.gr.nhood_enrichment(adata, cluster_key="seurat_clusters", copy = True)
+```
+
+```{python try_neigh}
+pd.DataFrame(np.row_stack(neigh_scores[0]))
+```

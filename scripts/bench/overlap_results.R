@@ -36,7 +36,7 @@ natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
         filter(edge_specificity > 0.03) %>%
-        mutate(prank = percent_rank(desc(edge_avg_expr))) %>%
+        mutate(prank = percent_rank(dplyr::desc(edge_avg_expr))) %>%
         filter(prank <= 0.1) %>%
             as_tibble()
         })
@@ -54,7 +54,7 @@ italk_sig <- italk_results %>%
     map(function(res){
         res %>%
             mutate(weight_comb = weight_from * weight_to) %>%
-            mutate(prank = percent_rank(desc(weight_comb))) %>%
+            mutate(prank = percent_rank(dplyr::desc(weight_comb))) %>%
             filter(prank <= 0.01) %>%
             as_tibble()
     })
@@ -161,6 +161,20 @@ random_sig <- sig_list %>%
 
 plotSaveUset(random_sig,
              "output/benchmark/overlap_plots/random_sig.png")
+
+
+
+# 6. Upset Plots Each tool with CellChatDB
+cellchatdb_sig <- sig_list %>%
+  map(function(tool)
+    tool %>%
+      pluck("CellChatDB")) %>%
+  # purrr::list_modify("CellChat" = NULL) %>%
+  prepForUpset()
+
+
+plotSaveUset(cellchatdb_sig,
+             "output/benchmark/overlap_plots/cellchatdb_sig.png")
 
 
 # II. Overlap Scaled by Sig. Hits from SquidPy
