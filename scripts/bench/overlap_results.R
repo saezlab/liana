@@ -39,9 +39,8 @@ squidpy_sig <- squidpy_results %>%
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
-        filter(edge_specificity >= 0.03) %>%
-        mutate(prank = percent_rank(dplyr::desc(edge_avg_expr))) %>%
-        filter(prank <= 0.1) %>%
+        mutate(prank = percent_rank(dplyr::desc(edge_specificity))) %>%
+        filter(prank <= 0.01) %>%
             as_tibble()
         })
 
@@ -59,7 +58,7 @@ italk_sig <- italk_results %>%
         res %>%
             mutate(weight_comb = weight_from * weight_to) %>%
             mutate(prank = percent_rank(dplyr::desc(weight_comb))) %>%
-            filter(prank <= 0.01) %>%
+            filter(prank < 0.01) %>%
             as_tibble()
     })
 
