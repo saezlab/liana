@@ -3,7 +3,7 @@ library(tidyverse)
 library(UpSetR)
 library(pheatmap)
 library(jaccard)
-source("scripts/utils/plot_utils.R")
+source("R/plot_utils.R")
 
 
 # Load results
@@ -21,21 +21,25 @@ conn_results <- readRDS("output/benchmark/main_run/conn_full.rds")
 # Filter for 'significant' hits and format to Upset
 cellchat_sig <- cellchat_results  %>%
     map(function(res){
-        res %>% filter(pval < 0.01) %>%
+        res %>%
+        filter(pval <= 0.01) %>%
+        mutate(prank = percent_rank(dplyr::desc(prob))) %>%
+        filter(prank <= 0.05) %>%
             as_tibble()})
 
 
 squidpy_sig <- squidpy_results %>%
     map(function(res){
-        res %>% mutate(source = str_glue("c{source}")) %>%
-            filter(pvalue < 0.05) %>%
+        res %>%
+        mutate(source = str_glue("c{source}")) %>%
+            filter(pvalue <= 0.05) %>%
             as_tibble()})
 
 
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
-        filter(edge_specificity > 0.03) %>%
+        filter(edge_specificity >= 0.03) %>%
         mutate(prank = percent_rank(dplyr::desc(edge_avg_expr))) %>%
         filter(prank <= 0.1) %>%
             as_tibble()
@@ -45,7 +49,7 @@ natmi_sig <- natmi_results %>%
 sca_sig <- sca_results %>%
     map(function(res){
     res %>%
-        filter(LRscore >= 0.5) %>%
+        filter(LRscore >= 0.45) %>%
         as_tibble()
         })
 
@@ -60,12 +64,13 @@ italk_sig <- italk_results %>%
     })
 
 
-source("scripts/pipes/connectome_pipe.R")
+source("R/connectome_pipe.R")
 conn_sig <- conn_results %>%
     map(function(res){
         res %>% FormatConnectome(max.p = 0.05,
-                                 remove.na = TRUE,
-                                 min.z = 0.5) %>%
+                                 remove.na = TRUE)  %>%
+        mutate(prank = percent_rank(desc(weight_sc))) %>%
+        filter(prank <= 0.03) %>%
             as_tibble()
     })
 
@@ -163,8 +168,20 @@ plotSaveUset(random_sig,
              "output/benchmark/overlap_plots/random_sig.png")
 
 
+# 6. Upset Plots Each tool with CellPhoneDB
+sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
+cellphonedb_sig <- sig_list %>%
+  map(function(tool)
+    tool %>%
+      pluck("CellPhoneDB")) %>%
+  prepForUpset()
 
-# 6. Upset Plots Each tool with CellChatDB
+
+plotSaveUset(cellphonedb_sig,
+             "output/benchmark/overlap_plots/cellphonedb_sig.png")
+
+
+# 7. Upset Plots Each tool with CellChatDB
 cellchatdb_sig <- sig_list %>%
   map(function(tool)
     tool %>%
@@ -177,7 +194,7 @@ plotSaveUset(cellchatdb_sig,
              "output/benchmark/overlap_plots/cellchatdb_sig.png")
 
 
-# II. Overlap Scaled by Sig. Hits from SquidPy
+# Overlap Scaled by Sig. Hits from SquidPy
 tmp <- sig_list %>%
   map(function(db)
     db %>%
@@ -189,3 +206,5 @@ tmp <- sig_list %>%
            map(function(cols) cols %>%
                  unite(source, target, col = "pairs"))) %>%
   select(name, proportions)
+
+tmp

@@ -6,8 +6,8 @@ library(tidyverse)
 library(Seurat)
 library(reticulate)
 
-source("scripts/utils/bench_robust.R")
-source("scripts/utils/robust_roc.R")
+source("R/bench_robust.R")
+source("R/robust_roc.R")
 # sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
 
 
@@ -33,15 +33,15 @@ natmi_roc <- natmi_sub %>%
 # Connectome
 conn_sub <- readRDS("output/benchmark/connectome_sub.rds")
 conn_roc <- conn_sub %>%
-    robust_get_roc(predictor_metric = "weight_norm",
-                   predictor_thresh = 0.05,
+    robust_get_roc(predictor_metric = "weight_sc",
+                   predictor_thresh = 0.1,
                    .rank = TRUE)
 
 # iTALK
 italk_sub <- readRDS("output/benchmark/italk_sub.rds")
 italk_roc <- italk_sub %>%
     robust_get_roc(predictor_metric = "weight_comb",
-                   predictor_thresh = 0.01,
+                   predictor_thresh = 0.05,
                    .rank = TRUE)
 
 # SCA
