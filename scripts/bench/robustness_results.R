@@ -26,7 +26,7 @@ cellchat_roc <- cellchat_sub %>%
 # NATMI
 natmi_sub <- readRDS("output/benchmark/natmi_sub.rds")
 natmi_roc <- natmi_sub %>%
-    robust_get_roc(predictor_metric = "edge_avg_expr",
+    robust_get_roc(predictor_metric = "edge_specificity",
                    predictor_thresh = 0.01,
                    .rank = TRUE)
 
