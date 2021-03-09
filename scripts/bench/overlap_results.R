@@ -1,5 +1,6 @@
 # Load Prerequisites
-library(tidyverse)
+library(pheatmap)
+library(jaccard)
 library(UpSetR)
 library(pheatmap)
 library(jaccard)
@@ -108,7 +109,9 @@ plotSaveUset(binary_prep$CellChat,
              "output/benchmark/overlap_plots/cellchat_upset.png")
 
 
-# Meaningless - for the BS/Mean score tools
+
+plotSaveUset(binary_prep$SCA,
+             "output/benchmark/overlap_plots/sca_upset.png")
 
 
 # 2. Upset Plots Each with Default Resource
@@ -181,6 +184,74 @@ plotSaveUset(cellchatdb_sig,
              "output/benchmark/overlap_plots/cellchatdb_sig.png")
 
 
+
+# 8. Get all Data combined
+comb <- list("CellChat" = cellchat_results,
+             "Squidpy" = squidpy_results,
+             "NATMI" = natmi_results,
+             "iTALK" = italk_results,
+             "SCA" = sca_results,
+             "Connectome" = conn_results %>%
+               map(function(res){
+               res %>%
+                   FormatConnectome(., remove.na = TRUE) %>%
+                   as_tibble()
+             }))
+
+lnames <- map(names(comb), function(l_name){
+  map(names(comb[[l_name]]), function(r_name){
+    str_glue("{l_name}_{r_name}")
+  })
+}) %>% unlist()
+
+comb <- comb %>% purrr::flatten() %>%
+  setNames(lnames)
+names(comb)
+
+
+library(sparsepca)
+library(M3C)
+
+comb$Connectome$Random %>%
+  mutate(x = (.[, 5] - mean(.[, 6])) / sd(.[, 6]))
+
+mean(comb$Connectome$Random$weight_norm)
+
+
+tmp <- map(names(comb),
+           function(l_name){
+             comb[[l_name]] %>%
+               as.data.frame() %>%
+               mutate(!!l_name := (.[, 5] - mean(.[, 5])) / sd(.[, 5])) %>%
+               select(1:4, !!l_name) %>%
+               unite("interaction", source, target, ligand, receptor, sep="_") %>%
+               distinct()
+}) %>% reduce(., full_join) %>%
+  mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
+  mutate_at(vars(2:ncol(.)), ~ replace(., . != 0, .)) %>%
+  as.data.frame()
+tmp
+
+head(tmp)
+
+tmp <- tmp %>% column_to_rownames("interaction") %>% select(3:15)
+pca(tmp, labels=colnames(tmp),legendtextsize = 10,axistextsize = 10,dotsize=2)
+tmp
+
+tmp %>% column_to_rownames("interaction")
+umap(pollen$data,colvec=c('skyblue'))
+
+
+
+
+iris.data = iris[, grep("Sepal|Petal", colnames(iris))]
+iris.labels = iris[, "Species"]
+library(umap)
+iris.umap = umap(iris.data)
+
+iris.umap.learn = umap(iris.data, method="umap-learn")
+
+
 # Overlap Scaled by Sig. Hits from SquidPy
 tmp <- sig_list %>%
   map(function(db)
@@ -195,3 +266,4 @@ tmp <- sig_list %>%
   select(name, proportions)
 
 tmp
+
