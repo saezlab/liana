@@ -23,10 +23,9 @@ cellchat_sig <- cellchat_results  %>%
     map(function(res){
         res %>%
         filter(pval <= 0.01) %>%
-        mutate(prank = percent_rank(dplyr::desc(prob))) %>%
-        filter(prank <= 0.05) %>%
+        # mutate(prank = percent_rank(dplyr::desc(prob))) %>%
+        # filter(prank <= 0.05) %>%
             as_tibble()})
-
 
 squidpy_sig <- squidpy_results %>%
     map(function(res){
@@ -40,7 +39,7 @@ natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
         mutate(prank = percent_rank(dplyr::desc(edge_specificity))) %>%
-        filter(prank <= 0.01) %>%
+        filter(prank <= 0.005) %>%
             as_tibble()
         })
 
@@ -48,7 +47,7 @@ natmi_sig <- natmi_results %>%
 sca_sig <- sca_results %>%
     map(function(res){
     res %>%
-        filter(LRscore >= 0.45) %>%
+        filter(LRscore >= 0.5) %>% # this is the threshold that they use when they compare
         as_tibble()
         })
 
@@ -132,17 +131,6 @@ omni_sig <- sig_list %>%
 plotSaveUset(omni_sig,
              "output/benchmark/overlap_plots/omni_sig.png")
 
-# remove CellChat
-sig_list_excl <- sig_list
-sig_list_excl$CellChat <- NULL
-minus_cell_chat <- sig_list_excl %>%
-  map(function(tool)
-    tool %>% pluck("OmniPath")) %>%
-  prepForUpset()
-
-plotSaveUset(minus_cell_chat,
-             "output/benchmark/overlap_plots/omni_minus_cc.png")
-
 
 # 4. Upset Plots Each tool with Ramilowski
 ramilowski_sig <- sig_list %>%
@@ -159,7 +147,7 @@ random_sig <- sig_list %>%
   map(function(tool)
     tool %>%
       pluck("Random")) %>%
-  purrr::list_modify("Squidpy" = NULL) %>%
+  purrr::list_modify("Squidpy" = NULL) %>% # no random net for squidpy
   prepForUpset()
 
 
