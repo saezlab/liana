@@ -53,7 +53,9 @@ Depends:
     reticulate,
     BiRewire,
     yardstick,
-    magrittr
+    magrittr,
+    UpSetR,
+    RColorBrewer
 Suggests:
     knitr,
     rmarkdown,

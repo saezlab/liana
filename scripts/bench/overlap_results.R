@@ -4,8 +4,10 @@ library(jaccard)
 library(UpSetR)
 library(pheatmap)
 library(jaccard)
-source("R/plot_utils.R")
-
+library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
+# library(viridis)
 
 # Load results
 squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds") %>%
@@ -24,8 +26,8 @@ cellchat_sig <- cellchat_results  %>%
     map(function(res){
         res %>%
         filter(pval <= 0.01) %>%
-        # mutate(prank = percent_rank(dplyr::desc(prob))) %>%
-        # filter(prank <= 0.05) %>%
+        mutate(prank = percent_rank(dplyr::desc(prob))) %>%
+        filter(prank <= 0.05) %>%
             as_tibble()})
 
 squidpy_sig <- squidpy_results %>%
@@ -63,7 +65,6 @@ italk_sig <- italk_results %>%
     })
 
 
-source("R/connectome_pipe.R")
 conn_sig <- conn_results %>%
     map(function(res){
         res %>% FormatConnectome(max.p = 0.05,
@@ -74,7 +75,12 @@ conn_sig <- conn_results %>%
     })
 
 
-# Significant Hits
+
+# I. Overlap
+
+# 1. UpSet Plots and Heatmaps by Tool
+# Significant Hits for each tool
+# using specificity measures wheere available (and ranking if necessary)
 sig_list <- list("CellChat" = cellchat_sig,
                  "Squidpy" = squidpy_sig,
                  "NATMI" = natmi_sig,
@@ -82,39 +88,62 @@ sig_list <- list("CellChat" = cellchat_sig,
                  "Connectome" = conn_sig,
                  "iTALK" = italk_sig)
 
+# binarize significant results and bind to the same matrix for each tool
 binary_prep <- sig_list %>%
   map(function(df) prepForUpset(df))
 
-# I. Simple Overlap
-# 1. UpSet Plots and Heatmaps by Tool
-# SquidPy
-plotSaveUset(binary_prep$Squidpy,
-             "output/benchmark/overlap_plots/squidpy_upset.png")
 
-heatm_test <- binary_prep$Squidpy %>%
-  as_tibble() %>%
-  column_to_rownames("interaction") %>%
-  pheatmap(.,
-           cluster_rows = FALSE,
-           cluster_cols = TRUE,
-           treeheight_col = 0,
-           treeheight_row = 0,
-           display_numbers = FALSE,
-           silent = TRUE,
-           show_rownames = FALSE
-           )
-
-# CellChat
-plotSaveUset(binary_prep$CellChat,
-             "output/benchmark/overlap_plots/cellchat_upset.png")
+names(binary_prep) %>%
+  map(function(l_name){
+    plotSaveUset(binary_prep[[l_name]],
+                str_glue("output/benchmark/overlap_plots/upset_tools/{l_name}_upset.png"))
+  })
 
 
+# 2. Combine all binary results into heatmap
+binary_heatm <- get_BigHeat(sig_list,
+                            display_numbers = FALSE,
+                            silent = FALSE,
+                            show_rownames = FALSE,
+                            show_colnames = FALSE,
+                            legend_breaks = 0:1,
+                            fontsize = 18,
+                            drop_levels = TRUE,
+                            cluster_rows = TRUE,
+                            cluster_cols = TRUE,
+                            color = c("gray15", "darkslategray2"),
+                            border_color = NA,
+                            clustering_distance_rows = "binary",
+                            clustering_distance_cols = "binary",
+                            treeheight_row = 0)
 
-plotSaveUset(binary_prep$SCA,
-             "output/benchmark/overlap_plots/sca_upset.png")
 
 
-# 2. Upset Plots Each with Default Resource
+# 3. Upset Plots by Resource
+sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
+cellphonedb_sig <- sig_list %>%
+  map(function(tool)
+    tool %>%
+      pluck("CellPhoneDB")) %>%
+  prepForUpset()
+
+
+
+
+
+
+
+
+
+default_sig <- sig_list %>%
+  map(function(tool)
+    tool %>% pluck("Default")) %>%
+  prepForUpset()
+
+
+
+
+
 default_sig <- sig_list %>%
   map(function(tool)
     tool %>% pluck("Default")) %>%
@@ -185,7 +214,15 @@ plotSaveUset(cellchatdb_sig,
 
 
 
-# 8. Get all Data combined
+
+
+
+
+
+
+
+
+# Combine all
 comb <- list("CellChat" = cellchat_results,
              "Squidpy" = squidpy_results,
              "NATMI" = natmi_results,
@@ -193,10 +230,12 @@ comb <- list("CellChat" = cellchat_results,
              "SCA" = sca_results,
              "Connectome" = conn_results %>%
                map(function(res){
-               res %>%
+                 res %>%
                    FormatConnectome(., remove.na = TRUE) %>%
                    as_tibble()
-             }))
+               }))
+
+
 
 lnames <- map(names(comb), function(l_name){
   map(names(comb[[l_name]]), function(r_name){
@@ -211,6 +250,14 @@ names(comb)
 
 library(sparsepca)
 library(M3C)
+
+
+
+
+pca(all_sig,
+    labels=xd,
+    legendtextsize = 10,axistextsize = 10,dotsize=2)
+
 
 comb$Connectome$Random %>%
   mutate(x = (.[, 5] - mean(.[, 6])) / sd(.[, 6]))
@@ -266,4 +313,10 @@ tmp <- sig_list %>%
   select(name, proportions)
 
 tmp
+
+
+
+
+
+
 
