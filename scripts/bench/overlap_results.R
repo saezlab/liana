@@ -10,8 +10,7 @@ library(RColorBrewer)
 # library(viridis)
 
 # Load results
-squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds") %>%
-    plyr::rename(., c("CellPhoneDB" = "Default"))
+squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds")
 cellchat_results <- readRDS("output/benchmark/main_run/cellchat_full.rds")
 natmi_results <- readRDS("output/benchmark/main_run/natmi_full.rds")  %>%
     purrr::list_modify("lrc2a" = NULL) %>%
@@ -37,7 +36,6 @@ squidpy_sig <- squidpy_results %>%
             filter(pvalue <= 0.05) %>%
             as_tibble()})
 
-
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
@@ -46,14 +44,12 @@ natmi_sig <- natmi_results %>%
             as_tibble()
         })
 
-
 sca_sig <- sca_results %>%
     map(function(res){
     res %>%
         filter(LRscore >= 0.5) %>% # this is the threshold that they use when they compare
         as_tibble()
         })
-
 
 italk_sig <- italk_results %>%
     map(function(res){
@@ -63,7 +59,6 @@ italk_sig <- italk_results %>%
             filter(prank < 0.01) %>%
             as_tibble()
     })
-
 
 conn_sig <- conn_results %>%
     map(function(res){
@@ -87,17 +82,17 @@ sig_list <- list("CellChat" = cellchat_sig,
                  "SCA" = sca_sig,
                  "Connectome" = conn_sig,
                  "iTALK" = italk_sig)
+# Assign "Default" to CellPhoneDB
+sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
+
 
 # binarize significant results and bind to the same matrix for each tool
-binary_prep <- sig_list %>%
-  map(function(df) prepForUpset(df))
+# then generate UpsetPlots
+names(sig_list) %>%
+  map(function(m_name) sig_list[[m_name]] %>%
+        prepForUpset() %>%
+        plotSaveUset(str_glue("output/benchmark/overlap_plots/upset_tools/{m_name}_upset.png")))
 
-
-names(binary_prep) %>%
-  map(function(l_name){
-    plotSaveUset(binary_prep[[l_name]],
-                str_glue("output/benchmark/overlap_plots/upset_tools/{l_name}_upset.png"))
-  })
 
 
 # 2. Combine all binary results into heatmap
@@ -120,97 +115,16 @@ binary_heatm <- get_BigHeat(sig_list,
 
 
 # 3. Upset Plots by Resource
-sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
-cellphonedb_sig <- sig_list %>%
-  map(function(tool)
-    tool %>%
-      pluck("CellPhoneDB")) %>%
-  prepForUpset()
+# assign CellPhoneDB to Squidpy default
+sig_list_resource <- get_swapped_list(sig_list)
 
-
-
-
-
-
-
-
-
-default_sig <- sig_list %>%
-  map(function(tool)
-    tool %>% pluck("Default")) %>%
-  prepForUpset()
-
-
-
-
-
-default_sig <- sig_list %>%
-  map(function(tool)
-    tool %>% pluck("Default")) %>%
-  prepForUpset()
-
-plotSaveUset(default_sig,
-             "output/benchmark/overlap_plots/default_sig.png")
-
-
-
-# 3. Upset Plots Each tool with OmniPath
-omni_sig <- sig_list %>%
-  map(function(tool)
-    tool %>% pluck("OmniPath")) %>%
-  prepForUpset()
-
-plotSaveUset(omni_sig,
-             "output/benchmark/overlap_plots/omni_sig.png")
-
-
-# 4. Upset Plots Each tool with Ramilowski
-ramilowski_sig <- sig_list %>%
-  map(function(tool)
-    tool %>% pluck("Ramilowski2015")) %>%
-  prepForUpset()
-
-plotSaveUset(ramilowski_sig,
-             "output/benchmark/overlap_plots/ramilowski_sig.png")
-
-
-# 5. Upset Plots Each tool with Random
-random_sig <- sig_list %>%
-  map(function(tool)
-    tool %>%
-      pluck("Random")) %>%
-  purrr::list_modify("Squidpy" = NULL) %>% # no random net for squidpy
-  prepForUpset()
-
-
-plotSaveUset(random_sig,
-             "output/benchmark/overlap_plots/random_sig.png")
-
-
-# 6. Upset Plots Each tool with CellPhoneDB
-sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
-cellphonedb_sig <- sig_list %>%
-  map(function(tool)
-    tool %>%
-      pluck("CellPhoneDB")) %>%
-  prepForUpset()
-
-
-plotSaveUset(cellphonedb_sig,
-             "output/benchmark/overlap_plots/cellphonedb_sig.png")
-
-
-# 7. Upset Plots Each tool with CellChatDB
-cellchatdb_sig <- sig_list %>%
-  map(function(tool)
-    tool %>%
-      pluck("CellChatDB")) %>%
-  # purrr::list_modify("CellChat" = NULL) %>%
-  prepForUpset()
-
-
-plotSaveUset(cellchatdb_sig,
-             "output/benchmark/overlap_plots/cellchatdb_sig.png")
+# Plot and Save Upsets
+names(sig_list_resource) %>%
+  map(function(r_name)
+    sig_list_resource[[r_name]] %>%
+        prepForUpset() %>%
+      plotSaveUset(str_glue("output/benchmark/overlap_plots/upset_resources/{r_name}_upset.png"))
+  )
 
 
 
@@ -222,7 +136,12 @@ plotSaveUset(cellchatdb_sig,
 
 
 
-# Combine all
+
+
+
+
+
+# Combine all (non-binary)
 comb <- list("CellChat" = cellchat_results,
              "Squidpy" = squidpy_results,
              "NATMI" = natmi_results,

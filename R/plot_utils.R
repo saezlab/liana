@@ -42,6 +42,10 @@ plotSaveUset <- function(upset_df, dir){
 #' @inheritDotParams pheatmap::pheatmap
 get_BigHeat <- function(sig_list,
                         ...){
+
+  require(pheatmap)
+  require(RColorBrewer)
+
   # remove OmniPath and Random resources, as they are much larger than the
   # rest of the resources and result in too much sparsity to get meaningful
   # clusters not completely align to them.
@@ -100,3 +104,37 @@ get_BigHeat <- function(sig_list,
 }
 
 
+#' Helper function to Swap Nested Lists
+#' @param sig_list named list of significant hits. Named list of methods with
+#' each element being a named list of resources
+#' @return A list of resources with each element being a named list of methods
+#'
+#' @details Swap from nested resource lists to nested method lists,
+#'  previously the resources were nested by method, this returns the opposite
+get_swapped_list <- function(sig_list){
+
+  sig_df <- sig_list %>%
+    enframe() %>%
+    unnest(value) %>%
+    mutate(name = map(names(sig_list), # get combined method and resource names
+                      function(m_name){
+                        map(names(sig_list[[m_name]]),
+                            function(r_name){
+                              str_glue("{m_name}_{r_name}")
+                            })
+                      }) %>% unlist()) %>%
+    separate(name, into = c("method", "resource")) %>%
+    mutate(value = value %>% setNames(method)) %>%
+    group_by(resource)
+
+  # Keep names of resources
+  sig_resource_names <- group_keys(sig_df) %>%
+    pull(resource)
+
+  sig_list_resource <- sig_df %>%
+    group_split() %>%
+    map(function(r_list) # get only list values from resource lists
+      r_list %>%
+        pull(value)) %>%
+    setNames(sig_resource_names)
+}
