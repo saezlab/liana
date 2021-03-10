@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_omnipath.R
 \name{get_omni_resources}
 \alias{get_omni_resources}
-\title{Function to call OmniPath resources}
+\title{Function to get intercell resources as in OmniPath}
 \usage{
 get_omni_resources()
 }
@@ -10,5 +10,5 @@ get_omni_resources()
 A list with intercellular resources from OmniPath
 }
 \description{
-Function to call OmniPath resources
+Function to get intercell resources as in OmniPath
 }

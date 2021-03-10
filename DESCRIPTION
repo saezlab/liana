@@ -55,7 +55,8 @@ Depends:
     yardstick,
     magrittr,
     UpSetR,
-    RColorBrewer
+    RColorBrewer,
+    ggfortify
 Suggests:
     knitr,
     rmarkdown,

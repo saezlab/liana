@@ -138,3 +138,64 @@ get_swapped_list <- function(sig_list){
         pull(value)) %>%
     setNames(sig_resource_names)
 }
+
+
+
+
+#' PCA plot for Cell type/cluster pair frequency for 'significant/top' hits
+#' @param sig_list named list of significant hits. Named list of methods with
+#' each element being a named list of resources
+#' @return A ggplot2 object
+#' @import ggfortify ggplot2 RColorBrewer
+plot_freq_pca <- function(sig_list){
+  require(ggfortify)
+
+  # get cell type pair frequency for sig. hits
+  freq_df <- sig_list %>%
+    enframe() %>%
+    unnest(value) %>%
+    mutate(name = map(names(sig_list), # get combined method and resource names
+                      function(m_name){
+                        map(names(sig_list[[m_name]]),
+                            function(r_name){
+                              str_glue("{m_name}_{r_name}")
+                            })
+                      }) %>% unlist()) %>%
+    mutate(value = value %>%
+             map(function(res) res %>%
+                   unite(source, target, col = "clust_pair") %>%
+                   group_by(clust_pair) %>%
+                   summarise(cn = n()) %>%
+                   mutate(freq = cn / sum(cn)) %>%
+                   select(clust_pair, freq)
+             )) %>%
+    unnest(value)
+
+
+  # format to df with frequencies and
+  # Resource and Method columns as factors
+  cell_pair_frequency <- freq_df %>%
+    pivot_wider(names_from = clust_pair, values_from = freq, id_cols = name,
+                values_fill = 0) %>%
+    as.data.frame() %>%
+    separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
+    mutate(Method = factor(Method, # prevent ggplot2 from rearranging
+                           levels = c("CellChat", "Squidpy", "NATMI",
+                                      "SCA", "Connectome", "iTALK"))) %>%
+    mutate(Resource = factor(Resource)) %>%
+    column_to_rownames("name")
+
+
+  # get PCs
+  pca_res <- prcomp(cell_pair_frequency[3:ncol(cell_pair_frequency)])
+
+  # frequency plot
+  pca_freq <- autoplot(pca_res, data = cell_pair_frequency,
+                       colour = "Method", shape = "Resource",
+                       size = 6, position = "jitter") +
+    scale_color_manual(values=brewer.pal(6, "Dark2")) + theme_bw(base_size = 26) +
+    scale_shape_manual(values=1:nlevels(cell_pair_frequency$Resource))
+
+  return(pca_freq)
+}
+

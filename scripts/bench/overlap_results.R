@@ -2,10 +2,8 @@
 library(pheatmap)
 library(jaccard)
 library(UpSetR)
-library(pheatmap)
 library(jaccard)
 library(tidyverse)
-library(pheatmap)
 library(RColorBrewer)
 # library(viridis)
 
@@ -130,18 +128,11 @@ names(sig_list_resource) %>%
 
 
 
+# 4. Sig/Top Hits per Cell Pairs PCA
+plot_freq_pca(sig_list)
 
 
-
-
-
-
-
-
-
-
-
-# Combine all (non-binary)
+# 5. Combine all (non-binary)
 comb <- list("CellChat" = cellchat_results,
              "Squidpy" = squidpy_results,
              "NATMI" = natmi_results,
@@ -167,23 +158,6 @@ comb <- comb %>% purrr::flatten() %>%
 names(comb)
 
 
-library(sparsepca)
-library(M3C)
-
-
-
-
-pca(all_sig,
-    labels=xd,
-    legendtextsize = 10,axistextsize = 10,dotsize=2)
-
-
-comb$Connectome$Random %>%
-  mutate(x = (.[, 5] - mean(.[, 6])) / sd(.[, 6]))
-
-mean(comb$Connectome$Random$weight_norm)
-
-
 tmp <- map(names(comb),
            function(l_name){
              comb[[l_name]] %>%
@@ -203,36 +177,6 @@ head(tmp)
 tmp <- tmp %>% column_to_rownames("interaction") %>% select(3:15)
 pca(tmp, labels=colnames(tmp),legendtextsize = 10,axistextsize = 10,dotsize=2)
 tmp
-
-tmp %>% column_to_rownames("interaction")
-umap(pollen$data,colvec=c('skyblue'))
-
-
-
-
-iris.data = iris[, grep("Sepal|Petal", colnames(iris))]
-iris.labels = iris[, "Species"]
-library(umap)
-iris.umap = umap(iris.data)
-
-iris.umap.learn = umap(iris.data, method="umap-learn")
-
-
-# Overlap Scaled by Sig. Hits from SquidPy
-tmp <- sig_list %>%
-  map(function(db)
-    db %>%
-      pluck("Default")) %>%
-  map(function(tool) tool %>%
-        select(source, target)) %>%
-  enframe() %>%
-  mutate(proportions = value %>%
-           map(function(cols) cols %>%
-                 unite(source, target, col = "pairs"))) %>%
-  select(name, proportions)
-
-tmp
-
 
 
 
