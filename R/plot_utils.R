@@ -152,24 +152,7 @@ plot_freq_pca <- function(sig_list){
 
   # get cell type pair frequency for sig. hits
   freq_df <- sig_list %>%
-    enframe() %>%
-    unnest(value) %>%
-    mutate(name = map(names(sig_list), # get combined method and resource names
-                      function(m_name){
-                        map(names(sig_list[[m_name]]),
-                            function(r_name){
-                              str_glue("{m_name}_{r_name}")
-                            })
-                      }) %>% unlist()) %>%
-    mutate(value = value %>%
-             map(function(res) res %>%
-                   unite(source, target, col = "clust_pair") %>%
-                   group_by(clust_pair) %>%
-                   summarise(cn = n()) %>%
-                   mutate(freq = cn / sum(cn)) %>%
-                   select(clust_pair, freq)
-             )) %>%
-    unnest(value)
+    get_binary_frequencies()
 
 
   # format to df with frequencies and
@@ -199,3 +182,29 @@ plot_freq_pca <- function(sig_list){
   return(pca_freq)
 }
 
+
+#' Get binary activity frequencies per cell-cell pair
+#' @param sig_list named list of significant hits. Named list of methods with
+#' each element being a named list of resources
+#' @return A tibble of cell pair frequencies, based on binarized activity
+get_binary_frequencies <- function(sig_list){
+  sig_list %>%
+    enframe() %>%
+    unnest(value) %>%
+    mutate(name = map(names(sig_list), # get combined method and resource names
+                      function(m_name){
+                        map(names(sig_list[[m_name]]),
+                            function(r_name){
+                              str_glue("{m_name}_{r_name}")
+                            })
+                      }) %>% unlist()) %>%
+    mutate(value = value %>%
+             map(function(res) res %>%
+                   unite(source, target, col = "clust_pair") %>%
+                   group_by(clust_pair) %>%
+                   summarise(cn = n()) %>%
+                   mutate(freq = cn / sum(cn)) %>%
+                   select(clust_pair, freq)
+             )) %>%
+    unnest(value)
+}

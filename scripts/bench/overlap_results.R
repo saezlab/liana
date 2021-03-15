@@ -8,7 +8,11 @@ library(RColorBrewer)
 # library(viridis)
 
 # Load results
-squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds")
+squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds") %>%
+  map(function(ll) ll %>%
+        mutate(source = as.character(str_glue("c{source}")),
+               target = as.character(str_glue("c{target}")))
+      )# issue with clust names
 cellchat_results <- readRDS("output/benchmark/main_run/cellchat_full.rds")
 natmi_results <- readRDS("output/benchmark/main_run/natmi_full.rds")  %>%
     purrr::list_modify("lrc2a" = NULL) %>%
@@ -30,7 +34,6 @@ cellchat_sig <- cellchat_results  %>%
 squidpy_sig <- squidpy_results %>%
     map(function(res){
         res %>%
-        mutate(source = str_glue("c{source}")) %>%
             filter(pvalue <= 0.05) %>%
             as_tibble()})
 
@@ -93,6 +96,7 @@ names(sig_list) %>%
 
 
 
+
 # 2. Combine all binary results into heatmap
 binary_heatm <- get_BigHeat(sig_list,
                             display_numbers = FALSE,
@@ -123,8 +127,6 @@ names(sig_list_resource) %>%
         prepForUpset() %>%
       plotSaveUset(str_glue("output/benchmark/overlap_plots/upset_resources/{r_name}_upset.png"))
   )
-
-
 
 
 
