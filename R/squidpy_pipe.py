@@ -9,7 +9,7 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
      Parameters
         ----------
         op_resource
-            OmniPath database to use in LR inference
+            OmniPath database resource to use in LR inference
         adata_seurat
             Anndata/ScanPy clustering object
         ident
@@ -17,22 +17,24 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
         Returns
             A LigRec Results Object"""
     try:
-        res_filt = None if op_resource == "OmniPath" else op_resource
-
-        y = sp.gr.ligrec(adata_seurat, ident,
-                         fdr_method=None, copy=True,
-                         interactions_params={"resources": res_filt},
-                         transmitter_params={"categories": "ligand", "resources": res_filt},
-                         receiver_params={"categories": "receptor", "resources": res_filt},
-                         threshold=0.1, seed=1004, n_perms=10000, n_jobs=1, corr_method = "fdr_bh") # should replace with kwargs and elipses
-        return y
-    except ValueError:
+        res = sp.gr.ligrec(
+            adata_seurat,
+            ident,
+            fdr_method=None, copy=True,
+            interactions=op_resource,
+            # corr_method = "fdr_bh",
+            threshold=0.1, seed=1004,
+            n_perms=100, n_jobs=1 
+            ) # should replace with kwargs and elipses
+        return res
+    except ValueError as e:
+        print(e)
         print(op_resource)
         return None
 
 
 def get_ligrec(intercell_resources, adata_seurat, ident):
-    return dict(map(lambda x: (x, get_squidpy_res(x, adata_seurat, ident)), intercell_resources))
+    return list(map(lambda x: (x, get_squidpy_res(x, adata_seurat, ident)), intercell_resources))
 
 
 def reformat(x):
@@ -81,7 +83,8 @@ def call_squidpy(intercell_resources,
     """Call Squidpy
          Parameters
         ----------
-        intercell_resources,
+        intercell_resources
+            List with OmniPath resources
 
         exprs
             Expression Matrix
@@ -97,12 +100,14 @@ def call_squidpy(intercell_resources,
         Returns
             Two lists: One with LR interaction pvalue results for each resource, and one with means.
     """
-    intercell_resources = list(intercell_resources)
+    # intercell_resources = list(intercell_resources)
+
     adata_seurat = convert_anndata(exprs, meta, feature_meta, embedding)
     # call squidpy
     squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
+    print(squidpy_res)
 
-    squidpy_pvalues = list(map(lambda x: reformat(squidpy_res[x]["pvalues"]), intercell_resources))
-    squidpy_means = list(map(lambda x: reformat(squidpy_res[x]["means"]), intercell_resources))
+    squidpy_pvalues = list(map(lambda x: reformat(x[1]["pvalues"]), squidpy_res))
+    squidpy_means = list(map(lambda x: reformat(x[1]["means"]), squidpy_res))
 
     return {"pvalues": squidpy_pvalues, "means": squidpy_means}

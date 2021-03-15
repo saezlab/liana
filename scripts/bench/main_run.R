@@ -1,8 +1,3 @@
-# Load prerequisites
-library(tidyverse)
-library(Seurat)
-library(reticulate)
-
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
 # Fix for NATMI
@@ -19,16 +14,15 @@ breast_cancer <- RenameIdents(breast_cancer, clust.anns)
 # saveRDS(omni_resources, "input/omni_resources.rds")
 # omni_resources <- readRDS("input/omni_resources.rds")
 
-
 # Get Full Omni Resources
 omni_resources <- compile_ligrec()
-
 
 
 # Get Random DB
 op_random <- shuffle_omnipath(omni_resources$OmniPath)
 
 # Append shuffled omni db and default to omni_resources
+# to be included in omni format function
 omni_resources_plus <- append(list("Random" = op_random,
                                    "Default" = NULL),
                               omni_resources)
@@ -38,7 +32,7 @@ omni_resources_plus <- append(list("Random" = op_random,
 squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
-                                 ident = "seurat_clusters")
+                                 .ident = "seurat_clusters")
 # saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
 
 
@@ -62,7 +56,7 @@ natmi_results <- call_natmi(omni_resources = omni_resources_plus,
 
 # 3. CellChat -----------------------------------------------------------------
 cellchat_results <- omni_resources_plus %>%
-    map(function(db) call_cellchat(db,
+    map(function(db) call_cellchat(op_resource = db,
                                   seurat_object = breast_cancer,
                                   nboot = 100,
                                   exclude_anns = c(),

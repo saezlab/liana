@@ -7,12 +7,12 @@
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #' Stats:
 #' Mean expr
-#' pval
+#' pval from shuffle clusts
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          ident = "seurat_annotations"){
+                          .ident = "seurat_annotations"){
 
     # prep seurat data for transfer
     exprs <- GetAssayData(seurat_object)
@@ -24,15 +24,20 @@ call_squidpyR <- function(seurat_object,
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
+    op_resources <- map(omni_resources, function(x) x %>%
+                              select(source = source_genesymbol,
+                                     target = target_genesymbol)) %>%
+        unname()
+
     # Call Squidpy
-    reticulate::source_python("scripts/pipes/squidpy_pipe.py")
+    reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
-    py$squidpy_results <- py$call_squidpy(names(omni_resources),
+    py$squidpy_results <- py$call_squidpy(op_resources,
                                           exprs,
                                           meta,
                                           feature_meta,
                                           embedding,
-                                          ident)
+                                          .ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
     squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
@@ -49,7 +54,6 @@ call_squidpyR <- function(seurat_object,
                 rename(ligand = source,
                        receptor = target) %>%
                 separate(pair, sep = "_", into=c("source", "target")))
-
 
     return(squidpy_results)
 }
