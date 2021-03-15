@@ -7,6 +7,9 @@ clust.anns <- c("c0", "c1","c2",
                 "c9", "c10", "c11", "c12")
 names(clust.anns) <- levels(breast_cancer)
 breast_cancer <- RenameIdents(breast_cancer, clust.anns)
+breast_cancer@meta.data <- breast_cancer@meta.data %>%
+    mutate(seurat_clusters = as.factor(str_glue("c{seurat_clusters}")))
+Idents(breast_cancer)
 
 # Get Omni Resrouces
 # source("scripts/utils/get_omnipath.R")
@@ -16,7 +19,6 @@ breast_cancer <- RenameIdents(breast_cancer, clust.anns)
 
 # Get Full Omni Resources
 omni_resources <- compile_ligrec()
-
 
 # Get Random DB
 op_random <- shuffle_omnipath(omni_resources$OmniPath)
@@ -30,7 +32,7 @@ omni_resources_plus <- append(list("Random" = op_random,
 
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
-                                 omni_resources = omni_resources,
+                                 omni_resources = omni_resources_plus,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  .ident = "seurat_clusters")
 # saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
@@ -38,9 +40,9 @@ squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format
-# omni_to_NATMI(omni_resources = omni_resources,
-              # omni_path = "input/omnipath_NATMI")
-py_set_seed(1004)
+omni_to_NATMI(omni_resources = omni_resources,
+              omni_path = "input/omnipath_NATMI")
+
 natmi_results <- call_natmi(omni_resources = omni_resources_plus,
                             seurat_object = breast_cancer,
                             omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
@@ -52,6 +54,7 @@ natmi_results <- call_natmi(omni_resources = omni_resources_plus,
                             .subsampling_pipe = FALSE
                             )
 # saveRDS(natmi_results, "output/benchmark/main_run/natmi_full.rds")
+xd <- FormatNatmi("~/Repos/ligrec_decoupleR/output/benchmark/natmi_full", TRUE)
 
 
 # 3. CellChat -----------------------------------------------------------------

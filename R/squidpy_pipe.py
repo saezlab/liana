@@ -24,7 +24,7 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
             interactions=op_resource,
             # corr_method = "fdr_bh",
             threshold=0.1, seed=1004,
-            n_perms=100, n_jobs=1 
+            n_perms=10000, n_jobs=1 
             ) # should replace with kwargs and elipses
         return res
     except ValueError as e:
@@ -100,13 +100,12 @@ def call_squidpy(intercell_resources,
         Returns
             Two lists: One with LR interaction pvalue results for each resource, and one with means.
     """
-    # intercell_resources = list(intercell_resources)
-
+    
     adata_seurat = convert_anndata(exprs, meta, feature_meta, embedding)
     # call squidpy
     squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
-    print(squidpy_res)
-
+    
+    # reformat results
     squidpy_pvalues = list(map(lambda x: reformat(x[1]["pvalues"]), squidpy_res))
     squidpy_means = list(map(lambda x: reformat(x[1]["means"]), squidpy_res))
 

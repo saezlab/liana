@@ -38,6 +38,7 @@
 #'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
 #'  divided by the sum of the mean expression of that ligand/receptor across all cell types
 #'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
+#'  @import rprojroot
 call_natmi <- function(omni_resources,
                        seurat_object = NULL,
                        omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
@@ -47,10 +48,12 @@ call_natmi <- function(omni_resources,
                        output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
                        .format = TRUE,
                        .write_data = FALSE,
-                       .subsampling_pipe = FALSE){
+                       .subsampling_pipe = FALSE,
+                       .seed = 1004){
 
-    library(rprojroot)
+    require(rprojroot)
     project_rootdir <- find_rstudio_root_file()
+    py_set_seed(.seed)
 
     if(.subsampling_pipe){
         em_path = str_split_helper(em_path, seurat_object@project.name)
@@ -70,6 +73,9 @@ call_natmi <- function(omni_resources,
                       enframe(name="barcode", value="annotation"),
                   file = ann_path,
                   row.names = FALSE)
+
+        message(str_glue("Saving resources to {omnidbs_path}"))
+        omni_to_NATMI(omnidbs_path)
     }
 
     message(str_glue("Output to be saved and read from {output_path}"))
@@ -87,7 +93,11 @@ call_natmi <- function(omni_resources,
     # append default resources to OmniPath ones
     if("DEFAULT" %in% toupper(names(omni_resources))){
         omni_list <- append(as.list(names(omni_resources)),
-                            list("lrc2p", "lrc2a"))
+                            list(
+                                "lrc2p" #,
+                                 # "lrc2a" contains putative LRs
+                                 )
+                            )
         omni_list <- omni_list %>% purrr::list_modify("Default" = NULL)
     } else{
         omni_list <- as.list(names(omni_resources))
@@ -95,6 +105,9 @@ call_natmi <- function(omni_resources,
 
     # submit native sys requests
     omni_list %>% map(function(resource){
+
+        message(str_glue("Now Running: {resource}"))
+
         system(str_glue("python3 ExtractEdges.py ",
                         "--species human ",
                         "--emFile {em_path} ",
@@ -122,12 +135,12 @@ call_natmi <- function(omni_resources,
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
 
+    omni_resources <- omni_resources %>%
+        purrr::list_modify("Default" = NULL)
+
     names(omni_resources) %>%
         map(function(x){
             write.csv(omni_resources[[x]]  %>%
-                          # filter complexes
-                          filter(entity_type_intercell_source != "complex",
-                                 entity_type_intercell_target != "complex") %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
                           distinct() %>%
@@ -160,7 +173,9 @@ FormatNatmi <- function(output_path, .format){
                           edge_avg_expr = `Edge average expression weight`,
                           edge_specificity = `Edge average expression derived specificity`)
         }), result)) %>%
-        deframe()
+        deframe() %>%
+        purrr::list_modify("lrc2a" = NULL) %>% # remove putative res if present
+        plyr::rename(., c("lrc2p" = "Default")) # change this to default
 }
 
 

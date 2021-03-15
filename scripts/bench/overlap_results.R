@@ -83,8 +83,6 @@ sig_list <- list("CellChat" = cellchat_sig,
                  "SCA" = sca_sig,
                  "Connectome" = conn_sig,
                  "iTALK" = italk_sig)
-# Assign "Default" to CellPhoneDB
-sig_list$Squidpy$CellPhoneDB <- sig_list$Squidpy$Default
 
 
 # binarize significant results and bind to the same matrix for each tool

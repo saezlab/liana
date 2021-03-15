@@ -12,7 +12,8 @@ call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          .ident = "seurat_annotations"){
+                          .ident = "seurat_annotations",
+                          .default = TRUE){
 
     # prep seurat data for transfer
     exprs <- GetAssayData(seurat_object)
@@ -24,10 +25,14 @@ call_squidpyR <- function(seurat_object,
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
+    if("DEFAULT" %in% toupper(names(omni_resources))){
+        omni_resources$Default <- omni_resources$CellPhoneDB
+    }
+
     op_resources <- map(omni_resources, function(x) x %>%
                               select(source = source_genesymbol,
                                      target = target_genesymbol)) %>%
-        unname()
+        unname() # unname list, so that it is passed as list not dict to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
