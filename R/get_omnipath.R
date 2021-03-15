@@ -46,7 +46,6 @@ get_omni_resources <- function(){
     omni_resources <- omni_list %>%
         map(function(x){
             message(x)
-
             if(x!="OmniPath"){
                 x_obj = methods::new("OmniCriteria",
                                      interactions_param=list(resource=x),
@@ -76,18 +75,25 @@ get_omni_resources <- function(){
 #' @details calls on omnipath_intercell, intercell_connections, get_partners,
 #' and intercell_connections
 #' @import magrittr tidyverse
-compile_ligrec <- function(){
+#' @param omni_variants bool whether to get different OmniPath variants (e.g.
+#' _full, based on ligrec resource quality quartile, or if only lig_rec)
+#' @param lr_pipeline bool whether to format for lr_pipeline and remove
+#' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
+compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     # A list of OmniPath variants to be returned
-    omnipath_variants <- list(
-        # OmniPath_full = list(),
-        OmniPath_q50 = list(quality = .5),
-        OmniPath_ligrec = list(ligrec = TRUE),
-        OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
-    )
+    if(omni_variants){
+        omnipath_variants <- list(
+            OmniPath_full = list(),
+            OmniPath_q50 = list(quality = .5),
+            OmniPath_ligrec = list(ligrec = TRUE),
+            OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
+        )
+    } else{
+        omnipath_variants <- list()
+    }
 
-
-    get_lr_resources() %>%
+    omni_resources <- get_lr_resources() %>%
         map(function(resource){
             list(ligands = get_ligands(resource),
                  receptors = get_receptors(resource),
@@ -102,9 +108,26 @@ compile_ligrec <- function(){
                      receptors = do.call(get_receptors, args),
                      connections = do.call(intercell_connections, args))
             }
-        ))
+        )) %>%
+        {
+            if(lr_pipeline) reform_omni(.)
+            else .
+        }
 
+    return(omni_resources)
 }
+
+
+
+#' Helper Function to Reformat Omni_resources for LR Pipeline
+reform_omni <- function(omni_resources){
+    map(omni_resources, function(x) x %>%
+            pluck("connections") %>%
+            distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
+                                  "target_genesymbol"),
+                        .keep_all = TRUE))
+}
+
 
 
 #' Retrieves intercellular interactions from OmniPath
@@ -196,6 +219,7 @@ intercell_connections <- function(resource, ...){
 
 
 #' Retrieves ligands from one ligand receptor resource
+#' @inheritDotParams OmnipathR::intercell_connections
 get_ligands <- function(resource, ...){
 
     get_partners(side = 'ligand', resource = resource, ...)
@@ -204,6 +228,7 @@ get_ligands <- function(resource, ...){
 
 
 #' Retrieves receptors from one ligand-receptor resource
+#' @inheritDotParams OmnipathR::intercell_connections
 get_receptors <- function(resource, ...){
 
     get_partners(side = 'receptor', resource = resource, ...)
@@ -214,6 +239,9 @@ get_receptors <- function(resource, ...){
 
 #' Retrieves intercellular communication partners (ligands or receptors) from
 #' one ligand-receptor resource.
+#' @param side indicates whether ligand or receptor
+#' @param resource Name of current resource (taken from get_lr_resources)
+#' @inheritDotParams OmnipathR::omnipath_intercell
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){
@@ -250,6 +278,9 @@ get_partners <- function(side, resource, ...){
 
 #' Retrieves intercellular communication partners (transmitters or receivers)
 #' from OmniPath
+#' @param side
+#' @param quality
+#' @param ligrec
 omnipath_partners <- function(side,
                               quality = NULL,
                               ligrec = FALSE){

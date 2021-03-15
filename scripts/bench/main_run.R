@@ -3,8 +3,6 @@ library(tidyverse)
 library(Seurat)
 library(reticulate)
 
-sapply(list.files("scripts/pipes/", pattern = ".R", full.names = TRUE), source)
-
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
 # Fix for NATMI
@@ -19,12 +17,15 @@ breast_cancer <- RenameIdents(breast_cancer, clust.anns)
 # source("scripts/utils/get_omnipath.R")
 # omni_resources <- get_omni_resources()
 # saveRDS(omni_resources, "input/omni_resources.rds")
-omni_resources <- readRDS("input/omni_resources.rds")
+# omni_resources <- readRDS("input/omni_resources.rds")
+
+
+# Get Full Omni Resources
+omni_resources <- compile_ligrec()
 
 
 
 # Get Random DB
-source("scripts/utils/shuffle_omnipath.R")
 op_random <- shuffle_omnipath(omni_resources$OmniPath)
 
 # Append shuffled omni db and default to omni_resources
