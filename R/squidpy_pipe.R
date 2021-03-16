@@ -3,11 +3,17 @@
 #' @param omni_resources List of OmniPath resources
 #' @param python_path path to python version to use in reticulate
 #' @param .seed used to python seed
+#' @returns A list of Squidpy results for each resource
+#' @details CellPhoneDB v2 algorithm implementation in Python
+#' Stats:
+#' Mean expr
+#' pval from shuffle clusts
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          ident = "seurat_annotations"){
+                          .ident = "seurat_annotations",
+                          .default = TRUE){
 
     # prep seurat data for transfer
     exprs <- GetAssayData(seurat_object)
@@ -15,18 +21,28 @@ call_squidpyR <- function(seurat_object,
     feature_meta <- GetAssay(seurat_object)[[]]
     embedding <- Embeddings(seurat_object, "umap")
 
+
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
+    if("DEFAULT" %in% toupper(names(omni_resources))){
+        omni_resources$Default <- omni_resources$CellPhoneDB
+    }
+
+    op_resources <- map(omni_resources, function(x) x %>%
+                              select(source = source_genesymbol,
+                                     target = target_genesymbol)) %>%
+        unname() # unname list, so that it is passed as list not dict to Python
+
     # Call Squidpy
-    reticulate::source_python("scripts/pipes/squidpy_pipe.py")
+    reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
-    py$squidpy_results <- py$call_squidpy(names(omni_resources),
+    py$squidpy_results <- py$call_squidpy(op_resources,
                                           exprs,
                                           meta,
                                           feature_meta,
                                           embedding,
-                                          ident)
+                                          .ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
     squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
@@ -43,7 +59,6 @@ call_squidpyR <- function(seurat_object,
                 rename(ligand = source,
                        receptor = target) %>%
                 separate(pair, sep = "_", into=c("source", "target")))
-
 
     return(squidpy_results)
 }

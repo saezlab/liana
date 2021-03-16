@@ -4,6 +4,8 @@
 #' @param exclude_anns Annotation criteria to be excluded
 #' @param nboot number of bootstraps to calculate p-value
 #' @param .format bool whether to format output
+#' @param .normalize # bool whether to normalize non-normalized data with
+#'  internal func
 #' @inheritDotParams CellChat::subsetCommunication
 #' @return A DF of intercellular communication network
 call_cellchat <- function(op_resource,
@@ -13,14 +15,20 @@ call_cellchat <- function(op_resource,
                                            "cell_surface_ligand-receptor"),
                           nboot = 100,
                           assay = "SCT",
+                          .normalize = FALSE,
                           ...
                           ){
-    library(CellChat)
-    library(patchwork)
-    library(ggalluvial)
-    library(igraph)
+    require(CellChat)
+    require(igraph)
+    options(stringsAsFactors = FALSE)
 
-    data.input <- GetAssayData(seurat_object, assay = assay, slot = "data") # normalized data matrix
+    data.input <- as.matrix(GetAssayData(seurat_object,
+                                         assay = assay,
+                                         slot = "data")) # data matrix
+    if(.normalize){
+        data.input <- normalizeData(data.input)
+    }
+
     labels <- Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels)) # create a dataframe of the cell labels
 
@@ -171,9 +179,9 @@ call_cellchat <- function(op_resource,
     ## Compute the communication probability and infer cellular communication network
     # NOTE !!!!! here we might be able to extend it further with OmniPath
     # However, this might be too time-consuming and irrelevant.
-    # cellchat.omni <- projectData(cellchat.omni, PPI.human)
+    cellchat.omni <- projectData(cellchat.omni, PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use=TRUE,
+                                       raw.use=FALSE,
                                        nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups

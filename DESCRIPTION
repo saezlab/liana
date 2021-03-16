@@ -1,19 +1,21 @@
 Package: intercell
 Type: Package
-Title: Cell-cell communication resources and tools
+Title: Cell-cell communication resources and tools benchmark
 Version: 0.0.1
 Authors@R: c(
     person(
         given = "Daniel",
         family = "Dimitrov",
         role = "aut",
-        email = "daniel.dimitrov@uni-heidelberg.de"
+        email = "daniel.dimitrov@uni-heidelberg.de",
+        comment = c(ORCID = "Enter your ORCID")
     ),
     person(
         given = "Charlotte",
         family = "Boys",
         role = c("aut"),
-        email = "mm228@stud.uni-heidelberg.de"
+        email = "mm228@stud.uni-heidelberg.de",
+        comment = c(ORCID = "Enter your ORCID")
     ),
     person(
         given = "Denes",
@@ -21,6 +23,13 @@ Authors@R: c(
         role = c("cre", "aut"),
         email = "turei.denes@gmail.com",
         comment = c(ORCID = "0000-0002-7249-9379")
+    ),
+    person(
+        given = "James",
+        family = "Nagai",
+        role = c("aut"),
+        email = "mm228@stud.uni-heidelberg.de",
+        comment = c(ORCID = "Enter your ORCID")
     ))
 Description: Comparative analysis of cell-cell communication resources and
     cell-cell communication inference tools.
@@ -33,14 +42,21 @@ Depends:
     R(>= 4.0),
     graphics,
     utils,
+    tidyverse,
+    OmnipathR,
+    Connectome,
+    CellChat,
+    iTALK,
+    Seurat,
+    SCAomni,
+    rprojroot,
+    reticulate,
+    BiRewire,
+    yardstick,
     magrittr,
-    purrr,
-    readr,
-    dplyr,
-    rlang,
-    tidyr,
-    ggplot2,
-    OmnipathR
+    UpSetR,
+    RColorBrewer,
+    ggfortify
 Suggests:
     knitr,
     rmarkdown,

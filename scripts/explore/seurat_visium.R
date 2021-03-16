@@ -171,8 +171,6 @@ anchors <- FindTransferAnchors(reference = allen_reference,
 
 labels.assay <- TransferData(anchorset = anchors, refdata = allen_reference$subclass,
                                   weight.reduction = cortex[["pca"]])
-
-
 cortex <- AddMetaData(cortex, metadata = labels.assay)
 
 cortex <- SetIdent(cortex, value = cortex@meta.data$predicted.id)

@@ -1,7 +1,7 @@
 #' Shuffle OmniPath Intercell DB
 #' @param op_resource Intrcell DB to shuffle
 #' @param .seed Value for set.seed
-#' @return
+#' @return A shuffled omnipath-formatted resource
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 
@@ -14,7 +14,7 @@ shuffle_omnipath <- function(op_resource,
 
     op_prep <- op_resource %>%
         filter(entity_type_intercell_source != "complex",
-               entity_type_intercell_target != "complex",) %>%
+               entity_type_intercell_target != "complex") %>%
         select(source_genesymbol, target_genesymbol,
                is_directed, is_stimulation, is_inhibition,
                consensus_direction, consensus_stimulation,
@@ -40,7 +40,7 @@ shuffle_omnipath <- function(op_resource,
                                     delimitators = list(negative = '-1',
                                                         positive = '1'))
     # Jacard dsg
-    message(str_glue("Jaccard index between random and original DB: ",
+    message(str_glue("Jaccard index between random and original resource: ",
                      {birewire.similarity.dsg(op_dsg, random_dsg)}))
 
     # format to OmniPath
@@ -59,6 +59,7 @@ shuffle_omnipath <- function(op_resource,
                genesymbol_intercell_target = target_genesymbol,
                entity_type_intercell_target = "protein",
                sources = "RANDOM",
+               references = "BiRewire",
                entity_type_intercell_source = "protein",
                entity_type_intercell_target)
 
