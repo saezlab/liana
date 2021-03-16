@@ -13,8 +13,8 @@ shuffle_omnipath <- function(op_resource,
     directed_vector <- append(rep(1, stimul_num), rep(-1,100000 - stimul_num) )
 
     op_prep <- op_resource %>%
-        filter(entity_type_intercell_source != "complex",
-               entity_type_intercell_target != "complex") %>%
+        # filter(entity_type_intercell_source != "complex",
+        #        entity_type_intercell_target != "complex") %>%
         select(source_genesymbol, target_genesymbol,
                is_directed, is_stimulation, is_inhibition,
                consensus_direction, consensus_stimulation,
@@ -45,23 +45,28 @@ shuffle_omnipath <- function(op_resource,
 
     # format to OmniPath
     op_random <- random_sif %>%
-        select(source_genesymbol = source,
-               target_genesymbol = target,
-               sign) %>%
-        mutate(is_directed = 1,
-               is_stimulation = if_else(sign==1, 1, 0),
-               consensus_stimulation = if_else(sign==1, 1, 0),
-               is_inhibition = if_else(sign==-1, 1, 0),
-               consensus_inhibition = if_else(sign==-1, 1, 0),
-               category_intercell_source = "ligand",
-               category_intercell_target = "receptor",
-               genesymbol_intercell_source = source_genesymbol,
-               genesymbol_intercell_target = target_genesymbol,
-               entity_type_intercell_target = "protein",
-               sources = "RANDOM",
-               references = "BiRewire",
-               entity_type_intercell_source = "protein",
-               entity_type_intercell_target)
+        select(
+            source,
+            target,
+            sign) %>%
+        mutate(
+            source_genesymbol = source,
+            target_genesymbol = target,
+            is_directed = 1,
+            is_stimulation = if_else(sign==1, 1, 0),
+            consensus_stimulation = if_else(sign==1, 1, 0),
+            is_inhibition = if_else(sign==-1, 1, 0),
+            consensus_inhibition = if_else(sign==-1, 1, 0),
+            category_intercell_source = "ligand",
+            category_intercell_target = "receptor",
+            genesymbol_intercell_source = source_genesymbol,
+            genesymbol_intercell_target = target_genesymbol,
+            entity_type_intercell_target = "protein",
+            sources = "RANDOM",
+            references = "BiRewire",
+            entity_type_intercell_source = "protein",
+            entity_type_intercell_target
+            )
 
 
 }

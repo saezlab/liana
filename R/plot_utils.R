@@ -148,7 +148,6 @@ get_swapped_list <- function(sig_list){
 #' @return A ggplot2 object
 #' @import ggfortify ggplot2 RColorBrewer
 plot_freq_pca <- function(sig_list){
-  require(ggfortify)
 
   # get cell type pair frequency for sig. hits
   freq_df <- sig_list %>%

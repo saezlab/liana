@@ -120,12 +120,19 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
 
 #' Helper Function to Reformat Omni_resources for LR Pipeline
+#' @param omni_resources OmniPath list returned by compile_ligrec
+#' @return A list of OmniPath resources, including OmniPath composite DB,
+#' A reshuffled OmniPath, and a Default with NULL ( tool pipelines run
+#' using their default resource)
 reform_omni <- function(omni_resources){
     map(omni_resources, function(x) x %>%
             pluck("connections") %>%
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
-                        .keep_all = TRUE))
+                        .keep_all = TRUE)) %>%
+        append(list("Random" = shuffle_omnipath(.$connectomeDB2020),
+                    "Default" = NULL),
+               .)
 }
 
 
@@ -213,7 +220,9 @@ intercell_connections <- function(resource, ...){
         entity_type = 'protein',
         ...
     ) %>%
-        as_tibble()
+        as_tibble() %>%
+        mutate(category_intercell_source = "ligand",
+               category_intercell_target = "receptor")
 
 }
 

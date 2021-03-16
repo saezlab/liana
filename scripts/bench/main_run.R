@@ -1,64 +1,37 @@
 # Load Data
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
-# Fix for NATMI
-clust.anns <- c("c0", "c1","c2",
-                "c3","c4","c5",
-                "c6", "c7", "c8",
-                "c9", "c10", "c11", "c12")
-names(clust.anns) <- levels(breast_cancer)
-breast_cancer <- RenameIdents(breast_cancer, clust.anns)
-breast_cancer@meta.data <- breast_cancer@meta.data %>%
-    mutate(seurat_clusters = as.factor(str_glue("c{seurat_clusters}")))
-Idents(breast_cancer)
 
-# Get Omni Resrouces
-# source("scripts/utils/get_omnipath.R")
-# omni_resources <- get_omni_resources()
+# Get Full Omni Resources
+# omni_resources <- compile_ligrec()
 # saveRDS(omni_resources, "input/omni_resources.rds")
 # omni_resources <- readRDS("input/omni_resources.rds")
 
-# Get Full Omni Resources
-omni_resources <- compile_ligrec()
-
-# Get Random DB
-op_random <- shuffle_omnipath(omni_resources$OmniPath)
-
-# Append shuffled omni db and default to omni_resources
-# to be included in omni format function
-omni_resources_plus <- append(list("Random" = op_random,
-                                   "Default" = NULL),
-                              omni_resources)
 
 
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = breast_cancer,
-                                 omni_resources = omni_resources_plus,
+                                 omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  .ident = "seurat_clusters")
-# saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
+saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
 
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format
-omni_to_NATMI(omni_resources = omni_resources,
-              omni_path = "input/omnipath_NATMI")
-
-natmi_results <- call_natmi(omni_resources = omni_resources_plus,
+natmi_results <- call_natmi(omni_resources = omni_resources,
                             seurat_object = breast_cancer,
                             omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
                             natmi_path = "~/Repos/NATMI",
-                            em_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_em_subsample_1.csv",
-                            ann_path = "~/Repos/ligrec_decoupleR/input/natmi_subsample/bc_ann_subsample_1.csv",
+                            em_path = "~/Repos/ligrec_decoupleR/input/bc_em.csv",
+                            ann_path = "~/Repos/ligrec_decoupleR/input/bc_ann.csv",
                             output_path = "~/Repos/ligrec_decoupleR/output/benchmark/natmi_full",
-                            .write_data = FALSE,
+                            .write_data = TRUE,
                             .subsampling_pipe = FALSE
                             )
-# saveRDS(natmi_results, "output/benchmark/main_run/natmi_full.rds")
-xd <- FormatNatmi("~/Repos/ligrec_decoupleR/output/benchmark/natmi_full", TRUE)
-
+saveRDS(natmi_results, "output/benchmark/main_run/natmi_full.rds")
 
 # 3. CellChat -----------------------------------------------------------------
-cellchat_results <- omni_resources_plus %>%
+cellchat_results <- omni_resources %>%
     map(function(db) call_cellchat(op_resource = db,
                                   seurat_object = breast_cancer,
                                   nboot = 100,
@@ -66,9 +39,17 @@ cellchat_results <- omni_resources_plus %>%
                                   thresh = 1,
                                   assay = "SCT",
                                   .normalize = FALSE)) %>%
-    setNames(names(omni_resources_plus))
-# saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
+    setNames(names(omni_resources))
+saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
 
+
+call_cellchat(op_resource = omni_resources$Random,
+              seurat_object = breast_cancer,
+              nboot = 100,
+              exclude_anns = c(),
+              thresh = 1,
+              assay = "SCT",
+              .normalize = FALSE)
 
 
 

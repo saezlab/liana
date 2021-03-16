@@ -12,10 +12,10 @@
 #' if true, we use Seurat object name to modify output and input, so that
 #' each subsampling is saved to a different dir
 #' @return DF with NATMI results
-#' @details This function will take omnipath resources saved to csvs and copy them to the
-#' NATMI dbs folder, then it will natively call the python modules of NATMI
-#' in the NATMI dir and save the output into a specified directory.
-#' It will then load and format the output to a DF.
+#' @details This function will take omnipath resources saved to csvs and copy
+#'  them to the NATMI dbs folder, then it will natively call the python modules
+#'  in the NATMI dir and save the output into a specified directory.
+#'  It will then load and format the output to a DF.
 #'
 #' NB! Please stick to full paths.
 #'
@@ -75,7 +75,7 @@ call_natmi <- function(omni_resources,
                   row.names = FALSE)
 
         message(str_glue("Saving resources to {omnidbs_path}"))
-        omni_to_NATMI(omnidbs_path)
+        omni_to_NATMI(omni_resources, omnidbs_path)
     }
 
     message(str_glue("Output to be saved and read from {output_path}"))
@@ -104,6 +104,7 @@ call_natmi <- function(omni_resources,
     }
 
     # submit native sys requests
+    # Check issue with Default
     omni_list %>% map(function(resource){
 
         message(str_glue("Now Running: {resource}"))
@@ -119,7 +120,7 @@ call_natmi <- function(omni_resources,
     })
 
     # set dir back to project
-    setwd(project_rootdir)
+    setwd(project_rootdir) # possibly hangs here
 
     # load results
     natmi_results <- FormatNatmi(output_path, .format)
@@ -135,12 +136,12 @@ call_natmi <- function(omni_resources,
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
 
-    omni_resources <- omni_resources %>%
+    op_resources <- omni_resources %>%
         purrr::list_modify("Default" = NULL)
 
-    names(omni_resources) %>%
+    names(op_resources) %>%
         map(function(x){
-            write.csv(omni_resources[[x]]  %>%
+            write.csv(op_resources[[x]]  %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
                           distinct() %>%
@@ -155,7 +156,7 @@ omni_to_NATMI <- function(omni_resources,
 #' @param output_path NATMI output path
 #' @param .format bool whether to format output
 #' @return A list of NATMI results per resource loaded from the output directory
-FormatNatmi <- function(output_path, .format){
+FormatNatmi <- function(output_path, .format=TRUE){
     list.files(output_path,
                all.files = TRUE,
                recursive = TRUE,
