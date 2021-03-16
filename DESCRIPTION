@@ -38,20 +38,19 @@ URL: https://omnipathdb.org/
 BugReports: https://github.com/saezlab/Cell_Cell_Investigation/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
+Remotes: Coolgenome/iTALK,
+    msraredon/Connectome,
+    sqjin/CellChat,
+    bioc::3.12/BiRewire
 Depends:
     R(>= 4.0),
     graphics,
     utils,
     tidyverse,
     OmnipathR,
-    Connectome,
-    CellChat,
-    iTALK,
     Seurat,
-    SCAomni,
     rprojroot,
     reticulate,
-    BiRewire,
     yardstick,
     magrittr,
     UpSetR,
