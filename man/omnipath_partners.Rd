@@ -7,6 +7,13 @@ from OmniPath}
 \usage{
 omnipath_partners(side, quality = NULL, ligrec = FALSE)
 }
+\arguments{
+\item{side}{Either "ligand" or "receptor".}
+
+\item{quality}{Numeric: a quality threshold for OmniPath between 0 and 1.}
+
+\item{ligrec}{Use only ligand-receptor interactions from OmniPath.}
+}
 \description{
 Retrieves intercellular communication partners (transmitters or receivers)
 from OmniPath

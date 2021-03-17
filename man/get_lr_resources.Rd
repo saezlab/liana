@@ -7,7 +7,7 @@
 get_lr_resources()
 }
 \value{
-a list of strings for each intercell resource in OmniPath
+A list of strings for each intercell resource in OmniPath
 }
 \description{
 Helper function that returns the name of each intercell resource in OmniPath

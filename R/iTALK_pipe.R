@@ -1,25 +1,34 @@
-#' Function to call iTalk with databases from OmniPath
+#' Run iTALK with OmniPath data
+#'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param assay assay to use from Seurat object
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
 #' @param .deg if is NULL run FindAllMarkers
-#' @inheritDotParams iTALK::rawParse
+# #' @inheritDotParams iTALK::rawParse
+#'
 #' @return An unfiltered iTALK df sorted by relevance
 #'
 #' @details
 #' Stats:
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
-#' @import iTALK Seurat tidyverse
-call_italk <- function(op_resource,
-                       seurat_object,
-                       assay = "SCT",
-                       .format = TRUE,
-                       .DE = FALSE,
-                       .deg = NULL,
-                       ...){
+#'
+# #' @importFrom iTALK rawParse FindLR
+# #' @importFrom Seurat Idents FindAllMarkers GetAssayData
+#' @importFrom magrittr %>%
+#' @importFrom tidyr unite
+#' @importFrom dplyr select rename mutate group_by group_split
+call_italk <- function(
+    op_resource,
+    seurat_object,
+    assay = "SCT",
+    .format = TRUE,
+    .DE = FALSE,
+    .deg = NULL,
+    ...
+){
 
   if(!is.null(op_resource)){
     op_resource <- op_resource %>%
@@ -104,9 +113,12 @@ call_italk <- function(op_resource,
 
 
 
-#' Helper function to filter and format iTalk results
+#' Filter and format iTalk results
+#'
 #' @param italk_res iTalk results object
 #' @param remove.na bool whether to filter NA
+#'
+#' @importFrom tibble tibble
 FormatiTALK <- function(italk_res, remove.na = TRUE){
   italk_res <- tibble(
     'source' = italk_res$cell_from,

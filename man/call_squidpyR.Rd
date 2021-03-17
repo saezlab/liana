@@ -9,7 +9,8 @@ call_squidpyR(
   omni_resources,
   python_path,
   .seed = 1004,
-  ident = "seurat_annotations"
+  .ident = "seurat_annotations",
+  .default = TRUE
 )
 }
 \arguments{
@@ -31,5 +32,5 @@ Call Squidpy Pipeline via reticulate with OmniPath and format results
 CellPhoneDB v2 algorithm implementation in Python
 Stats:
 Mean expr
-pval
+pval from shuffle clusts
 }

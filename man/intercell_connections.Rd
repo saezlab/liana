@@ -6,6 +6,13 @@
 \usage{
 intercell_connections(resource, ...)
 }
+\arguments{
+\item{resource}{Name of the resource. For a full list of resources
+see \code{get_lr_resources}.}
+
+\item{...}{Passed to \code{omnipath_intercell} or
+\code{OmnipathR::import_post_translational_interactions}.}
+}
 \description{
 Retrieves the interactions from one ligand-receptor resource
 }

@@ -34,12 +34,20 @@ plotSaveUset <- function(upset_df, dir){
 
 
 
-
+#' ??? heatmap
+#'
 #' @param sig_list named list of significant hits. Named list of methods with
-#' each element being a named list of resources
-#' @return A pheatmap showing binary overlap between methods and resources
-#' @import pheatmap RColorBrewer
+#'     each element being a named list of resources
 #' @inheritDotParams pheatmap::pheatmap
+#'
+#' @return A pheatmap showing binary overlap between methods and resources
+#'
+#' @importFrom pheatmap pheatmap
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom grDevices colorRampPalette
+#' @importFrom purrr map
+#' @importFrom magrittr %>%
+#' @importFrom stringr str_glue
 get_BigHeat <- function(sig_list,
                         ...){
 

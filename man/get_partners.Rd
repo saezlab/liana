@@ -7,6 +7,19 @@ one ligand-receptor resource.}
 \usage{
 get_partners(side, resource, ...)
 }
+\arguments{
+\item{side}{Either "ligand" or "receptor".}
+
+\item{resource}{Name of the resource. For a full list of resources
+see \code{get_lr_resources}.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=omnipath_intercell]{omnipath_intercell}}
+  \describe{
+    \item{\code{quality}}{Numeric: a quality threshold for OmniPath between 0 and 1.}
+    \item{\code{ligrec}}{Use only ligand-receptor interactions from OmniPath.}
+  }}
+}
 \description{
 Retrieves intercellular communication partners (ligands or receptors) from
 one ligand-receptor resource.

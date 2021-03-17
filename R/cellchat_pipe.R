@@ -6,8 +6,20 @@
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
 #'  internal func
-#' @inheritDotParams CellChat::subsetCommunication
+# #' @inheritDotParams CellChat::subsetCommunication
+#'
 #' @return A DF of intercellular communication network
+#'
+# #' @importFrom CellChat subsetCommunication createCellChat computeCommunProb
+# #' @importFrom CellChat subsetData identifyOverExpressedGenes
+# #' @importFrom CellChat identifyOverExpressedInteractions filterCommunication
+# #' @importFrom Seurat Idents GetAssayData NormalizeData
+#' @importFrom purrr pmap
+#' @importFrom magrittr %>%
+#' @importFrom dplyr select mutate mutate_at distinct_at filter
+#' @importFrom tibble column_to_rownames enframe
+#' @importFrom tidyr unite unnest separate
+#' @importFrom stringr str_glue
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,
@@ -18,19 +30,21 @@ call_cellchat <- function(op_resource,
                           .normalize = FALSE,
                           ...
                           ){
-    require(CellChat)
-    require(igraph)
+
+    stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
 
     data.input <- as.matrix(GetAssayData(seurat_object,
                                          assay = assay,
                                          slot = "data")) # data matrix
     if(.normalize){
+        # function name NormalizeData is not capitalized?
         data.input <- normalizeData(data.input)
     }
 
     labels <- Idents(seurat_object)
-    meta <- data.frame(group = labels, row.names = names(labels)) # create a dataframe of the cell labels
+    # create a dataframe of the cell labels
+    meta <- data.frame(group = labels, row.names = names(labels))
 
     cellchat.omni <- createCellChat(object = data.input,
                                meta = meta,
@@ -202,5 +216,8 @@ call_cellchat <- function(op_resource,
                    pval)
     }
 
+    options(stringsAsFactors = stringsAsFactors)
+
     return(df.omni)
+
 }

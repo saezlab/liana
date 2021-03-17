@@ -14,7 +14,8 @@ call_natmi(
   output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
   .format = TRUE,
   .write_data = FALSE,
-  .subsampling_pipe = FALSE
+  .subsampling_pipe = FALSE,
+  .seed = 1004
 )
 }
 \arguments{
@@ -47,12 +48,11 @@ DF with NATMI results
 Call NATMI Pipeline from R with OmniPath
 }
 \details{
-This function will take omnipath resources saved to csvs and copy them to the
-NATMI dbs folder, then it will natively call the python modules of NATMI
-in the NATMI dir and save the output into a specified directory.
-It will then load and format the output to a DF.
-
-NB! Please stick to full paths.
+This function will take omnipath resources saved to csvs and copy
+    them to the NATMI dbs folder, then it will natively call the Python
+    modules of NATMI in the NATMI dir and save the output into a specified
+    directory. It will then load and format the output to a DF.
+    NB! Please stick to full paths.
 
 NATMI Arguments:
   --interDB INTERDB

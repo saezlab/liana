@@ -2,7 +2,7 @@
 % Please edit documentation in R/NATMI_pipe.R
 \name{FormatNatmi}
 \alias{FormatNatmi}
-\title{Helper function to load NATMI results from folder and format appropriately}
+\title{Load NATMI results from folder and format appropriately}
 \usage{
 FormatNatmi(output_path, .format)
 }
@@ -12,8 +12,9 @@ FormatNatmi(output_path, .format)
 \item{.format}{bool whether to format output}
 }
 \value{
-A list of NATMI results per resource loaded from the output directory
+A list of NATMI results per resource loaded from the output
+    directory.
 }
 \description{
-Helper function to load NATMI results from folder and format appropriately
+Load NATMI results from folder and format appropriately
 }

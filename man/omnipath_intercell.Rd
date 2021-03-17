@@ -6,6 +6,11 @@
 \usage{
 omnipath_intercell(quality = NULL, ligrec = FALSE)
 }
+\arguments{
+\item{quality}{Numeric: a quality threshold for OmniPath between 0 and 1.}
+
+\item{ligrec}{Use only ligand-receptor interactions from OmniPath.}
+}
 \value{
 A tibble with Intercell interactions from OmnIPath
 }

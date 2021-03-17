@@ -1,4 +1,5 @@
 #' Call NATMI Pipeline from R with OmniPath
+#'
 #' @param omni_resources List of OmniPath resources
 #' @param omnidbs_path path of saved omnipath resources
 #' @param natmi_path path of NATMI code and dbs
@@ -9,15 +10,17 @@
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
 #' @param .subsampling_pipe bool whether ran as part of the robustness pipe:
-#' if true, we use Seurat object name to modify output and input, so that
-#' each subsampling is saved to a different dir
-#' @return DF with NATMI results
-#' @details This function will take omnipath resources saved to csvs and copy them to the
-#' NATMI dbs folder, then it will natively call the python modules of NATMI
-#' in the NATMI dir and save the output into a specified directory.
-#' It will then load and format the output to a DF.
+#'     if true, we use Seurat object name to modify output and input, so that
+#'     each subsampling is saved to a different dir
 #'
-#' NB! Please stick to full paths.
+#' @return DF with NATMI results
+#'
+#' @details
+#'     This function will take omnipath resources saved to csvs and copy
+#'     them to the NATMI dbs folder, then it will natively call the Python
+#'     modules of NATMI in the NATMI dir and save the output into a specified
+#'     directory. It will then load and format the output to a DF.
+#'     NB! Please stick to full paths.
 #'
 #' NATMI Arguments:
 #'   --interDB INTERDB
@@ -38,20 +41,25 @@
 #'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
 #'  divided by the sum of the mean expression of that ligand/receptor across all cell types
 #'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
-#'  @import rprojroot
-call_natmi <- function(omni_resources,
-                       seurat_object = NULL,
-                       omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-                       natmi_path = "~/Repos/NATMI",
-                       em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-                       ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-                       output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-                       .format = TRUE,
-                       .write_data = FALSE,
-                       .subsampling_pipe = FALSE,
-                       .seed = 1004){
+#'
+#' @importFrom rprojroot find_rstudio_root_file
+#' @importFrom reticulate py_set_seed
+#' @importFrom stringr str_glue
+#' @importFrom Seurat GetAssayData Idents
+call_natmi <- function(
+    omni_resources,
+    seurat_object = NULL,
+    omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+    natmi_path = "~/Repos/NATMI",
+    em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
+    ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
+    output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+    .format = TRUE,
+    .write_data = FALSE,
+    .subsampling_pipe = FALSE,
+    .seed = 1004
+){
 
-    require(rprojroot)
     project_rootdir <- find_rstudio_root_file()
     py_set_seed(.seed)
 
@@ -151,11 +159,22 @@ omni_to_NATMI <- function(omni_resources,
 }
 
 
-#' Helper function to load NATMI results from folder and format appropriately
+#' Load NATMI results from folder and format appropriately
+#'
 #' @param output_path NATMI output path
 #' @param .format bool whether to format output
-#' @return A list of NATMI results per resource loaded from the output directory
+#'
+#' @return A list of NATMI results per resource loaded from the output
+#'     directory.
+#'
+#' @importFrom tibble enframe deframe
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom dplyr mutate select
+#' @importFrom readr read_csv
+#' @importFrom tidyr separate
 FormatNatmi <- function(output_path, .format){
+
     list.files(output_path,
                all.files = TRUE,
                recursive = TRUE,
@@ -179,11 +198,15 @@ FormatNatmi <- function(output_path, .format){
 }
 
 
-#' Helper function to split and format strings for subsampling
+#' Split and format strings for subsampling
+#'
 #' @param path path to CSV (em/annotations) to split and format to the
-#' current subsampling taken from a seurat object project name
+#'     current subsampling taken from a seurat object project name
 #' @param project_name seurat object project name
+#'
 #' @return Path to save subsampling EM and Annotations
+#'
+#' @importFrom stringr str_split str_glue
 str_split_helper <- function(path, project_name){
     split_path <- str_split(path, pattern = "\\.", n = 2)[[1]][1]
     str_glue("{split_path}_{project_name}.csv")

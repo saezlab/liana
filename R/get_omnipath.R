@@ -284,7 +284,7 @@ intercell_connections <- function(resource, ...){
 
 
 #' Retrieves ligands from one ligand receptor resource
-#' @inheritDotParams OmnipathR::intercell_connections
+#' @inheritDotParams intercell_connections
 get_ligands <- function(resource, ...){
 
     get_partners(side = 'ligand', resource = resource, ...)
@@ -293,7 +293,7 @@ get_ligands <- function(resource, ...){
 
 
 #' Retrieves receptors from one ligand-receptor resource
-#' @inheritDotParams OmnipathR::intercell_connections
+#' @inheritDotParams intercell_connections
 get_receptors <- function(resource, ...){
 
     get_partners(side = 'receptor', resource = resource, ...)
@@ -312,7 +312,7 @@ get_receptors <- function(resource, ...){
 #' @importFrom magrittr %>%
 #' @importFrom dplyr select distinct rename
 #'
-#' @inheritDotParams OmnipathR::omnipath_intercell
+#' @inheritDotParams omnipath_intercell
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){

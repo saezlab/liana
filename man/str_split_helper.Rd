@@ -2,7 +2,7 @@
 % Please edit documentation in R/NATMI_pipe.R
 \name{str_split_helper}
 \alias{str_split_helper}
-\title{Helper function to split and format strings for subsampling}
+\title{Split and format strings for subsampling}
 \usage{
 str_split_helper(path, project_name)
 }
@@ -16,5 +16,5 @@ current subsampling taken from a seurat object project name}
 Path to save subsampling EM and Annotations
 }
 \description{
-Helper function to split and format strings for subsampling
+Split and format strings for subsampling
 }
