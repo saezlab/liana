@@ -19,6 +19,59 @@
 #
 
 
+#' Ligand-receptor resources descriptive plots
+#'
+#' Generates a number of comparative and descriptive plots about
+#' ligand-receptor resources.
+#'
+#' @importFrom rlang %||%
+#' @importFrom magrittr %>% %<>%
+descriptive_plots <- function(ligrec = NULL, outdir = NULL){
+
+    options(intercell.fig_desc_dir = outdir)
+
+    ligrec %<>% `%||%`(compile_ligrec())
+
+    ligrec %>%
+    ligrec_overlap %>%
+    summarize_overlaps %>%
+    total_unique_bar
+
+}
+
+
+#' Makes sure the output directory exists
+#'
+#' @importFrom rlang %||%
+#' @importFrom magrittr %>% %T>%
+ensure_outdir <- function(outdir = NULL){
+
+    outdir %>%
+    `%||%`(options('intercell.fig_desc_dir')[[1]]) %>%
+    `%||%`(file.path('figures', 'descriptive')) %T>%
+    options(intercell.fig_desc_dir = .) %T>%
+    dir.create(showWarnings = FALSE, recursive = TRUE)
+
+}
+
+
+#' Creates a path for a figure output
+#'
+#' @importFrom magrittr %>% %<>%
+figure_path <- function(fname, ...){
+
+    args <- list(...)
+    outdir <- args$outdir
+    args$outdir <- NULL
+    fname %<>% {do.call(sprintf, c(list(.), args))}
+
+    outdir %>%
+    ensure_outdir %>%
+    file.path(fname)
+
+}
+
+
 #' Overlaps between ligand-receptor resources
 #'
 #' Identifies the unique and shared ligands, receptors and interactions
@@ -159,7 +212,7 @@ total_unique_bar <- function(ligrec_olap){
                 theme_bw()
 
             cairo_pdf(
-                sprintf('size_overlap_%s.pdf', label),
+                figure_path('size_overlap_%s.pdf', label),
                 width = 5,
                 height = 8,
                 family = 'DINPro'
