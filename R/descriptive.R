@@ -143,17 +143,20 @@ summarize_overlaps <- function(ligrec_olap){
 
     ligrec_olap %>%
     map(
-        function(data, key){
+        function(data){
             data %>%
             group_by(resource) %>%
             mutate(total = n()) %>%
             ungroup() %>%
             group_by(resource, unique) %>%
-            mutate(n_unique = ifelse(unique, n(), NA)) %>%
+            mutate(
+                n_unique = ifelse(unique, n(), NA),
+                n_shared = ifelse(unique, NA, n())
+            ) %>%
             summarize_all(first) %>%
             ungroup() %>%
-            select(resource, omnipath, total, n_unique) %>%
-            pivot_longer(c(total, n_unique)) %>%
+            select(resource, omnipath, total, n_shared, n_unique) %>%
+            pivot_longer(c(total, n_shared, n_unique)) %>%
             group_by(resource, name) %>%
             mutate(value = max(value, 0, na.rm = TRUE)) %>%
             summarize_all(first) %>%
@@ -176,6 +179,7 @@ summarize_overlaps <- function(ligrec_olap){
 #' @importFrom purrr map2
 #' @importFrom dplyr mutate filter arrange pull
 #' @importFrom ggplot2 ggplot aes geom_col ylab xlab ggtitle theme_bw
+#' @importFrom ggplot2 scale_fill_discrete guide_legend
 #' @importFrom stringr str_to_title
 total_unique_bar <- function(ligrec_olap){
 
@@ -183,7 +187,8 @@ total_unique_bar <- function(ligrec_olap){
         ligrec_olap$connections %>%
         filter(name == 'total') %>%
         arrange(value) %>%
-        pull(resource)
+        pull(resource) %>%
+        unique
 
     ligrec_olap %>%
     map2(
@@ -191,6 +196,7 @@ total_unique_bar <- function(ligrec_olap){
         function(data, label){
 
             data %<>%
+                filter(name != 'total') %>%
                 mutate(
                     resource = factor(
                         resource,
@@ -199,15 +205,20 @@ total_unique_bar <- function(ligrec_olap){
                     ),
                     name = factor(
                         name,
-                        levels = c('total', 'n_unique'),
+                        levels = c('n_shared', 'n_unique'),
                         ordered = TRUE
                     )
                 )
 
             p <- ggplot(data, aes(y = resource, x = value, fill = name)) +
                 geom_col() +
-                ylab('Records') +
-                xlab('Resources') +
+                scale_fill_manual(
+                    values = c('#B3C5E9', '#4268B3'),
+                    label = c(n_shared = 'Shared', n_unique = 'Unique'),
+                    guide = guide_legend(title = '')
+                ) +
+                xlab('Records') +
+                ylab('Resources') +
                 ggtitle(str_to_title(label)) +
                 theme_bw()
 
@@ -221,6 +232,8 @@ total_unique_bar <- function(ligrec_olap){
             print(p)
 
             dev.off()
+
+            return(data)
 
         }
     ) %>%
