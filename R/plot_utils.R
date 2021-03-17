@@ -163,7 +163,7 @@ plot_freq_pca <- function(sig_list){
     separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
     mutate(Method = factor(Method, # prevent ggplot2 from rearranging
                            levels = c("CellChat", "Squidpy", "NATMI",
-                                      "SCA", "Connectome", "iTALK"))) %>%
+                                      "iTALK", "Connectome", "SCA"))) %>%
     mutate(Resource = factor(Resource)) %>%
     column_to_rownames("name")
 

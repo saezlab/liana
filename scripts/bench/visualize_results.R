@@ -1,47 +1,32 @@
-# Load Prerequisites
-library(pheatmap)
-library(jaccard)
-library(UpSetR)
-library(jaccard)
-library(tidyverse)
-library(RColorBrewer)
-# library(viridis)
-
 # Load results
-squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds") %>%
-  map(function(ll) ll %>%
-        mutate(source = as.character(str_glue("c{source}")),
-               target = as.character(str_glue("c{target}")))
-      )# issue with clust names
+squidpy_results <- readRDS("output/benchmark/main_run/squidpy_full.rds")
 cellchat_results <- readRDS("output/benchmark/main_run/cellchat_full.rds")
-natmi_results <- readRDS("output/benchmark/main_run/natmi_full.rds")  %>%
-    purrr::list_modify("lrc2a" = NULL) %>%
-    plyr::rename(., c("lrc2p" = "Default"))
+natmi_results <- readRDS("output/benchmark/main_run/natmi_full.rds")
 sca_results <- readRDS("output/benchmark/main_run/sca_full.rds")
 italk_results <- readRDS("output/benchmark/main_run/italk_full.rds")
 conn_results <- readRDS("output/benchmark/main_run/conn_full.rds")
 
 
 # Filter for 'significant' hits and format to Upset
-cellchat_sig <- cellchat_results  %>%
+squidpy_sig <- squidpy_results %>%
+  map(function(res){
+    res %>%
+      filter(pvalue <= 0.05) %>%
+      as_tibble()})
+
+cellchat_sig <- cellchat_results %>%
     map(function(res){
         res %>%
-        filter(pval <= 0.01) %>%
+        filter(pval <= 0.00) %>%
         mutate(prank = percent_rank(dplyr::desc(prob))) %>%
         filter(prank <= 0.05) %>%
-            as_tibble()})
-
-squidpy_sig <- squidpy_results %>%
-    map(function(res){
-        res %>%
-            filter(pvalue <= 0.05) %>%
             as_tibble()})
 
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
         mutate(prank = percent_rank(dplyr::desc(edge_specificity))) %>%
-        filter(prank <= 0.005) %>%
+        filter(prank <= 0.01) %>%
             as_tibble()
         })
 
@@ -63,10 +48,10 @@ italk_sig <- italk_results %>%
 
 conn_sig <- conn_results %>%
     map(function(res){
-        res %>% FormatConnectome(max.p = 0.05,
-                                 remove.na = TRUE)  %>%
+        res %>%
+        filter(p_val_adj.lig <= 0.05 & p_val_adj.rec <= 0.05) %>%
         mutate(prank = percent_rank(desc(weight_sc))) %>%
-        filter(prank <= 0.03) %>%
+        filter(prank <= 0.1) %>%
             as_tibble()
     })
 
@@ -131,8 +116,14 @@ names(sig_list_resource) %>%
 # 4. Sig/Top Hits per Cell Pairs PCA
 plot_freq_pca(sig_list)
 
+# PCA - SCA
+plot_freq_pca(sig_list %>% purrr::list_modify("SCA" = NULL))
+
 
 # 5. Combine all (non-binary)
+# PCA of Rank Frequencies
+# LM/Corr with NES fig + bar plots
+
 comb <- list("CellChat" = cellchat_results,
              "Squidpy" = squidpy_results,
              "NATMI" = natmi_results,
