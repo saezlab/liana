@@ -86,8 +86,9 @@ get_BigHeat <- function(sig_list,
   # data frame with column annotations.
   # with a column for resources and a column for methods
   annotations_df <- data.frame(Resource = resource_groups,
-                               Method = method_groups) %>%
-    `rownames<-`(colnames(heatmap_binary_list))
+                               Method = method_groups)  %>%
+    mutate(rn = colnames(heatmap_binary_list)) %>%
+    column_to_rownames("rn")
 
   # List with colors for each annotation.
   mycolors <- list(Method = brewer.pal(6, "Dark2"),
@@ -98,7 +99,8 @@ get_BigHeat <- function(sig_list,
   binary_heatmap <- pheatmap(heatmap_binary_list,
                              annotation_col = annotations_df,
                              annotation_colors = mycolors,
-                             ...)
+                             ...
+                             )
 
   return(binary_heatmap)
 }

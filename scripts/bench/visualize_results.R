@@ -59,24 +59,21 @@ conn_sig <- conn_results %>%
 
 # I. Overlap
 
-# 1. UpSet Plots and Heatmaps by Tool
 # Significant Hits for each tool
 # using specificity measures wheere available (and ranking if necessary)
 sig_list <- list("CellChat" = cellchat_sig,
                  "Squidpy" = squidpy_sig,
                  "NATMI" = natmi_sig,
-                 "SCA" = sca_sig,
+                 "iTALK" = italk_sig,
                  "Connectome" = conn_sig,
-                 "iTALK" = italk_sig)
+                 "SCA" = sca_sig) # keep order for hm
 
 
-# binarize significant results and bind to the same matrix for each tool
-# then generate UpsetPlots
+# 1. UpSet Plots and Heatmaps by Tool
 names(sig_list) %>%
   map(function(m_name) sig_list[[m_name]] %>%
         prepForUpset() %>%
         plotSaveUset(str_glue("output/benchmark/overlap_plots/upset_tools/{m_name}_upset.png")))
-
 
 
 
@@ -123,7 +120,6 @@ plot_freq_pca(sig_list %>% purrr::list_modify("SCA" = NULL))
 # 5. Combine all (non-binary)
 # PCA of Rank Frequencies
 # LM/Corr with NES fig + bar plots
-
 comb <- list("CellChat" = cellchat_results,
              "Squidpy" = squidpy_results,
              "NATMI" = natmi_results,
