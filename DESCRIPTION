@@ -46,18 +46,27 @@ Depends:
     R(>= 4.0),
     graphics,
     utils,
-    tidyverse,
     OmnipathR,
-    Seurat,
+    plyr,
     rprojroot,
     reticulate,
     yardstick,
     magrittr,
+    tidyr,
+    tibble,
+    readr,
+    rlang,
+    dplyr,
     UpSetR,
     RColorBrewer,
-    ggfortify
+    ggfortify,
+    ggplot2
 Suggests:
     knitr,
     rmarkdown,
-    ggplot2
+    Connectome,
+    CellChat,
+    BiRewire,
+    iTALK,
+    Seurat
 RoxygenNote: 7.1.1
