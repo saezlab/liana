@@ -107,7 +107,6 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
     # A list of OmniPath variants to be returned
     if(omni_variants){
         omnipath_variants <- list(
-            OmniPath_full = list(),
             OmniPath_q50 = list(quality = .5),
             OmniPath_ligrec = list(ligrec = TRUE),
             OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
