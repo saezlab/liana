@@ -302,7 +302,6 @@ get_receptors <- function(resource, ...){
 }
 
 
-
 #' Retrieves intercellular communication partners (ligands or receptors) from
 #' one ligand-receptor resource.
 #'
