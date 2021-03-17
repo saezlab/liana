@@ -34,7 +34,7 @@ descriptive_plots <- function(ligrec = NULL, outdir = NULL){
 
     ligrec %>%
     ligrec_overlap %>%
-    summarize_overlaps %>%
+    summarize_overlaps %T>%
     total_unique_bar
 
 }
@@ -225,7 +225,7 @@ total_unique_bar <- function(ligrec_olap){
             cairo_pdf(
                 figure_path('size_overlap_%s.pdf', label),
                 width = 5,
-                height = 8,
+                height = 4,
                 family = 'DINPro'
             )
 
@@ -240,3 +240,102 @@ total_unique_bar <- function(ligrec_olap){
     invisible()
 
 }
+
+
+#' Upset plots of ligands, receptors and connections
+#'
+#' @importFrom purrr cross2 map walk
+#' @importFrom magrittr %>%
+ligand_receptor_upset <- function(data, upset_args = list()){
+
+    data %>%
+    names %>%
+    cross2(c(TRUE, FALSE)) %>%
+    map(setNames, c('label', 'omnipath')) %>%
+    walk(
+        function(args){
+            args %>%
+            c(
+                list(
+                    d = data[[args$label]],
+                    upset_args = upset_args
+                ),
+                `if`(
+                    args$label == 'connections',
+                    quos(resource, source, target),
+                    quos(resource, uniprot)
+                )
+            ) %>%
+            do.call(what = upset_generic)
+        }
+    )
+
+}
+
+
+#' Creates an upset plot
+#'
+#' A wrapper to create an upset plot from a data frame
+#'
+#' @param data A data frame, one element from the output of
+#'     \code{ligrec_overlap}.
+#' @param label A label for the file name. Should refer to the entities we
+#'     classify e.g. "ligand".
+#' @param omnipath Logical: whether to include OmniPath.
+#' @param upset_args List: additional arguments for \code{UpSetR::upset}.
+#' @param ... Column names: the first one should be the set assignment, the
+#'     rest define unique entities.
+#'
+#' @importFrom magrittr %>% %<>%
+#' @importFrom rlang !! !!! enquos
+#' @importFrom dplyr mutate select distinct filter group_by group_split
+#' @importFrom dplyr group_keys pull
+#' @importFrom purrr map
+#' @importFrom UpSetR upset fromList
+upset_generic <- function(data, label, omnipath, upset_args, ...){
+
+    cols <- enquos(...)
+    set_col <- cols[[1]]
+    cols %<>% `[`(-1)
+
+    data %<>%
+    mutate(element = paste(!!!cols, sep = '__')) %>%
+    select(!!set_col, element) %>%
+    distinct() %>%
+    {`if`(
+        omnipath,
+        filter(
+            .,
+            !startsWith(!!set_col, 'OmniPath') |
+            !!set_col == 'OmniPath'
+        ),
+        filter(., !startsWith(!!set_col, 'OmniPath'))
+    )} %>%
+    group_by(!!set_col) %>%
+    {setNames(
+        group_split(., .keep = FALSE) %>% map(pull),
+        group_keys(.) %>% pull
+    )}
+
+    path <- figure_path(
+        'upset_%s_%s.pdf',
+        label,
+        `if`(omnipath, 'omnipath', 'no-omnipath')
+    )
+
+    cairo_pdf(path, width = 8, height = 4, family = 'DINPro')
+
+        data %>%
+        fromList %>%
+        list %>%
+        c(upset_args) %>%
+        do.call(what = upset) %>%
+        print()
+
+    dev.off()
+
+    invisible(data)
+
+}
+
+
