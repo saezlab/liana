@@ -1,0 +1,151 @@
+---
+title: "squidpy_test"
+author: "Daniel Dimitrov"
+date: "1/27/2021"
+output: html_document
+---
+
+```{r load_r}
+library(Seurat)
+library(reticulate)
+library(tidyverse)
+reticulate::use_python("/home/dbdimitrov/anaconda3/bin/python")
+
+# Load data and convert to anndata
+pbmc3k <- readRDS("input/pbmc3k_processed.rds")
+
+# prep data for transfer
+exprs <- GetAssayData(pbmc3k)
+meta <- pbmc3k[[]]
+feature_meta <- GetAssay(pbmc3k)[[]]
+embedding <- Embeddings(pbmc3k, "umap")
+
+
+```
+
+
+```{python python_env}
+import pandas as pd
+import scanpy as sc
+import squidpy as sp
+import re
+```
+
+
+```{python setup_squidpy}
+
+intercell_resources = [
+    'CellChatDB',
+    'CellPhoneDB',
+    'Ramilowski2015',
+    'Baccin2019',
+    'LRdb',
+    'Kirouac2010',
+    'ICELLNET',
+    'iTALK',
+    'EMBRACE',
+    'HPMR',
+    'Guide2Pharma',
+    'connectomeDB2020',
+    'talklr',
+    'CellTalkDB',
+    'OmniPath'
+]
+
+# define function to map over all resources
+def get_omni_resources(op_resource, **kwargs):
+    try:
+        res_filt = None if op_resource == "OmniPath" else op_resource
+        y = sp.gr.ligrec(adata_seurat, "seurat_annotations",
+                         fdr_method=None, copy=True,
+                         interactions_params={"resources": res_filt},
+                         transmitter_params={"categories": "ligand", "resources": res_filt},
+                         receiver_params={"categories": "receptor", "resources": res_filt},
+                         threshold=0.1, seed=0, n_perms=10000, n_jobs=1)
+        return y
+    except ValueError:
+        print(op_resource)
+        return None
+
+
+def get_ligrec( resource_list ):
+    return dict(map( lambda x: (x, get_omni_resources(x)), resource_list ))
+
+
+```
+
+```{python call_squidpy}
+
+# Convert R Seurat to Python Anndata
+adata_seurat = sc.AnnData(X = r.exprs.T, obs = r.meta, var = r.feature_meta)
+adata_seurat.obsm['umap'] = r.embedding
+
+# Raw
+adata_seurat.raw = adata_seurat.copy()
+
+# call squidpy
+squidpy_res = get_ligrec( intercell_resources )
+```
+
+```{python reformat_squidpy}
+
+# Reformat results to non-multiindex
+def reformat(x):
+    # flatten multiindex columns (i.e. cell types)
+    x_reform = pd.DataFrame(x.to_records())
+    # fix column formatting
+    x_reform = x_reform. \
+    rename(columns=lambda x:re.sub(', ', '_', x)). \
+    rename(columns=lambda x:re.sub((r"'"), '', x))
+    x_reform.columns = list(map(lambda x: x[1:-1] if x.startswith(r"(") else x, x_reform.columns))
+    return x_reform
+
+
+def get_ligrec( resource_list ):
+    return dict(map( lambda x: (x, get_omni_resources(x)), resource_list ))
+
+squidpy_pvalues = list(map(lambda x: reformat(squidpy_res[x].pvalues), intercell_resources))
+squidpy_means = list(map(lambda x: reformat(squidpy_res[x].means), intercell_resources))
+
+
+
+```
+
+
+
+
+
+```{r squid_transform}
+# transfer from Python to R
+squidpy_pvalues <- py$squidpy_pvalues %>% setNames(py$intercell_resources)
+squidpy_means <- py$squidpy_means %>% setNames(py$intercell_resources)
+
+
+# reformat function r
+squidpy_reformat <- function(.name,
+                       .pval_list,
+                       .mean_list){
+    x_pval <- .pval_list[[.name]] %>%
+        pivot_longer(cols = 3:ncol(.),
+                     values_to="pvalue",
+                     names_to="pair")
+    
+    x_mean <- .mean_list[[.name]] %>%
+        pivot_longer(cols = 3:ncol(.),
+                     values_to = "means",
+                     names_to = "pair")
+    
+    return(left_join(x_pval, x_mean))
+}
+
+
+
+squidpy_results <- map(py$intercell_resources,
+    function(x) squidpy_reformat(.name=x,
+                     .pval_list = squidpy_pvalues,
+                     .mean_list = squidpy_means)) %>%
+    setNames(py$intercell_resources)
+
+squidpy_results["OmniPath"]
+
+```

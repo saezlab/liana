@@ -1,0 +1,161 @@
+---
+title: "LR_pipe"
+author: "Daniel Dimitrov"
+date: "1/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_renv}
+library(Seurat)
+library(SeuratData)
+library(Connectome)
+library(ggplot2)
+library(reticulate)
+reticulate::use_python("/home/dbdimitrov/anaconda3/bin/python")
+
+
+```
+
+
+```{r load_seuratData}
+
+# Install data and load
+# InstallData('pbmc3k')
+data('pbmc3k')
+pbmc <- pbmc3k
+rm(pbmc3k)
+
+# Filter
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+
+# Normalize
+pbmc <- NormalizeData(pbmc)
+
+# Identify highly variable features
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+
+# Scale data
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+
+# Dimensionality reduction
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+
+# Cluster
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+# UMAP
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+
+# Rename cluster identities
+new.cluster.ids <- c("Naive CD4 T", "Memory CD4 T", "CD14+ Mono", "B", "CD8 T", "FCGR3A+ Mono", 
+    "NK", "DC", "Platelet")
+names(new.cluster.ids) <- levels(pbmc)
+pbmc <- RenameIdents(pbmc, new.cluster.ids)
+
+saveRDS(pbmc, file = "input/pbmc3k_processed.rds")
+
+```
+
+
+```{r seurat_toAnn}
+sc <- import("scanpy")
+adata_seurat <- sc$AnnData(
+    X   = t(as.matrix(GetAssayData(pbmc))),
+    obs = pbmc[[]],
+    var = GetAssay(pbmc)[[]]
+)
+adata_seurat$obsm$update(umap = Embeddings(pbmc, "umap"))
+
+adata_seurat
+
+py$adata_seurat <- adata_seurat
+```
+
+
+
+```{python python_env}
+import scanpy as sc
+import squidpy as sp
+
+
+# Remaining Q: What do we do with VST in scanpy - do we need to filter?
+help(squidpy.gr._ligrec)
+```
+
+```{python fun_squidpy}
+
+intercell_resources = [
+    'CellPhoneDB',
+    'Ramilowski2015',
+    'Baccin2019',
+    'LRdb',
+    'Kirouac2010',
+    'ICELLNET',
+    'iTALK',
+    'EMBRACE',
+    'HPMR',
+    'Guide2Pharma',
+    'connectomeDB2020',
+    'talklr',
+    'CellTalkDB',
+    'OmniPath'
+]
+
+
+# define function to map over all resources
+def call_sp_resource(op_resource, **kwargs):
+    try:
+        res_filt = None if op_resource == "OmniPath" else op_resource
+        y = sp.gr.ligrec(adata_seurat, "seurat_clusters",
+                         fdr_method=None, copy=True,
+                         interactions_params={"resources": res_filt},
+                         transmitter_params={"resources": res_filt},
+                         receiver_params={"resources": res_filt},
+                         threshold=0.1, seed=0, n_perms=10000, n_jobs=1)
+        return y
+    except ValueError:
+        return None
+
+
+def get_ligrec( resource_list ):
+    return dict(map( lambda x: (x, call_sp_resource(x)), resource_list ))
+
+
+# def function to reformat squidpy dataframe
+def reformat(x):
+    # flatten multiindex columns (i.e. cell types)
+    x_reform = pd.DataFrame(x.to_records())
+    # fix column formatting
+    x_reform = x_reform. \
+    rename(columns=lambda x:re.sub(', ', '_', x)). \
+    rename(columns=lambda x:re.sub((r"'"), '', x)) 
+    x_reform.columns = list(map(lambda x: x[1:-1] if x.startswith(r"(") else x, x_reform.columns))
+    x_reform['source_target'] = x_reform[['source', 'target']].apply(lambda x: '_'.join(x), axis=1)
+    x_reform.drop(['source', 'target'], axis=1, inplace=True)
+    x_reform = x_reform.set_index('source_target').reset_index()
+    return x_reform
+
+```
+
+```{python call_squidpy}
+# Raw
+adata_seurat.raw = adata_seurat.copy()
+
+# call squidpy
+lr_res = get_ligrec( intercell_resources )
+```
+
+```{python}
+lr_res['OmniPath'].pvalues
+```
+
+
+
+
