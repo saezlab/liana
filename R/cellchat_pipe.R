@@ -16,6 +16,7 @@ call_cellchat <- function(op_resource,
                                            "cell_surface_ligand-receptor"),
                           nboot = 100,
                           assay = "SCT",
+                          .seed = 1004,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
                           ...
@@ -179,11 +180,10 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
-    # NOTE !!!!! here we might be able to extend it further with OmniPath
-    # However, this might be too time-consuming and irrelevant.
     cellchat.omni <- projectData(cellchat.omni, PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
                                        raw.use=FALSE,
+                                       seed.use = .seed,
                                        nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups

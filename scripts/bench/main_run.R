@@ -2,9 +2,9 @@
 breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
 
 # Get Full Omni Resources
-omni_resources <- compile_ligrec()
+# omni_resources <- compile_ligrec()
 # saveRDS(omni_resources, "input/omni_resources.rds")
-# omni_resources <- readRDS("input/omni_resources.rds")
+omni_resources <- readRDS("input/omni_resources.rds")
 
 
 
@@ -38,7 +38,8 @@ cellchat_results <- omni_resources %>%
                                   exclude_anns = c(),
                                   thresh = 1,
                                   assay = "SCT",
-                                  .normalize = FALSE)) %>%
+                                  .normalize = FALSE,
+                                  .do_parallel = TRUE)) %>%
     setNames(names(omni_resources))
 saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
 
@@ -51,7 +52,7 @@ sca_results <- omni_resources %>%
                  assay = 'SCT',
                  .format = TRUE,
                  s.score = 0,
-                 logFC = 0.25
+                 logFC = log2(1.5)
         ))
 saveRDS(sca_results, "output/benchmark/main_run/sca_full.rds")
 
@@ -75,6 +76,7 @@ italk_results <- omni_resources %>%
         call_italk(op_resource = db,
                    breast_cancer,
                    assay = 'SCT',
-                   .format = TRUE
+                   .format = TRUE,
+                   .DE = TRUE
         ))
 saveRDS(italk_results, "output/benchmark/main_run/italk_full.rds")

@@ -12,19 +12,22 @@ squidpy_sig <- squidpy_results %>%
   map(function(res){
     res %>%
       filter(pvalue <= 0.05) %>%
-      as_tibble()})
+      as_tibble()
+    })
 
 cellchat_sig <- cellchat_results %>%
     map(function(res){
         res %>%
+        mutate(pval = p.adjust(pval, method = "BH")) %>%
         filter(pval <= 0.00) %>%
         mutate(prank = percent_rank(dplyr::desc(prob))) %>%
-        filter(prank <= 0.05) %>%
+        filter(prank <= 0.1) %>%
             as_tibble()})
 
 natmi_sig <- natmi_results %>%
     map(function(res){
         res %>%
+        filter(source != target) %>%
         mutate(prank = percent_rank(dplyr::desc(edge_specificity))) %>%
         filter(prank <= 0.01) %>%
             as_tibble()
@@ -40,9 +43,8 @@ sca_sig <- sca_results %>%
 italk_sig <- italk_results %>%
     map(function(res){
         res %>%
-            mutate(weight_comb = weight_from * weight_to) %>%
-            mutate(prank = percent_rank(dplyr::desc(weight_comb))) %>%
-            filter(prank < 0.01) %>%
+        filter(qval_from <= 0.05 & qval_to <= 0.05) %>%
+            mutate(weight_comb = logFC_from * logFC_to) %>%
             as_tibble()
     })
 
@@ -95,7 +97,6 @@ binary_heatm <- get_BigHeat(sig_list,
                             treeheight_row = 0)
 
 
-
 # 3. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
 sig_list_resource <- get_swapped_list(sig_list)
@@ -110,30 +111,51 @@ names(sig_list_resource) %>%
 
 
 
-# 4. Sig/Top Hits per Cell Pairs PCA
+# 4. Binary PCA
 plot_freq_pca(sig_list)
 
-# PCA - SCA
+# Binary PCA - SCA
 plot_freq_pca(sig_list %>% purrr::list_modify("SCA" = NULL))
 
 
-# 5. Combine all (non-binary)
-# PCA of Rank Frequencies
-# LM/Corr with NES fig + bar plots
-comb <- list("CellChat" = cellchat_results,
-             "Squidpy" = squidpy_results,
-             "NATMI" = natmi_results,
-             "iTALK" = italk_results,
-             "SCA" = sca_results,
-             "Connectome" = conn_results %>%
-               map(function(res){
-                 res %>%
-                   FormatConnectome(., remove.na = TRUE) %>%
-                   as_tibble()
-               }))
+# 5. PCA by Rank Frequencies
+comb_list <- list("CellChat" = cellchat_results,
+                  "Squidpy" = squidpy_results,
+                  "NATMI" = natmi_results,
+                  "iTALK" = italk_results,
+                  "SCA" = sca_results,
+                  "Connectome" = conn_results)
+
+
+# maybe just count sig hits from Squidpy
+xd <- squidpy_results$OmniPath %>%
+  as_tibble() %>%
+  select(source, target, ligand, receptor, pvalue) %>%
+  filter(!is.nan(pvalue)) %>%
+  mutate(nt = min_rank(pvalue)) %>%
+  unite(source, target, col = "cell_pair") %>%
+  group_by(cell_pair) %>%
+  summarise(ntc=(mean(nt))) %>%
+  mutate(zs = -1*scale(ntc))
+
+tmp <- natmi_results$OmniPath %>%
+  as_tibble() %>%
+  select(source, target, ligand, receptor, edge_specificity) %>%
+  filter(source != target) %>%
+  unite(source, target, col = "cell_pair") %>%
+  filter(!is.nan(edge_specificity)) %>%
+  mutate(nt = min_rank(edge_specificity)) %>%
+  group_by(cell_pair) %>%
+  summarise(ntc=(mean(nt))) %>%
+  mutate(zs = -1*scale(ntc))
+
+
+# 6. LM/Corr with NES fig + bar plots
 
 
 
+
+# Combine all results into tool_resource list
 lnames <- map(names(comb), function(l_name){
   map(names(comb[[l_name]]), function(r_name){
     str_glue("{l_name}_{r_name}")
@@ -143,6 +165,8 @@ lnames <- map(names(comb), function(l_name){
 comb <- comb %>% purrr::flatten() %>%
   setNames(lnames)
 names(comb)
+
+
 
 
 tmp <- map(names(comb),

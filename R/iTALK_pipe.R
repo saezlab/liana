@@ -60,7 +60,7 @@ call_italk <- function(op_resource,
         map(function(x)
           x %>%
             rename(p.value = 'p_val',
-                   logFC = 'avg_log2FC',
+                   logFC = 'avg_logFC',
                    pct.1 = 'pct.1',
                    pct.2 = 'pct.2',
                    q.value = 'p_val_adj',
@@ -73,7 +73,6 @@ call_italk <- function(op_resource,
     comb <- combn(levels(Idents(seurat_object)), 2)
     res = list()
     for (i in  seq_len(dim(comb)[2])) {
-      print(comb[, i])
       res[[paste0(comb[, i][1], '_x_', comb[, i][2])]] <-
         FindLR(deg[[comb[, i][1]]], deg[[comb[, i][2]]],
                datatype = 'DEG',
@@ -95,7 +94,7 @@ call_italk <- function(op_resource,
   }
 
   if (.format) {
-    res <- res %>% FormatiTALK(remove.na = TRUE)
+    res <- res %>% FormatiTALK(remove.na = TRUE, .DE = .DE)
   }
 
   return(res)
@@ -107,17 +106,35 @@ call_italk <- function(op_resource,
 #' Helper function to filter and format iTalk results
 #' @param italk_res iTalk results object
 #' @param remove.na bool whether to filter NA
-FormatiTALK <- function(italk_res, remove.na = TRUE){
-  italk_res <- tibble(
-    'source' = italk_res$cell_from,
-    'ligand' = italk_res$ligand,
-    'target' = italk_res$cell_to,
-    'receptor' = italk_res$receptor,
-    'weight_from' = italk_res$cell_from_mean_exprs,
-    'weight_to' = italk_res$cell_to_mean_exprs
-  )
-  if (remove.na) {
-    italk_res <- italk_res[!(is.na(italk_res$weight_from) &
-                               is.na(italk_res$weight_to)), ]
+FormatiTALK <- function(italk_res,
+                        remove.na = TRUE,
+                        .DE = FALSE){
+  if(!.DE){
+    italk_res <- tibble(
+      'source' = italk_res$cell_from,
+      'ligand' = italk_res$ligand,
+      'target' = italk_res$cell_to,
+      'receptor' = italk_res$receptor,
+      'weight_from' = italk_res$cell_from_mean_exprs,
+      'weight_to' = italk_res$cell_to_mean_exprs
+    )
+    if (remove.na) {
+      italk_res <- italk_res[!(is.na(italk_res$weight_from) &
+                                 is.na(italk_res$weight_to)), ]
+    }
+
+  } else{
+    italk_res <- tibble(
+      'source' = italk_res$cell_from,
+      'ligand' = italk_res$ligand,
+      'target' = italk_res$cell_to,
+      'receptor' = italk_res$receptor,
+      'logFC_from' = italk_res$cell_from_logFC,
+      'logFC_to' = italk_res$cell_to_logFC,
+      'qval_from' = italk_res$cell_from_q.value,
+      'qval_to' = italk_res$cell_to_q.value,
+    )
   }
+
+  return(italk_res)
 }
