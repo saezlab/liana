@@ -117,7 +117,8 @@ FormatiTALK <- function(italk_res,
       'receptor' = italk_res$receptor,
       'weight_from' = italk_res$cell_from_mean_exprs,
       'weight_to' = italk_res$cell_to_mean_exprs
-    )
+    ) %>%
+      mutate(weight_comb = abs(weight_from * weight_to))
     if (remove.na) {
       italk_res <- italk_res[!(is.na(italk_res$weight_from) &
                                  is.na(italk_res$weight_to)), ]
@@ -133,7 +134,8 @@ FormatiTALK <- function(italk_res,
       'logFC_to' = italk_res$cell_to_logFC,
       'qval_from' = italk_res$cell_from_q.value,
       'qval_to' = italk_res$cell_to_q.value,
-    )
+    )  %>%
+      mutate(weight_comb = abs(logFC_from * logFC_to))
   }
 
   return(italk_res)

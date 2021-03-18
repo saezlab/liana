@@ -56,8 +56,9 @@ ggplot(bc_nes_regression, aes(x=adjr, y=pval, colour = Method, shape = Resource)
     scale_color_manual(values=brewer.pal(6, "Dark2")) +
     scale_shape_manual(values=1:nlevels(bc_nes_regression$Resource))
 
-reg_heat <- bc_nes_regression %>%
-    pivot_wider(names_from = method, values_from = adjr, id_cols = resource,
-                values_fill = 0)
+
+
+# Ranked Frequncies x NES
+rank_frequencies
 
 

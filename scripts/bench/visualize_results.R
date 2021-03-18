@@ -44,7 +44,6 @@ italk_sig <- italk_results %>%
     map(function(res){
         res %>%
         filter(qval_from <= 0.05 & qval_to <= 0.05) %>%
-            mutate(weight_comb = logFC_from * logFC_to) %>%
             as_tibble()
     })
 
@@ -128,26 +127,155 @@ comb_list <- list("CellChat" = cellchat_results,
 
 
 # maybe just count sig hits from Squidpy
-xd <- squidpy_results$OmniPath %>%
+squidpy_fullc <- squidpy_results$OmniPath %>%
   as_tibble() %>%
+  filter(source!=target) %>%
   select(source, target, ligand, receptor, pvalue) %>%
   filter(!is.nan(pvalue)) %>%
-  mutate(nt = min_rank(pvalue)) %>%
   unite(source, target, col = "cell_pair") %>%
   group_by(cell_pair) %>%
-  summarise(ntc=(mean(nt))) %>%
-  mutate(zs = -1*scale(ntc))
+  summarise(cellpair_count = n()) %>%
+  mutate(cellpair_normrank = scale(cellpair_count)[, 1])
 
-tmp <- natmi_results$OmniPath %>%
-  as_tibble() %>%
-  select(source, target, ligand, receptor, edge_specificity) %>%
-  filter(source != target) %>%
-  unite(source, target, col = "cell_pair") %>%
-  filter(!is.nan(edge_specificity)) %>%
-  mutate(nt = min_rank(edge_specificity)) %>%
-  group_by(cell_pair) %>%
-  summarise(ntc=(mean(nt))) %>%
-  mutate(zs = -1*scale(ntc))
+
+# by rank
+squidpy_full <- squidpy_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, pvalue) %>%
+      filter(!is.nan(pvalue)) %>%
+      mutate(edge_rank = min_rank(pvalue)) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(edge_rank))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1]))
+
+
+# ranks for the rest
+# NATMI
+natmi_full <- natmi_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, edge_specificity) %>%
+      filter(!is.nan(edge_specificity)) %>%
+      mutate(edge_rank = min_rank(desc(edge_specificity))) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(edge_rank))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1]))
+
+
+# SCA
+sca_full <- sca_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, LRscore) %>%
+      filter(!is.nan(LRscore)) %>%
+      mutate(edge_rank = min_rank(desc(LRscore))) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(edge_rank))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1]))
+
+
+# Connectome
+conn_full <- conn_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, weight_sc) %>%
+      filter(!is.nan(weight_sc)) %>%
+      mutate(edge_rank = min_rank(desc(weight_sc))) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(edge_rank))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1]))
+
+# CellChat
+cellchat_full <- cellchat_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, pval) %>%
+      filter(!is.nan(pval)) %>%
+      mutate(edge_rank = min_rank(desc(pval))) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(edge_rank))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1])
+    )
+
+# iTALK
+italk_full <- italk_results %>%
+  map(function(res)
+    res %>% as_tibble() %>%
+      filter(source!=target) %>%
+      select(source, target, ligand, receptor, weight_comb) %>%
+      filter(!is.nan(weight_comb)) %>%
+      mutate(weight_comb = min_rank(desc(weight_comb))) %>%
+      unite(source, target, col = "cell_pair") %>%
+      group_by(cell_pair) %>%
+      summarise(cellpair_rank = (mean(weight_comb))) %>%
+      mutate(cellpair_normrank = -1*scale(cellpair_rank)[, 1])
+  )
+
+
+
+full_list <- (list("CellChat" = cellchat_full,
+                   "Squidpy" = squidpy_full,
+                   "NATMI" = natmi_full,
+                   "iTALK" = italk_full,
+                   "SCA" = sca_full,
+                   "Connectome" = conn_full
+                   )
+              )
+
+# Combine all results into tool_resource list
+lnames <- map(names(full_list), function(l_name){
+  map(names(full_list[[l_name]]), function(r_name){
+    str_glue("{l_name}_{r_name}")
+  })
+}) %>% unlist()
+
+full_df <- full_list %>% purrr::flatten() %>%
+  setNames(lnames)
+names(full_list)
+
+
+
+
+# almost identical from here on to other PCA
+# change them to one function
+rank_frequencies <- full_df %>%
+  enframe() %>%
+  unnest(value) %>%
+  pivot_wider(id_cols = name,
+              names_from = cell_pair,
+              values_from = cellpair_normrank,
+              values_fill = 0) %>%
+  as.data.frame() %>%
+  separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
+  mutate(Method = factor(Method, # prevent ggplot2 from rearranging
+                         levels = c("CellChat", "Squidpy", "NATMI",
+                                    "iTALK", "Connectome", "SCA"))) %>%
+  mutate(Resource = factor(Resource)) %>%
+  column_to_rownames("name")
+
+
+
+
+pca_res <- prcomp(rank_frequencies[,3:ncol(rank_frequencies)])
+# pca by RANKed activities
+autoplot(pca_res, data = rank_frequencies,
+                     colour = "Method", shape = "Resource",
+                     size = 6, position = "jitter") +
+  scale_color_manual(values=brewer.pal(6, "Dark2")) + theme_bw(base_size = 26) +
+  scale_shape_manual(values=1:nlevels(rank_frequencies$Resource))
+
+
 
 
 # 6. LM/Corr with NES fig + bar plots
