@@ -39,8 +39,7 @@ DefaultAssay(breast_cancer) <- "Spatial"
 
 adata_seurat <- sc$AnnData(
     X   = t(as.matrix(GetAssayData(breast_cancer))),
-    obs = breast_cancer[[]] #,
-    # var = GetAssay(breast_cancer)[[]]
+    obs = breast_cancer[[]]
 )
 adata_seurat$obsm$update(umap = Embeddings(breast_cancer, "umap"))
 

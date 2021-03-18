@@ -145,21 +145,17 @@ get_swapped_list <- function(sig_list){
 
 
 #' PCA plot for Cell type/cluster pair frequency for 'significant/top' hits
-#' @param sig_list named list of significant hits. Named list of methods with
+#' @param freq_df named list of significant hits. Named list of methods with
 #' each element being a named list of resources
 #' @return A ggplot2 object
 #' @import ggfortify ggplot2 RColorBrewer
-plot_freq_pca <- function(sig_list){
-
-  # get cell type pair frequency for sig. hits
-  freq_df <- sig_list %>%
-    get_binary_frequencies()
-
-
+plot_freq_pca <- function(freq_df){
   # format to df with frequencies and
   # Resource and Method columns as factors
   cell_pair_frequency <- freq_df %>%
-    pivot_wider(names_from = clust_pair, values_from = freq, id_cols = name,
+    pivot_wider(names_from = clust_pair,
+                values_from = freq,
+                id_cols = name,
                 values_fill = 0) %>%
     as.data.frame() %>%
     separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
@@ -179,6 +175,9 @@ plot_freq_pca <- function(sig_list){
                        size = 6, position = "jitter") +
     scale_color_manual(values=brewer.pal(6, "Dark2")) + theme_bw(base_size = 26) +
     scale_shape_manual(values=1:nlevels(cell_pair_frequency$Resource))
+
+
+
 
   return(pca_freq)
 }
@@ -208,4 +207,48 @@ get_binary_frequencies <- function(sig_list){
                    select(clust_pair, freq)
              )) %>%
     unnest(value)
+}
+
+
+#' Helper function to get cell pair activity from rank averages
+#' @param result Result for a specific Tool-resource combinations
+#' @param score_col Score column name provided by the tool
+#' @param .desc_order Whether the most significant hits are in descending order,
+#' i.e. the highest is the most sig
+#' @details Cell pair ranks are averaged, then converted to z-scores, which
+#' are multiplied by -1 as we want the lowest average ranks to have the highest
+#' z scores
+format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
+  result %>%
+    as_tibble() %>%
+    filter(source!=target) %>%
+    select(source, target, ligand, receptor, !!score_col) %>%
+    filter(!is.nan(!!rlang::sym(score_col))) %>%
+    mutate(edge_rank := if_else(rep(.desc_order, nrow(.)),
+                                min_rank(desc(!!rlang::sym(score_col))),
+                                min_rank(!!rlang::sym(score_col))))  %>%
+    unite(source, target, col = "clust_pair") %>%
+    group_by(clust_pair) %>%
+    summarise(avg_rank = (mean(edge_rank))) %>%
+    mutate(freq = -1*scale(avg_rank)[, 1])
+}
+
+
+#' Helper function to convert list with all resources ranked to frequencies df
+#' @param full_list list with all resources ranked to frequencies df
+get_rank_frequencies <- function(full_list){
+  # Combine all results into tool_resource list
+  lnames <- map(names(full_list), function(l_name){
+    map(names(full_list[[l_name]]), function(r_name){
+      str_glue("{l_name}_{r_name}")
+    })
+  }) %>% unlist()
+
+  freq_df <- full_list %>%
+    purrr::flatten() %>%
+    setNames(lnames) %>%
+    enframe() %>%
+    unnest(value)
+
+  return(freq_df)
 }
