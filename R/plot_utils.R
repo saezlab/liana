@@ -51,9 +51,6 @@ plotSaveUset <- function(upset_df, dir){
 get_BigHeat <- function(sig_list,
                         ...){
 
-  require(pheatmap)
-  require(RColorBrewer)
-
   # remove OmniPath and Random resources, as they are much larger than the
   # rest of the resources and result in too much sparsity to get meaningful
   # clusters not completely align to them.
