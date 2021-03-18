@@ -4,7 +4,7 @@
 \alias{descriptive_plots}
 \title{Ligand-receptor resources descriptive plots}
 \usage{
-descriptive_plots(ligrec = NULL, outdir = NULL)
+descriptive_plots(ligrec = NULL, outdir = NULL, upset_args = list())
 }
 \description{
 Generates a number of comparative and descriptive plots about

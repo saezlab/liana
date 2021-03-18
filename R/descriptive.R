@@ -26,7 +26,11 @@
 #'
 #' @importFrom rlang %||%
 #' @importFrom magrittr %>% %<>% %T>%
-descriptive_plots <- function(ligrec = NULL, outdir = NULL){
+descriptive_plots <- function(
+    ligrec = NULL,
+    outdir = NULL,
+    upset_args = list()
+){
 
     log_success('Descriptive visualization of ligand-receptor resources.')
 
@@ -36,7 +40,7 @@ descriptive_plots <- function(ligrec = NULL, outdir = NULL){
 
     ligrec %>%
     ligrec_overlap %T>%
-    ligand_receptor_upset %>%
+    ligand_receptor_upset(upset_args = upset_args) %>%
     summarize_overlaps %T>%
     total_unique_bar %T>%
     {log_success('Finished descriptive visualizations.')} %>%
@@ -306,6 +310,7 @@ ligand_receptor_upset <- function(data, upset_args = list()){
 #' @importFrom dplyr group_keys pull
 #' @importFrom purrr map
 #' @importFrom UpSetR upset fromList
+#' @importFrom RCurl merge.list
 upset_generic <- function(data, label, omnipath, upset_args, ...){
 
     cols <- enquos(...)
@@ -330,6 +335,17 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
         group_split(., .keep = FALSE) %>% map(pull),
         group_keys(.) %>% pull
     )}
+
+    upset_args %<>% merge.list(
+        list(
+            order.by = 'freq',
+            mb.ratio = c(.5, .5),
+            nsets = length(data),
+            nintersects = 30,
+            scale.intersections = `if`(omnipath, 'log10', 'identity'),
+            show.numbers = 'no'
+        )
+    )
 
     path <- figure_path(
         'upset_%s_%s.pdf',

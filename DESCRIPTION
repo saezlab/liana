@@ -62,7 +62,8 @@ Imports:
     RColorBrewer,
     ggfortify,
     ggplot2,
-    logger
+    logger,
+    RCurl
 Suggests:
     knitr,
     rmarkdown,
