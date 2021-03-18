@@ -70,23 +70,23 @@ call_natmi <- function(
     }
 
     if(.write_data){
-        message(str_glue("Writing EM to {em_path}"))
+        log_info("Writing EM to {em_path}")
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
                                                     assay = "SCT",
                                                     slot = "data"))) - 1),
                   file = em_path,
                   row.names = TRUE)
-        message(str_glue("Writing Annotations to {ann_path}"))
+        log_info("Writing Annotations to {ann_path}")
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
                   file = ann_path,
                   row.names = FALSE)
 
-        message(str_glue("Saving resources to {omnidbs_path}"))
+        log_info("Saving resources to {omnidbs_path}")
         omni_to_NATMI(omnidbs_path)
     }
 
-    message(str_glue("Output to be saved and read from {output_path}"))
+    log_success("Output to be saved and read from {output_path}")
     dir.create(file.path(output_path), recursive = TRUE)
 
     # copy OmniPath resources to NATMI dir
@@ -114,7 +114,7 @@ call_natmi <- function(
     # submit native sys requests
     omni_list %>% map(function(resource){
 
-        message(str_glue("Now Running: {resource}"))
+        log_success("Now Running: {resource}")
 
         system(str_glue("python3 ExtractEdges.py ",
                         "--species human ",

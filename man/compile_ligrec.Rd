@@ -2,9 +2,7 @@
 % Please edit documentation in R/get_omnipath.R
 \name{compile_ligrec}
 \alias{compile_ligrec}
-\title{Function to get unfiltered intercell resources
-For each resource and OmniPath variant compiles tables of ligands,
-receptors and interactions}
+\title{Function to get unfiltered intercell resources}
 \usage{
 compile_ligrec(omni_variants = FALSE, lr_pipeline = TRUE)
 }
@@ -17,11 +15,10 @@ duplicate LRs (mainly from composite OmniDB due to category
 (adhesion vs lr))}
 }
 \description{
-Function to get unfiltered intercell resources
 For each resource and OmniPath variant compiles tables of ligands,
-receptors and interactions
+receptors and interactions.
 }
 \details{
-calls on omnipath_intercell, intercell_connections, get_partners,
-and intercell_connections
+calls on \code{omnipath_intercell}, \code{intercell_connections},
+    \code{get_partners}, and \code{intercell_connections}
 }

@@ -98,7 +98,7 @@ call_cellchat <- function(op_resource,
                                                 co_I_receptor
             ){
 
-                suppressMessages(message(interaction_name))
+                log_trace(interaction_name)
 
                 if(co_A_receptor=="" & co_I_receptor==""){
 
@@ -177,8 +177,8 @@ call_cellchat <- function(op_resource,
             filter(!(annotation %in% exclude_anns))
     }
 
-    message(str_glue("Number of interactions:
-                     {length(CellChatDB.omni$interaction$interaction_name)}"))
+    log_info("Number of interactions:
+                     {length(CellChatDB.omni$interaction$interaction_name)}")
 
     ## set the used database in the object
     cellchat.omni@DB <- CellChatDB.omni
