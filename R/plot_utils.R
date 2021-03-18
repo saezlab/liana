@@ -225,8 +225,8 @@ format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
     select(source, target, ligand, receptor, !!score_col) %>%
     filter(!is.nan(!!rlang::sym(score_col))) %>%
     mutate(edge_rank := if_else(rep(.desc_order, nrow(.)),
-                                min_rank(desc(!!rlang::sym(score_col))),
-                                min_rank(!!rlang::sym(score_col))))  %>%
+                                row_number(desc(!!rlang::sym(score_col))),
+                                row_number(!!rlang::sym(score_col))))  %>%
     unite(source, target, col = "clust_pair") %>%
     group_by(clust_pair) %>%
     summarise(avg_rank = (mean(edge_rank))) %>%
