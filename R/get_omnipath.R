@@ -89,10 +89,12 @@ get_omni_resources <- function(){
 
 
 #' Function to get unfiltered intercell resources
+#'
 #' For each resource and OmniPath variant compiles tables of ligands,
-#' receptors and interactions
-#' @details calls on omnipath_intercell, intercell_connections, get_partners,
-#' and intercell_connections
+#' receptors and interactions.
+#'
+#' @details calls on \code{omnipath_intercell}, \code{intercell_connections},
+#'     \code{get_partners}, and \code{intercell_connections}
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom purrr map
@@ -114,6 +116,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
     } else{
         omnipath_variants <- list()
     }
+
+    log_success('Compiling ligand-receptor database data.')
 
     omni_resources <-
         get_lr_resources() %>%
@@ -145,9 +149,23 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
             else .
         }
 
+    log_success('Finished compiling ligand-receptor database data.')
+
     return(omni_resources)
 }
 
+
+#' Ligand-receptor data for the descriptive part
+#'
+#' Ligands, receptors and connections from each resource in a nested list
+#' of tibbles.
+#'
+#' @seealso \code{\link{compile_ligrec}}
+compile_ligrec_descr <- function(){
+
+    compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
+
+}
 
 
 #' Helper Function to Reformat Omni_resources for LR Pipeline

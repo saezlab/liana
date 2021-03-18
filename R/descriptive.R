@@ -25,17 +25,23 @@
 #' ligand-receptor resources.
 #'
 #' @importFrom rlang %||%
-#' @importFrom magrittr %>% %<>%
+#' @importFrom magrittr %>% %<>% %T>%
 descriptive_plots <- function(ligrec = NULL, outdir = NULL){
+
+    log_success('Descriptive visualization of ligand-receptor resources.')
 
     options(intercell.fig_desc_dir = outdir)
 
-    ligrec %<>% `%||%`(compile_ligrec())
+    ligrec %<>% `%||%`(compile_ligrec_descr())
 
     ligrec %>%
-    ligrec_overlap %>%
+    ligrec_overlap %T>%
+    ligand_receptor_upset %>%
     summarize_overlaps %T>%
-    total_unique_bar
+    total_unique_bar %T>%
+    {log_success('Finished descriptive visualizations.')} %>%
+    invisible
+
 
 }
 
@@ -82,11 +88,13 @@ figure_path <- function(fname, ...){
 #' @return The same nested list of data frames as the input (`ligrec`) with
 #'     new columns added: unique, op_unique, omnipath, n_resources.
 #'
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %T>%
 #' @importFrom rlang !!!
 #' @importFrom purrr map map2
 #' @importFrom dplyr mutate select distinct group_by ungroup n_distinct
 ligrec_overlap <- function(ligrec){
+
+    log_success('Finding overlaps between resources.')
 
     grp_vars <- list(
         ligands = syms('uniprot'),
@@ -120,7 +128,8 @@ ligrec_overlap <- function(ligrec){
             mutate(unique = ifelse(omnipath, op_unique, n_resources) == 1)
         }
     ) %>%
-    setNames(keys)
+    setNames(keys) %T>%
+    {log_success('Finished finding overlaps between resources.')}
 
 }
 
@@ -140,6 +149,8 @@ ligrec_overlap <- function(ligrec){
 #' @importFrom dplyr group_by mutate ungroup summarize_all select first
 #' @importFrom tidyr pivot_longer
 summarize_overlaps <- function(ligrec_olap){
+
+    log_success('Summarizing overlaps.')
 
     ligrec_olap %>%
     map(
@@ -183,6 +194,8 @@ summarize_overlaps <- function(ligrec_olap){
 #' @importFrom stringr str_to_title
 total_unique_bar <- function(ligrec_olap){
 
+    log_success('Drawing overlap barplots.')
+
     res_order <-
         ligrec_olap$connections %>%
         filter(name == 'total') %>%
@@ -217,9 +230,8 @@ total_unique_bar <- function(ligrec_olap){
                     label = c(n_shared = 'Shared', n_unique = 'Unique'),
                     guide = guide_legend(title = '')
                 ) +
-                xlab('Records') +
+                xlab(str_to_title(label)) +
                 ylab('Resources') +
-                ggtitle(str_to_title(label)) +
                 theme_bw()
 
             cairo_pdf(
@@ -247,6 +259,8 @@ total_unique_bar <- function(ligrec_olap){
 #' @importFrom purrr cross2 map walk
 #' @importFrom magrittr %>%
 ligand_receptor_upset <- function(data, upset_args = list()){
+
+    log_success('Overlap upset plots.')
 
     data %>%
     names %>%
