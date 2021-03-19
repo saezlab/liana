@@ -540,6 +540,52 @@ ligand_receptor_classes <- function(
 }
 
 
+#' Ligand-receptor classification from HGNC
+#'
+#' @importFrom magrittr %>% %<>%
+#' @importFrom dplyr left_join
+#' @importFrom purrr map
+hgnc_ligrec_classes <- function(ligrec, largest = 15){
+
+    hgnc_lig <- hgnc_annot('ligand')
+    hgnc_rec <- hgnc_annot('receptor')
+
+    ligrec$connections %<>%
+        left_join(hgnc_lig, by = c('source' = 'uniprot')) %>%
+        left_join(
+            hgnc_rec,
+            by = c('target' = 'uniprot'),
+            suffix = c('_source', '_target')
+        )
+
+    ligrec$ligands %<>% left_join(hgnc_lig, by = 'uniprot')
+    ligrec$receptors %<>% left_join(hgnc_rec, by = 'uniprot')
+
+    ligrec %<>% map(largest_groups, category, largest = largest)
+
+    return(ligrec)
+
+}
+
+
+#' Classes from HGNC
+#'
+#' @importFrom OmnipathR import_omnipath_intercell
+#' @importFrom magrittr %>%
+#' @importFrom dplyr select
+hgnc_annot <- function(parent){
+
+    import_omnipath_intercell(
+        resource = 'HGNC',
+        scope = 'specific',
+        parent = parent,
+        entity_type = 'protein'
+    ) %>%
+    select(uniprot, category)
+
+}
+
+
 #' Ligand-receptor data stacked barplots with classifications
 #'
 #' Calls \code{\link{ligand_receptor_classes_bar}} with classification from
