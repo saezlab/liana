@@ -21,7 +21,7 @@ Connectome;
 SingleCellSignalR (SCAomni);
 iTALK;
 scTalk - to be implemented;
-cell2cell - to be implemented;
+cell2cell - to be implemented.
 
 ## Resources
 
