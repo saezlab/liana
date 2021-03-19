@@ -248,6 +248,7 @@ summarize_overlaps <- function(ligrec_olap){
 #' @importFrom ggplot2 ggplot aes geom_col ylab xlab ggtitle theme_bw
 #' @importFrom ggplot2 scale_fill_discrete guide_legend
 #' @importFrom stringr str_to_title
+#' @importFrom grDevices cairo_pdf
 total_unique_bar <- function(ligrec_olap){
 
     log_success('Drawing overlap barplots.')
@@ -363,6 +364,7 @@ ligand_receptor_upset <- function(data, upset_args = list()){
 #' @importFrom purrr map
 #' @importFrom UpSetR upset fromList
 #' @importFrom RCurl merge.list
+#' @importFrom grDevices cairo_pdf
 upset_generic <- function(data, label, omnipath, upset_args, ...){
 
     cols <- enquos(...)
@@ -525,6 +527,7 @@ ligand_receptor_classes_bar <- function(
 #' @importFrom ggplot2 scale_fill_manual guide_legend element_text
 #' @importFrom dplyr filter mutate
 #' @importFrom stringr str_to_title
+#' @importFrom grDevices cairo_pdf
 classes_bar <- function(data, entity, resource, var){
 
     var <- enquo(var)
