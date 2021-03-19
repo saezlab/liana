@@ -612,6 +612,7 @@ ligand_receptor_classes_bar_all <- function(ligrec){
     ligrec %T>%
     {log_success('Stacked barplots of classifications.')} %T>%
     ligand_receptor_classes_bar('SignaLink_pathway', pathway, NULL) %T>%
+    ligand_receptor_classes_bar('SIGNOR', pathway, 15) %T>%
     ligand_receptor_classes_bar('NetPath', pathway, 15) %T>%
     ligand_receptor_classes_bar('CancerSEA', state, 15) %T>%
     ligand_receptor_classes_bar(
