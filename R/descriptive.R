@@ -19,6 +19,54 @@
 #
 
 
+.palette1 <- c(
+    '#8D4C6A',
+    '#377EB8',
+    '#419681',
+    '#4DAF4A',
+    '#727E76',
+    '#984EA3',
+    '#CB6651',
+    '#FF7F00',
+    '#FFBF19',
+    '#FFFF33',
+    '#D2AA2D',
+    '#A65628',
+    '#CE6B73',
+    '#F781BF',
+    '#E41A1C',
+    '#1B9E77',
+    '#D95F02',
+    '#E7298A',
+    '#66A61E',
+    '#E6AB02'
+)
+
+.palette2 <- c(
+    '#176FC1',
+    '#A6D81C',
+    '#F89D0E',
+    '#00AAB0',
+    '#0A6167',
+    '#5B205F',
+    '#7264B9',
+    '#9E1639',
+    '#D22027',
+    '#ED0772',
+    '#FFF200',
+    '#4CBD38'
+)
+
+.resource_short <- list(
+    Ramilowski2015 = 'Ramilowski',
+    connectomeDB2020 = 'ConnDB2020',
+    Guide2Pharma = 'GuidePharm',
+    OmniPath_ligrec_q50 = 'OmniPath_LRQ',
+    OmniPath_ligrec = 'OmniPath_LR',
+    OmniPath_q50 = 'OmniPath_Q'
+)
+
+
 #' Ligand-receptor resources descriptive plots
 #'
 #' Generates a number of comparative and descriptive plots about
@@ -93,9 +141,10 @@ figure_path <- function(fname, ...){
 #'     new columns added: unique, op_unique, omnipath, n_resources.
 #'
 #' @importFrom magrittr %>% %T>%
-#' @importFrom rlang !!!
+#' @importFrom rlang !!! exec
 #' @importFrom purrr map map2
-#' @importFrom dplyr mutate select distinct group_by ungroup n_distinct
+#' @importFrom dplyr mutate select distinct group_by ungroup
+#' @importFrom dplyr n_distinct recode
 ligrec_overlap <- function(ligrec){
 
     log_success('Finding overlaps between resources.')
@@ -129,7 +178,10 @@ ligrec_overlap <- function(ligrec){
             group_by(!!!grp_vars[[key]]) %>%
             mutate(op_unique = n_distinct(omnipath)) %>%
             ungroup() %>%
-            mutate(unique = ifelse(omnipath, op_unique, n_resources) == 1)
+            mutate(
+                unique = ifelse(omnipath, op_unique, n_resources) == 1,
+                resource = exec(recode, .x = resource, !!!.resource_short)
+            )
         }
     ) %>%
     setNames(keys) %T>%
@@ -376,12 +428,15 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
 #' @param resource Character: name of the annotation resource.
 #' @param attr Name of the classifying variable from the annotation resource
 #'     (e.g. pathway).
+#' @param largest Numeric: how many of the largest groups to use. If `NULL`
+#'     all groups will be used.
 #'
 #' @importFrom rlang enquo quo_text sym !! :=
 #' @importFrom OmnipathR annotated_network
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr rename filter select left_join
-ligand_receptor_classes <- function(ligrec, resource, attr){
+#' @importFrom purrr map
+ligand_receptor_classes <- function(ligrec, resource, attr, largest = NULL){
 
     attr <- enquo(attr)
     attr_str <- quo_text(attr)
@@ -404,6 +459,168 @@ ligand_receptor_classes <- function(ligrec, resource, attr){
     ligrec$receptors %<>%
         left_join(annot, by = 'uniprot')
 
+    ligrec %<>% map(largest_groups, !!var, largest = largest)
+
     return(ligrec)
+
+}
+
+
+#' Ligand-receptor data stacked barplots with classification
+#'
+#' Assigns classes to ligands, receptors and their connections and for each
+#' of these entities creates a stacked barplot.
+#'
+#' @param ligrec List of tibbles with ligand-receptor data, as produced by
+#'     \code{\link{ligrec_overlap}}.
+#' @param resource Character: name of the annotation resource.
+#' @param attr Name of the classifying variable from the annotation resource
+#'     (e.g. pathway).
+#' @param largest Numeric: how many of the largest groups to use. If `NULL`
+#'     all groups will be used.
+#'
+#' @importFrom rlang enquo !!
+#' @importFrom magrittr %>% %<>%
+#' @importFrom purrr walk2
+ligand_receptor_classes_bar <- function(
+    ligrec,
+    resource,
+    attr,
+    largest = NULL
+){
+
+    attr <- enquo(attr)
+
+    ligrec %<>%
+    ligand_receptor_classes(
+        resource,
+        !!attr,
+        largest = largest
+    ) %>%
+    walk2(
+        names(.),
+        classes_bar,
+        resource,
+        !!attr
+    ) %>%
+    invisible
+
+}
+
+
+#' Stacked barplot from a data frame of classified entities
+#'
+#' @param data A data frame with classified entities (ligands, receptors or
+#'     connections).
+#' @param entity The name of the entity, to be included in the output file
+#'     name and the y axis label.
+#' @param resource The name of the resource, to be included in the output
+#'     file name.
+#'
+#' @return Returns `NULL`.
+#'
+#' @importFrom magrittr %>% %<>%
+#' @importFrom rlang enquo !! quo_text :=
+#' @importFrom ggplot2 ggplot aes geom_bar xlab ylab theme_bw theme
+#' @importFrom ggplot2 scale_fill_manual guide_legend element_text
+#' @importFrom dplyr filter mutate
+#' @importFrom stringr str_to_title
+classes_bar <- function(data, entity, resource, var){
+
+    var <- enquo(var)
+    legend_title <- var %>% quo_text %>% str_to_title
+
+    path <- figure_path('classes_%s_%s.pdf', entity, resource)
+
+    data %<>%
+        filter(!is.na(!!var)) %>%
+        order_by_group_size(resource) %>%
+        mutate(
+            !!var := factor(
+                !!var,
+                levels = sort(unique(!!var)),
+                ordered = TRUE
+            )
+        )
+
+    p <- ggplot(data, aes(x = resource, fill = !!var)) +
+        geom_bar() +
+        stat_count() +
+        scale_fill_manual(
+            values = .palette1,
+            guide = guide_legend(title = legend_title)
+        ) +
+        xlab('Resources') +
+        ylab(str_to_title(entity)) +
+        theme_bw() +
+        theme(
+            axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
+            legend.text = element_text(size = 7),
+            legend.key.size = unit(3, 'mm')
+        )
+
+    cairo_pdf(path, width = 5, height = 3, family = 'DINPro')
+
+        print(p)
+
+    dev.off()
+
+}
+
+
+#' Keep only the largest groups according to a grouping variable
+#'
+#' @param data A data frame.
+#' @param var Name of the grouping variable.
+#' @param largest Numeric: how many of the largest groups to keep. If `NULL`
+#'     the data frame will be returned unchanged.
+#'
+#' @importFrom rlang enquo !!
+#' @importFrom magrittr %>%
+#' @importFrom dplyr add_count filter arrange desc filter select
+#' @importFrom utils head
+largest_groups <- function(data, var, largest = NULL){
+
+    var <- enquo(var)
+
+    data %>%
+    {`if`(
+        is.null(largest),
+        .,
+        add_count(!!var) %>%
+        arrange(desc(n)) %>%
+        filter(!!var %in% head(unique(!!var), n = largest)) %>%
+        select(-n)
+    )}
+
+}
+
+
+#' Orders the levels of a factor variable by their number of elements
+#'
+#' @param data A data frame.
+#' @param var Name of a variable in the data frame.
+#'
+#' @return The data frame with the variable converted to a factor and its
+#'     levels ordered.
+#'
+#' @importFrom rlang enquo !! :=
+#' @importFrom dplyr add_count arrange desc mutate select
+#' @importFrom magrittr %>%
+order_by_group_size <- function(data, var){
+
+    var <- enquo(var)
+
+    data %>%
+    add_count(resource) %>%
+    arrange(desc(n)) %>%
+    mutate(
+        !!var := factor(
+            !!var,
+            levels = unique(!!var),
+            ordered = TRUE
+        )
+    ) %>%
+    select(-n)
 
 }
