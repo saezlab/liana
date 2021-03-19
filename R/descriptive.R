@@ -369,3 +369,41 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
 }
 
 
+#' Combines ligand-receptor and classification data
+#'
+#' @param ligrec List of tibbles with ligand-receptor data, as produced by
+#'     \code{\link{ligrec_overlap}}.
+#' @param resource Character: name of the annotation resource.
+#' @param attr Name of the classifying variable from the annotation resource
+#'     (e.g. pathway).
+#'
+#' @importFrom rlang enquo quo_text sym !! :=
+#' @importFrom OmnipathR annotated_network
+#' @importFrom magrittr %>% %<>%
+#' @importFrom dplyr rename filter select left_join
+ligand_receptor_classes <- function(ligrec, resource, attr){
+
+    attr <- enquo(attr)
+    attr_str <- quo_text(attr)
+    attr_src <- sprintf('%s_source', attr_str) %>% sym
+    attr_tgt <- sprintf('%s_target', attr_str) %>% sym
+
+    annot <- import_omnipath_annotations(resource = resource, wide = TRUE)
+
+    ligrec$connections %<>%
+        annotated_network(annot = annot, !!attr) %>%
+        filter(!!attr_src == !!attr_tgt) %>%
+        select(-!!attr_tgt) %>%
+        rename(!!attr := !!attr_src)
+
+    annot %<>% select(uniprot, !!attr)
+
+    ligrec$ligands %<>%
+        left_join(annot, by = 'uniprot')
+
+    ligrec$receptors %<>%
+        left_join(annot, by = 'uniprot')
+
+    return(ligrec)
+
+}
