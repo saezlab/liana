@@ -688,13 +688,17 @@ ligand_receptor_classes_bar <- function(
 #' @importFrom rlang enquo !! quo_text :=
 #' @importFrom ggplot2 ggplot aes geom_bar xlab ylab theme_bw theme
 #' @importFrom ggplot2 scale_fill_manual guide_legend element_text
-#' @importFrom dplyr filter mutate
-#' @importFrom stringr str_to_title
+#' @importFrom dplyr filter mutate pull
+#' @importFrom stringr str_to_title str_replace
 #' @importFrom grDevices cairo_pdf
 classes_bar <- function(data, entity, resource, var){
 
     var <- enquo(var)
-    legend_title <- var %>% quo_text %>% str_to_title
+    legend_title <- sprintf(
+        '%s (%s)',
+        var %>% quo_text %>% str_to_title,
+        resource %>% str_replace('_.*$', '')
+    )
 
     path <- figure_path('classes_%s_%s.pdf', entity, resource)
 
@@ -725,7 +729,9 @@ classes_bar <- function(data, entity, resource, var){
             legend.key.size = unit(3, 'mm')
         )
 
-    cairo_pdf(path, width = 5, height = 3, family = 'DINPro')
+    wide <- (data %>% pull(!!var) %>% as.character %>% nchar %>% max) > 30
+
+    cairo_pdf(path, width = `if`(wide, 7, 5), height = 3, family = 'DINPro')
 
         print(p)
 
