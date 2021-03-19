@@ -455,7 +455,9 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
             nsets = length(data),
             nintersects = 30,
             scale.intersections = `if`(omnipath, 'log10', 'identity'),
-            show.numbers = 'no'
+            show.numbers = 'no',
+            sets.x.label = str_to_title(label),
+            mainbar.y.label = sprintf('Shared %s', label)
         )
     )
 
