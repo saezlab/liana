@@ -204,6 +204,7 @@ bc_nes_vec <- map2(.x=str_glue("c{seq(0, 11)}"), .y=seq(1, 12), .f=function(x1, 
   distinct() %>%
   select(clust_pair, NES) %>%
   mutate(NES = as.double(NES))
+  # mutate(NES = scale(as.double(NES))[,1])
 
 
 
@@ -235,11 +236,10 @@ ggplot(rank_nes_regression, aes(x=adjr, y=-log10(pval), colour = Method, shape =
 
 
 # pearson corr
-rank_nes_freq
-
 rank_nes_corr <- rank_nes_freq %>%
+  filter(str_detect(name, "OmniPath")) %>%
   group_by(name) %>%
-  do(corr = cor.test(x = .$freq, y = .$NES)) %>%
+  do(corr = cor.test(x = .$freq, y = .$NES, method = "pearson")) %>%
   mutate(coef = corr %>% glance() %>% pull(estimate),
          pval = corr %>% glance() %>% pull(p.value)) %>%
   select(name, coef, pval)  %>%
@@ -251,8 +251,8 @@ ggplot(rank_nes_corr, aes(x=coef, y=-log10(pval), colour = Method, shape = Resou
   geom_point(size=5) +
   scale_color_manual(values=brewer.pal(6, "Dark2")) +
   scale_shape_manual(values=1:nlevels(rank_nes_regression$Resource)) +
-  xlab("Pearson Correlation Coefficient")  +
-  ggtitle("Correlation of Cell-Pair Activities x NES")
+  xlab("Spearman Correlation Coefficient")  # +
+ # ggtitle("Correlation of Cell-Pair Activities x NES")
 
 
 
