@@ -550,6 +550,11 @@ ligand_receptor_classes <- function(
 
 #' Ligand-receptor classification from HGNC
 #'
+#' @param ligrec List of tibbles with ligand-receptor data, as produced by
+#'     \code{\link{ligrec_overlap}}.
+#' @param largest Numeric: how many of the largest groups to use. If `NULL`
+#'     all groups will be used.
+#'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr left_join filter select rename
 #' @importFrom purrr map
@@ -593,6 +598,71 @@ hgnc_annot <- function(parent){
         entity_type = 'protein'
     ) %>%
     select(uniprot, category)
+
+}
+
+
+#' Ligand-receptor classification by localization
+#'
+#' Classifies ligands, receptors and their connections by localization:
+#' either plasmam mebrane transmembrane, plasma membrane peripheral or
+#' secreted. A receptor typically is not secreted, but here we keep this
+#' option just to see how many of them are eventually annotated as secreted.
+#' Such annotations are not always wrong, as some receptors indeed have
+#' secreted forms. The connections classified by all possible combinations
+#' of ligand and receptor localizations.
+#'
+#' @param ligrec List of tibbles with ligand-receptor data, as produced by
+#'     \code{\link{ligrec_overlap}}.
+#'
+#' @importFrom OmnipathR import_omnipath_intercell
+#' @importFrom magrittr %>% %<>%
+#' @importFrom dplyr filter select distinct mutate recode distinct
+#' @importFrom rlang exec !!!
+localization_ligrec_classes <- function(ligrec){
+
+    locations <- list(
+        S = 'secreted',
+        T = 'plasma_membrane_transmembrane',
+        P = 'plasma_membrane_peripheral'
+    )
+
+    annot <-
+        import_omnipath_intercell(
+            aspect = 'locational',
+            source = 'composite',
+            parent = locations %>% unlist
+        ) %>%
+        select(uniprot, location = category) %>%
+        mutate(
+            location = exec(recode, .x = location, !!!locations)
+        ) %>%
+        distinct
+
+    ligrec$connections %<>%
+        left_join(annot, by = c('source' == 'uniprot')) %>%
+        left_join(annot, by = c('target' == 'uniprot'),
+            suffix = c('_source', '_target')
+        ) %>%
+        mutate(
+            category = sprintf(
+                '%s \u2192 %s',
+                category_source,
+                category_target
+            )
+        ) %>%
+        select(
+            -category_source,
+            -category_target
+        )
+
+    ligrec$ligands %<>%
+        left_join(annot, by = 'uniprot')
+
+    ligrec$receptors %<>%
+        left_join(annot, by = 'uniprot')
+
+    return(ligrec)
 
 }
 
