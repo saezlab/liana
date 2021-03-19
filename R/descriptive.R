@@ -89,6 +89,7 @@ descriptive_plots <- function(
     ligrec %>%
     ligrec_overlap %T>%
     ligand_receptor_upset(upset_args = upset_args) %>%
+    ligand_receptor_classes_bar_all %>%
     summarize_overlaps %T>%
     total_unique_bar %T>%
     {log_success('Finished descriptive visualizations.')} %>%
@@ -432,20 +433,34 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
 #'     (e.g. pathway).
 #' @param largest Numeric: how many of the largest groups to use. If `NULL`
 #'     all groups will be used.
+#' @param filter_annot Expression for filtering the annotation data frame.
+#' @param label_annot Function to process the labels of the annotation
+#'     variable (e.g. to shorten long strings).
 #'
 #' @importFrom rlang enquo quo_text sym !! :=
 #' @importFrom OmnipathR annotated_network
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr rename filter select left_join
 #' @importFrom purrr map
-ligand_receptor_classes <- function(ligrec, resource, attr, largest = NULL){
+ligand_receptor_classes <- function(
+    ligrec,
+    resource,
+    attr,
+    largest = NULL,
+    filter_annot = TRUE,
+    label_annot = identity
+){
 
     attr <- enquo(attr)
     attr_str <- quo_text(attr)
     attr_src <- sprintf('%s_source', attr_str) %>% sym
     attr_tgt <- sprintf('%s_target', attr_str) %>% sym
+    filter_annot <- enexprs(filter_annot)
 
-    annot <- import_omnipath_annotations(resource = resource, wide = TRUE)
+    annot <-
+        import_omnipath_annotations(resource = resource, wide = TRUE) %>%
+        filter(!!!filter_annot) %>%
+        mutate(!!attr := label_annot(!!attr))
 
     ligrec$connections %<>%
         annotated_network(annot = annot, !!attr) %>%
@@ -461,9 +476,41 @@ ligand_receptor_classes <- function(ligrec, resource, attr, largest = NULL){
     ligrec$receptors %<>%
         left_join(annot, by = 'uniprot')
 
-    ligrec %<>% map(largest_groups, !!var, largest = largest)
+    ligrec %<>% map(largest_groups, !!attr, largest = largest)
 
     return(ligrec)
+
+}
+
+
+#' Ligand-receptor data stacked barplots with classifications
+#'
+#' Calls \code{\link{ligand_receptor_classes_bar}} with classification from
+#' many annotation resources.
+#'
+#' @param ligrec List of tibbles with ligand-receptor data, as produced by
+#'     \code{\link{ligrec_overlap}}.
+#'
+#' @return Returns the input data frame unchanged.
+#'
+#' @importFrom magrittr %T>% %>%
+#' @importFrom stringr str_sub str_to_title
+ligand_receptor_classes_bar_all <- function(ligrec){
+
+    ligrec %T>%
+    {log_success('Stacked barplots of classifications.')} %T>%
+    ligand_receptor_classes_bar('SignaLink_pathway', pathway, NULL) %T>%
+    ligand_receptor_classes_bar('NetPath', pathway, 15) %T>%
+    ligand_receptor_classes_bar('CancerSEA', state, 15) %T>%
+    ligand_receptor_classes_bar(
+        'MSigDB',
+        geneset,
+        15,
+        filter_annot = collection == 'hallmark',
+        label_annot = function(x){str_to_title(str_sub(x, 10))}
+    ) %T>%
+    {log_success('Finished stacked barplots of classifications.')} %>%
+    invisible
 
 }
 
@@ -480,6 +527,7 @@ ligand_receptor_classes <- function(ligrec, resource, attr, largest = NULL){
 #'     (e.g. pathway).
 #' @param largest Numeric: how many of the largest groups to use. If `NULL`
 #'     all groups will be used.
+#' @param ... Passed to \code{\link{ligand_receptor_classes}}.
 #'
 #' @importFrom rlang enquo !!
 #' @importFrom magrittr %>% %<>%
@@ -488,7 +536,8 @@ ligand_receptor_classes_bar <- function(
     ligrec,
     resource,
     attr,
-    largest = NULL
+    largest = NULL,
+    ...
 ){
 
     attr <- enquo(attr)
@@ -497,7 +546,8 @@ ligand_receptor_classes_bar <- function(
     ligand_receptor_classes(
         resource,
         !!attr,
-        largest = largest
+        largest = largest,
+        ...
     ) %>%
     walk2(
         names(.),
@@ -584,13 +634,13 @@ classes_bar <- function(data, entity, resource, var){
 #' @importFrom utils head
 largest_groups <- function(data, var, largest = NULL){
 
-    var <- enquo(var)
+    var <- ensym(var)
 
     data %>%
     {`if`(
         is.null(largest),
         .,
-        add_count(!!var) %>%
+        add_count(., !!var) %T>%
         arrange(desc(n)) %>%
         filter(!!var %in% head(unique(!!var), n = largest)) %>%
         select(-n)
