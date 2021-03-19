@@ -508,6 +508,12 @@ ligand_receptor_classes <- function(
     label_annot = identity
 ){
 
+    if(resource == 'HGNC'){
+
+        return(ligrec %>% hgnc_ligrec_classes(largest = largest))
+
+    }
+
     attr <- enquo(attr)
     attr_str <- quo_text(attr)
     attr_src <- sprintf('%s_source', attr_str) %>% sym
@@ -543,7 +549,7 @@ ligand_receptor_classes <- function(
 #' Ligand-receptor classification from HGNC
 #'
 #' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr left_join
+#' @importFrom dplyr left_join filter select rename
 #' @importFrom purrr map
 hgnc_ligrec_classes <- function(ligrec, largest = 15){
 
@@ -556,7 +562,10 @@ hgnc_ligrec_classes <- function(ligrec, largest = 15){
             hgnc_rec,
             by = c('target' = 'uniprot'),
             suffix = c('_source', '_target')
-        )
+        ) %>%
+        filter(category_source == category_target) %>%
+        select(-category_target) %>%
+        rename(category = category_source)
 
     ligrec$ligands %<>% left_join(hgnc_lig, by = 'uniprot')
     ligrec$receptors %<>% left_join(hgnc_rec, by = 'uniprot')
@@ -612,6 +621,7 @@ ligand_receptor_classes_bar_all <- function(ligrec){
         filter_annot = collection == 'hallmark',
         label_annot = function(x){str_to_title(str_sub(x, 10))}
     ) %T>%
+    ligand_receptor_classes_bar('HGNC', category, 15) %T>%
     {log_success('Finished stacked barplots of classifications.')} %>%
     invisible
 
