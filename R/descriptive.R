@@ -19,6 +19,7 @@
 #
 
 
+# colors from Daniel
 .palette1 <- c(
     '#8D4C6A',
     '#377EB8',
@@ -42,6 +43,7 @@
     '#E6AB02'
 )
 
+# RWTH colors
 .palette2 <- c(
     '#176FC1',
     '#A6D81C',
@@ -55,6 +57,61 @@
     '#ED0772',
     '#FFF200',
     '#4CBD38'
+)
+
+# 13 shades of 4 colors (calm blue)
+.palette3 <- c(
+    '#007E9D',
+    '#00ACCB',
+    '#9ED3DD',
+    '#5F3950',
+    '#A190B1',
+    '#DCBAC7',
+    '#2B4035',
+    '#4E9495',
+    '#7CA2A3',
+    '#949673',
+    '#BCB590',
+    '#D7CBB5',
+    '#6A5340'
+)
+
+# Paul Tol palette, distinct
+.palette4 <- c(
+    '#88CCEE',
+    '#332288',
+    '#44AA99',
+    '#117733',
+    '#999933',
+    '#DDCC77',
+    '#CC6677',
+    '#882255',
+    '#AA4499'
+)
+
+# Paul Tol palette, distinct 21 shades of 7 colors
+.palette5 <- c(
+    '#771155',
+    '#AA4488',
+    '#CC99BB',
+    '#114477',
+    '#4477AA',
+    '#77AADD',
+    '#117777',
+    '#44AAAA',
+    '#77CCCC',
+    '#117744',
+    '#44AA77',
+    '#88CCAA',
+    '#777711',
+    '#AAAA44',
+    '#DDDD77',
+    '#774411',
+    '#AA7744',
+    '#DDAA77',
+    '#771122',
+    '#AA4455',
+    '#DD7788'
 )
 
 .resource_short <- list(
@@ -600,7 +657,7 @@ classes_bar <- function(data, entity, resource, var){
         geom_bar() +
         stat_count() +
         scale_fill_manual(
-            values = .palette1,
+            values = .palette5,
             guide = guide_legend(title = legend_title)
         ) +
         xlab('Resources') +
