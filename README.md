@@ -14,32 +14,32 @@ We provide the resources and methods as a pipeline for further use in this repos
 
 The methods implemented in this repository are:
 
-CellPhoneDB algorithm (via Squidpy)
-CellChat
-NATMI
-Connectome
-SingleCellSignalR (SCAomni)
-iTALK
-scTalk - to be implemented
-cell2cell - to be implemented
+CellPhoneDB algorithm (via Squidpy);
+CellChat;
+NATMI;
+Connectome;
+SingleCellSignalR (SCAomni);
+iTALK;
+scTalk - to be implemented;
+cell2cell - to be implemented;
 
 ## Resources
 
 The intercellular signalling resources were queried from OmniPath and are the following:
-CellChatDB
-CellPhoneDB
-Ramilowski2015
-Baccin2019
-LRdb
-Kiroauc2010
-ICELLNET
-iTALK
-EMBRACE
-HPMR
-Guide2Pharma
-connectomeDB2020
-talklr
-CellTalkDB
+CellChatDB;
+CellPhoneDB;
+Ramilowski2015;
+Baccin2019;
+LRdb;
+Kiroauc2010;
+ICELLNET;
+iTALK;
+EMBRACE;
+HPMR;
+Guide2Pharma;
+connectomeDB2020;
+talklr;
+CellTalkDB;
 OmniPathDB - a composite resource from all resources.
 
 Moreover, a Randomized resource can be generated via reshuffling any of the abovementioned using BiRewire, and each tool can be run with its 'Default' inbuilt resource.
