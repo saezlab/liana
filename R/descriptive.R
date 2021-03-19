@@ -514,6 +514,10 @@ ligand_receptor_classes <- function(
 
         return(ligrec %>% hgnc_ligrec_classes(largest = largest))
 
+    }else if(resource == 'OP-L'){
+
+        return(ligrec %>% localization_ligrec_classes)
+
     }
 
     attr <- enquo(attr)
@@ -622,16 +626,16 @@ hgnc_annot <- function(parent){
 localization_ligrec_classes <- function(ligrec){
 
     locations <- list(
-        S = 'secreted',
-        T = 'plasma_membrane_transmembrane',
-        P = 'plasma_membrane_peripheral'
+        secreted = 'S',
+        plasma_membrane_transmembrane = 'T',
+        plasma_membrane_peripheral = 'P'
     )
 
     annot <-
         import_omnipath_intercell(
             aspect = 'locational',
             source = 'composite',
-            parent = locations %>% unlist
+            parent = locations %>% names
         ) %>%
         select(uniprot, location = category) %>%
         mutate(
@@ -640,20 +644,24 @@ localization_ligrec_classes <- function(ligrec){
         distinct
 
     ligrec$connections %<>%
-        left_join(annot, by = c('source' == 'uniprot')) %>%
-        left_join(annot, by = c('target' == 'uniprot'),
+        left_join(annot, by = c('source' = 'uniprot')) %>%
+        left_join(annot, by = c('target' = 'uniprot'),
             suffix = c('_source', '_target')
         ) %>%
+        filter(
+            !is.na(location_source) &
+            !is.na(location_target)
+        ) %>%
         mutate(
-            category = sprintf(
+            location = sprintf(
                 '%s \u2192 %s',
-                category_source,
-                category_target
+                location_source,
+                location_target
             )
         ) %>%
         select(
-            -category_source,
-            -category_target
+            -location_source,
+            -location_target
         )
 
     ligrec$ligands %<>%
@@ -695,6 +703,7 @@ ligand_receptor_classes_bar_all <- function(ligrec){
         label_annot = function(x){str_to_title(str_sub(x, 10))}
     ) %T>%
     ligand_receptor_classes_bar('HGNC', category, 15) %T>%
+    ligand_receptor_classes_bar('OP-L', location) %T>%
     {log_success('Finished stacked barplots of classifications.')} %>%
     invisible
 
