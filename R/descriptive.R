@@ -747,7 +747,7 @@ classes_bar <- function(data, entity, resource, var){
 #' @param largest Numeric: how many of the largest groups to keep. If `NULL`
 #'     the data frame will be returned unchanged.
 #'
-#' @importFrom rlang enquo !!
+#' @importFrom rlang ensym !!
 #' @importFrom magrittr %>%
 #' @importFrom dplyr add_count filter arrange desc filter select
 #' @importFrom utils head

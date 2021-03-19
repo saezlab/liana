@@ -4,7 +4,7 @@
 \alias{ligand_receptor_classes_bar}
 \title{Ligand-receptor data stacked barplots with classification}
 \usage{
-ligand_receptor_classes_bar(ligrec, resource, attr, largest = NULL)
+ligand_receptor_classes_bar(ligrec, resource, attr, largest = NULL, ...)
 }
 \arguments{
 \item{ligrec}{List of tibbles with ligand-receptor data, as produced by
@@ -17,6 +17,8 @@ ligand_receptor_classes_bar(ligrec, resource, attr, largest = NULL)
 
 \item{largest}{Numeric: how many of the largest groups to use. If `NULL`
 all groups will be used.}
+
+\item{...}{Passed to \code{\link{ligand_receptor_classes}}.}
 }
 \description{
 Assigns classes to ligands, receptors and their connections and for each

@@ -4,7 +4,14 @@
 \alias{ligand_receptor_classes}
 \title{Combines ligand-receptor and classification data}
 \usage{
-ligand_receptor_classes(ligrec, resource, attr, largest = NULL)
+ligand_receptor_classes(
+  ligrec,
+  resource,
+  attr,
+  largest = NULL,
+  filter_annot = TRUE,
+  label_annot = identity
+)
 }
 \arguments{
 \item{ligrec}{List of tibbles with ligand-receptor data, as produced by
@@ -17,6 +24,11 @@ ligand_receptor_classes(ligrec, resource, attr, largest = NULL)
 
 \item{largest}{Numeric: how many of the largest groups to use. If `NULL`
 all groups will be used.}
+
+\item{filter_annot}{Expression for filtering the annotation data frame.}
+
+\item{label_annot}{Function to process the labels of the annotation
+variable (e.g. to shorten long strings).}
 }
 \description{
 Combines ligand-receptor and classification data
