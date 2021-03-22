@@ -146,7 +146,7 @@ descriptive_plots <- function(
     ligrec %>%
     ligrec_overlap %T>%
     ligand_receptor_upset(upset_args = upset_args) %>%
-    ligand_receptor_classes_bar_all %>%
+    ligrec_classes_all %>%
     summarize_overlaps %T>%
     total_unique_bar %T>%
     {log_success('Finished descriptive visualizations.')} %>%
@@ -677,7 +677,7 @@ localization_ligrec_classes <- function(ligrec){
 
 #' Ligand-receptor data stacked barplots with classifications
 #'
-#' Calls \code{\link{ligand_receptor_classes_bar}} with classification from
+#' Calls \code{\link{ligrec_classes}} with classification from
 #' many annotation resources.
 #'
 #' @param ligrec List of tibbles with ligand-receptor data, as produced by
@@ -687,23 +687,23 @@ localization_ligrec_classes <- function(ligrec){
 #'
 #' @importFrom magrittr %T>% %>%
 #' @importFrom stringr str_sub str_to_title
-ligand_receptor_classes_bar_all <- function(ligrec){
+ligrec_classes_all <- function(ligrec){
 
     ligrec %T>%
     {log_success('Stacked barplots of classifications.')} %T>%
-    ligand_receptor_classes_bar('SignaLink_pathway', pathway, NULL) %T>%
-    ligand_receptor_classes_bar('SIGNOR', pathway, 15) %T>%
-    ligand_receptor_classes_bar('NetPath', pathway, 15) %T>%
-    ligand_receptor_classes_bar('CancerSEA', state, 15) %T>%
-    ligand_receptor_classes_bar(
+    ligrec_classes_bar_enrich('SignaLink_pathway', pathway, NULL) %T>%
+    ligrec_classes_bar_enrich('SIGNOR', pathway, 15) %T>%
+    ligrec_classes_bar_enrich('NetPath', pathway, 15) %T>%
+    ligrec_classes_bar_enrich('CancerSEA', state, 15) %T>%
+    ligrec_classes_bar_enrich(
         'MSigDB',
         geneset,
         15,
         filter_annot = collection == 'hallmark',
         label_annot = function(x){str_to_title(str_sub(x, 10))}
     ) %T>%
-    ligand_receptor_classes_bar('HGNC', category, 15) %T>%
-    ligand_receptor_classes_bar('OP-L', location) %T>%
+    ligrec_classes_bar_enrich('HGNC', category, 15) %T>%
+    ligrec_classes_bar_enrich('OP-L', location) %T>%
     {log_success('Finished stacked barplots of classifications.')} %>%
     invisible
 
@@ -727,7 +727,7 @@ ligand_receptor_classes_bar_all <- function(ligrec){
 #' @importFrom rlang enquo !!
 #' @importFrom magrittr %>% %<>%
 #' @importFrom purrr walk2
-ligand_receptor_classes_bar <- function(
+ligrec_classes_bar_enrich <- function(
     ligrec,
     resource,
     attr,
@@ -750,6 +750,12 @@ ligand_receptor_classes_bar <- function(
         resource,
         !!attr
     ) %>%
+    walk2(
+        names(.),
+        classes_enrich,
+        resource,
+        !!attr
+    ) %>%
     invisible
 
 }
@@ -763,6 +769,7 @@ ligand_receptor_classes_bar <- function(
 #'     name and the y axis label.
 #' @param resource The name of the resource, to be included in the output
 #'     file name.
+#' @param var Name of the classifying variable.
 #'
 #' @return Returns `NULL`.
 #'
@@ -818,6 +825,37 @@ classes_bar <- function(data, entity, resource, var){
         print(p)
 
     dev.off()
+
+}
+
+#' Enrichment dot plot from a data frame of classified entities
+#'
+#' @param data A data frame with classified entities (ligands, receptors or
+#'     connections).
+#' @param entity The name of the entity, to be included in the output file
+#'     name and the y axis label.
+#' @param resource The name of the resource, to be included in the output
+#'     file name.
+#' @param var Name of the classifying variable.
+#'
+#' @return Returns `NULL`.
+#'
+#' @importFrom rlang ensym !!
+#' @importFrom magrittr %>%
+classes_enrich <- function(data, entity, resource, var){
+
+    var <- ensym(var)
+
+    data %>%
+    resource_vs_class_contingency(!!var)
+
+}
+
+
+#' @importFrom rlang ensym
+resource_vs_class_contingency <- function(data, var){
+
+    var <- ensym(var)
 
 }
 
