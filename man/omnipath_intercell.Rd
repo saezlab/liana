@@ -6,6 +6,12 @@
 \usage{
 omnipath_intercell(quality = NULL, ligrec = FALSE)
 }
+\arguments{
+\item{quality}{Quality measures for OmniPath CompositeDB (biased due to the
+prevalence of e.g. Ramilowski in the resources)}
+
+\item{ligrec}{whether to filter according to side}
+}
 \value{
 A tibble with Intercell interactions from OmnIPath
 }

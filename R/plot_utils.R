@@ -238,7 +238,6 @@ format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
 #' Helper function to convert list with all resources ranked to frequencies df
 #'
 #' @param full_list list with all resources ranked to frequencies df
-#'
 get_rank_frequencies <- function(full_list){
   # Combine all results into tool_resource list
   lnames <- map(names(full_list), function(l_name){

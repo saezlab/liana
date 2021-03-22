@@ -59,7 +59,6 @@ conn_sig <- conn_results %>%
   })
 
 
-
 sig_list <- list("CellChat" = cellchat_sig,
                  "Squidpy" = squidpy_sig,
                  "NATMI" = natmi_sig,
@@ -92,7 +91,8 @@ binary_heatm <- get_BigHeat(sig_list,
                             border_color = NA,
                             clustering_distance_rows = "binary",
                             clustering_distance_cols = "binary",
-                            treeheight_row = 0)
+                            treeheight_row = 0,
+                            treeheight_col = 100)
 
 
 # 3. Upset Plots by Resource

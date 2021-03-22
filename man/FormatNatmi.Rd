@@ -4,7 +4,7 @@
 \alias{FormatNatmi}
 \title{Helper function to load NATMI results from folder and format appropriately}
 \usage{
-FormatNatmi(output_path, .format)
+FormatNatmi(output_path, .format = TRUE)
 }
 \arguments{
 \item{output_path}{NATMI output path}

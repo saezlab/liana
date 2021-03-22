@@ -7,6 +7,14 @@ from OmniPath}
 \usage{
 omnipath_partners(side, quality = NULL, ligrec = FALSE)
 }
+\arguments{
+\item{side}{'ligand' (trans), 'receptor' (rec) or 'both' (both short or long notation can be used)}
+
+\item{quality}{Quality measures for OmniPath CompositeDB (biased due to the
+prevalence of e.g. Ramilowski in the resources)}
+
+\item{ligrec}{whether to filter according to side}
+}
 \description{
 Retrieves intercellular communication partners (transmitters or receivers)
 from OmniPath

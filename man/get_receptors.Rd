@@ -6,6 +6,13 @@
 \usage{
 get_receptors(resource, ...)
 }
+\arguments{
+\item{...}{
+  Arguments passed on to \code{\link[=intercell_connections]{intercell_connections}}
+  \describe{
+    \item{\code{resource}}{Name of current resource (taken from get_lr_resources)}
+  }}
+}
 \description{
 Retrieves receptors from one ligand-receptor resource
 }

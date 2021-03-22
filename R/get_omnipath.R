@@ -79,6 +79,7 @@ get_omni_resources <- function(){
 #' _full, based on ligrec resource quality quartile, or if only lig_rec)
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
 #' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
+#' @return A list of OmniPath resources formatted according to the method pipes
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     # A list of OmniPath variants to be returned
@@ -138,8 +139,7 @@ reform_omni <- function(omni_resources){
 
 
 #' Retrieves intercellular interactions from OmniPath
-#' @param quality
-#' @param ligrec
+#' @inheritParams omnipath_partners
 #' @return A tibble with Intercell interactions from OmnIPath
 omnipath_intercell <- function(
     quality = NULL,
@@ -207,6 +207,8 @@ omnipath_intercell <- function(
 
 
 #' Retrieves the interactions from one ligand-receptor resource
+#' @inheritDotParams OmnipathR::import_post_translational_interactions
+#' @inheritParams get_partners
 intercell_connections <- function(resource, ...){
 
     if(resource == 'OmniPath'){
@@ -228,7 +230,8 @@ intercell_connections <- function(resource, ...){
 
 
 #' Retrieves ligands from one ligand receptor resource
-#' @inheritDotParams OmnipathR::intercell_connections
+#' @inheritDotParams intercell_connections
+#' @inheritParams get_partners
 get_ligands <- function(resource, ...){
 
     get_partners(side = 'ligand', resource = resource, ...)
@@ -237,7 +240,7 @@ get_ligands <- function(resource, ...){
 
 
 #' Retrieves receptors from one ligand-receptor resource
-#' @inheritDotParams OmnipathR::intercell_connections
+#' @inheritDotParams intercell_connections
 get_receptors <- function(resource, ...){
 
     get_partners(side = 'receptor', resource = resource, ...)
@@ -248,9 +251,9 @@ get_receptors <- function(resource, ...){
 
 #' Retrieves intercellular communication partners (ligands or receptors) from
 #' one ligand-receptor resource.
-#' @param side indicates whether ligand or receptor
+#' @inheritParams omnipath_partners
 #' @param resource Name of current resource (taken from get_lr_resources)
-#' @inheritDotParams OmnipathR::omnipath_intercell
+#' @inheritDotParams omnipath_intercell
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){
@@ -287,9 +290,11 @@ get_partners <- function(side, resource, ...){
 
 #' Retrieves intercellular communication partners (transmitters or receivers)
 #' from OmniPath
-#' @param side
-#' @param quality
-#' @param ligrec
+#' @param side 'ligand' (trans), 'receptor' (rec) or 'both' (both short or long notation can be used)
+#' @param quality Quality measures for OmniPath CompositeDB (biased due to the
+#' prevalence of e.g. Ramilowski in the resources)
+#' @param ligrec whether to filter according to side
+#' @import OmnipathR
 omnipath_partners <- function(side,
                               quality = NULL,
                               ligrec = FALSE){

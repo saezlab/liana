@@ -4,10 +4,10 @@
 \alias{plot_freq_pca}
 \title{PCA plot for Cell type/cluster pair frequency for 'significant/top' hits}
 \usage{
-plot_freq_pca(sig_list)
+plot_freq_pca(freq_df)
 }
 \arguments{
-\item{sig_list}{named list of significant hits. Named list of methods with
+\item{freq_df}{named list of significant hits. Named list of methods with
 each element being a named list of resources}
 }
 \value{
