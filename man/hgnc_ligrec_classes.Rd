@@ -6,6 +6,13 @@
 \usage{
 hgnc_ligrec_classes(ligrec, largest = 15)
 }
+\arguments{
+\item{ligrec}{List of tibbles with ligand-receptor data, as produced by
+\code{\link{ligrec_overlap}}.}
+
+\item{largest}{Numeric: how many of the largest groups to use. If `NULL`
+all groups will be used.}
+}
 \description{
 Ligand-receptor classification from HGNC
 }

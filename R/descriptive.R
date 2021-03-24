@@ -847,15 +847,78 @@ classes_enrich <- function(data, entity, resource, var){
     var <- ensym(var)
 
     data %>%
-    resource_vs_class_contingency(!!var)
+    map(resource_vs_class_enrich, !!var)
 
 }
 
 
-#' @importFrom rlang ensym
-resource_vs_class_contingency <- function(data, var){
+#' Pairwise enrichment between two factors
+#'
+#' From a data frame with two categorical variables performs Barnard or
+#' Fisher tests between all combinations of the levels of the two variables.
+#' In each test the contingency table looks like: in \code{var1} belongs to
+#' level x or not vs. in \code{var2} belongs to level y or not.
+#'
+#' @param data A data frame with entities labeled with two categorical
+#'     variables \code{var1} and \code{var2}.
+#' @param var1 Name of the first categorical variable.
+#' @param var2 Name of the second categorical variable. Because in
+#'     ligand-receptor data it's always `resource` the default is `resource`.
+#' @param p_adj_method Adjustment method for multiple testing p-value
+#'     correction (see \code{stats::p.adjust}).
+#' @param test_method Characted: either "barnard" or "fisher".
+#' @param ... Passed to \code{Barnard::barnard.test}.
+#'
+#' @return A data frame with all possible combinations of the two categorical
+#'     variables, p-values, adjusted p-values and odds ratios.
+#'
+#' @importFrom rlang ensym !! !!! ensym quo_text exec
+#' @importFrom magrittr %>% %<>%
+#' @importFrom dplyr filter group_by group_modify mutate last
+#' @importFrom purrr cross_df map
+#' @importFrom Barnard barnard.test
+enrich2 <- function(
+    data,
+    var1,
+    var2 = resource,
+    p_adj_method = 'fdr',
+    test_method = 'barnard',
+    ...
+){
 
-    var <- ensym(var)
+    var1 <- ensym(var1)
+    var2 <- ensym(var2)
+    var1_str <- quo_text(var1)
+    var2_str <- quo_text(var2)
+
+    t_f <- c('TRUE', 'FALSE')
+
+    data %<>% select(!!var1, !!var2)
+
+    data %>%
+    {map(names(.), function(x){unique(.[[x]])})} %>%
+    setNames(names(data)) %>%
+    cross_df() %>%
+    filter(!is.na(!!var1) & !is.na(!!var2)) %>%
+    group_by(!!var1, !!var2) %>%
+    group_modify(
+        function(.x, .y){
+            f1 <- factor(data[[var1_str]] == .y[[var1_str]][1], levels = t_f)
+            f2 <- factor(data[[var2_str]] == .y[[var2_str]][1], levels = t_f)
+            result <- fisher.test(f1, f2)
+            odds_ratio <- result$estimate
+            if(test_method == 'barnard'){
+                sink('NUL')
+                result <- exec(barnard.test, !!!table(f1, f2), ...)
+                sink()
+            }
+            tibble(pval = last(result$p.value), odds_ratio = odds_ratio)
+        }
+    ) %>%
+    ungroup() %>%
+    mutate(
+        padj = p.adjust(pval, method = p_adj_method)
+    )
 
 }
 

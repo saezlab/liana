@@ -63,7 +63,8 @@ Imports:
     ggfortify,
     ggplot2,
     logger,
-    RCurl
+    RCurl,
+    Barnard
 Suggests:
     knitr,
     rmarkdown,
