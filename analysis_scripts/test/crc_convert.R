@@ -1,3 +1,8 @@
+require(Seurat)
+require(tidyverse)
+
+setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
+
 #' Helper function to convert CRC data to sparse Seurat
 sparsify_to_seurat <- function(counts_loc, meta_loc, save_loc){
     counts <- read_delim(counts_loc,
@@ -12,7 +17,7 @@ sparsify_to_seurat <- function(counts_loc, meta_loc, save_loc){
 
     CreateSeuratObject(counts = Seurat::as.sparse(crc_korean_counts),
                        project = "10X_CRC") %>%
-        Seurat::AddMetaData(crc_korean_meta) %>%
+        Seurat::AddMetaData(meta) %>%
         Seurat::NormalizeData() %>%
         Seurat::FindVariableFeatures() %>%
         saveRDS(., save_loc)
