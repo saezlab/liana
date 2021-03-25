@@ -4,7 +4,7 @@
 \alias{classes_enrich}
 \title{Enrichment dot plot from a data frame of classified entities}
 \usage{
-classes_enrich(data, entity, resource, var)
+classes_enrich(data, entity, resource, var, ...)
 }
 \arguments{
 \item{data}{A data frame with classified entities (ligands, receptors or
@@ -17,6 +17,8 @@ name and the y axis label.}
 file name.}
 
 \item{var}{Name of the classifying variable.}
+
+\item{...}{Passed to \code{\link{enrich2}}.}
 }
 \value{
 Returns `NULL`.

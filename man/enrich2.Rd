@@ -25,9 +25,11 @@ ligand-receptor data it's always `resource` the default is `resource`.}
 \item{p_adj_method}{Adjustment method for multiple testing p-value
 correction (see \code{stats::p.adjust}).}
 
-\item{test_method}{Characted: either "barnard" or "fisher".}
+\item{test_method}{Characted: either "barnard", "barnard2" or "fisher".
+"barnard" uses \code{Barnard::barnard.test} while "barnard2" uses
+\code{DescTools::BarnardTest}.}
 
-\item{...}{Passed to \code{Barnard::barnard.test}.}
+\item{...}{Passed to the function executing the Barnard test.}
 }
 \value{
 A data frame with all possible combinations of the two categorical

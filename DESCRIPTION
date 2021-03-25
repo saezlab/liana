@@ -64,7 +64,8 @@ Imports:
     ggplot2,
     logger,
     RCurl,
-    Barnard
+    Barnard,
+    DescTools
 Suggests:
     knitr,
     rmarkdown,

@@ -174,12 +174,13 @@ ensure_outdir <- function(outdir = NULL){
 #' Creates a path for a figure output
 #'
 #' @importFrom magrittr %>% %<>%
+#' @importFrom rlang !!! exec
 figure_path <- function(fname, ...){
 
     args <- list(...)
     outdir <- args$outdir
     args$outdir <- NULL
-    fname %<>% {do.call(sprintf, c(list(.), args))}
+    fname %<>% {exec(sprintf, ., !!!args)}
 
     outdir %>%
     ensure_outdir %>%
@@ -237,9 +238,9 @@ ligrec_overlap <- function(ligrec){
             mutate(op_unique = n_distinct(omnipath)) %>%
             ungroup() %>%
             mutate(
-                unique = ifelse(omnipath, op_unique, n_resources) == 1,
-                resource = exec(recode, .x = resource, !!!.resource_short)
-            )
+                unique = ifelse(omnipath, op_unique, n_resources) == 1
+            ) %>%
+            shorten_resources()
         }
     ) %>%
     setNames(keys) %T>%
@@ -837,17 +838,79 @@ classes_bar <- function(data, entity, resource, var){
 #' @param resource The name of the resource, to be included in the output
 #'     file name.
 #' @param var Name of the classifying variable.
+#' @param ... Passed to \code{\link{enrich2}}.
 #'
 #' @return Returns `NULL`.
 #'
-#' @importFrom rlang ensym !!
+#' @importFrom rlang ensym !! quo_text
 #' @importFrom magrittr %>%
-classes_enrich <- function(data, entity, resource, var){
+#' @importFrom purrr discard
+#' @importFrom stringr str_to_title
+#' @importFrom viridis scale_fill_viridis
+#' @importFrom ggplot2 ggplot aes geom_tile xlab ylab
+#' @importFrom ggplot2 theme_bw element_text theme
+#' @importFrom dplyr pull
+classes_enrich <- function(data, entity, resource, var, ...){
 
     var <- ensym(var)
 
-    data %>%
-    map(resource_vs_class_enrich, !!var)
+    path <- figure_path('enrich_heatmap_%s_%s.pdf', entity, resource)
+    resource <- NULL
+
+    data %<>%
+        enrich2(!!var, ...) %>%
+        arrange(desc(abs(enrichment))) %>%
+        filter(
+            !!var %in% head(
+                unique(
+                    filter(., !is.infinite(enrichment)) %>% pull(!!var)
+                ),
+                n = 15
+            )
+        ) %>%
+        cluster_for_heatmap(!!var, resource, enrichment) %>%
+        replace_inf(enrichment) %>%
+        shorten_resources()
+
+    lim <- data %>% pull(enrichment) %>% abs %>% max
+
+    p <- ggplot(data, aes(x = resource, y = !!var, fill = enrichment)) +
+        geom_tile() +
+        geom_text(
+            mapping = aes(
+                label = ifelse(padj < .1, '\u2605', '')
+            ),
+            color = 'white',
+            size = 2,
+            family = 'DejaVu Sans'
+        ) +
+        scale_fill_viridis(
+            option = 'cividis',
+            limits = c(-lim, lim),
+            guide = guide_colorbar(title = 'Enrichment')
+        ) +
+        xlab('Resources') +
+        ylab(
+            sprintf(
+                '%s (%s)',
+                var %>% quo_text %>% str_to_title,
+                resource
+            )
+        ) +
+        theme_bw() +
+        theme(
+            axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)
+        )
+
+    height <- data %>% pull(!!var) %>% levels %>% length / 6 + 1
+
+    cairo_pdf(path, width = 5.5, height = height, family = 'DINPro')
+
+    print(p)
+
+    dev.off()
+
+    invisible(NULL)
 
 }
 
@@ -857,7 +920,9 @@ classes_enrich <- function(data, entity, resource, var){
 #' From a data frame with two categorical variables performs Barnard or
 #' Fisher tests between all combinations of the levels of the two variables.
 #' In each test the contingency table looks like: in \code{var1} belongs to
-#' level x or not vs. in \code{var2} belongs to level y or not.
+#' level x or not vs. in \code{var2} belongs to level y or not. By default
+#' Fisher test is used simply because Barnard tests take very very long to
+#' compute.
 #'
 #' @param data A data frame with entities labeled with two categorical
 #'     variables \code{var1} and \code{var2}.
@@ -866,8 +931,10 @@ classes_enrich <- function(data, entity, resource, var){
 #'     ligand-receptor data it's always `resource` the default is `resource`.
 #' @param p_adj_method Adjustment method for multiple testing p-value
 #'     correction (see \code{stats::p.adjust}).
-#' @param test_method Characted: either "barnard" or "fisher".
-#' @param ... Passed to \code{Barnard::barnard.test}.
+#' @param test_method Characted: either "barnard", "barnard2" or "fisher".
+#'     "barnard" uses \code{Barnard::barnard.test} while "barnard2" uses
+#'     \code{DescTools::BarnardTest}.
+#' @param ... Passed to the function executing the Barnard test.
 #'
 #' @return A data frame with all possible combinations of the two categorical
 #'     variables, p-values, adjusted p-values and odds ratios.
@@ -877,12 +944,14 @@ classes_enrich <- function(data, entity, resource, var){
 #' @importFrom dplyr filter group_by group_modify mutate last
 #' @importFrom purrr cross_df map
 #' @importFrom Barnard barnard.test
+#' @importFrom DescTools BarnardTest
+#' @importFrom RCurl merge.list
 enrich2 <- function(
     data,
     var1,
     var2 = resource,
     p_adj_method = 'fdr',
-    test_method = 'barnard',
+    test_method = 'fisher',
     ...
 ){
 
@@ -911,13 +980,23 @@ enrich2 <- function(
                 sink('NUL')
                 result <- exec(barnard.test, !!!table(f1, f2), ...)
                 sink()
+            }else if(test_method == 'barnard2'){
+                param <-
+                    list(...) %>%
+                    merge.list(list(fixed = NA, method = 'boschloo'))
+                result <- exec(BarnardTest, f1, f2, !!!param)
             }
             tibble(pval = last(result$p.value), odds_ratio = odds_ratio)
         }
     ) %>%
     ungroup() %>%
     mutate(
-        padj = p.adjust(pval, method = p_adj_method)
+        padj = p.adjust(pval, method = p_adj_method),
+        enrichment = ifelse(
+            odds_ratio < 1,
+            -1 / odds_ratio,
+            odds_ratio
+        ) %>% unname
     )
 
 }
@@ -977,5 +1056,102 @@ order_by_group_size <- function(data, var){
         )
     ) %>%
     select(-n)
+
+}
+
+
+#' In a data frame shortens the names of certain resources
+#'
+#' @importFrom dplyr mutate recode
+#' @importFrom magrittr %>%
+#' @importFrom rlang !!!
+shorten_resources <- function(data){
+
+    data %>%
+    mutate(
+        resource = exec(recode, .x = resource, !!!.resource_short)
+    )
+
+}
+
+
+#' Replace infinite values with a value slightly lower or higher than the
+#' extrema
+#'
+#' @importFrom magrittr %>%
+#' @importFrom rlang ensym !! :=
+#' @importFrom dplyr pull mutate
+#' @importFrom purrr discard
+replace_inf <- function(data, var, s = 1.1){
+
+    var <- ensym(var)
+
+    n_inf <-
+        data %>% pull(!!var) %>% discard(is.infinite) %>% min %>% min(0) * s
+    p_inf <-
+        data %>% pull(!!var) %>% discard(is.infinite) %>% max %>% max(0) * s
+
+    data %>%
+    mutate(
+        !!var := ifelse(
+            !!var == -Inf,
+            n_inf,
+            ifelse(
+                !!var == Inf,
+                p_inf,
+                !!var
+            )
+        )
+    )
+
+}
+
+
+#' Rearranges a data frame before plotting a heatmap
+#'
+#' Applies hierarchical clustering on two variables and converts them to
+#' factors with the order of their levels corresponding to the clusters.
+#'
+#' @param data A data frame used for the heatmap.
+#' @param cat1 Name of the first categorical variable (one axis of the
+#'     heatmap).
+#' @param cat2 Name of the second categorical variable (another axis of the
+#'     heatmap).
+#' @param val Name of the numeric variable corresponding to the color scale
+#'     of the heatmap.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom rlang ensym !! :=
+#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr pull mutate
+cluster_for_heatmap <- function(data, cat1, cat2, val){
+
+    cat1 <- ensym(cat1)
+    cat2 <- ensym(cat2)
+    val <- ensym(val)
+
+    m <-
+        data %>%
+        replace_inf(!!val) %>%
+        pivot_wider(
+            id_cols = !!cat1,
+            names_from = !!cat2,
+            values_from = !!val
+        ) %>%
+        {`rownames<-`(
+            as.matrix(select(., -1)),
+            pull(., 1)
+        )}
+
+    cat1_ord <-
+        m %>% dist %>% hclust %>% `$`('order') %>% {`[`(rownames(m), .)}
+    cat2_ord <-
+        m %>% t %>% dist %>% hclust %>% `$`('order') %>% {`[`(colnames(m), .)}
+
+    data %>%
+    mutate(
+        !!cat1 := factor(!!cat1, levels = cat1_ord, ordered = TRUE),
+        !!cat2 := factor(!!cat2, levels = cat2_ord, ordered = TRUE)
+    )
 
 }
