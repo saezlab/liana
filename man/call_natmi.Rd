@@ -7,11 +7,13 @@
 call_natmi(
   omni_resources,
   seurat_object = NULL,
+  wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
   omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
   natmi_path = "~/Repos/NATMI",
   em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
   ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
   output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+  .assay = "SCT",
   .format = TRUE,
   .write_data = FALSE,
   .subsampling_pipe = FALSE,

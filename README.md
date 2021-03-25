@@ -43,3 +43,9 @@ CellTalkDB;
 OmniPathDB - a composite resource from all resources.
 
 Moreover, a Randomized resource can be generated via reshuffling any of the abovementioned using BiRewire, and each tool can be run with its 'Default' inbuilt resource.
+
+
+
+## Dependancies
+### Modified version of SingleCellSignalR (SCA)
+devtools::install_github(repo = "https://github.com/SCA-IRCM/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    

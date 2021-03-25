@@ -9,6 +9,7 @@
 #' @inheritDotParams CellChat::subsetCommunication
 #' @return A DF of intercellular communication network
 #' @import CellChat
+#' @export
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,

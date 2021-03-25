@@ -13,6 +13,7 @@
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
 #' @import iTALK Seurat tidyverse
+#' @export
 call_italk <- function(op_resource,
                        seurat_object,
                        assay = "SCT",
@@ -106,6 +107,7 @@ call_italk <- function(op_resource,
 #' Helper function to filter and format iTalk results
 #' @param italk_res iTalk results object
 #' @param remove.na bool whether to filter NA
+#' @export
 FormatiTALK <- function(italk_res,
                         remove.na = TRUE,
                         .DE = FALSE){

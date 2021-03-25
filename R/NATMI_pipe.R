@@ -39,6 +39,7 @@
 #'  divided by the sum of the mean expression of that ligand/receptor across all cell types
 #'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
 #'  @import rprojroot
+#'  @export
 call_natmi <- function(omni_resources,
                        seurat_object = NULL,
                        wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
@@ -155,6 +156,7 @@ omni_to_NATMI <- function(omni_resources,
 #' @param output_path NATMI output path
 #' @param .format bool whether to format output
 #' @return A list of NATMI results per resource loaded from the output directory
+#' @export
 FormatNatmi <- function(output_path, .format=TRUE){
     list.files(output_path,
                all.files = TRUE,

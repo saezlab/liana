@@ -14,6 +14,7 @@
 #'   are more specific to a given pair of cell types
 #' 3) p-val
 #' @import Connectome
+#' @export
 call_connectome <- function(seurat_object,
                             op_resource,
                             ...,
@@ -76,6 +77,7 @@ call_connectome <- function(seurat_object,
 #' @param conn connectome object
 #' @param .log whether to log weight
 #' @inheritDotParams Connectome::FilterConnectome
+#' @export
 FormatConnectome <- function(conn,
                              ...){
     require(Connectome)

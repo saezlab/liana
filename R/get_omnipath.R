@@ -1,6 +1,7 @@
 #' Helper function that returns the name of each intercell resource in OmniPath
 #'
 #' @return a list of strings for each intercell resource in OmniPath
+#' @export
 get_lr_resources <- function(){
     return(
         list(
@@ -28,6 +29,7 @@ get_lr_resources <- function(){
 #' Function to get intercell resources as in OmniPath
 #' @return A list with intercellular resources from OmniPath
 #' @import OmnipathR tidyverse
+#' @export
 get_omni_resources <- function(){
 
     omni_list <- get_lr_resources()
@@ -80,6 +82,7 @@ get_omni_resources <- function(){
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
 #' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
 #' @return A list of OmniPath resources formatted according to the method pipes
+#' @export
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     # A list of OmniPath variants to be returned

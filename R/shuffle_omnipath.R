@@ -2,6 +2,7 @@
 #' @param op_resource Intrcell DB to shuffle
 #' @param .seed Value for set.seed
 #' @return A shuffled omnipath-formatted resource
+#' @export
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 
