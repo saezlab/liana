@@ -57,12 +57,12 @@ saveRDS(natmi_results, "output/benchmark/main_run/natmi_full.rds")
 # 3. CellChat -----------------------------------------------------------------
 cellchat_results <- omni_resources %>%
     map(function(db) call_cellchat(op_resource = db,
-                                   seurat_object = breast_cancer,
-                                   nboot = 100,
+                                   seurat_object = crc_belgian,
+                                   nboot = 10,
                                    exclude_anns = c(),
                                    thresh = 1,
-                                   assay = "SCT",
-                                   .normalize = FALSE,
+                                   assay = "RNA",
+                                   .normalize = TRUE,
                                    .do_parallel = TRUE)) %>%
     setNames(names(omni_resources))
 saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
@@ -72,8 +72,8 @@ saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
 sca_results <- omni_resources %>%
     map(function(db)
         call_sca(op_resource = db,
-                 breast_cancer,
-                 assay = 'SCT',
+                 crc_belgian,
+                 assay = 'RNA',
                  .format = TRUE,
                  s.score = 0,
                  logFC = log2(1.5)
@@ -84,13 +84,14 @@ saveRDS(sca_results, "output/benchmark/main_run/sca_full.rds")
 # 5. Connectome ----------------------------------------------------------------
 conn_results <- omni_resources %>%
     map(function(db)
-        call_connectome(seurat_object = breast_cancer,
+        call_connectome(seurat_object = crc_belgian,
+                        .spatial = FALSE,
                         op_resource = db,
-                        min.cells.per.ident = 10,
+                        min.cells.per.ident = 1,
                         p.values = TRUE,
                         calculate.DOR = FALSE,
                         .format = TRUE,
-                        assay = 'SCT'))
+                        assay = 'RNA'))
 saveRDS(conn_results, "output/benchmark/main_run/conn_full.rds")
 
 
@@ -98,8 +99,8 @@ saveRDS(conn_results, "output/benchmark/main_run/conn_full.rds")
 italk_results <- omni_resources %>%
     map(function(db)
         call_italk(op_resource = db,
-                   breast_cancer,
-                   assay = 'SCT',
+                   crc_belgian,
+                   assay = 'RNA',
                    .format = TRUE,
                    .DE = TRUE
         ))
