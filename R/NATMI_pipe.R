@@ -41,18 +41,17 @@
 #'  @import rprojroot
 call_natmi <- function(omni_resources,
                        seurat_object = NULL,
+                       wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
                        omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
                        natmi_path = "~/Repos/NATMI",
                        em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
                        ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
                        output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+                       .assay = "SCT",
                        .format = TRUE,
                        .write_data = FALSE,
                        .subsampling_pipe = FALSE,
                        .seed = 1004){
-
-    require(rprojroot)
-    project_rootdir <- find_rstudio_root_file()
     py_set_seed(.seed)
 
     if(.subsampling_pipe){
@@ -64,7 +63,7 @@ call_natmi <- function(omni_resources,
     if(.write_data){
         message(str_glue("Writing EM to {em_path}"))
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
-                                                    assay = "SCT",
+                                                    assay = .assay,
                                                     slot = "data"))) - 1),
                   file = em_path,
                   row.names = TRUE)
@@ -120,7 +119,7 @@ call_natmi <- function(omni_resources,
     })
 
     # set dir back to project
-    setwd(project_rootdir) # possibly hangs here
+    setwd(wd_path) # possibly hangs here
 
     # load results
     natmi_results <- FormatNatmi(output_path, .format)

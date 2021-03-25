@@ -1,68 +1,65 @@
-library(data.table)
-library(Matrix)
-
-crc_counts <- read_delim("input/crc_data/crc_processed.txt",
-                         delim = "\t") %>%
-    as.data.frame() %>%
-    column_to_rownames("Index")
+# Check Belgian
+crc_belgian <- readRDS("input/crc_data/crc_belgian.rds")
+crc_korean <- readRDS("input/crc_data/crc_korean.rds")
 
 
-# Load and check metadata
-crc_korean_meta <- read_delim("input/crc_data/GSE132465_GEO_processed_CRC_10X_cell_annotation.txt",
-                       delim = "\t") %>%
-    as.data.frame() %>%
-    column_to_rownames("Index")
+belgian_clusters <- crc_belgian@meta.data %>%
+    unite(Cell_type, Cell_subtype, col = "cc", remove = FALSE, sep=">") %>%
+    # Filter Unknown and Unspecified
+    filter(!(str_detect("Unknown", Cell_subtype))) %>%
+    filter(!(str_starts("Unspecified Plasma", Cell_subtype))) %>%
+    # Myoloids_SPP1+A/B into Myoloids_SPP1+ (+ fix typo)
+    mutate(cc = if_else(str_detect(cc, "SPP1"),
+                        "Myoloids>SPP1+",
+                        cc)
+           ) %>%
+    # Group Healthy Epithelial Cells
+    mutate(cc = if_else((str_detect(cc, "Epithelial") & !str_detect(cc, "CMS")),
+                        "Epithelial>Healthy",
+                        cc
+                        )
+    ) %>%
+    group_by(cc) %>%
+    summarise(n())
 
-korean_clusters <- crc_korean_meta %>%
-    group_by(Cell_type, Cell_subtype) %>%
+korean_clusters <- crc_korean@meta.data %>%
+    # Filter Unknown Subtypes
+    filter(Cell_subtype != "Unknown") %>%
+    unite(Cell_type, Cell_subtype, col = "cc", remove = FALSE, sep=">") %>%
+    # Myoloids_SPP1+A/B into Myoloids_SPP1+ (+ fix typo)
+    mutate(cc = if_else(str_detect(cc, "SPP1"),
+                        "Myoloids>SPP1+",
+                        cc)
+    ) %>%
+    # Group Healthy Epithelial Cells
+    mutate(cc = if_else((str_detect(cc, "Epithelial") & !str_detect(cc, "CMS")),
+                        "Epithelial>Healthy",
+                        cc
+                        )
+           ) %>%
+    group_by(cc) %>%
     summarise(n())
 
 
-crc_protocols_meta <- read_delim("input/crc_data/GSE132257_processed_protocol_and_fresh_frozen_cell_annotation.txt",
-                              delim = "\t") %>%
-    as.data.frame() %>%
-    column_to_rownames("Index")
+setdiff(belgian_clusters$cc, korean_clusters$cc)
+setdiff(korean_clusters$cc, belgian_clusters$cc)
+# Myeloids_SPP1+A and Myeloids_SPP1+B -> Myeloids_SPP1+
+# Epithelial Cells -> Tumour, Stemlike, and Normal
+#
 
-protocols_clusters <- crc_protocols_meta %>%
-    group_by(Cell_type, Cell_subtype) %>%
-    summarise(n())
-
-
-crc_belgian_meta <- read_delim("input/crc_data/GSE144735_processed_KUL3_CRC_10X_annotation.txt",
-                                 delim = "\t") %>%
-    as.data.frame() %>%
-    column_to_rownames("Index")
-
-
-belgian_clusters <- crc_belgian_meta %>%
-    group_by(Cell_type, Cell_subtype) %>%
-    summarise(n())
+xd <- belgian_clusters %>%
+    tidyr::separate(cc, into = c("Cluster_types", "Cluster_subtypes"), sep = ">")
 
 
 
 
 
-# Basic function to convert human to mouse gene names
-convertHumanGeneList <- function(x){
-    require("biomaRt")
-    human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-    mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
-    genesV2 = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = x
-                     , mart = human, attributesL = c("mgi_symbol"),
-                     martL = mouse, uniqueRows=T)
-    humanx <- unique(genesV2[, 2])
-    # Print the first 6 genes found to the screen
-    print(head(humanx))
-    return(humanx)
-}
-
-unique(omni_resources$OmniPath)
-genesV2[, 2]
 
 
-genesV2 = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol",
-                 values = omni_resources$Random$source,
-                 mart = human, attributesL = c("mgi_symbol"),
-                 martL = mouse, uniqueRows=T)
 
-unique(genesV2)
+
+
+
+
+
+

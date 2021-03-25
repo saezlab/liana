@@ -51,8 +51,8 @@ def reformat(x):
 
 def convert_anndata(exprs,
                     meta,
-                    feature_meta,
-                    embedding):
+                    feature_meta
+                    ):
     """Convert R Seurat to Python Anndata
      Parameters
         ----------
@@ -62,14 +62,10 @@ def convert_anndata(exprs,
             Clustering metadata
         feature_meta
             Feature metadata (e.g. vst parameters from Seurat)
-        embedding
-            Dimensionality reduction data (e.g. UMAP, tSNE)
-
         Returns
             A converted AnnData Object
     """
     adata_seurat = sc.AnnData(X=exprs.T, obs=meta, var=feature_meta)
-    adata_seurat.obsm['umap'] = embedding
     adata_seurat.raw = adata_seurat.copy()
     return adata_seurat
 
@@ -78,7 +74,6 @@ def call_squidpy(intercell_resources,
                  exprs,
                  meta,
                  feature_meta,
-                 embedding,
                  ident):
     """Call Squidpy
          Parameters
@@ -92,8 +87,6 @@ def call_squidpy(intercell_resources,
             Clustering metadata
         feature_meta
             Feature metadata (e.g. vst parameters from Seurat)
-        embedding
-            Dimensionality reduction data (e.g. UMAP, tSNE)
         ident
             Cluster identity column
 
@@ -101,7 +94,7 @@ def call_squidpy(intercell_resources,
             Two lists: One with LR interaction pvalue results for each resource, and one with means.
     """
     
-    adata_seurat = convert_anndata(exprs, meta, feature_meta, embedding)
+    adata_seurat = convert_anndata(exprs, meta, feature_meta)
     # call squidpy
     squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
     

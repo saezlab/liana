@@ -19,7 +19,6 @@ call_squidpyR <- function(seurat_object,
     exprs <- GetAssayData(seurat_object)
     meta <- seurat_object[[]]
     feature_meta <- GetAssay(seurat_object)[[]]
-    embedding <- Embeddings(seurat_object, "umap")
 
 
     reticulate::use_python(python_path)
@@ -41,7 +40,6 @@ call_squidpyR <- function(seurat_object,
                                           exprs,
                                           meta,
                                           feature_meta,
-                                          embedding,
                                           .ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
