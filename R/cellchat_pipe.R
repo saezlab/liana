@@ -27,11 +27,14 @@ call_cellchat <- function(op_resource,
                                            "cell_surface_ligand-receptor"),
                           nboot = 100,
                           assay = "SCT",
+                          .seed = 1004,
                           .normalize = FALSE,
+                          .do_parallel = FALSE,
                           ...
                           ){
 
     stringsAsFactors <- options('stringsAsFactors')[[1]]
+
     options(stringsAsFactors = FALSE)
 
     data.input <- as.matrix(GetAssayData(seurat_object,
@@ -42,15 +45,19 @@ call_cellchat <- function(op_resource,
         data.input <- normalizeData(data.input)
     }
 
-    labels <- Idents(seurat_object)
     # create a dataframe of the cell labels
+    labels <- Idents(seurat_object)
+
     meta <- data.frame(group = labels, row.names = names(labels))
 
     cellchat.omni <- createCellChat(object = data.input,
                                meta = meta,
                                group.by = "group")
 
-    # future::plan("multiprocess", workers = 4) # do parallel
+
+    if(.do_parallel){
+        future::plan("multiprocess") # do parallel
+    }
 
     # load CellChatDB
     CellChatDB.omni <- CellChatDB.human
@@ -58,17 +65,18 @@ call_cellchat <- function(op_resource,
     if(!is.null(op_resource)){
         # get complexes and interactions from omnipath
         complex_interactions <- op_resource %>%
-            select("ligand" = source_genesymbol,
-                   "receptor" = target_genesymbol,
-                   "evidence" = sources,
-                   category_intercell_source,
-                   category_intercell_target,
-                   genesymbol_intercell_source,
-                   genesymbol_intercell_target,
-                   is_directed,
-                   is_stimulation,
-                   is_inhibition
-            ) %>%
+            select(
+                "genesymbol_intercell_source" = target,
+                "genesymbol_intercell_target" = source,
+                "ligand" = source_genesymbol,
+                "receptor" = target_genesymbol,
+                "evidence" = sources,
+                category_intercell_source,
+                category_intercell_target,
+                is_directed,
+                is_stimulation,
+                is_inhibition
+                ) %>%
             unite("annotation",
                   c(category_intercell_source, category_intercell_target),
                   sep="-") %>%
@@ -79,6 +87,7 @@ call_cellchat <- function(op_resource,
                    co_A_receptor = "",
                    co_I_receptor = "") %>%
             mutate_at(vars(everything()), ~ replace(., is.na(.), ""))
+
 
 
         # Get OmniPath directed info
@@ -134,29 +143,25 @@ call_cellchat <- function(op_resource,
             column_to_rownames("interaction_name2") %>%
             # NOTE: ligand - (subunit_1 + subunit_2)
             mutate(interaction_name_2 = str_glue("{ligand} - {receptor}")) %>%
-            mutate(interaction_name_2 = ifelse(str_detect(.data$genesymbol_intercell_target, "^COMPLEX"),
-                                               str_glue("{ligand} -", "{str_split(genesymbol_intercell_target, pattern='_')}"), interaction_name_2)) %>%
-            mutate(interaction_name_2 = ifelse(str_detect(.data$genesymbol_intercell_source, "^COMPLEX"),
-                                               str_glue("{ligand} -", "{str_split(genesymbol_intercell_source, pattern='_')}"), interaction_name_2)) %>%
+            mutate(interaction_name_2 = ifelse(str_detect(.data$receptor, "^COMPLEX"),
+                                               str_glue("{ligand} -", "{str_split(receptor, pattern='_')}"), interaction_name_2)) %>%
+            mutate(interaction_name_2 = ifelse(str_detect(.data$ligand, "^COMPLEX"),
+                                               str_glue("{ligand} -", "{str_split(ligand, pattern='_')}"), interaction_name_2)) %>%
             mutate(interaction_name_2 = str_replace(interaction_name_2, "c", "")) %>%
             mutate(interaction_name_2 = str_replace(interaction_name_2, "COMPLEX:", "")) %>%
             mutate(interaction_name_2 = str_replace(interaction_name_2, "-", "- ")) %>%
             mutate(interaction_name_2 = str_replace_all(interaction_name_2, ", ", "+")) %>%
             mutate(interaction_name_2 = str_replace_all(interaction_name_2, '"', ""))
-        # select(all_of(names(interaction_input)))
 
         # Get Omni Complexes
         omni_complexes <- complex_interactions %>%
-            filter(str_detect(genesymbol_intercell_source, "COMPLEX") |
-                       str_detect(genesymbol_intercell_target, "COMPLEX")) %>%
-            select(genesymbol_intercell_source,
-                   genesymbol_intercell_target)
+            filter(str_detect(ligand, "_") |
+                       str_detect(receptor, "_")) %>%
+            select(ligand, receptor)
 
         # Convert to CellChat format
-        omni_complexes <- union(omni_complexes$genesymbol_intercell_source,
-                                omni_complexes$genesymbol_intercell_target) %>%
-            str_subset(pattern = "COMPLEX") %>%
-            str_replace(pattern = "COMPLEX:", "") %>%
+        omni_complexes <- union(omni_complexes$ligand,
+                                omni_complexes$receptor) %>%
             enframe() %>%
             separate(col=value, sep="_",
                      into = c("subunit_1", "subunit_2",
@@ -191,11 +196,10 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
-    # NOTE !!!!! here we might be able to extend it further with OmniPath
-    # However, this might be too time-consuming and irrelevant.
     cellchat.omni <- projectData(cellchat.omni, PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
                                        raw.use=FALSE,
+                                       seed.use = .seed,
                                        nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups

@@ -9,6 +9,11 @@ reform_omni(omni_resources)
 \arguments{
 \item{omni_resources}{List: output from \code{compile_ligrec}.}
 }
+\value{
+A list of OmniPath resources, including OmniPath composite DB,
+    a reshuffled OmniPath, and a Default with NULL ( tool pipelines run
+    using their default resource)
+}
 \description{
 Helper Function to Reformat Omni_resources for LR Pipeline
 }

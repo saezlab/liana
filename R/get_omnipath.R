@@ -104,6 +104,8 @@ get_omni_resources <- function(){
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
 #'     duplicate LRs (mainly from composite OmniDB due to category
 #'     (adhesion vs lr))
+#'
+#' @return A list of OmniPath resources formatted according to the method pipes
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     # A list of OmniPath variants to be returned
@@ -175,6 +177,10 @@ compile_ligrec_descr <- function(){
 #' @importFrom purrr map pluck
 #' @importFrom dplyr distinct_at
 #' @importFrom magrittr %>%
+#'
+#' @return A list of OmniPath resources, including OmniPath composite DB,
+#'     a reshuffled OmniPath, and a Default with NULL ( tool pipelines run
+#'     using their default resource)
 reform_omni <- function(omni_resources){
 
     map(
@@ -190,6 +196,13 @@ reform_omni <- function(omni_resources){
                 .keep_all = TRUE
             )
         }
+    ) %>%
+    append(
+        list(
+            "Random" = shuffle_omnipath(.$connectomeDB2020),
+            "Default" = NULL
+        ),
+        .
     )
 
 }
@@ -296,13 +309,17 @@ intercell_connections <- function(resource, ...){
         entity_type = 'protein',
         ...
     ) %>%
-        as_tibble()
+        as_tibble() %>%
+        mutate(category_intercell_source = "ligand",
+               category_intercell_target = "receptor")
 
 }
 
 
 #' Retrieves ligands from one ligand receptor resource
+#'
 #' @inheritDotParams intercell_connections
+#' @inheritParams get_partners
 get_ligands <- function(resource, ...){
 
     get_partners(side = 'ligand', resource = resource, ...)
@@ -325,12 +342,12 @@ get_receptors <- function(resource, ...){
 #' @param side Either "ligand" or "receptor".
 #' @param resource Name of the resource. For a full list of resources
 #'     see \code{get_lr_resources}.
+#' @inheritParams omnipath_partners
+#' @inheritDotParams omnipath_intercell
 #'
 #' @importFrom rlang sym syms !!
 #' @importFrom magrittr %>%
 #' @importFrom dplyr select distinct rename
-#'
-#' @inheritDotParams omnipath_intercell
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){
@@ -368,13 +385,15 @@ get_partners <- function(side, resource, ...){
 #' Retrieves intercellular communication partners (transmitters or receivers)
 #' from OmniPath
 #'
-#' @param side Either "ligand" or "receptor".
+#' @param side Either 'ligand' (trans), 'receptor' (rec) or 'both' (both
+#'     short or long notation can be used).
 #' @param quality Numeric: a quality threshold for OmniPath between 0 and 1.
 #' @param ligrec Use only ligand-receptor interactions from OmniPath.
 #'
 #' @importFrom magrittr %>%
 #' @importFrom dplyr group_by filter ungroup
 #' @importFrom tibble as_tibble
+#' @importFrom OmnipathR import_omnipath_intercell
 omnipath_partners <- function(
     side,
     quality = NULL,

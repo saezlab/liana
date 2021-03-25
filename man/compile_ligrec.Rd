@@ -14,6 +14,9 @@ _full, based on ligrec resource quality quartile, or if only lig_rec)}
 duplicate LRs (mainly from composite OmniDB due to category
 (adhesion vs lr))}
 }
+\value{
+A list of OmniPath resources formatted according to the method pipes
+}
 \description{
 For each resource and OmniPath variant compiles tables of ligands,
 receptors and interactions.

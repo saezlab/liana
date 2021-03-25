@@ -8,7 +8,8 @@ from OmniPath}
 omnipath_partners(side, quality = NULL, ligrec = FALSE)
 }
 \arguments{
-\item{side}{Either "ligand" or "receptor".}
+\item{side}{Either 'ligand' (trans), 'receptor' (rec) or 'both' (both
+short or long notation can be used).}
 
 \item{quality}{Numeric: a quality threshold for OmniPath between 0 and 1.}
 

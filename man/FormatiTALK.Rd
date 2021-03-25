@@ -4,7 +4,7 @@
 \alias{FormatiTALK}
 \title{Filter and format iTalk results}
 \usage{
-FormatiTALK(italk_res, remove.na = TRUE)
+FormatiTALK(italk_res, remove.na = TRUE, .DE = FALSE)
 }
 \arguments{
 \item{italk_res}{iTalk results object}

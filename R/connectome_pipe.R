@@ -42,9 +42,7 @@ call_connectome <- function(seurat_object,
 
         # scale genes to ligands and receptors available in the resource
         connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)
-        print(length(connectome.genes))
         genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
-        print(length(genes))
 
         seurat_object <- ScaleData(seurat_object, features = genes)
 

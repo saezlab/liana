@@ -9,7 +9,7 @@ enrich2(
   var1,
   var2 = resource,
   p_adj_method = "fdr",
-  test_method = "barnard",
+  test_method = "fisher",
   ...
 )
 }
@@ -39,5 +39,7 @@ A data frame with all possible combinations of the two categorical
 From a data frame with two categorical variables performs Barnard or
 Fisher tests between all combinations of the levels of the two variables.
 In each test the contingency table looks like: in \code{var1} belongs to
-level x or not vs. in \code{var2} belongs to level y or not.
+level x or not vs. in \code{var2} belongs to level y or not. By default
+Fisher test is used simply because Barnard tests take very very long to
+compute.
 }

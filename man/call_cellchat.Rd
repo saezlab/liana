@@ -11,7 +11,9 @@ call_cellchat(
   exclude_anns = c("ecm-receptor", "cell_surface_ligand-receptor"),
   nboot = 100,
   assay = "SCT",
+  .seed = 1004,
   .normalize = FALSE,
+  .do_parallel = FALSE,
   ...
 )
 }

@@ -7,11 +7,13 @@
 get_ligands(resource, ...)
 }
 \arguments{
+\item{resource}{Name of the resource. For a full list of resources
+see \code{get_lr_resources}.}
+
 \item{...}{
   Arguments passed on to \code{\link[=intercell_connections]{intercell_connections}}
   \describe{
-    \item{\code{resource}}{Name of the resource. For a full list of resources
-see \code{get_lr_resources}.}
+    \item{\code{}}{}
   }}
 }
 \description{

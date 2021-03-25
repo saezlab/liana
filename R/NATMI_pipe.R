@@ -20,7 +20,7 @@
 #'     them to the NATMI dbs folder, then it will natively call the Python
 #'     modules of NATMI in the NATMI dir and save the output into a specified
 #'     directory. It will then load and format the output to a DF.
-#'     NB! Please stick to full paths.
+#'
 #'
 #' NATMI Arguments:
 #'   --interDB INTERDB
@@ -35,12 +35,18 @@
 #'   --out OUT             the path to save the analysis results
 #'
 #' Stats:
-#' 1) The mean-expression edge weights are calculated by multiplying the mean-expression level of the ligand in the
-#'   sending cell type by the mean expression of the receptor in the target cell type (no discriminatory information)
-#' 2) The specificity-based edge weights, help identify the most specific edges in the network
-#'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
-#'  divided by the sum of the mean expression of that ligand/receptor across all cell types
-#'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
+#' 1) The mean-expression edge weights are calculated by multiplying the
+#'    mean-expression level of the ligand in the
+#'    sending cell type by the mean expression of the receptor in the target
+#'    cell type (no discriminatory information)
+#' 2) The specificity-based edge weights, help identify the most specific
+#'    edges in the network
+#'    where each specificity is defined as the mean expression of the
+#'    ligand/receptor in a given cell type
+#'    divided by the sum of the mean expression of that ligand/receptor
+#'    across all cell types
+#'  # * a weight of 1 means both the ligand and receptor are only expressed
+#'      in one (not necessarily the same) cell type
 #'
 #' @importFrom rprojroot find_rstudio_root_file
 #' @importFrom reticulate py_set_seed
@@ -54,6 +60,7 @@ call_natmi <- function(
     em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
     ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
     output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+    .assay = "SCT",
     .format = TRUE,
     .write_data = FALSE,
     .subsampling_pipe = FALSE,
@@ -61,6 +68,7 @@ call_natmi <- function(
 ){
 
     project_rootdir <- find_rstudio_root_file()
+
     py_set_seed(.seed)
 
     if(.subsampling_pipe){
@@ -72,7 +80,7 @@ call_natmi <- function(
     if(.write_data){
         log_info("Writing EM to {em_path}")
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
-                                                    assay = "SCT",
+                                                    assay = .assay,
                                                     slot = "data"))) - 1),
                   file = em_path,
                   row.names = TRUE)
@@ -83,7 +91,8 @@ call_natmi <- function(
                   row.names = FALSE)
 
         log_info("Saving resources to {omnidbs_path}")
-        omni_to_NATMI(omnidbs_path)
+        omni_to_NATMI(omni_resources, omnidbs_path)
+
     }
 
     log_success("Output to be saved and read from {output_path}")
@@ -112,6 +121,7 @@ call_natmi <- function(
     }
 
     # submit native sys requests
+    # Check issue with Default
     omni_list %>% map(function(resource){
 
         log_success("Now Running: {resource}")
@@ -127,7 +137,7 @@ call_natmi <- function(
     })
 
     # set dir back to project
-    setwd(project_rootdir)
+    setwd(wd_path) # possibly hangs here
 
     # load results
     natmi_results <- FormatNatmi(output_path, .format)
@@ -143,12 +153,12 @@ call_natmi <- function(
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
 
-    omni_resources <- omni_resources %>%
+    op_resources <- omni_resources %>%
         purrr::list_modify("Default" = NULL)
 
-    names(omni_resources) %>%
+    names(op_resources) %>%
         map(function(x){
-            write.csv(omni_resources[[x]]  %>%
+            write.csv(op_resources[[x]]  %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
                           distinct() %>%
@@ -173,7 +183,8 @@ omni_to_NATMI <- function(omni_resources,
 #' @importFrom dplyr mutate select
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
-FormatNatmi <- function(output_path, .format){
+#'
+FormatNatmi <- function(output_path, .format = TRUE){
 
     list.files(output_path,
                all.files = TRUE,
