@@ -19,9 +19,7 @@ crc_belgian@meta.data <-  crc_belgian@meta.data %>%
     mutate(Cell_type = factor(Cell_type))
 crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data))
 crc_belgian <- SetIdent(crc_belgian, value = crc_belgian@meta.data$Cell_type)
-crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data)[1:2000])
-Idents(crc_belgian)
-
+crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data)[5000:10000])
 
 # Get Full Omni Resources
 # omni_resources <- compile_ligrec()

@@ -47,5 +47,6 @@ Moreover, a Randomized resource can be generated via reshuffling any of the abov
 
 
 ## Dependancies
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...
 ### Modified version of SingleCellSignalR (SCA)
-devtools::install_github(repo = "https://github.com/SCA-IRCM/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    
+devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    

@@ -77,4 +77,5 @@ Stats:
  divided by the sum of the mean expression of that ligand/receptor across all cell types
  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
  @import rprojroot
+ @export
 }
