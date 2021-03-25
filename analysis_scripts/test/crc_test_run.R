@@ -34,9 +34,7 @@ omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
 squidpy_results <- call_squidpyR(seurat_object = crc_belgian,
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
-                                 .ident = "clusters")
-saveRDS(squidpy_results, "output/benchmark/main_run/squidpy_full.rds")
-
+                                 .ident = "Cell_clusters")
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format
@@ -52,7 +50,6 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             .subsampling_pipe = FALSE,
                             .assay = "RNA"
                             )
-saveRDS(natmi_results, "output/benchmark/main_run/natmi_full.rds")
 
 # 3. CellChat -----------------------------------------------------------------
 cellchat_results <- omni_resources %>%
@@ -65,7 +62,6 @@ cellchat_results <- omni_resources %>%
                                    .normalize = TRUE,
                                    .do_parallel = TRUE)) %>%
     setNames(names(omni_resources))
-saveRDS(cellchat_results, "output/benchmark/main_run/cellchat_full.rds")
 
 
 # 4. SCA ----------------------------------------------------------------------
@@ -78,7 +74,6 @@ sca_results <- omni_resources %>%
                  s.score = 0,
                  logFC = log2(1.5)
         ))
-saveRDS(sca_results, "output/benchmark/main_run/sca_full.rds")
 
 
 # 5. Connectome ----------------------------------------------------------------
@@ -92,7 +87,6 @@ conn_results <- omni_resources %>%
                         calculate.DOR = FALSE,
                         .format = TRUE,
                         assay = 'RNA'))
-saveRDS(conn_results, "output/benchmark/main_run/conn_full.rds")
 
 
 # 6. iTALK
@@ -104,4 +98,3 @@ italk_results <- omni_resources %>%
                    .format = TRUE,
                    .DE = TRUE
         ))
-saveRDS(italk_results, "output/benchmark/main_run/italk_full.rds")
