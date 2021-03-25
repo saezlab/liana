@@ -855,7 +855,6 @@ classes_enrich <- function(data, entity, resource, var, ...){
     var <- ensym(var)
 
     path <- figure_path('enrich_heatmap_%s_%s.pdf', entity, resource)
-    resource <- NULL
 
     data %<>%
         enrich2(!!var, ...) %>%
@@ -877,8 +876,17 @@ classes_enrich <- function(data, entity, resource, var, ...){
     p <- ggplot(data, aes(x = resource, y = !!var, fill = enrichment)) +
         geom_tile() +
         geom_text(
+            # star: '\u2605'
             mapping = aes(
-                label = ifelse(padj < .1, '\u2605', '')
+                label = ifelse(
+                    padj < .2,
+                    ifelse(
+                        padj < .1,
+                        ifelse(padj < .05, '\u274B', '\u273B'),
+                        '\u2723'
+                    ),
+                    ''
+                )
             ),
             color = 'white',
             size = 2,
@@ -887,14 +895,16 @@ classes_enrich <- function(data, entity, resource, var, ...){
         scale_fill_viridis(
             option = 'cividis',
             limits = c(-lim, lim),
-            guide = guide_colorbar(title = 'Enrichment')
+            guide = guide_colorbar(
+                title = sprintf('Enrichment\nof %s', entity)
+            )
         ) +
         xlab('Resources') +
         ylab(
             sprintf(
                 '%s (%s)',
                 var %>% quo_text %>% str_to_title,
-                resource
+                sub('_.*', '', resource)
             )
         ) +
         theme_bw() +
@@ -902,9 +912,13 @@ classes_enrich <- function(data, entity, resource, var, ...){
             axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)
         )
 
-    height <- data %>% pull(!!var) %>% levels %>% length / 6 + 1
+    height <-
+        data %>% pull(!!var) %>% levels %>% length / 7 + 1.6
+    width <-
+        data %>% pull(!!var) %>% as.character %>% nchar %>% max %>%
+        {`if`(. > 25, `if`(. > 40, 7.5, 6.5), 5.5)}
 
-    cairo_pdf(path, width = 5.5, height = height, family = 'DINPro')
+    cairo_pdf(path, width = width, height = height, family = 'DINPro')
 
     print(p)
 
