@@ -8,6 +8,7 @@
 #' Stats:
 #' Mean expr
 #' pval from shuffle clusts
+#' @export
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
@@ -67,6 +68,7 @@ call_squidpyR <- function(seurat_object,
 #' @param .name omnipath resource name
 #' @param .pval_list p-value results from different dbs as a list from squidpy
 #' @param .mean_list mean list from squidpy
+#' @export
 squidpy_reformat <- function(.name,
                              .pval_list,
                              .mean_list){

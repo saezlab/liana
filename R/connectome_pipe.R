@@ -18,6 +18,7 @@
 # #' @importFrom Connectome ncomms8866_human ScaleData CreateConnectome
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
+#' @export
 call_connectome <- function(seurat_object,
                             op_resource,
                             ...,
@@ -83,6 +84,7 @@ call_connectome <- function(seurat_object,
 # #' @inheritDotParams Connectome::FilterConnectome
 #'
 # #' @importFrom Connectome FilterConnectome
+#' @export
 FormatConnectome <- function(conn,
                              ...){
 

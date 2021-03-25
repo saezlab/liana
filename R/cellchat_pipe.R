@@ -20,6 +20,7 @@
 #' @importFrom tibble column_to_rownames enframe
 #' @importFrom tidyr unite unnest separate
 #' @importFrom stringr str_glue
+#' @export
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,

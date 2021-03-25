@@ -118,6 +118,7 @@ call_italk <- function(
 #' @param remove.na bool whether to filter NA
 #'
 #' @importFrom tibble tibble
+#' @export
 FormatiTALK <- function(italk_res,
                         remove.na = TRUE,
                         .DE = FALSE){

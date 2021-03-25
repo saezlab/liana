@@ -15,12 +15,11 @@ crc_belgian@meta.data <-  crc_belgian@meta.data %>%
                         "Epithelial_Healthy",
                         Cell_clusters)
            ) %>%
-    mutate(Cell_clusters = factor(Cell_clusters))
+    mutate(Cell_clusters = factor(Cell_clusters)) %>%
+    mutate(Cell_type = factor(Cell_type))
 crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data))
-crc_belgian <- SetIdent(crc_belgian, value = crc_belgian@meta.data$Cell_clusters)
-crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data)[1:2000])
-Idents(crc_belgian)
-
+crc_belgian <- SetIdent(crc_belgian, value = crc_belgian@meta.data$Cell_type)
+crc_belgian <- subset(crc_belgian, cells = rownames(crc_belgian@meta.data)[5000:10000])
 
 # Get Full Omni Resources
 # omni_resources <- compile_ligrec()
@@ -34,7 +33,7 @@ omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
 squidpy_results <- call_squidpyR(seurat_object = crc_belgian,
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
-                                 .ident = "Cell_clusters")
+                                 .ident = "Cell_type")
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format

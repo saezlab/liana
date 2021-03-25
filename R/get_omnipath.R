@@ -1,6 +1,7 @@
 #' Helper function that returns the name of each intercell resource in OmniPath
 #'
 #' @return A list of strings for each intercell resource in OmniPath
+#' @export
 get_lr_resources <- function(){
 
     return(
@@ -34,6 +35,7 @@ get_lr_resources <- function(){
 #' @importFrom OmnipathR import_intercell_network
 #' @importFrom magrittr %>%
 #' @importFrom methods new
+#' @export
 get_omni_resources <- function(){
 
     omni_list <- get_lr_resources()
@@ -106,6 +108,7 @@ get_omni_resources <- function(){
 #'     (adhesion vs lr))
 #'
 #' @return A list of OmniPath resources formatted according to the method pipes
+#' @export
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     # A list of OmniPath variants to be returned
