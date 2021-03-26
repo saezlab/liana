@@ -49,17 +49,3 @@ setdiff(korean_clusters$cc, belgian_clusters$cc)
 
 xd <- belgian_clusters %>%
     tidyr::separate(cc, into = c("Cluster_types", "Cluster_subtypes"), sep = ">")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
