@@ -59,7 +59,7 @@ cellchat_results <- omni_resources %>%
                                    thresh = 1,
                                    assay = "RNA",
                                    .normalize = TRUE,
-                                   .do_parallel = TRUE)) %>%
+                                   .do_parallel = FALSE)) %>%
     setNames(names(omni_resources))
 
 

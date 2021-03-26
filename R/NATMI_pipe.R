@@ -165,15 +165,15 @@ FormatNatmi <- function(output_path, .format=TRUE){
         enframe() %>%
         separate(value, into = c("resource", "file"), remove = FALSE) %>%
         mutate(value =  value %>% map(function(csv)
-            read_csv(str_glue("{output_path}/{csv}")))) %>%
+            read.csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
         mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
-            df %>% select(source = `Sending cluster`,
-                          target = `Target cluster`,
-                          ligand = `Ligand symbol`,
-                          receptor = `Receptor symbol`,
-                          edge_avg_expr = `Edge average expression weight`,
-                          edge_specificity = `Edge average expression derived specificity`)
+            df %>% select(source = Sending.cluster,
+                          target = Target.cluster,
+                          ligand = Ligand.symbol,
+                          receptor = Receptor.symbol,
+                          edge_avg_expr = Edge.average.expression.weight,
+                          edge_specificity = Edge.average.expression.derived.specificity)
         }), result)) %>%
         deframe() %>%
         purrr::list_modify("lrc2a" = NULL) %>% # remove putative res if present
