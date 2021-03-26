@@ -8,23 +8,23 @@ However, these methods and resources are usually in a fixed combination of a met
 As such, we compare all combinations between 15 resources and 7 methods and explore the effect on downstream results.
 
 We provide the resources and methods as a pipeline for further use in this repository.
-
-
+  
+  
+  
 ## Methods
 
 The methods implemented in this repository are:
 
-CellPhoneDB algorithm (via Squidpy);
-CellChat;
-NATMI;
-Connectome;
-SingleCellSignalR (SCAomni);
-iTALK;
-scTalk - to be implemented;
-cell2cell - to be implemented.
-
+CellPhoneDB algorithm (via Squidpy);  
+CellChat;  
+NATMI;  
+Connectome;  
+SingleCellSignalR (SCAomni);  
+iTALK;  
+  
+  
 ## Resources
-
+  
 The intercellular signalling resources were queried from OmniPath and are the following:
 CellChatDB;  
 CellPhoneDB;  
@@ -65,31 +65,32 @@ devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v
 git clone https://github.com/asrhou/NATMI.git
   
   
+  
 ### R sessionInfo()
-R version 4.0.3 (2020-10-10)
-Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Ubuntu 20.04.2 LTS
-
-Matrix products: default
-BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
-LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
-
-locale:
+R version 4.0.3 (2020-10-10)  
+Platform: x86_64-pc-linux-gnu (64-bit)  
+Running under: Ubuntu 20.04.2 LTS  
+  
+Matrix products: default  
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0  
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0  
+  
+locale:  
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=de_DE.UTF-8   
  [6] LC_MESSAGES=en_US.UTF-8    LC_PAPER=de_DE.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
 [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
 
-attached base packages:
+attached base packages:  
 [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 
-other attached packages:
+other attached packages:  
  [1] intercell_0.0.1     ggfortify_0.4.11    RColorBrewer_1.1-2  UpSetR_1.4.0        magrittr_2.0.1      yardstick_0.0.7     BiRewire_3.22.0    
  [8] Matrix_1.2-18       tsne_0.1-3          slam_0.1-48         reticulate_1.18     rprojroot_2.0.2     SCAomni_0.0.1.8     Seurat_3.2.3       
 [15] iTALK_0.1.0         CellChat_0.5.5      Connectome_1.0.1    OmnipathR_2.0.0     jsonlite_1.7.2      igraph_1.2.6        forcats_0.5.1      
 [22] stringr_1.4.0       dplyr_1.0.4         purrr_0.3.4         readr_1.4.0         tidyr_1.1.2         tibble_3.0.6        ggplot2_3.3.3      
 [29] tidyverse_1.3.0     Biobase_2.50.0      BiocGenerics_0.36.0
 
-loaded via a namespace (and not attached):
+loaded via a namespace (and not attached):  
   [1] statnet.common_4.4.1        rsvd_1.0.3                  ica_1.0-2                   svglite_2.0.0               ps_1.5.0                   
   [6] foreach_1.5.1               lmtest_0.9-38               crayon_1.4.1                V8_3.4.0                    MASS_7.3-53                
  [11] MAST_1.16.0                 nlme_3.1-149                backports_1.2.1             qlcMatrix_0.9.7             reprex_1.0.0               
