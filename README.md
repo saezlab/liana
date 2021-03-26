@@ -47,7 +47,7 @@ Moreover, a Randomized resource can be generated via reshuffling any of the abov
    
    
 ## Dependancies
-Please check the .yml file (Recommended to use it to set up a conda environment) and the also install the following in R:
+Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/biorxiv/intercell.yml) file (Recommended to use it to set up a conda environment) and the also install the following in R:
    
 library(devtools)  
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...   
