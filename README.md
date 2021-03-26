@@ -26,42 +26,45 @@ cell2cell - to be implemented.
 ## Resources
 
 The intercellular signalling resources were queried from OmniPath and are the following:
-CellChatDB;
-CellPhoneDB;
-Ramilowski2015;
-Baccin2019;
-LRdb;
+CellChatDB;  
+CellPhoneDB;  
+Ramilowski2015;  
+Baccin2019;  
+LRdb;  
 Kiroauc2010;
-ICELLNET;
-iTALK;
-EMBRACE;
-HPMR;
-Guide2Pharma;
-connectomeDB2020;
-talklr;
-CellTalkDB;
-OmniPathDB - a composite resource from all resources.
-
+ICELLNET;  
+iTALK;  
+EMBRACE;  
+HPMR;  
+Guide2Pharma;  
+connectomeDB2020;  
+talklr;  
+CellTalkDB;  
+OmniPathDB - a composite resource from all resources.  
+  
 Moreover, a Randomized resource can be generated via reshuffling any of the abovementioned using BiRewire, and each tool can be run with its 'Default' inbuilt resource.
-
-
-
+  
+   
+   
 ## Dependancies
 Please check the .yml file (Recommended to use it to set up a conda environment) and the also install the following in R:
+   
+library(devtools)  
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...   
+devtools::install_github("sqjin/CellChat")  
+devtools::install_github('msraredon/Connectome', ref = 'master')   
+devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')   
+devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')   
 
-library(devtools)
-Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...
-devtools::install_github("sqjin/CellChat")
-devtools::install_github('msraredon/Connectome', ref = 'master')
-devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')
-devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')
-
+  
+  
 #### Modified version of SingleCellSignalR (SCA)
 devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    
-
+  
 #### Clone NATMI, as it is ran natively (i.e. in cmd)
 git clone https://github.com/asrhou/NATMI.git
-
+  
+  
 ### R sessionInfo()
 R version 4.0.3 (2020-10-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
