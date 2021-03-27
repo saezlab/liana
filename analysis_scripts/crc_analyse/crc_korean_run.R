@@ -82,7 +82,7 @@ saveRDS(italk_results, "output/crc_res/italk_results.rds")
 cellchat_results <- omni_resources %>%
     map(function(db) call_cellchat(op_resource = db,
                                    seurat_object = crc_korean,
-                                   nboot = 1000,
+                                   nboot = 100,
                                    exclude_anns = c(),
                                    thresh = 1,
                                    assay = "RNA",
