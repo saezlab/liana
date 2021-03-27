@@ -9,7 +9,7 @@ belgian_clusters <- format_crc_meta(crc_belgian) %>%
 
 korean_clusters <- format_crc_meta(crc_korean) %>%
     pluck("meta.data") %>%
-    group_by(Cell_clusters) %>%
+    group_by(Cell_subtype) %>%
     summarise(n())
 
 

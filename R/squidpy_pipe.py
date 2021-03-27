@@ -24,7 +24,7 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
             interactions=op_resource,
             corr_method = "fdr_bh",
             threshold=0.1, seed=1004,
-            n_perms=1000, n_jobs = 128
+            n_perms=10000, n_jobs = -5
             ) # should replace with kwargs and elipses
         return res
     except ValueError as e:
