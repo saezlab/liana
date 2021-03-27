@@ -1,3 +1,8 @@
+library(intercell)
+sapply(list.files("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/R/", pattern = ".R", full.names = TRUE), source)
+setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
+
+
 # Load Data
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
     format_crc_meta()
@@ -18,7 +23,7 @@ omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = crc_korean,
                                  omni_resources = omni_resources,
-                                 python_path = "/home/dbdimitrov/anaconda3/bin/python",
+                                 python_path = "/net/data.isilon/ag-saez/bq_ddimitrov/SOFTWARE/miniconda3/envs/ligrec/bin/python3.8",
                                  .ident = "Cell_subtype")
 saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
 
@@ -26,16 +31,16 @@ saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
 # save OmniPath Resource to NATMI format
 natmi_results <- call_natmi(omni_resources = omni_resources,
                             seurat_object = crc_korean,
-                            wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
-                            omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-                            natmi_path = "~/Repos/NATMI",
-                            em_path = "~/Repos/ligrec_decoupleR/input/crc_korean_em.csv",
-                            ann_path = "~/Repos/ligrec_decoupleR/input/crc_korean_ann.csv",
-                            output_path = "~/Repos/ligrec_decoupleR/output/crc_res/natmi_results.rds",
+                            wd_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/",
+                            omnidbs_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/input/omni_natmi",
+                            natmi_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/NATMI/",
+                            em_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/input/crc_korean_counts.csv",
+                            ann_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/input/crc_korean_ann.csv",
+                            output_path = "/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/output/crc_natmi_test/",
                             .write_data = TRUE,
                             .subsampling_pipe = FALSE,
                             .assay = "RNA"
-                            )
+)
 saveRDS(natmi_results, "output/crc_res/natmi_results.rds")
 
 
@@ -51,6 +56,7 @@ cellchat_results <- omni_resources %>%
                                    .do_parallel = FALSE)) %>%
     setNames(names(omni_resources))
 saveRDS(cellchat_results, "output/crc_res/cellchat_results.rds")
+
 
 # 4. SCA ----------------------------------------------------------------------
 sca_results <- omni_resources %>%

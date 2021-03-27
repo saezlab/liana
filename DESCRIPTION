@@ -49,7 +49,6 @@ Depends:
     iTALK,
     Seurat,
     SCAomni,
-    rprojroot,
     reticulate,
     BiRewire,
     yardstick,
