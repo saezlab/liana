@@ -53,7 +53,7 @@ cellchat_results <- omni_resources %>%
                                    thresh = 1,
                                    assay = "RNA",
                                    .normalize = TRUE,
-                                   .do_parallel = FALSE)) %>%
+                                   .do_parallel = TRUE)) %>%
     setNames(names(omni_resources))
 saveRDS(cellchat_results, "output/crc_res/cellchat_results.rds")
 
