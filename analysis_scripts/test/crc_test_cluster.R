@@ -7,7 +7,6 @@ setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
     format_crc_meta()
 crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data)[5000:7500])
-crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data))
 
 crc_korean@meta.data <- crc_korean@meta.data %>%
     mutate(Cell_subtype = factor(Cell_subtype))
