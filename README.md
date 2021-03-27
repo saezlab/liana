@@ -82,9 +82,10 @@ Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...
 devtools::install_github("sqjin/CellChat")  
 devtools::install_github('msraredon/Connectome', ref = 'master')   
 devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')   
-devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')  
 # A modified version of SingleCellSignalR (SCA) that enables external resources
-devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    
+devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
+# Install this repos
+devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')  
 ```
 
   

@@ -41,7 +41,7 @@ call_cellchat <- function(op_resource,
 
 
     if(.do_parallel){
-        future::plan("multiprocess") # do parallel
+        future::plan("multicore") # do parallel
     }
 
     # load CellChatDB
@@ -189,7 +189,7 @@ call_cellchat <- function(op_resource,
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
     cellchat.omni <- filterCommunication(cellchat.omni,
-                                         min.cells = 10)
+                                         min.cells = 1)
 
 
     # Extract the inferred cellular communication network
