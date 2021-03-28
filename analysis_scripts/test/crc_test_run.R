@@ -1,11 +1,10 @@
 # Load Data
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
     format_crc_meta()
+# saveRDS(crc_korean, "input/crc_data/crc_korean_mod.rds")
+
 crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data)[5000:7500])
 crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data))
-
-crc_korean@meta.data <- crc_korean@meta.data %>%
-    mutate(Cell_subtype = factor(Cell_subtype))
 
 # Get Full Omni Resources
 # omni_resources <- compile_ligrec()
@@ -16,7 +15,7 @@ omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
 
 
 # 1. Squidpy -------------------------------------------------------------------
-squidpy_results <- call_squidpyR(seurat_object = crc_korean,
+squidpy_results <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_korean_mod.rds"),
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  .ident = "Cell_subtype")
@@ -32,9 +31,10 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             em_path = "~/Repos/ligrec_decoupleR/input/crc_korean_em.csv",
                             ann_path = "~/Repos/ligrec_decoupleR/input/crc_korean_ann.csv",
                             output_path = "~/Repos/ligrec_decoupleR/output/crc_res/natmi_results.rds",
-                            .write_data = TRUE,
+                            .write_data = FALSE,
                             .subsampling_pipe = FALSE,
-                            .assay = "RNA"
+                            .assay = "RNA",
+                            .num_cor = 11
                             )
 saveRDS(natmi_results, "output/crc_res/natmi_results.rds")
 

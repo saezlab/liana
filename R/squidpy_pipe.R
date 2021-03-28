@@ -16,12 +16,6 @@ call_squidpyR <- function(seurat_object,
                           .ident = "seurat_annotations",
                           .default = TRUE){
 
-    # prep seurat data for transfer
-    exprs <- GetAssayData(seurat_object)
-    meta <- seurat_object[[]]
-    feature_meta <- GetAssay(seurat_object)[[]]
-
-
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
@@ -37,10 +31,11 @@ call_squidpyR <- function(seurat_object,
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
+    # pass seurat
     py$squidpy_results <- py$call_squidpy(op_resources,
-                                          exprs,
-                                          meta,
-                                          feature_meta,
+                                          GetAssayData(seurat_object), #expr
+                                          seurat_object[[]], # meta
+                                          GetAssay(seurat_object)[[]], # feature_meta
                                           .ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
