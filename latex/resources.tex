@@ -1,0 +1,187 @@
+\documentclass{standalone}
+
+\usepackage[no-math]{fontspec}
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\usepackage{xltxtra}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,decorations.pathreplacing,calligraphy,positioning,shadows,fit,calc,arrows.meta,graphs,graphdrawing,quotes}
+\usegdlibrary{trees}
+\usepackage{color}
+\usepackage{xcolor}
+
+% Paul Tol 9 colors
+\definecolor{skyblue}{RGB}{136,204,238}
+\definecolor{slateblue}{RGB}{51,34,136}
+\definecolor{surfiegreen}{RGB}{68,170,153}
+\definecolor{chateaugreen}{RGB}{17,119,51}
+\definecolor{trendygreen}{RGB}{153,153,51}
+\definecolor{picasso}{RGB}{221,204,119}
+\definecolor{blush}{RGB}{204,102,119}
+\definecolor{royalheath}{RGB}{136,34,85}
+\definecolor{orchid}{RGB}{170,68,153}
+
+# Paul Tol 7 colors, 3 tones each
+\definecolor{pink0}{RGB}{119,17,85}
+\definecolor{pink1}{RGB}{170,68,136}
+\definecolor{pink2}{RGB}{204,153,187}
+\definecolor{blue0}{RGB}{17,68,119}
+\definecolor{blue1}{RGB}{68,119,170}
+\definecolor{blue2}{RGB}{119,170,221}
+\definecolor{turquoise0}{RGB}{17,119,119}
+\definecolor{turquoise1}{RGB}{68,170,170}
+\definecolor{turquoise2}{RGB}{119,204,204}
+\definecolor{green0}{RGB}{17,119,68}
+\definecolor{green1}{RGB}{68,170,119}
+\definecolor{green2}{RGB}{136,204,170}
+\definecolor{olive0}{RGB}{119,119,17}
+\definecolor{olive1}{RGB}{170,170,68}
+\definecolor{olive2}{RGB}{221,221,119}
+\definecolor{brown0}{RGB}{119,68,17}
+\definecolor{brown1}{RGB}{170,119,68}
+\definecolor{brown2}{RGB}{221,170,119}
+\definecolor{salmon0}{RGB}{119,17,34}
+\definecolor{salmon1}{RGB}{170,68,85}
+\definecolor{salmon2}{RGB}{221,119,136}
+
+\setmainfont{HelveticaNeueLTStd-Cn.otf}[
+    Path=/home/denes/fonts/from_csilla/,
+    BoldFont=HelveticaNeueLTStd-MdCn.otf
+]
+
+\def\yr#1{\\\footnotesize#1}
+
+\tikzstyle{res}=[
+    rectangle,
+    rounded corners=5,
+    text centered,
+    text=white,
+    text width=\textwidth-24pt,
+    minimum height=2em,
+    inner sep=10pt
+]
+\tikzstyle{icres}=[
+    res,
+    fill=,
+    draw=
+]
+
+\begin{document}
+
+    \begin{tikzpicture}[
+            layered layout,
+            nodes = {rectangle, draw},
+            circular placement,
+            radius = 2cm
+        ]
+
+            \node (litr) [liter] {Literature};
+
+            \node (bacc) [icres] {Baccin \yr{2019}};
+            \node (rami) [icres] {Ramilowski \yr{2015}};
+            \node (ccdb) [icres] {CellChatDB \yr{2021}};
+            \node (ctdb) [icres] {CellTalkDB \yr{2020}};
+            \node (cpdb) [icres] {CellPhoneDB \yr{2018}};
+            \node (conn) [icres] {connectomeDB \yr{2020}};
+            \node (embr) [icres] {EMBRACE \yr{2019}};
+            \node (g2ph) [icres] {Guide to Pharmacology \yr{2009}};
+            \node (hpmr) [icres] {HPMR \yr{2003}};
+            \node (icel) [icres] {ICELLNET \yr{2020}};
+            \node (itlk) [icres] {iTALK \yr{2019}}
+            \node (lrdb) [icres] {LRdb \yr{2020}};
+            \node (tklr) [icres] {talklr \yr{2020}};
+            \node (dlrp) [icres] {DIP-DLRP};
+
+            \node (omni) [omnip] {OmniPath};
+
+            \node (kegg) [ntres] {KEGG};
+            \node (reac) [ntres] {Reactome};
+            \node (bgri) [ntres] {BioGRID};
+            \node (hprd) [ntres] {HPRD};
+            \node (indb) [ntres] {InnateDB};
+            \node (inta) [ntres] {IntAct};
+            \node (strg) [ntres] {STRING};
+            \node (unip) [ntres] {UniProt};
+            \node (inge) [ntres] {Ingenuity};
+            \node (mxdb) [ntres] {MatrixDB};
+            \node (i2dd) [ntres] {I2D};
+            \node (csig) [ntres] {cellsignal.com};
+
+            \node (grae) [paper] {Graeber 2001};
+            \node (grif) [paper] {Griffith 2014};
+            \node (came) [paper] {Cameron 2003};
+            \node (zhou) [paper] {Zhou 2017};
+            \node (ausl) [paper] {Auslander 2018};
+
+            \draw
+                (rami) edge[->] (bacc)
+                (kegg) edge[->] (bacc)
+                (reac) edge[->] (bacc)
+                (litr) edge[->] (bacc)
+                (kegg) edge[->] (ccdb)
+                (litr) edge[->] (ccdb)
+                (g2ph) edge[->] (cpdb)
+                (i2dd) edge[->] (cpdb)
+                (indb) edge[->] (cpdb)
+                (inta) edge[->] (cpdb)
+                (mxdb) edge[->] (cpdb)
+                (litr) edge[->] (cpdb)
+                (strg) edge[->] (ctdb)
+                (litr) edge[->] (ctdb)
+                (rami) edge[->] (conn)
+                (cpdb) edge[->] (conn)
+                (litr) edge[->] (conn)
+                (bacc) edge[->] (conn)
+                (lrdb) edge[->] (conn)
+                (icel) edge[->] (conn)
+                (rami) edge[->] (embr)
+                (litr) edge[->] (g2ph)
+                (litr) edge[->] (hpmr)
+                (inge) edge[->] (icel)
+                (strg) edge[->] (icel)
+                (bgri) edge[->] (icel)
+                (reac) edge[->] (icel)
+                (cpdb) edge[->] (icel)
+                (rami) edge[->] (itlk)
+                (hpmr) edge[->] (itlk)
+                (g2ph) edge[->] (itlk)
+                (grae) edge[->] (itlk)
+                (grif) edge[->] (itlk)
+                (came) edge[->] (itlk)
+                (zhou) edge[->] (itlk)
+                (ausl) edge[->] (itlk)
+                (unip) edge[->] (lrdb)
+                (rami) edge[->] (lrdb)
+                (litr) edge[->] (lrdb)
+                (g2ph) edge[->] (lrdb)
+                (reac) edge[->] (lrdb)
+                (hpmr) edge[->] (lrdb)
+                (hprd) edge[->] (lrdb)
+                (csig) edge[->] (lrdb)
+                (dlrp) edge[->] (rami)
+                (hpmr) edge[->] (rami)
+                (g2ph) edge[->] (rami)
+                (hprd) edge[->] (rami)
+                (strg) edge[->] (rami)
+                (litr) edge[->] (rami)
+                (rami) edge[->] (tklr)
+                (rami) edge[->] (omni)
+                (bacc) edge[->] (omni)
+                (ccdb) edge[->] (omni)
+                (cpdb) edge[->] (omni)
+                (ctdb) edge[->] (omni)
+                (g2ph) edge[->] (omni)
+                (conn) edge[->] (omni)
+                (embr) edge[->] (omni)
+                (itlk) edge[->] (omni)
+                (tklr) edge[->] (omni)
+                (lrdb) edge[->] (omni)
+                (hpmr) edge[->] (omni)
+                (icel) edge[->] (omni);
+
+    \end{tikzpicture}
+
+\end{document}
