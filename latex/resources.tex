@@ -1,16 +1,13 @@
-\documentclass{standalone}
+\documentclass[margin=5mm]{standalone}
 
 \usepackage[no-math]{fontspec}
-\usepackage{xunicode}
 \usepackage{polyglossia}
 \setdefaultlanguage{english}
 \usepackage{xltxtra}
 
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{shapes,decorations.pathreplacing,calligraphy,positioning,shadows,fit,calc,arrows.meta,graphs,graphdrawing,quotes}
-\usegdlibrary{trees}
-\usepackage{color}
+\usetikzlibrary{shapes,decorations.pathreplacing,calligraphy,positioning,shadows,fit,calc,arrows.meta,graphs,graphdrawing,graphdrawing.layered,quotes}
 \usepackage{xcolor}
 
 % Paul Tol 9 colors
@@ -24,7 +21,7 @@
 \definecolor{royalheath}{RGB}{136,34,85}
 \definecolor{orchid}{RGB}{170,68,153}
 
-# Paul Tol 7 colors, 3 tones each
+% Paul Tol 7 colors, 3 tones each
 \definecolor{pink0}{RGB}{119,17,85}
 \definecolor{pink1}{RGB}{170,68,136}
 \definecolor{pink2}{RGB}{204,153,187}
@@ -48,34 +45,70 @@
 \definecolor{salmon2}{RGB}{221,119,136}
 
 \setmainfont{HelveticaNeueLTStd-Cn.otf}[
-    Path=/home/denes/fonts/from_csilla/,
-    BoldFont=HelveticaNeueLTStd-MdCn.otf
+    Path = /home/denes/fonts/from_csilla/,
+    BoldFont = HelveticaNeueLTStd-MdCn.otf
 ]
 
 \def\yr#1{\\\footnotesize#1}
 
-\tikzstyle{res}=[
+\tikzstyle{res} = [
     rectangle,
-    rounded corners=5,
+    rounded corners = 5,
     text centered,
-    text=white,
-    text width=\textwidth-24pt,
-    minimum height=2em,
-    inner sep=10pt
+    text = white,
+    minimum height = 2em,
+    inner sep = 10pt,
+    fill opacity = .8
 ]
-\tikzstyle{icres}=[
+\tikzstyle{icres} = [
     res,
-    fill=,
-    draw=
+    fill = pink2,
+    draw = pink0,
+    text = pink0
+]
+\tikzstyle{ntres} = [
+    res,
+    fill = blue2,
+    draw = blue0,
+    text = blue0
+]
+\tikzstyle{liter} = [
+    res,
+    fill = olive2,
+    draw = olive0,
+    text = olive0
+]
+\tikzstyle{paper} = [
+    res,
+    fill = turquoise2,
+    draw = turquoise0,
+    text = turquoise0
+]
+\tikzstyle{omnip} = [
+    res,
+    fill = green2,
+    draw = green0,
+    text = green0
 ]
 
 \begin{document}
 
     \begin{tikzpicture}[
             layered layout,
-            nodes = {rectangle, draw},
-            circular placement,
-            radius = 2cm
+            every edge/.style={
+                ->,
+                draw = gray!90,
+                thick,
+                > = {Stealth[scale = 1.3]},
+                rounded corners = 10mm
+            },
+            auto,
+            node distance = 1cm,
+            every text node part/.style = {
+                align = center
+            },
+            grow' = right,
+            components go down right aligned
         ]
 
             \node (litr) [liter] {Literature};
@@ -90,7 +123,7 @@
             \node (g2ph) [icres] {Guide to Pharmacology \yr{2009}};
             \node (hpmr) [icres] {HPMR \yr{2003}};
             \node (icel) [icres] {ICELLNET \yr{2020}};
-            \node (itlk) [icres] {iTALK \yr{2019}}
+            \node (itlk) [icres] {iTALK \yr{2019}};
             \node (lrdb) [icres] {LRdb \yr{2020}};
             \node (tklr) [icres] {talklr \yr{2020}};
             \node (dlrp) [icres] {DIP-DLRP};
@@ -116,7 +149,7 @@
             \node (zhou) [paper] {Zhou 2017};
             \node (ausl) [paper] {Auslander 2018};
 
-            \draw
+            \path
                 (rami) edge[->] (bacc)
                 (kegg) edge[->] (bacc)
                 (reac) edge[->] (bacc)
