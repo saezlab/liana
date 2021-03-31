@@ -203,7 +203,7 @@ figure_path <- function(fname, ...){
 #' @importFrom rlang !!! exec
 #' @importFrom purrr map map2
 #' @importFrom dplyr mutate select distinct group_by ungroup
-#' @importFrom dplyr n_distinct recode
+#' @importFrom dplyr n_distinct recode bind_rows n
 ligrec_overlap <- function(ligrec){
 
     log_success('Finding overlaps between resources.')
@@ -498,7 +498,7 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
 #'     variable (e.g. to shorten long strings).
 #'
 #' @importFrom rlang enquo quo_text sym !! :=
-#' @importFrom OmnipathR annotated_network
+#' @importFrom OmnipathR annotated_network import_omnipath_annotations
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr rename filter select left_join
 #' @importFrom purrr map
