@@ -9,7 +9,7 @@ crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
 # saveRDS(crc_korean, "input/crc_data/crc_korean_form.rds")
 
 # Get Full Omni Resources
-# omni_resources <- compile_ligrec()
+omni_resources <- compile_ligrec(lr_pipeline = FALSE)
 # saveRDS(omni_resources, "input/omni_resources.rds")
 omni_resources <- readRDS("input/omni_resources.rds")
 
