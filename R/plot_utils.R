@@ -76,11 +76,11 @@ get_BigHeat <- function(sig_list,
   # annotation groups (sequential vectors as in heatmap_binary_list)
   method_groups <- colnames(heatmap_binary_list) %>%
     enframe() %>%
-    separate(value, into = c("method", "resource")) %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(method)
   resource_groups <- colnames(heatmap_binary_list) %>%
     enframe() %>%
-    separate(value, into = c("method", "resource")) %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(resource)
 
   # data frame with column annotations.
@@ -158,10 +158,9 @@ plot_freq_pca <- function(freq_df){
                 id_cols = name,
                 values_fill = 0) %>%
     as.data.frame() %>%
-    separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
+    separate(name, into = c("Method", "Resource"), remove = FALSE, sep="_") %>%
     mutate(Method = factor(Method, # prevent ggplot2 from rearranging
-                           levels = c("CellChat", "Squidpy", "NATMI",
-                                      "iTALK", "Connectome", "SCA"))) %>%
+                           )) %>%
     mutate(Resource = factor(Resource)) %>%
     column_to_rownames("name")
 
@@ -173,7 +172,8 @@ plot_freq_pca <- function(freq_df){
   pca_freq <- autoplot(pca_res, data = cell_pair_frequency,
                        colour = "Method", shape = "Resource",
                        size = 6, position = "jitter") +
-    scale_color_manual(values=brewer.pal(6, "Dark2")) + theme_bw(base_size = 26) +
+    scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(cell_pair_frequency$Method))) +
+    theme_bw(base_size = 26) +
     scale_shape_manual(values=1:nlevels(cell_pair_frequency$Resource))
 
 

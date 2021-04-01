@@ -1,15 +1,23 @@
 # Load results
 squidpy_results <- readRDS("output/crc_res/squidpy_results.rds")
-# cellchat_results <- readRDS("output/crc_res/cellchat_full.rds")
+cellchat_results <- readRDS("output/crc_res/cellchat_results.rds")
 natmi_results <- readRDS("output/crc_res/natmi_results.rds")
 sca_results <- readRDS("output/crc_res/sca_results.rds")
 italk_results <- readRDS("output/crc_res/italk_results.rds")
 conn_results <- readRDS("output/crc_res/conn_results.rds")
 
 
+result_list <- list("CellChat" = cellchat_results,
+                    "Squidpy" = squidpy_results,
+                    "NATMI" = natmi_results,
+                    "iTALK" = italk_results,
+                    "Connectome" = conn_results,
+                    "SCA" = sca_results)
+
+
 # I. Overlap
 
-# Significant/Top Hits for each tool
+# Top X Top Hits for each tool
 squidpy_sig <- squidpy_results %>%
     map(function(res){
         res %>%
@@ -23,7 +31,7 @@ cellchat_sig <- cellchat_results %>%
             mutate(pval = p.adjust(pval, method = "BH")) %>%
             filter(pval <= 0.00) %>%
             mutate(prank = percent_rank(dplyr::desc(prob))) %>%
-            filter(prank <= 0.01) %>%
+            filter(prank <= 0.001) %>%
             as_tibble()})
 
 natmi_sig <- natmi_results %>%
@@ -62,8 +70,7 @@ conn_sig <- conn_results %>%
     })
 
 
-sig_list <- list(
-    # "CellChat" = cellchat_sig,
+sig_list <- list("CellChat" = cellchat_sig,
                  "Squidpy" = squidpy_sig,
                  "NATMI" = natmi_sig,
                  "iTALK" = italk_sig,
@@ -114,7 +121,7 @@ names(sig_list_resource) %>%
     map(function(r_name)
         sig_list_resource[[r_name]] %>%
             prepForUpset() %>%
-            plotSaveUset(str_glue("output/benchmark/overlap_plots/upset_resources/{r_name}_upset.png"))
+            plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_resources/{r_name}_upset.png"))
     )
 
 
@@ -177,8 +184,7 @@ italk_full <- italk_results %>%
 
 
 # Combine all into list and get frequencies per rank
-rank_frequencies <- (list(
-    #"CellChat" = cellchat_full,
+rank_frequencies <- (list("CellChat" = cellchat_full,
                           "Squidpy" = squidpy_full,
                           "NATMI" = natmi_full,
                           "iTALK" = italk_full,

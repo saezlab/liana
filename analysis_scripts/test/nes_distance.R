@@ -1,16 +1,93 @@
 # LM/Corr with NES fig + bar plots
 # Combine all into list and get frequencies per rank
+# II All Results ranked -------------------------------------------------------
+squidpy_p_full <- squidpy_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="pvalue",
+                                    .desc_order = FALSE)
+    )
+
+squidpy_m_full <- squidpy_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="means",
+                                    .desc_order = TRUE)
+    )
+
+# NATMI
+natmi_sw_full <- natmi_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="edge_specificity",
+                                    .desc_order = TRUE)
+    )
+
+
+natmi_epw_full <- natmi_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="edge_avg_expr",
+                                    .desc_order = TRUE)
+    )
+
+# SCA
+sca_full <- sca_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="LRscore",
+                                    .desc_order = TRUE)
+    )
+
+# Connectome
+conn_sw_full <- conn_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="weight_sc",
+                                    .desc_order = TRUE)
+    )
+
+conn_epw_full <- conn_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="weight_norm",
+                                    .desc_order = TRUE)
+    )
+
+
+# CellChat
+cellchat_full <- cellchat_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="pval",
+                                    .desc_order = FALSE)
+    )
+
+# iTALK
+italk_full <- italk_results %>%
+    map(function(res)
+        res %>%
+            format_rank_frequencies(score_col="weight_comb",
+                                    .desc_order = TRUE)
+    )
+
+
+# Combine all into list and get frequencies per rank
 rank_frequencies <- (list("CellChat" = cellchat_full,
-                          "Squidpy" = squidpy_full,
-                          "NATMI" = natmi_full,
+                          "Squidpy.pvals" = squidpy_p_full,
+                          "Squidpy.means" = squidpy_p_full,
+                          "NATMI.EPW" = natmi_epw_full,
+                          "NATMI.SW" = natmi_sw_full,
                           "iTALK" = italk_full,
-                          "Connectome" = conn_full,
+                          "Connectome.EPW" = conn_epw_full,
+                          "Connectome.SW" = conn_sw_full,
                           "SCA" = sca_full)) %>%
     get_rank_frequencies()
 
 # 5. PCA by Rank Frequencies
 plot_freq_pca(rank_frequencies)
-rank_frequencies
+
+
 
 
 # Read NES
@@ -50,14 +127,14 @@ rank_nes_regression <- rank_nes_freq %>%
     mutate(adjr =  model %>% glance() %>% pluck("adj.r.squared")) %>%
     mutate(pval =  model %>% glance() %>% pluck("p.value")) %>%
     select(name, adjr, pval)  %>%
-    separate(name, into = c("Method", "Resource"), convert = TRUE) %>%
+    separate(name, into = c("Method", "Resource"), convert = TRUE, sep = "_") %>%
     mutate_if(is.character, as.factor)
 
 
 ggplot(rank_nes_regression, aes(x=adjr, y=-log10(pval), colour = Method, shape = Resource)) +
     theme_bw(base_size = 26) +
     geom_point(size=5) +
-    scale_color_manual(values=brewer.pal(6, "Dark2")) +
+    scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(rank_nes_regression$Method))) +
     scale_shape_manual(values=1:nlevels(rank_nes_regression$Resource)) +
     xlab("Adj. Rsq") +
     ggtitle("Linear Regression of Activities x NES")
@@ -65,21 +142,22 @@ ggplot(rank_nes_regression, aes(x=adjr, y=-log10(pval), colour = Method, shape =
 
 # pearson corr
 rank_nes_corr <- rank_nes_freq %>%
-    filter(str_detect(name, "OmniPath")) %>%
+    # filter(str_detect(name, "OmniPath")) %>%
     group_by(name) %>%
     do(corr = cor.test(x = .$freq, y = .$NES, method = "pearson")) %>%
     mutate(coef = corr %>% glance() %>% pull(estimate),
            pval = corr %>% glance() %>% pull(p.value)) %>%
     select(name, coef, pval)  %>%
-    separate(name, into = c("Method", "Resource"), convert = TRUE) %>%
+    separate(name, into = c("Method", "Resource"), convert = TRUE, sep = "_") %>%
     mutate_if(is.character, as.factor)
 
-ggplot(rank_nes_corr, aes(x=coef, y=-log10(pval), colour = Method, shape = Resource)) +
+ggplot(rank_nes_corr, aes(x=coef, y=-log10(pval),
+                          colour = Method, shape = Resource)) +
     theme_bw(base_size = 26) +
     geom_point(size=5) +
-    scale_color_manual(values=brewer.pal(6, "Dark2")) +
+    scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(rank_nes_corr$Method))) +
     scale_shape_manual(values=1:nlevels(rank_nes_regression$Resource)) +
-    xlab("Spearman Correlation Coefficient")  # +
+    xlab("Pearson Correlation Coefficient")  # +
 # ggtitle("Correlation of Cell-Pair Activities x NES")
 
 

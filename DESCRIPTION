@@ -55,7 +55,13 @@ Depends:
     magrittr,
     UpSetR,
     RColorBrewer,
-    ggfortify
+    ggfortify,
+    logger,
+    RCurl,
+    Barnard,
+    DescTools,
+    rlang,
+    viridis
 Suggests:
     knitr,
     rmarkdown,
