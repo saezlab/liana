@@ -9,7 +9,7 @@ prepForUpset <- function(named_list){
       unite("interaction", source, target,
             ligand, receptor, sep="_") %>%
       mutate(!!l_name := 1)
-  }) %>% reduce(., full_join) %>%
+  }) %>% reduce(., full_join, by = "interaction") %>%
     mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
     mutate_at(vars(2:ncol(.)), ~ replace(., . != 0, 1)) %>%
     as.data.frame()
@@ -125,7 +125,7 @@ get_swapped_list <- function(sig_list){
                               str_glue("{m_name}_{r_name}")
                             })
                       }) %>% unlist()) %>%
-    separate(name, into = c("method", "resource")) %>%
+    separate(name, into = c("method", "resource"), sep = "_") %>%
     mutate(value = value %>% setNames(method)) %>%
     group_by(resource)
 
@@ -235,7 +235,8 @@ format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
 #' Helper function to convert list with all resources ranked to frequencies df
 #'
 #' @param full_list list with all resources ranked to frequencies df
-get_rank_frequencies <- function(full_list){
+get_rank_frequencies <- function(spec_list){
+
   # Combine all results into tool_resource list
   lnames <- map(names(full_list), function(l_name){
     map(names(full_list[[l_name]]), function(r_name){

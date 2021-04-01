@@ -55,7 +55,7 @@ top_lists <- map(c(50, 200, 1000, 5000),
 
 # 1. UpSet Plots and Heatmaps by Tool
 names(top_lists[[3]]) %>%
-    map(function(m_name) top200[[m_name]] %>%
+    map(function(m_name) top_lists[[3]][[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
@@ -81,13 +81,13 @@ binary_heatm <- get_BigHeat(top_lists[[3]],
 
 
 # 3. Binary PCA
-plot_freq_pca(sig_list %>%
+plot_freq_pca(top_lists[[3]] %>%
                   get_binary_frequencies())
 
 
 # 4. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-sig_list_resource <- get_swapped_list(sig_list)
+sig_list_resource <- get_swapped_list(top_lists[[3]])
 
 # Plot and Save Upsets
 names(sig_list_resource) %>%
@@ -157,12 +157,15 @@ italk_full <- italk_results %>%
 
 
 # Combine all into list and get frequencies per rank
-rank_frequencies <- (list("CellChat" = cellchat_full,
-                          "Squidpy" = squidpy_full,
-                          "NATMI" = natmi_full,
-                          "iTALK" = italk_full,
-                          "Connectome" = conn_full,
-                          "SCA" = sca_full)) %>%
+full_list <- spec_list %>%
+    map(function(x) x %>%
+            pluck("method_results") %>%
+            map(function(res) res %>%
+                    format_rank_frequencies(score_col="weight_comb",
+                                            .desc_order = TRUE))
+        )
+
+rank_frequencies <- spec_list %>%
     get_rank_frequencies()
 
 # 5. PCA by Rank Frequencies
