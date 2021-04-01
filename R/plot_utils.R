@@ -91,8 +91,8 @@ get_BigHeat <- function(sig_list,
     column_to_rownames("rn")
 
   # List with colors for each annotation.
-  mycolors <- list(Method = brewer.pal(6, "Dark2"),
-                   Resource = colorRampPalette(brewer.pal(8, "Set1"))(length(unique(resource_groups))))
+  mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                   Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))))
   names(mycolors$Resource) <- unique(resource_groups)
   names(mycolors$Method) <- unique(method_groups)
 
@@ -175,9 +175,6 @@ plot_freq_pca <- function(freq_df){
     scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(cell_pair_frequency$Method))) +
     theme_bw(base_size = 26) +
     scale_shape_manual(values=1:nlevels(cell_pair_frequency$Resource))
-
-
-
 
   return(pca_freq)
 }

@@ -1,95 +1,68 @@
 # Load results
-squidpy_results <- readRDS("output/crc_res/squidpy_results.rds")
-cellchat_results <- readRDS("output/crc_res/cellchat_results.rds")
-natmi_results <- readRDS("output/crc_res/natmi_results.rds")
-sca_results <- readRDS("output/crc_res/sca_results.rds")
-italk_results <- readRDS("output/crc_res/italk_results.rds")
-conn_results <- readRDS("output/crc_res/conn_results.rds")
+spec_list <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       #"pval"=FALSE,
+                                       "prob"=TRUE)),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       # "means"=TRUE,
+                                       "pvalue"=FALSE
+                                       )),
+                  "NATMI" =
+                      methods::new("MethodSpecifics",
+                                   method_name="NATMI",
+                                   method_results = readRDS("output/crc_res/natmi_results.rds"),
+                                   method_scores=list(
+                                       "edge_avg_expr"=TRUE,
+                                       "edge_specificity"=TRUE)),
+                  "iTALK" =
+                      methods::new("MethodSpecifics",
+                                   method_name="iTALK",
+                                   method_results = readRDS("output/crc_res/italk_results.rds"),
+                                   method_scores=list(
+                                       "weight_comb"=TRUE
+                                       )),
+                  "Connectome" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Connectome",
+                                   method_results = readRDS("output/crc_res/conn_results.rds"),
+                                   method_scores=list(
+                                       "weight_sc"=TRUE,
+                                       "weight_norm"=TRUE
+                                       )),
+                  "SCA" = methods::new("MethodSpecifics",
+                                       method_name="SCA",
+                                       method_results = readRDS("output/crc_res/sca_results.rds"),
+                                       method_scores=list(
+                                           "LRscore"=TRUE
+                                           ))
+                  )
 
-
-result_list <- list("CellChat" = cellchat_results,
-                    "Squidpy" = squidpy_results,
-                    "NATMI" = natmi_results,
-                    "iTALK" = italk_results,
-                    "Connectome" = conn_results,
-                    "SCA" = sca_results)
 
 
 # I. Overlap
 
 # Top X Top Hits for each tool
-squidpy_sig <- squidpy_results %>%
-    map(function(res){
-        res %>%
-            filter(pvalue <= 0.1) %>%
-            as_tibble()
-    })
-
-cellchat_sig <- cellchat_results %>%
-    map(function(res){
-        res %>%
-            mutate(pval = p.adjust(pval, method = "BH")) %>%
-            filter(pval <= 0.00) %>%
-            mutate(prank = percent_rank(dplyr::desc(prob))) %>%
-            filter(prank <= 0.001) %>%
-            as_tibble()})
-
-natmi_sig <- natmi_results %>%
-    map(function(res){
-        res %>%
-            filter(source != target) %>%
-            mutate(prank = percent_rank(dplyr::desc(edge_specificity))) %>%
-            filter(prank <= 0.001) %>%
-            as_tibble()
-    })
-
-sca_sig <- sca_results %>%
-    map(function(res){
-        res %>%
-            filter(LRscore >= 0.9) %>% # this is the threshold that they use when they compare
-            as_tibble() %>%
-            distinct()
-    })
-
-italk_sig <- italk_results %>%
-    map(function(res){
-        res %>%
-            filter(qval_from <= 0.05 & qval_to <= 0.05) %>%
-            mutate(prank = percent_rank(desc(weight_comb))) %>%
-            filter(prank <= 0.01) %>%
-            as_tibble()
-    })
-
-conn_sig <- conn_results %>%
-    map(function(res){
-        res %>%
-            filter(p_val_adj.lig <= 0.05 & p_val_adj.rec <= 0.05) %>%
-            mutate(prank = percent_rank(desc(weight_sc))) %>%
-            filter(prank <= 0.001) %>%
-            as_tibble()
-    })
-
-
-sig_list <- list("CellChat" = cellchat_sig,
-                 "Squidpy" = squidpy_sig,
-                 "NATMI" = natmi_sig,
-                 "iTALK" = italk_sig,
-                 "Connectome" = conn_sig,
-                 "SCA" = sca_sig
-                 ) # order for hm
-
+top_lists <- map(c(50, 200, 1000, 5000),
+                 function(tn) get_top_hits(spec_list, .tn = tn))
 
 
 # 1. UpSet Plots and Heatmaps by Tool
-names(sig_list) %>%
-    map(function(m_name) sig_list[[m_name]] %>%
+names(top_lists[[3]]) %>%
+    map(function(m_name) top200[[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 
 
 # 2. Combine all binary results into heatmap
-binary_heatm <- get_BigHeat(sig_list,
+binary_heatm <- get_BigHeat(top_lists[[3]],
                             display_numbers = FALSE,
                             silent = FALSE,
                             show_rownames = FALSE,
