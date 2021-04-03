@@ -45,24 +45,21 @@ spec_list <- list("CellChat" =
                   )
 
 
-
 # I. Overlap
-
 # Top X Top Hits for each tool
-top_lists <- map(c(50, 200, 1000, 5000),
-                 function(tn) get_top_hits(spec_list, .tn = tn))
+top_lists <- get_top_hits(spec_list, n_ints=c(50, 200, 1000, 5000))
 
 
 # 1. UpSet Plots and Heatmaps by Tool
-names(top_lists[[3]]) %>%
-    map(function(m_name) top_lists[[3]][[m_name]] %>%
+names(top_lists$top_1000) %>%
+    map(function(m_name) top_lists$top_1000[[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 
 
 # 2. Combine all binary results into heatmap
-binary_heatm <- get_BigHeat(top_lists[[3]],
+binary_heatm <- get_BigHeat(top_lists$top_1000,
                             display_numbers = FALSE,
                             silent = FALSE,
                             show_rownames = FALSE,
@@ -81,13 +78,13 @@ binary_heatm <- get_BigHeat(top_lists[[3]],
 
 
 # 3. Binary PCA
-plot_freq_pca(top_lists[[3]] %>%
+plot_freq_pca(top_lists$top_1000 %>%
                   get_binary_frequencies())
 
 
 # 4. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-sig_list_resource <- get_swapped_list(top_lists[[3]])
+sig_list_resource <- get_swapped_list(top_lists$top_1000)
 
 # Plot and Save Upsets
 names(sig_list_resource) %>%
@@ -99,72 +96,7 @@ names(sig_list_resource) %>%
 
 
 
-
-# 4.1 Binary PCA - SCA
-# plot_freq_pca(sig_list %>%
-#                   purrr::list_modify("SCA" = NULL) %>%
-#                   get_binary_frequencies())
-
-
-
 # II All Results ranked -------------------------------------------------------
-squidpy_full <- squidpy_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="pvalue",
-                                    .desc_order = FALSE)
-    )
-
-# NATMI
-natmi_full <- natmi_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="edge_specificity",
-                                    .desc_order = TRUE)
-    )
-
-# SCA
-sca_full <- sca_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="LRscore",
-                                    .desc_order = TRUE)
-    )
-
-# Connectome
-conn_full <- conn_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="weight_sc",
-                                    .desc_order = TRUE)
-    )
-
-# CellChat
-cellchat_full <- cellchat_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="pval",
-                                    .desc_order = FALSE)
-    )
-
-# iTALK
-italk_full <- italk_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="weight_comb",
-                                    .desc_order = TRUE)
-    )
-
-
-# Combine all into list and get frequencies per rank
-full_list <- spec_list %>%
-    map(function(x) x %>%
-            pluck("method_results") %>%
-            map(function(res) res %>%
-                    format_rank_frequencies(score_col="weight_comb",
-                                            .desc_order = TRUE))
-        )
-
 rank_frequencies <- spec_list %>%
     get_rank_frequencies()
 
