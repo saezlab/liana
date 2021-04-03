@@ -6,28 +6,6 @@ spec_list <- list("CellChat" =
                                    method_scores=list(
                                        #"pval"=FALSE,
                                        "prob"=TRUE)),
-                  "Squidpy" =
-                      methods::new("MethodSpecifics",
-                                   method_name="Squidpy",
-                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
-                                   method_scores=list(
-                                       # "means"=TRUE,
-                                       "pvalue"=FALSE
-                                       )),
-                  "NATMI" =
-                      methods::new("MethodSpecifics",
-                                   method_name="NATMI",
-                                   method_results = readRDS("output/crc_res/natmi_results.rds"),
-                                   method_scores=list(
-                                       "edge_avg_expr"=TRUE,
-                                       "edge_specificity"=TRUE)),
-                  "iTALK" =
-                      methods::new("MethodSpecifics",
-                                   method_name="iTALK",
-                                   method_results = readRDS("output/crc_res/italk_results.rds"),
-                                   method_scores=list(
-                                       "weight_comb"=TRUE
-                                       )),
                   "Connectome" =
                       methods::new("MethodSpecifics",
                                    method_name="Connectome",
@@ -35,31 +13,53 @@ spec_list <- list("CellChat" =
                                    method_scores=list(
                                        "weight_sc"=TRUE,
                                        "weight_norm"=TRUE
-                                       )),
+                                   )),
+                  "iTALK" =
+                      methods::new("MethodSpecifics",
+                                   method_name="iTALK",
+                                   method_results = readRDS("output/crc_res/italk_results.rds"),
+                                   method_scores=list(
+                                       "weight_comb"=TRUE
+                                   )),
+                  "NATMI" =
+                      methods::new("MethodSpecifics",
+                                   method_name="NATMI",
+                                   method_results = readRDS("output/crc_res/natmi_results.rds"),
+                                   method_scores=list(
+                                       "edge_avg_expr"=TRUE,
+                                       "edge_specificity"=TRUE)),
                   "SCA" = methods::new("MethodSpecifics",
                                        method_name="SCA",
                                        method_results = readRDS("output/crc_res/sca_results.rds"),
                                        method_scores=list(
                                            "LRscore"=TRUE
-                                           ))
+                                           )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       # "means"=TRUE,
+                                       "pvalue"=FALSE
+                                   ))
                   )
 
 
 # I. Overlap
 # Top X Top Hits for each tool
-top_lists <- get_top_hits(spec_list, n_ints=c(50, 200, 1000, 5000))
+top_lists <- get_top_hits(spec_list, n_ints=c(50, 200, 500, 1000, 5000))
 
 
 # 1. UpSet Plots and Heatmaps by Tool
-names(top_lists$top_1000) %>%
-    map(function(m_name) top_lists$top_1000[[m_name]] %>%
+names(top_lists$top_500) %>%
+    map(function(m_name) top_lists$top_500[[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 
 
 # 2. Combine all binary results into heatmap
-binary_heatm <- get_BigHeat(top_lists$top_1000,
+binary_heatm <- get_BigHeat(top_lists$top_500,
                             display_numbers = FALSE,
                             silent = FALSE,
                             show_rownames = FALSE,
@@ -78,13 +78,13 @@ binary_heatm <- get_BigHeat(top_lists$top_1000,
 
 
 # 3. Binary PCA
-plot_freq_pca(top_lists$top_1000 %>%
+plot_freq_pca(top_lists$top_500 %>%
                   get_binary_frequencies())
 
 
 # 4. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-sig_list_resource <- get_swapped_list(top_lists$top_1000)
+sig_list_resource <- get_swapped_list(top_lists$top_500)
 
 # Plot and Save Upsets
 names(sig_list_resource) %>%
@@ -102,4 +102,3 @@ rank_frequencies <- spec_list %>%
 
 # 5. PCA by Rank Frequencies
 plot_freq_pca(rank_frequencies)
-rank_frequencies
