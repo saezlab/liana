@@ -82,14 +82,20 @@ plot_freq_pca(top_lists$top_500 %>%
                   get_binary_frequencies())
 
 
-# 4. Upset Plots by Resource
+# 4. Jaccard Index
+
+
+
+
+
+# 5. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-sig_list_resource <- get_swapped_list(top_lists$top_500)
+top500_resource_tool <- get_swapped_list(top_lists$top_500)
 
 # Plot and Save Upsets
-names(sig_list_resource) %>%
+names(top500_resource_tool) %>%
     map(function(r_name)
-        sig_list_resource[[r_name]] %>%
+        top500_resource_tool[[r_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_resources/{r_name}_upset.png"))
     )
@@ -100,5 +106,7 @@ names(sig_list_resource) %>%
 rank_frequencies <- spec_list %>%
     get_rank_frequencies()
 
-# 5. PCA by Rank Frequencies
+# 6. PCA by Rank Frequencies
 plot_freq_pca(rank_frequencies)
+
+
