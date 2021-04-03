@@ -100,8 +100,8 @@ bc_nes <- read.csv("~/Repos/ligrec_decoupleR/input/sc_bc/breast_cancer_NES.csv",
 bc_nes_vec <- map2(.x=str_glue("c{seq(0, 11)}"), .y=seq(1, 12), .f=function(x1, y1){
     map2(.x=str_glue("c{seq(0, 11)}"), .y=seq(1, 12), .f=function(x2, y2){
         str_glue("{x1}_{x2}:{bc_nes[y1, y2]}")
-    })
-}) %>%
+        })
+    }) %>%
     enframe() %>%
     unnest(value) %>%
     unnest(value) %>%

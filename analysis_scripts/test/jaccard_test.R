@@ -32,50 +32,51 @@ top_lists_swapped <-
 
 
 
-tmp <- top_lists_swapped$top_500$OmniPath %>%
+tmp <- top_lists_swapped$top_5000$OmniPath %>%
     prepForUpset() %>%
     select(-interaction) %>%
     t() %>%
-    vegdist(method = "bray", diag=TRUE, upper = TRUE, binary = TRUE)
+    vegdist(method = "bray", diag=FALSE, upper = TRUE, binary = TRUE) %>%
+    as.matrix()
+xy <- t(combn(colnames(tmp), 2))
+df_pairs <- data.frame(xy, bray=tmp[xy]) %>% as_tibble() %>%
+    dplyr::rename(method1="X1", method2="X2") %>%
+    distinct()
+
+
+
+nodes_x <- df_pairs %>%
+    pull(method1) %>%
+    unique() %>%
+    as_tibble() %>%
+    mutate(id=row_number()) %>%
+    dplyr::rename(group = "value") %>%
+    mutate(label = group)
+
+
+edges_x <- df_pairs %>%
+    arrange(method1, method2) %>%
+    mutate(color = "blue",
+           method1 = factor(method1),
+           method2 = factor(method2)) %>%
+    group_by(method1) %>%
+    mutate(from = group_indices()) %>%
+    ungroup() %>%
+    group_by(method2) %>%
+    mutate(to = group_indices() + 1) %>%
+    mutate(value = 1 - bray)
+
+
+
+library(visNetwork)
+visNetwork(nodes_x, edges_x) %>%
+    visEdges(smooth = list(enabled = TRUE, type = 'dynamic')) %>%
+    visPhysics(solver = "barnesHut",
+               barnesHut = list(springConstant = 0.001))  %>%
+    visLegend()
 
 
 
 
 library(GGally)
 ggpairs(tmp)
-
-
-require(visNetwork, quietly = TRUE)
-
-nodes <- data.frame(id = 1:3)
-edges <- data.frame(from = c(1,2), to = c(1,3))
-visNetwork(nodes, edges, width = "100%")
-
-
-library(rpart)
-
-# Basic classification tree
-res <- rpart(Species~., data=iris)
-visTree(res, main = "Iris classification Tree", width = "100%")
-
-
-
-nodes <- data.frame(id = 1:15, label = paste("Label", 1:15),
-                    group = sample(LETTERS[1:3], 15, replace = TRUE))
-
-edges <- data.frame(from = trunc(runif(15)*(15-1))+1,
-                    to = trunc(runif(15)*(15-1))+1)
-
-edges$color <- "black"
-edges$label <- NULL
-edges$value <- c(1:15)
-edges_bis <- edges
-edges_bis$color <- "red"
-# edges_bis$label <- "second"
-
-visNetwork(nodes, rbind(edges, edges_bis, edges)) %>%
-    visEdges(smooth = list(enabled = T, type = 'dynamic')) %>%
-    visPhysics(solver = "barnesHut",
-               barnesHut = list(springConstant = 0.002))
-
-
