@@ -64,14 +64,55 @@ edges_x <- df_pairs %>%
     ungroup() %>%
     group_by(method2) %>%
     mutate(to = group_indices() + 1) %>%
-    mutate(value = 1 - bray)
+    mutate(value = 1 - bray) %>%
+    mutate(title = "top5000")
+
+
+
+###
+tmp <- top_lists_swapped$top_500$OmniPath %>%
+    prepForUpset() %>%
+    select(-interaction) %>%
+    t() %>%
+    vegdist(method = "bray", diag=FALSE, upper = TRUE, binary = TRUE) %>%
+    as.matrix()
+xy <- t(combn(colnames(tmp), 2))
+df_pairs <- data.frame(xy, bray=tmp[xy]) %>% as_tibble() %>%
+    dplyr::rename(method1="X1", method2="X2") %>%
+    distinct()
+
+
+
+nodes_x <- df_pairs %>%
+    pull(method1) %>%
+    unique() %>%
+    as_tibble() %>%
+    mutate(id=row_number()) %>%
+    dplyr::rename(group = "value") %>%
+    mutate(label = group)
+
+
+edges_x1 <- df_pairs %>%
+    arrange(method1, method2) %>%
+    mutate(color = "red",
+           method1 = factor(method1),
+           method2 = factor(method2)) %>%
+    group_by(method1) %>%
+    mutate(from = group_indices()) %>%
+    ungroup() %>%
+    group_by(method2) %>%
+    mutate(to = group_indices() + 1) %>%
+    mutate(value = 1 - bray) %>%
+    mutate(title = "top500")
+
+###
 
 
 
 library(visNetwork)
-visNetwork(nodes_x, edges_x) %>%
+visNetwork(nodes_x, bind_rows(edges_x, edges_x1)) %>%
     visEdges(smooth = list(enabled = TRUE, type = 'dynamic')) %>%
-    visPhysics(solver = "barnesHut",
+    visPhysics(solver = "forceAtlas2Based",
                barnesHut = list(springConstant = 0.001))  %>%
     visLegend()
 

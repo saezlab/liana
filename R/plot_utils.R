@@ -65,7 +65,7 @@ get_BigHeat <- function(sig_list,
 
 
   # get binarized significant hits list (1 for sig per method, 0 if absent)
-  heatmap_binary_list <- heatmap_sig_list %>%
+  heatmap_binary_df <- heatmap_sig_list %>%
     purrr::flatten() %>%
     setNames(lnames) %>%
     prepForUpset() %>%
@@ -73,12 +73,12 @@ get_BigHeat <- function(sig_list,
     column_to_rownames("interaction")
 
 
-  # annotation groups (sequential vectors as in heatmap_binary_list)
-  method_groups <- colnames(heatmap_binary_list) %>%
+  # annotation groups (sequential vectors as in heatmap_binary_df)
+  method_groups <- colnames(heatmap_binary_df) %>%
     enframe() %>%
     separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(method)
-  resource_groups <- colnames(heatmap_binary_list) %>%
+  resource_groups <- colnames(heatmap_binary_df) %>%
     enframe() %>%
     separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(resource)
@@ -87,7 +87,7 @@ get_BigHeat <- function(sig_list,
   # with a column for resources and a column for methods
   annotations_df <- data.frame(Resource = resource_groups,
                                Method = method_groups)  %>%
-    mutate(rn = colnames(heatmap_binary_list)) %>%
+    mutate(rn = colnames(heatmap_binary_df)) %>%
     column_to_rownames("rn")
 
   # List with colors for each annotation.
@@ -96,7 +96,7 @@ get_BigHeat <- function(sig_list,
   names(mycolors$Resource) <- unique(resource_groups)
   names(mycolors$Method) <- unique(method_groups)
 
-  binary_heatmap <- pheatmap(heatmap_binary_list,
+  binary_heatmap <- pheatmap(heatmap_binary_df,
                              annotation_col = annotations_df,
                              annotation_colors = mycolors,
                              ...
