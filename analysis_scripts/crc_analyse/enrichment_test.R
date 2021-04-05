@@ -1,15 +1,5 @@
-my_pallette = colorRampPalette(c(
-    "gray15",
-    "darkslategray2",
-    "violetred2"
-    ))(100)
-
-
 # I) Enriched Cell Pairs
-
-
-
-top_frac <- top_lists$top_1000 %>%
+top_frac <- top_lists$top_500 %>%
     map(function(db){
         db %>%
         enframe(name = "resource", value = "results") %>%
@@ -22,7 +12,7 @@ top_frac <- top_lists$top_1000 %>%
             mutate(cell_fraq = cell_occur/sum(cell_occur)) %>%
             ungroup() %>%
             select(resource, cell, cell_fraq) %>%
-            pivot_wider(id_cols = resource ,
+            pivot_wider(id_cols = resource,
                         names_from = cell,
                         values_from = cell_fraq,
                         values_fill = 0)
@@ -76,7 +66,6 @@ cellfraq_heat <- pheatmap(top_frac %>%
          )
 
 
-
 cellfraq_heat$tree_row$order
 cellfraq_heat$tree_row$labels
 
@@ -95,7 +84,7 @@ cellcount_fraq <- crc_meta %>%
     mutate(mr = "Cell.Counts")
 
 
-cellcount_heat <- pheatmap(cell_num_fraq %>%
+cellcount_heat <- pheatmap(cellcount_fraq %>%
                                column_to_rownames("mr") %>%
                                t(),
                            display_numbers = FALSE,
@@ -110,21 +99,246 @@ cellcount_heat <- pheatmap(cell_num_fraq %>%
                            treeheight_row = 0,
                            cutree_cols = 7,
                            treeheight_col = 100
+                           )
+cellcount_heat
+
+
+
+
+#### Enrichment of ligand-receptor within same cell type
+# II) Enrichment by Method
+full_resource <- compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
+
+lr <- full_resource %>% ligrec_overlap()
+
+
+lr_csea <- lr %>% ligand_receptor_classes('CancerSEA', state)
+# lr_signal <- lr %>% ligand_receptor_classes('SignaLink_pathway', pathway, NULL)
+# lr_msig <- lr %>% ligand_receptor_classes(
+#     'MSigDB',
+#     geneset,
+#     filter_annot = collection == 'hallmark',
+#     label_annot = function(x){str_to_title(str_sub(x, 10))}
+# )
+
+
+# bind symbols
+ligand_syms <- full_resource$OmniPath$ligands %>%
+    select(uniprot, genesymbol)
+
+receptor_syms <- full_resource$OmniPath$receptors %>%
+    select(uniprot, genesymbol)
+
+csea_lig_syms <- lr_csea$ligands %>%
+    select(uniprot, state) %>%
+    na.omit() %>%
+    left_join(ligand_syms, by = "uniprot") %>%
+    select(genesymbol, state) %>%
+    distinct()
+
+csea_rec_syms <- lr_csea$receptors %>%
+    select(uniprot, state) %>%
+    na.omit() %>%
+    left_join(receptor_syms, by = "uniprot")  %>%
+    select(genesymbol, state) %>%
+    distinct()
+
+csea_syms <- bind_rows(csea_lig_syms, csea_rec_syms)
+
+
+
+# Get top 500 and bind csea states
+top500_resource_tool <- get_swapped_list(top_lists$top_500)
+top500_csea <- top500_resource_tool$OmniPath %>%
+    enframe(name = "method", value = "results") %>%
+    mutate(results = results %>% map(function(res) res %>%
+                                         select(source, target, ligand, receptor))) %>%
+    unnest(results) %>%
+    pivot_longer(cols = c(ligand, receptor), names_to = "cat", values_to = "genesymbol") %>%
+    pivot_longer(cols = c(source, target), names_to = "cell", values_to = "cell_type") %>%
+    left_join(csea_syms) %>%
+    na.omit()
+
+# Get enrichment per cell type by tool
+top500_csea_enrich <-
+    top500_csea %>%
+    group_by(cell_type)
+gk <- group_keys(top500_csea_enrich)
+
+omni_csea_enrich <- top500_csea_enrich %>%
+    group_split() %>%
+    map(function(met)
+        met %>%
+            enrich2(var1 = state,
+                    var2 = method)) %>%
+    setNames(gk$cell_type) %>%
+    enframe(name = "cell_type", value = "results") %>%
+    unnest(results) %>%
+    filter(abs(enrichment) != Inf)
+
+oce_heat <- omni_csea_enrich %>%
+    select(method, cell_type, state, enrichment) %>%
+    unite(method, cell_type, col = "mc", sep = "_") %>%
+    pivot_wider(id_cols = mc, names_from = state, values_from = enrichment) %>%
+    mutate_all(~ replace(., is.na(.), 0))
+
+
+# annotation groups (sequential vectors as in heatmap_binary_list)
+method_groups <- oce_heat %>%
+    separate(mc, into = c("method", "cell"), sep = "_") %>%
+    pull(method)
+cell_types <- oce_heat %>%
+    separate(mc, into = c("method", "cell"), sep = "_") %>%
+    pull(cell)
+
+# data frame with column annotations.
+# with a column for resources and a column for methods
+annotations_df <- data.frame(Cell_type = cell_types,
+                             Method = method_groups)  %>%
+    mutate(rn = oce_heat$mc) %>%
+    column_to_rownames("rn")
+
+# List with colors for each annotation.
+mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                 Cell_type = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(cell_types))))
+names(mycolors$Cell_type) <- unique(cell_types)
+names(mycolors$Method) <- unique(method_groups)
+
+# heatmap
+pheatmap(oce_heat %>%
+             column_to_rownames("mc") %>%
+             t(),
+         display_numbers = FALSE,
+         silent = FALSE,
+         show_colnames = FALSE,
+         color = colorRampPalette(c(
+             "darkslategray2",
+             "violetred2"))(100),
+         annotation_col = annotations_df,
+         annotation_colors = mycolors,
+         fontsize = 18,
+         drop_levels = TRUE,
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
+         border_color = NA,
+         treeheight_row = 0,
+         treeheight_col = 100
 )
 
-# top_frac <- bind_rows(top_frac, cell_num_fraq)
+
+
+# IV) Enriched by tool in the same system
+top500_csea <- top500_resource_tool$OmniPath %>%
+    enframe(name = "method", value = "results") %>%
+    mutate(results = results %>% map(function(res) res %>%
+                                         select(source, target, ligand, receptor))) %>%
+    unnest(results) %>%
+    pivot_longer(cols = c(ligand, receptor), names_to = "cat", values_to = "genesymbol") %>%
+    pivot_longer(cols = c(source, target), names_to = "cell", values_to = "cell_type") %>%
+    left_join(csea_syms) %>%
+    na.omit()
+
+
+# Get each resoure by tool
+top500_system <- top_lists$top_500 %>%
+    map(function(db){
+        db %>%
+            enframe(name = "resource", value = "results") %>%
+            mutate(results = results %>% map(function(res) res %>%
+                                                 select(source, target, ligand, receptor))) %>%
+            unnest(results) %>%
+            pivot_longer(cols = c(ligand, receptor), names_to = "cat", values_to = "genesymbol") %>%
+            pivot_longer(cols = c(source, target), names_to = "cell", values_to = "cell_type") %>%
+            left_join(csea_syms) %>%
+            na.omit()
+    }) %>%
+    enframe(name = "method", value = "results_resource") %>%
+    unnest(results_resource) %>%
+    group_by(resource)
+
+
+gk <- group_keys(top500_system)
+
+# Get enrichment on a "system" level, i.e. enrichment per tool by resource
+top500_sys_enrich <- top500_system %>%
+    group_split() %>%
+    setNames(gk$resource) %>%
+    map(function(db) db %>%
+            enrich2(var1 = state,
+                    var2 = method)
+            ) %>%
+    enframe(name = "resource", value = "enrich") %>%
+    unnest(enrich) %>%
+    unite(method, resource, col="mr") %>%
+    mutate_all(~ replace(., is.infinite(.), 0))
+
+
+sys_heat_data <- top500_sys_enrich %>%
+    pivot_wider(id_cols = mr,
+                names_from = state,
+                values_from = enrichment,
+                values_fill = 0)
+
+
+
+
+# annotation groups (sequential vectors as in heatmap_binary_list)
+method_groups <- sys_heat_data %>%
+    separate(mr, into = c("method", "resource"), sep = "_") %>%
+    pull(method)
+resource_groups <- sys_heat_data %>%
+    separate(mr, into = c("method", "resource"), sep = "_") %>%
+    pull(resource)
+
+# data frame with column annotations.
+# with a column for resources and a column for methods
+annotations_df <- data.frame(Resource = resource_groups,
+                             Method = method_groups)  %>%
+    mutate(rn = sys_heat_data$mr) %>%
+    column_to_rownames("rn")
+
+# List with colors for each annotation.
+mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                 Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))))
+names(mycolors$Resource) <- unique(resource_groups)
+names(mycolors$Method) <- unique(method_groups)
+
+
+
+sys_enrich_heat <- pheatmap(sys_heat_data %>%
+                              column_to_rownames("mr") %>%
+                              t(),
+                          annotation_col = annotations_df,
+                          annotation_colors = mycolors,
+                          display_numbers = FALSE,
+                          silent = FALSE,
+                          show_colnames = FALSE,
+                          color = colorRampPalette(c("darkslategray2", "violetred2"))(100),
+                          fontsize = 18,
+                          drop_levels = TRUE,
+                          cluster_rows = TRUE,
+                          cluster_cols = TRUE,
+                          border_color = NA,
+                          treeheight_row = 0,
+                          treeheight_col = 100
+)
 
 
 
 
 
-# II) Enrichment by Method
 
+# V) Enrichment by Interactions (use CellChat DB)
+conn_syms <- full_resource$OmniPath$connections %>%
+    select(source, target, source_genesymbol, target_genesymbol)
 
-
-
-# III) Enrichment by Rank (e.g. PROGENy)
-
+csea_conns <- lr_csea$connections %>%
+    select(source, target, state) %>%
+    distinct() %>%
+    left_join(conn_syms, by = c("source", "target")) %>%
+    distinct() %>%
+    select(source_genesymbol, target_genesymbol, state) %>%
+    unite(source_genesymbol, target_genesymbol, col = "interaction")
 
 
 
@@ -169,22 +383,7 @@ hyp_obj
 
 
 
-# XXX II) Enrichment by Resource
-# tmp <- sig_list_resource$OmniPath %>%
-#     filter(str_detect(name, "_OmniPath")) %>%
-#     separate(clust_pair, into=c("source", "target"), sep = "_") %>%
-#     separate(name, into=c("tool", "resource"), sep = "_")  %>%
-#     select(tool, source, target, freq)
 
-tmp1 <- tmp %>% select(tool, cp=source, freq) %>% mutate(cat="source")
-tmp2 <- tmp %>% select(tool, cp=target, freq) %>% mutate(cat="target")
-
-xd <- bind_rows(tmp1, tmp2)
-
-
-full_resource <- compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
-
-lr <- full_resource %>% ligrec_overlap()
 
 
 
@@ -259,30 +458,33 @@ data %>%
 
 
 
+# XXX II) Enrichment by Resource
+# tmp <- sig_list_resource$OmniPath %>%
+#     filter(str_detect(name, "_OmniPath")) %>%
+#     separate(clust_pair, into=c("source", "target"), sep = "_") %>%
+#     separate(name, into=c("tool", "resource"), sep = "_")  %>%
+#     select(tool, source, target, freq)
 
 
+# Get reso urces
+full_resource <- compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
 
-
-import_omnipath_intercell(
-    resource = 'HGNC',
-    scope = 'specific',
-    parent = "ligand",
-    entity_type = 'protein'
-) %>%
-    select(genesymbol, category)
-
-import_omnipath_intercell(
-    resource = 'HGNC',
-    scope = 'specific',
-    parent = "receptor",
-    entity_type = 'protein'
-) %>%
-    select(genesymbol, category)
-
-
+lr <- full_resource %>% ligrec_overlap()
 
 
 lr_csea <- lr %>% ligand_receptor_classes('CancerSEA', state)
+lr_signal <- lr %>% ligand_receptor_classes('SignaLink_pathway', pathway, NULL)
+
+
+
+# bind symbols
+lr_csea$connections
+lr_signal$connections
+
+
+
+
+
 lr_msig <- lr %>% ligand_receptor_classes(
     'MSigDB',
     geneset,
@@ -293,8 +495,6 @@ lr_msig <- lr %>% ligand_receptor_classes(
 
 conn_syms <- full_resource$OmniPath$connections %>%
     select(source, target, source_genesymbol, target_genesymbol)
-
-
 
 
 msig_conn_geneset <- lr_msig$connections %>%
@@ -310,6 +510,8 @@ msig_conn_geneset <- lr_msig$connections %>%
 lig_syms <- full_resource$OmniPath$connections %>%
     select(source, target_genesymbol)
 
+
+
 msig_lig_geneset <- lr_msig$ligands %>%
     select(source=uniprot, geneset) %>%
     distinct() %>%
@@ -317,9 +519,5 @@ msig_lig_geneset <- lr_msig$ligands %>%
     distinct() %>%
     select(source_genesymbol, target_genesymbol, geneset) %>%
     unite(source_genesymbol, target_genesymbol, col = "interaction")
-
-
-
-msig_lig_geneset
 
 
