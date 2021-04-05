@@ -1,37 +1,14 @@
 my_pallette = colorRampPalette(c(
-    # "gray15",
+    "gray15",
     "darkslategray2",
     "violetred2"
     ))(100)
 
 
 # I) Enriched Cell Pairs
-# i.e. cells with the most edges that either stem from them or to them
-top1000_resource_tool <- get_swapped_list(top_lists$top_1000)
-
-cell_fraq <- top1000_resource_tool$OmniPath %>%
-    enframe(name = "method", value = "results") %>%
-    mutate(results = results %>% map(function(res) res %>%
-            select(source, target))) %>%
-    unnest(results) %>%
-    pivot_longer(cols = c(source, target), names_to = "cat", values_to = "cell") %>%
-    group_by(method, cell) %>%
-    summarise(cell_occur = n()) %>%
-    mutate(cell_fraq = cell_occur/sum(cell_occur)) %>%
-    ungroup() %>%
-    select(method, cell, cell_fraq)
 
 
-cell_fraq %>%
-    pivot_wider(id_cols = cell,
-                names_from =  method,
-                values_from = cell_fraq,
-                values_fill = 0) %>%
-    column_to_rownames("cell") %>%
-    pheatmap()
 
-
-#
 top_frac <- top_lists$top_1000 %>%
     map(function(db){
         db %>%
@@ -79,21 +56,66 @@ names(mycolors$Resource) <- unique(resource_groups)
 names(mycolors$Method) <- unique(method_groups)
 
 
-pheatmap(top_frac %>% column_to_rownames("mr") %>% t(),
+cellfraq_heat <- pheatmap(top_frac %>%
+                              column_to_rownames("mr") %>%
+                              t(),
          annotation_col = annotations_df,
          annotation_colors = mycolors,
          display_numbers = FALSE,
          silent = FALSE,
          show_colnames = FALSE,
-         color = my_pallette,
+         color = colorRampPalette(c("darkslategray2", "violetred2"))(100),
          fontsize = 18,
          drop_levels = TRUE,
          cluster_rows = TRUE,
          cluster_cols = TRUE,
          border_color = NA,
          treeheight_row = 0,
+         cutree_cols = 7,
          treeheight_col = 100
          )
+
+
+
+cellfraq_heat$tree_row$order
+cellfraq_heat$tree_row$labels
+
+
+# Get proportions of single cells and proper names for clusts
+crc_form <- readRDS("input/crc_data/crc_korean_mod.rds")
+crc_meta <- crc_form@meta.data
+rm(crc_form)
+
+cellcount_fraq <- crc_meta %>%
+    select(Cell_clusters, Cell_subtype) %>%
+    group_by(Cell_subtype) %>%
+    summarise(cell_occur = n()) %>%
+    mutate(cell_fraq = cell_occur/sum(cell_occur), .keep = "unused") %>%
+    pivot_wider(names_from = Cell_subtype, values_from = cell_fraq) %>%
+    mutate(mr = "Cell.Counts")
+
+
+cellcount_heat <- pheatmap(cell_num_fraq %>%
+                               column_to_rownames("mr") %>%
+                               t(),
+                           display_numbers = FALSE,
+                           silent = FALSE,
+                           show_colnames = FALSE,
+                           color = colorRampPalette(c("darkslategray2", "violetred2"))(100),
+                           fontsize = 18,
+                           drop_levels = TRUE,
+                           cluster_rows = FALSE,
+                           cluster_cols = FALSE,
+                           border_color = NA,
+                           treeheight_row = 0,
+                           cutree_cols = 7,
+                           treeheight_col = 100
+)
+
+# top_frac <- bind_rows(top_frac, cell_num_fraq)
+
+
+
 
 
 # II) Enrichment by Method
