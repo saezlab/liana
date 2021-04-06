@@ -47,19 +47,19 @@ spec_list <- list("CellChat" =
 
 # I. Overlap
 # Top X Top Hits for each tool
-top_lists <- get_top_hits(spec_list, n_ints=c(50, 200, 500, 1000, 5000))
+top_lists <- get_top_hits(spec_list, n_ints=c(50, 250, 500, 1000, 2000))
 
 
 # 1. UpSet Plots and Heatmaps by Tool
-names(top_lists$top_500) %>%
-    map(function(m_name) top_lists$top_500[[m_name]] %>%
+names(top_lists$top_250) %>%
+    map(function(m_name) top_lists$top_250[[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 
 
 # 2. Combine all binary results into heatmap
-binary_heatm <- get_BigHeat(top_lists$top_500,
+binary_heatm <- get_BigHeat(top_lists$top_250,
                             display_numbers = FALSE,
                             silent = FALSE,
                             show_rownames = FALSE,
@@ -78,7 +78,7 @@ binary_heatm <- get_BigHeat(top_lists$top_500,
 
 
 # 3. Binary PCA
-plot_freq_pca(top_lists$top_500 %>%
+plot_freq_pca(top_lists$top_250 %>%
                   get_binary_frequencies())
 
 
@@ -90,12 +90,12 @@ plot_freq_pca(top_lists$top_500 %>%
 
 # 5. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-top500_resource_tool <- get_swapped_list(top_lists$top_500)
+top250_resource_tool <- get_swapped_list(top_lists$top_250)
 
 # Plot and Save Upsets
-names(top500_resource_tool) %>%
+names(top250_resource_tool) %>%
     map(function(r_name)
-        top500_resource_tool[[r_name]] %>%
+        top250_resource_tool[[r_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_resources/{r_name}_upset.png"))
     )

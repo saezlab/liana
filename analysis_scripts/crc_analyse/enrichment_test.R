@@ -1,5 +1,5 @@
 # I) Enriched Cell Pairs
-top_frac <- top_lists$top_500 %>%
+top_frac <- top_lists$top_250 %>%
     map(function(db){
         db %>%
         enframe(name = "resource", value = "results") %>%
@@ -54,7 +54,8 @@ cellfraq_heat <- pheatmap(top_frac %>%
          display_numbers = FALSE,
          silent = FALSE,
          show_colnames = FALSE,
-         color = colorRampPalette(c("darkslategray2", "violetred2"))(100),
+         color = colorRampPalette(c("darkslategray2",
+                                    "violetred2"))(20),
          fontsize = 18,
          drop_levels = TRUE,
          cluster_rows = TRUE,
@@ -69,6 +70,7 @@ cellfraq_heat <- pheatmap(top_frac %>%
 crc_form <- readRDS("input/crc_data/crc_korean_mod.rds")
 crc_meta <- crc_form@meta.data
 rm(crc_form)
+gc()
 
 cellcount_fraq <- crc_meta %>%
     select(Cell_clusters, Cell_subtype) %>%
@@ -79,8 +81,17 @@ cellcount_fraq <- crc_meta %>%
     mutate(mr = "Cell.Counts")
 
 
+cellfraq_heat$tree_row$labels
+cellfraq_heat$tree_row$order
+
+label_order <- data.frame(lab = cellfraq_heat$tree_row$labels,
+           ord = cellfraq_heat$tree_row$order) %>%
+    arrange(ord)
+
+
 cellcount_heat <- pheatmap(cellcount_fraq %>%
                                column_to_rownames("mr") %>%
+                               # select(label_order$lab) %>%
                                t(),
                            display_numbers = FALSE,
                            silent = FALSE,
@@ -162,8 +173,8 @@ signal_syms <- bind_rows(signal_lig_syms, signal_rec_syms)
 
 
 # Get top 500 and bind csea states
-top500_resource_tool <- get_swapped_list(top_lists$top_500)
-top500_csea <- top500_resource_tool$OmniPath %>%
+top250_resource_tool <- get_swapped_list(top_lists$top_250)
+top250_csea <- top250_resource_tool$OmniPath %>%
     enframe(name = "method", value = "results") %>%
     mutate(results = results %>% map(function(res) res %>%
                                          select(source, target, ligand, receptor))) %>%
@@ -174,12 +185,12 @@ top500_csea <- top500_resource_tool$OmniPath %>%
     na.omit()
 
 # Get enrichment per cell type by tool
-top500_csea_enrich <-
-    top500_csea %>%
+top250_csea_enrich <-
+    top250_csea %>%
     group_by(cell_type)
-gk <- group_keys(top500_csea_enrich)
+gk <- group_keys(top250_csea_enrich)
 
-omni_csea_enrich <- top500_csea_enrich %>%
+omni_csea_enrich <- top250_csea_enrich %>%
     group_split() %>%
     map(function(met)
         met %>%
@@ -227,10 +238,10 @@ pheatmap(oce_heat %>%
          show_colnames = FALSE,
          color = colorRampPalette(c(
              "darkslategray2",
-             "violetred2"))(100),
+             "violetred2"))(20),
          annotation_col = annotations_df,
          annotation_colors = mycolors,
-         fontsize = 18,
+         fontsize = 16,
          drop_levels = TRUE,
          cluster_rows = TRUE,
          cluster_cols = TRUE,
@@ -242,19 +253,8 @@ pheatmap(oce_heat %>%
 
 
 # IV) Enriched by tool in the same system
-top500_csea <- top500_resource_tool$OmniPath %>%
-    enframe(name = "method", value = "results") %>%
-    mutate(results = results %>% map(function(res) res %>%
-                                         select(source, target, ligand, receptor))) %>%
-    unnest(results) %>%
-    pivot_longer(cols = c(ligand, receptor), names_to = "cat", values_to = "genesymbol") %>%
-    pivot_longer(cols = c(source, target), names_to = "cell", values_to = "cell_type") %>%
-    left_join(csea_syms) %>%
-    na.omit()
-
-
 # Get each resoure by tool
-top500_system <- top_lists$top_500 %>%
+top_system <- top_lists$top_250 %>%
     map(function(db){
         db %>%
             enframe(name = "resource", value = "results") %>%
@@ -271,10 +271,10 @@ top500_system <- top_lists$top_500 %>%
     group_by(resource)
 
 
-gk <- group_keys(top500_system)
+gk <- group_keys(top_system)
 
 # Get enrichment on a "system" level, i.e. enrichment per tool by resource
-top500_sys_enrich <- top500_system %>%
+top_sys_enrich <- top_system %>%
     group_split() %>%
     setNames(gk$resource) %>%
     map(function(db) db %>%
@@ -287,12 +287,11 @@ top500_sys_enrich <- top500_system %>%
     mutate_all(~ replace(., is.infinite(.), 0))
 
 
-sys_heat_data <- top500_sys_enrich %>%
+sys_heat_data <- top_sys_enrich %>%
     pivot_wider(id_cols = mr,
                 names_from = state,
                 values_from = enrichment,
                 values_fill = 0)
-
 
 
 
@@ -327,8 +326,8 @@ sys_enrich_heat <- pheatmap(sys_heat_data %>%
                           display_numbers = FALSE,
                           silent = FALSE,
                           show_colnames = FALSE,
-                          color = colorRampPalette(c("darkslategray2", "violetred2"))(100),
-                          fontsize = 18,
+                          color = colorRampPalette(c("darkslategray2", "violetred2"))(20),
+                          fontsize = 17,
                           drop_levels = TRUE,
                           cluster_rows = TRUE,
                           cluster_cols = TRUE,
@@ -343,7 +342,7 @@ sys_enrich_heat <- pheatmap(sys_heat_data %>%
 
 # IV) Enriched by tool in the same system (signalink)
 # Get each resoure by tool
-top500_system <- top_lists$top_500 %>%
+top_signal_system <- top_lists$top_250 %>%
     map(function(db){
         db %>%
             enframe(name = "resource", value = "results") %>%
@@ -360,10 +359,10 @@ top500_system <- top_lists$top_500 %>%
     group_by(resource)
 
 
-gk <- group_keys(top500_system)
+gk <- group_keys(top_signal_system)
 
 # Get enrichment on a "system" level, i.e. enrichment per tool by resource
-top500_sys_enrich <- top500_system %>%
+topsignal_sys_enrich <- top_signal_system %>%
     group_split() %>%
     setNames(gk$resource) %>%
     map(function(db) db %>%
@@ -376,7 +375,7 @@ top500_sys_enrich <- top500_system %>%
     mutate_all(~ replace(., is.infinite(.), 0))
 
 
-sys_heat_data <- top500_sys_enrich %>%
+sys_heat_data <- topsignal_sys_enrich %>%
     pivot_wider(id_cols = mr,
                 names_from = pathway,
                 values_from = enrichment,
@@ -415,7 +414,7 @@ sys_enrich_heat <- pheatmap(sys_heat_data %>%
                             silent = FALSE,
                             show_colnames = FALSE,
                             color = colorRampPalette(c("darkslategray2", "violetred2"))(20),
-                            fontsize = 18,
+                            fontsize = 17,
                             drop_levels = TRUE,
                             cluster_rows = TRUE,
                             cluster_cols = TRUE,
@@ -425,8 +424,11 @@ sys_enrich_heat <- pheatmap(sys_heat_data %>%
 
 
 
+# VI) Enrichment with each method individually against whole geneset DB
 
-# V) Enrichment by Interactions (use CellChat DB)
+
+
+# VII) Enrichment by Interactions (use CellChat DB)
 conn_syms <- full_resource$OmniPath$connections %>%
     select(source, target, source_genesymbol, target_genesymbol)
 
