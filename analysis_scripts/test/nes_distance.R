@@ -1,90 +1,59 @@
 # LM/Corr with NES fig + bar plots
 # Combine all into list and get frequencies per rank
-# II All Results ranked -------------------------------------------------------
-squidpy_p_full <- squidpy_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="pvalue",
-                                    .desc_order = FALSE)
-    )
+# Load results
+library(broom)
 
-squidpy_m_full <- squidpy_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="means",
-                                    .desc_order = TRUE)
-    )
-
-# NATMI
-natmi_sw_full <- natmi_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="edge_specificity",
-                                    .desc_order = TRUE)
-    )
-
-
-natmi_epw_full <- natmi_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="edge_avg_expr",
-                                    .desc_order = TRUE)
-    )
-
-# SCA
-sca_full <- sca_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="LRscore",
-                                    .desc_order = TRUE)
-    )
-
-# Connectome
-conn_sw_full <- conn_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="weight_sc",
-                                    .desc_order = TRUE)
-    )
-
-conn_epw_full <- conn_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="weight_norm",
-                                    .desc_order = TRUE)
-    )
+spec_list <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/benchmark/main_run/cellchat_full.rds"),
+                                   method_scores=list(
+                                       #"pval"=FALSE,
+                                       "prob"=TRUE)),
+                  "Connectome" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Connectome",
+                                   method_results = readRDS("output/benchmark/main_run/conn_full.rds"),
+                                   method_scores=list(
+                                       "weight_sc"=TRUE,
+                                       "weight_norm"=TRUE
+                                   )),
+                  "iTALK" =
+                      methods::new("MethodSpecifics",
+                                   method_name="iTALK",
+                                   method_results = readRDS("output/benchmark/main_run/italk_full.rds"),
+                                   method_scores=list(
+                                       "weight_comb"=TRUE
+                                   )),
+                  "NATMI" =
+                      methods::new("MethodSpecifics",
+                                   method_name="NATMI",
+                                   method_results = readRDS("output/benchmark/main_run/natmi_full.rds"),
+                                   method_scores=list(
+                                       "edge_avg_expr"=TRUE,
+                                       "edge_specificity"=TRUE)),
+                  "SCA" = methods::new("MethodSpecifics",
+                                       method_name="SCA",
+                                       method_results = readRDS("output/benchmark/main_run/sca_full.rds"),
+                                       method_scores=list(
+                                           "LRscore"=TRUE
+                                       )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/benchmark/main_run/squidpy_full.rds"),
+                                   method_scores=list(
+                                       # "means"=TRUE,
+                                       "pvalue"=FALSE
+                                   ))
+)
 
 
-# CellChat
-cellchat_full <- cellchat_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="pval",
-                                    .desc_order = FALSE)
-    )
-
-# iTALK
-italk_full <- italk_results %>%
-    map(function(res)
-        res %>%
-            format_rank_frequencies(score_col="weight_comb",
-                                    .desc_order = TRUE)
-    )
 
 
-# Combine all into list and get frequencies per rank
-rank_frequencies <- (list("CellChat" = cellchat_full,
-                          "Squidpy.pvals" = squidpy_p_full,
-                          "Squidpy.means" = squidpy_p_full,
-                          "NATMI.EPW" = natmi_epw_full,
-                          "NATMI.SW" = natmi_sw_full,
-                          "iTALK" = italk_full,
-                          "Connectome.EPW" = conn_epw_full,
-                          "Connectome.SW" = conn_sw_full,
-                          "SCA" = sca_full)) %>%
+#  PCA by Rank Frequencies
+rank_frequencies <- spec_list %>%
     get_rank_frequencies()
-
-# 5. PCA by Rank Frequencies
 plot_freq_pca(rank_frequencies)
 
 

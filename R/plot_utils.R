@@ -49,11 +49,11 @@ get_BigHeat <- function(sig_list,
   # remove OmniPath and Random resources, as they are much larger than the
   # rest of the resources and result in too much sparsity to get meaningful
   # clusters not completely align to them.
-  heatmap_sig_list <- sig_list %>%
-    map(function(x) x %>%
-          purrr::list_modify("OmniPath" = NULL) %>%
-          purrr::list_modify("Random" = NULL)
-    )
+  heatmap_sig_list <- sig_list # %>%
+    # map(function(x) x %>%
+    #       purrr::list_modify("OmniPath" = NULL) %>%
+    #       purrr::list_modify("Random" = NULL)
+    # )
 
   # get method and resource names combined
   lnames <- map(names(heatmap_sig_list), function(m_name){

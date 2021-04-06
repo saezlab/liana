@@ -1,5 +1,8 @@
 library(vegan)
 
+# range standardization (from 1 (highest rank) to 0 (lowest rank))
+range1_0 <- function(x, ...){1 - (x - min(x, ...)) / (max(x, ...) - min(x, ...))}
+
 # distance with Ranked results (a bit meaningless)
 rank_dist <- rank_frequencies %>%
     group_by(name) %>%
@@ -8,13 +11,15 @@ rank_dist <- rank_frequencies %>%
     filter(resource == "OmniPath") %>%
     ungroup() %>%
     select(method, clust_pair, freq) %>%
-    pivot_wider(id_cols = method, names_from = clust_pair , values_from = freq, values_fill = 0)  %>%
+    pivot_wider(id_cols = method,
+                names_from = clust_pair,
+                values_from = freq,
+                values_fill = 0)  %>%
     column_to_rownames("method") %>%
-    vegdist(method = "jaccard")
+    vegdist(method = "bray")
 rank_dist
 
-# range standardization (from 1 (highest rank) to 0 (lowest rank))
-range1_0 <- function(x, ...){1 - (x - min(x, ...)) / (max(x, ...) - min(x, ...))}
+
 
 # data(BCI)
 # H <- diversity(BCI)
@@ -32,18 +37,16 @@ top_lists_swapped <-
 
 
 
-tmp <- top_lists_swapped$top_5000$OmniPath %>%
+tmp <- top_lists_swapped$top_2000$OmniPath %>%
     prepForUpset() %>%
     select(-interaction) %>%
     t() %>%
-    vegdist(method = "bray", diag=FALSE, upper = TRUE, binary = TRUE) %>%
+    vegdist(method = "jaccard", diag=FALSE, upper = TRUE, binary = TRUE) %>%
     as.matrix()
 xy <- t(combn(colnames(tmp), 2))
 df_pairs <- data.frame(xy, bray=tmp[xy]) %>% as_tibble() %>%
     dplyr::rename(method1="X1", method2="X2") %>%
     distinct()
-
-
 
 nodes_x <- df_pairs %>%
     pull(method1) %>%
@@ -65,16 +68,16 @@ edges_x <- df_pairs %>%
     group_by(method2) %>%
     mutate(to = group_indices() + 1) %>%
     mutate(value = 1 - bray) %>%
-    mutate(title = "top5000")
+    mutate(title = "top2000")
 
 
 
 ###
-tmp <- top_lists_swapped$top_500$OmniPath %>%
+tmp <- top_lists_swapped$top_50$OmniPath %>%
     prepForUpset() %>%
     select(-interaction) %>%
     t() %>%
-    vegdist(method = "bray", diag=FALSE, upper = TRUE, binary = TRUE) %>%
+    vegdist(method = "jaccard", diag=FALSE, upper = TRUE, binary = TRUE) %>%
     as.matrix()
 xy <- t(combn(colnames(tmp), 2))
 df_pairs <- data.frame(xy, bray=tmp[xy]) %>% as_tibble() %>%
@@ -106,14 +109,12 @@ edges_x1 <- df_pairs %>%
     mutate(title = "top500")
 
 ###
-
-
-
 library(visNetwork)
 visNetwork(nodes_x, bind_rows(edges_x, edges_x1)) %>%
     visEdges(smooth = list(enabled = TRUE, type = 'dynamic')) %>%
     visPhysics(solver = "forceAtlas2Based",
-               barnesHut = list(springConstant = 0.001))  %>%
+               forceAtlas2Based = list("gravitationalConstant" = -200,
+                                       "springConstant" = 0.02))  %>%
     visLegend()
 
 
