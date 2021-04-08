@@ -44,10 +44,9 @@ spec_list <- list("CellChat" =
                                    ))
                   )
 
-
 # I. Overlap
 # Top X Top Hits for each tool
-top_lists <- get_top_hits(spec_list, n_ints=c(50, 250, 500, 1000, 2000))
+top_lists <- get_top_hits(spec_list, n_ints=c(50, 100, 250, 500, 1000))
 
 
 # 1. UpSet Plots and Heatmaps by Tool

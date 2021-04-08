@@ -37,7 +37,7 @@ top_lists_swapped <-
 
 
 
-tmp <- top_lists_swapped$top_2000$OmniPath %>%
+tmp <- top_lists_swapped$top_1000$OmniPath %>%
     prepForUpset() %>%
     select(-interaction) %>%
     t() %>%
@@ -106,7 +106,7 @@ edges_x1 <- df_pairs %>%
     group_by(method2) %>%
     mutate(to = group_indices() + 1) %>%
     mutate(value = 1 - bray) %>%
-    mutate(title = "top500")
+    mutate(title = "top50")
 
 ###
 library(visNetwork)

@@ -807,7 +807,7 @@ classes_bar <- function(data, entity, resource, var){
         geom_bar() +
         stat_count() +
         scale_fill_manual(
-            values = .palette5,
+            values = .palette1,
             guide = guide_legend(title = legend_title)
         ) +
         xlab('Resources') +
@@ -875,18 +875,6 @@ classes_enrich <- function(data, entity, resource, var, ...){
 
     p <- ggplot(data, aes(x = resource, y = !!var, fill = enrichment)) +
         geom_tile() +
-        geom_text(
-            mapping = aes(
-                label = ifelse(
-                    padj < .05,
-                    '\u274B',
-                    ''
-                )
-            ),
-            color = 'white',
-            size = 2,
-            family = 'DejaVu Sans'
-        ) +
         scale_fill_viridis(
             option = 'cividis',
             limits = c(-lim, lim),
