@@ -4,10 +4,11 @@
 \usepackage{polyglossia}
 \setdefaultlanguage{english}
 \usepackage{xltxtra}
+\usepackage{microtype}
 
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{shapes,decorations.pathreplacing,calligraphy,positioning,shadows,fit,calc,arrows.meta,graphs,graphdrawing,graphdrawing.layered,quotes}
+\usetikzlibrary{shapes, positioning, arrows.meta}
 \usepackage{xcolor}
 
 % Paul Tol 9 colors
@@ -51,13 +52,17 @@
 
 \def\yr#1{\\\footnotesize#1}
 
+\pgfdeclarelayer{nodes}
+\pgfdeclarelayer{edges}
+\pgfsetlayers{edges, nodes}
+
 \tikzstyle{res} = [
     rectangle,
     rounded corners = 5,
     text centered,
     text = white,
     minimum height = 2em,
-    inner sep = 10pt,
+    inner sep = 7pt,
     fill opacity = .8
 ]
 \tikzstyle{icres} = [
@@ -94,7 +99,6 @@
 \begin{document}
 
     \begin{tikzpicture}[
-            layered layout,
             every edge/.style={
                 ->,
                 draw = gray!90,
@@ -107,113 +111,139 @@
             every text node part/.style = {
                 align = center
             },
-            grow' = right,
-            components go down right aligned
+            every node/.style = {scale = 1.5},
+            anchor = west
         ]
 
-            \node (litr) [liter] {Literature};
+        \begin{pgfonlayer}{nodes}
 
-            \node (bacc) [icres] {Baccin \yr{2019}};
-            \node (rami) [icres] {Ramilowski \yr{2015}};
-            \node (ccdb) [icres] {CellChatDB \yr{2021}};
-            \node (ctdb) [icres] {CellTalkDB \yr{2020}};
-            \node (cpdb) [icres] {CellPhoneDB \yr{2018}};
-            \node (conn) [icres] {connectomeDB \yr{2020}};
-            \node (embr) [icres] {EMBRACE \yr{2019}};
-            \node (g2ph) [icres] {Guide to Pharmacology \yr{2009}};
-            \node (hpmr) [icres] {HPMR \yr{2003}};
-            \node (icel) [icres] {ICELLNET \yr{2020}};
-            \node (itlk) [icres] {iTALK \yr{2019}};
-            \node (lrdb) [icres] {LRdb \yr{2020}};
-            \node (tklr) [icres] {talklr \yr{2020}};
-            \node (dlrp) [icres] {DIP-DLRP};
-
-            \node (omni) [omnip] {OmniPath};
-
-            \node (kegg) [ntres] {KEGG};
-            \node (reac) [ntres] {Reactome};
-            \node (bgri) [ntres] {BioGRID};
-            \node (hprd) [ntres] {HPRD};
             \node (indb) [ntres] {InnateDB};
-            \node (inta) [ntres] {IntAct};
-            \node (strg) [ntres] {STRING};
-            \node (unip) [ntres] {UniProt};
-            \node (inge) [ntres] {Ingenuity};
-            \node (mxdb) [ntres] {MatrixDB};
-            \node (i2dd) [ntres] {I2D};
-            \node (csig) [ntres] {cellsignal.com};
+            \node (i2dd) [ntres, below = of indb] {I2D};
+            \node (strg) [ntres, below = of i2dd] {STRING};
+            \node (mxdb) [ntres, below = of strg] {MatrixDB};
+            \node (inge) [ntres, below = of mxdb] {Ingenuity};
+            \node (inta) [ntres, below = of inge] {IntAct};
+            \node (kegg) [ntres, below = of inta] {KEGG};
+            \node (csig) [ntres, below = of kegg] {cellsignal.com};
+            \node (reac) [ntres, below = of csig] {Reactome};
+            \node (bgri) [ntres, below = of reac] {BioGRID};
+            \node (hprd) [ntres, below = of bgri] {HPRD};
+            \node (unip) [ntres, below = of hprd] {UniProt};
 
-            \node (grae) [paper] {Graeber 2001};
-            \node (grif) [paper] {Griffith 2014};
-            \node (came) [paper] {Cameron 2003};
-            \node (zhou) [paper] {Zhou 2017};
-            \node (ausl) [paper] {Auslander 2018};
+            \node (dlrp) [icres, right = 3cm of inge] {DIP-DLRP};
+            \node (g2ph) [icres, below = of dlrp] {
+                Guide to Pharmacology \yr{2009}
+            };
+            \node (rami) [icres, right = 15mm of g2ph] {
+                Ramilowski \yr{2015}
+            };
+            \node (cpdb) [icres, above right = 0cm and 3cm of rami] {
+                CellPhoneDB \yr{2018}
+            };
+            \node (bacc) [icres, below right = 0cm and 2cm of cpdb] {
+                Baccin \yr{2019}
+            };
+            \node (embr) [icres, below = 3cm of bacc] {EMBRACE \yr{2019}};
+            \node (lrdb) [icres, right = 20mm of embr] {LRdb \yr{2020}};
+            \node (ccdb) [icres, right = 23mm of lrdb] {
+                CellChatDB \yr{2021}
+            };
+            \node (tklr) [icres, above = of ccdb] {talklr \yr{2020}};
+            \node (conn) [icres, above right = 10mm and -28mm of tklr] {
+                connectomeDB \yr{2020}
+            };
+            \node (ctdb) [icres, above right = 3cm and 0mm of conn] {
+                CellTalkDB \yr{2020}
+            };
+            \node (hpmr) [icres, below = of g2ph] {HPMR \yr{2003}};
+            \node (itlk) [icres, below = 3cm of embr] {iTALK \yr{2019}};
+            \node (icel) [icres, below left = -5mm and 1cm of ctdb] {
+                ICELLNET \yr{2020}
+            };
+
+            \node (litr) [liter, above = 4cm of cpdb] {Literature};
+
+            \node (omni) [omnip, right = 15mm of tklr] {OmniPath};
+
+            \node (ausl) [paper, below left = of itlk] {Auslander 2018};
+            \node (zhou) [paper, left = of ausl] {Zhou 2017};
+            \node (grif) [paper, above = 13mm of zhou] {Griffith 2014};
+            \node (grae) [paper, above left = 15mm of grif] {Graeber 2001};
+            \node (came) [paper, above left = -5mm and 1cm of zhou] {
+                Cameron 2003
+            };
+
+        \end{pgfonlayer}
+
+        \begin{pgfonlayer}{edges}
 
             \path
-                (rami) edge[->] (bacc)
-                (kegg) edge[->] (bacc)
-                (reac) edge[->] (bacc)
-                (litr) edge[->] (bacc)
-                (kegg) edge[->] (ccdb)
-                (litr) edge[->] (ccdb)
-                (g2ph) edge[->] (cpdb)
-                (i2dd) edge[->] (cpdb)
-                (indb) edge[->] (cpdb)
-                (inta) edge[->] (cpdb)
-                (mxdb) edge[->] (cpdb)
-                (litr) edge[->] (cpdb)
-                (strg) edge[->] (ctdb)
-                (litr) edge[->] (ctdb)
-                (rami) edge[->] (conn)
-                (cpdb) edge[->] (conn)
-                (litr) edge[->] (conn)
-                (bacc) edge[->] (conn)
-                (lrdb) edge[->] (conn)
-                (icel) edge[->] (conn)
-                (rami) edge[->] (embr)
-                (litr) edge[->] (g2ph)
-                (litr) edge[->] (hpmr)
-                (inge) edge[->] (icel)
-                (strg) edge[->] (icel)
-                (bgri) edge[->] (icel)
-                (reac) edge[->] (icel)
-                (cpdb) edge[->] (icel)
-                (rami) edge[->] (itlk)
-                (hpmr) edge[->] (itlk)
-                (g2ph) edge[->] (itlk)
-                (grae) edge[->] (itlk)
-                (grif) edge[->] (itlk)
-                (came) edge[->] (itlk)
-                (zhou) edge[->] (itlk)
-                (ausl) edge[->] (itlk)
-                (unip) edge[->] (lrdb)
-                (rami) edge[->] (lrdb)
-                (litr) edge[->] (lrdb)
-                (g2ph) edge[->] (lrdb)
-                (reac) edge[->] (lrdb)
-                (hpmr) edge[->] (lrdb)
-                (hprd) edge[->] (lrdb)
-                (csig) edge[->] (lrdb)
-                (dlrp) edge[->] (rami)
-                (hpmr) edge[->] (rami)
-                (g2ph) edge[->] (rami)
-                (hprd) edge[->] (rami)
-                (strg) edge[->] (rami)
-                (litr) edge[->] (rami)
-                (rami) edge[->] (tklr)
-                (rami) edge[->] (omni)
-                (bacc) edge[->] (omni)
-                (ccdb) edge[->] (omni)
-                (cpdb) edge[->] (omni)
-                (ctdb) edge[->] (omni)
-                (g2ph) edge[->] (omni)
-                (conn) edge[->] (omni)
-                (embr) edge[->] (omni)
-                (itlk) edge[->] (omni)
-                (tklr) edge[->] (omni)
-                (lrdb) edge[->] (omni)
-                (hpmr) edge[->] (omni)
-                (icel) edge[->] (omni);
+                (rami) edge[pink0, ->] (bacc)
+                (kegg) edge[blue0, ->] (bacc)
+                (reac) edge[blue0, ->] (bacc)
+                (litr) edge[olive0, ->] (bacc)
+                (kegg) edge[blue0, ->] (ccdb)
+                (litr) edge[olive0, ->] (ccdb)
+                (g2ph) edge[pink0, ->] (cpdb)
+                (i2dd) edge[blue0, ->] (cpdb)
+                (indb) edge[blue0, ->] (cpdb)
+                (inta) edge[blue0, ->] (cpdb)
+                (mxdb) edge[blue0, ->] (cpdb)
+                (litr) edge[olive0, ->] (cpdb)
+                (strg) edge[blue0, ->] (ctdb)
+                (litr) edge[olive0, ->] (ctdb)
+                (rami) edge[pink0, ->] (conn)
+                (cpdb) edge[pink0, ->] (conn)
+                (litr) edge[olive0, ->] (conn)
+                (bacc) edge[pink0, ->] (conn)
+                (lrdb) edge[pink0, ->] (conn)
+                (icel) edge[pink0, ->] (conn)
+                (rami) edge[pink0, ->] (embr)
+                (litr) edge[olive0, ->] (g2ph)
+                (litr) edge[olive0, ->] (hpmr)
+                (inge) edge[blue0, ->] (icel)
+                (strg) edge[blue0, ->] (icel)
+                (bgri) edge[blue0, ->] (icel)
+                (reac) edge[blue0, ->] (icel)
+                (cpdb) edge[pink0, ->] (icel)
+                (rami) edge[pink0, ->] (itlk)
+                (hpmr) edge[pink0, ->] (itlk)
+                (g2ph) edge[pink0, ->] (itlk)
+                (grae) edge[turquoise0, ->] (itlk)
+                (grif) edge[turquoise0, ->] (itlk)
+                (came) edge[turquoise0, ->] (itlk)
+                (zhou) edge[turquoise0, ->] (itlk)
+                (ausl) edge[turquoise0, ->] (itlk)
+                (unip) edge[blue0, ->] (lrdb)
+                (rami) edge[pink0, ->] (lrdb)
+                (litr) edge[olive0, ->] (lrdb)
+                (g2ph) edge[pink0, ->] (lrdb)
+                (reac) edge[blue0, ->] (lrdb)
+                (hpmr) edge[pink0, ->] (lrdb)
+                (hprd) edge[blue0, ->] (lrdb)
+                (csig) edge[blue0, ->] (lrdb)
+                (dlrp) edge[pink0, ->] (rami)
+                (hpmr) edge[pink0, ->] (rami)
+                (g2ph) edge[pink0, ->] (rami)
+                (hprd) edge[blue0, ->] (rami)
+                (strg) edge[blue0, ->] (rami)
+                (litr) edge[olive0, ->] (rami)
+                (rami) edge[pink0, ->] (tklr)
+                (rami) edge[pink0, ->] (omni)
+                (bacc) edge[pink0, ->] (omni)
+                (ccdb) edge[pink0, ->] (omni)
+                (cpdb) edge[pink0, ->] (omni)
+                (ctdb) edge[pink0, ->] (omni)
+                (g2ph) edge[pink0, ->] (omni)
+                (conn) edge[pink0, ->] (omni)
+                (embr) edge[pink0, ->] (omni)
+                (itlk) edge[pink0, ->] (omni)
+                (tklr) edge[pink0, ->] (omni)
+                (lrdb) edge[pink0, ->] (omni)
+                (hpmr) edge[pink0, ->] (omni)
+                (icel) edge[pink0, ->] (omni);
+
+        \end{pgfonlayer}
 
     \end{tikzpicture}
 
