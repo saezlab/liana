@@ -171,17 +171,37 @@ sys_enrich_heat <- pheatmap(sys_heat_data %>%
 
 
 # VI) Enrichment with each method individually against whole geneset DB
+top_system <- top_lists$top_250 %>%
+    map(function(db){
+        db %>%
+            enframe(name = "resource", value = "results") %>%
+            mutate(results = results %>% map(function(res) res %>%
+                                                 select(source, target, ligand, receptor))) %>%
+            unnest(results) %>%
+            pivot_longer(cols = c(ligand, receptor), names_to = "cat", values_to = "genesymbol") %>%
+            pivot_longer(cols = c(source, target), names_to = "cell", values_to = "cell_type")
+    }) %>%
+    enframe(name = "method", value = "results_resource") %>%
+    unnest(results_resource) %>%
+    select(method, genesymbol, cell_type, resource)
+
+
+signalink_full <- import_omnipath_annotations(resource = "SignaLink_pathway",
+                                              wide = TRUE)
+
+cellchat_full <- import_omnipath_annotations(resource = "CellChatDB",
+                                              wide = TRUE)
+
+
+signalink_enrich <- signalink_full %>%
+    left_join(top_system) %>%
+    select(genesymbol, method, resource, pathway) %>%
+    na.omit() %>%
+    unite(method, resource, col="mr") %>%
+    enrich2(var1 = pathway,
+            var2 = mr) %>%
+    mutate_all(~ replace(., is.infinite(.), 0))
 
 
 
-# VII) Enrichment by Interactions (use CellChat DB)
-conn_syms <- full_resource$OmniPath$connections %>%
-    select(source, target, source_genesymbol, target_genesymbol)
 
-csea_conns <- lr_csea$connections %>%
-    select(source, target, state) %>%
-    distinct() %>%
-    left_join(conn_syms, by = c("source", "target")) %>%
-    distinct() %>%
-    select(source_genesymbol, target_genesymbol, state) %>%
-    unite(source_genesymbol, target_genesymbol, col = "interaction")

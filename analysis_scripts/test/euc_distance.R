@@ -1,3 +1,6 @@
+# Load Data
+breast_cancer <- readRDS("input/sc_bc/breast_cancer_seurat323.rds")
+
 # Get clusters
 clusts <- breast_cancer@meta.data %>%
     select(seurat_clusters) %>%
@@ -30,7 +33,6 @@ ggplot(clust_coords, aes(x=centroid_x, y=centroid_y, color = seurat_clusters)) +
     geom_point(size=5) +
     scale_color_manual(values=colorRampPalette(brewer.pal(8, "Set1"))(length(unique(clust_coords$seurat_clusters)))) +
     scale_shape_manual(values=1:nlevels(clust_coords$seurat_clusters))
-
 
 
 # Get Cluster Centroid info
@@ -75,7 +77,7 @@ rank_euc_freq <- rank_frequencies %>%
 rank_euc_corr <- rank_euc_freq %>%
     group_by(name) %>%
     na.omit() %>%
-    do(corr = cor.test(x = .$freq, y = .$norm_eucl, method = "pearson")) %>%
+    do(corr = cor.test(x = .$freq, y = .$norm_eucl, method = "spearman")) %>%
     mutate(coef = corr %>% glance() %>% pull(estimate),
            pval = corr %>% glance() %>% pull(p.value)) %>%
     select(name, coef, pval)  %>%
@@ -87,5 +89,5 @@ ggplot(rank_euc_corr, aes(x=coef, y=-log10(pval), colour = Method, shape = Resou
     geom_point(size=5) +
     scale_color_manual(values=brewer.pal(8, "Dark2")) +
     scale_shape_manual(values=1:nlevels(rank_euc_corr$Resource)) +
-    xlab("Pearson Correlation Coefficient")  # +
+    xlab("Spearman Correlation Coefficient")  # +
 # ggtitle("Correlation of Cell-Pair Activities x NES")

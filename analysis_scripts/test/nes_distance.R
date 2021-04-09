@@ -109,11 +109,11 @@ ggplot(rank_nes_regression, aes(x=adjr, y=-log10(pval), colour = Method, shape =
     ggtitle("Linear Regression of Activities x NES")
 
 
-# pearson corr
+# spearman corr
 rank_nes_corr <- rank_nes_freq %>%
     # filter(str_detect(name, "OmniPath")) %>%
     group_by(name) %>%
-    do(corr = cor.test(x = .$freq, y = .$NES, method = "pearson")) %>%
+    do(corr = cor.test(x = .$freq, y = .$NES, method = "spearman")) %>%
     mutate(coef = corr %>% glance() %>% pull(estimate),
            pval = corr %>% glance() %>% pull(p.value)) %>%
     select(name, coef, pval)  %>%
@@ -126,10 +126,8 @@ ggplot(rank_nes_corr, aes(x=coef, y=-log10(pval),
     geom_point(size=5) +
     scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(rank_nes_corr$Method))) +
     scale_shape_manual(values=1:nlevels(rank_nes_regression$Resource)) +
-    xlab("Pearson Correlation Coefficient")  # +
+    xlab("Spearman Correlation Coefficient")  # +
 # ggtitle("Correlation of Cell-Pair Activities x NES")
-
-
 
 
 # Binarized Activities
