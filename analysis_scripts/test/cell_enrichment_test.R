@@ -79,6 +79,13 @@ cellcount_fraq <- crc_meta %>%
     pivot_wider(names_from = Cell_subtype, values_from = cell_fraq) %>%
     mutate(mr = "Cell.Counts")
 
+# Cell Numbers
+crc_meta %>%
+    select(Cell_clusters, Cell_subtype) %>%
+    group_by(Cell_subtype) %>%
+    summarise(cell_occur = n()) %>%
+    arrange(Cell_subtype) %>%
+    write_csv(., "output/cell_counts.csv")
 
 cellfraq_heat$tree_row$labels
 cellfraq_heat$tree_row$order

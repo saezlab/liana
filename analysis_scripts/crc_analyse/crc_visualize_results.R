@@ -27,7 +27,8 @@ spec_list <- list("CellChat" =
                                    method_results = readRDS("output/crc_res/natmi_results.rds"),
                                    method_scores=list(
                                        "edge_avg_expr"=TRUE,
-                                       "edge_specificity"=TRUE)),
+                                       "edge_specificity"=TRUE
+                                       )),
                   "SCA" = methods::new("MethodSpecifics",
                                        method_name="SCA",
                                        method_results = readRDS("output/crc_res/sca_results.rds"),
@@ -46,7 +47,12 @@ spec_list <- list("CellChat" =
 
 # I. Overlap
 # Top X Top Hits for each tool
-top_lists <- get_top_hits(spec_list, n_ints=c(50, 100, 250, 500, 1000))
+top_lists <- get_top_hits(spec_list, n_ints=c(#50,
+                                              # 100,
+                                              250,
+                                              500,
+                                              1000
+                                              ))
 
 
 # 1. UpSet Plots and Heatmaps by Tool
@@ -59,6 +65,23 @@ names(top_lists$top_250) %>%
 
 # 2. Combine all binary results into heatmap
 binary_heatm <- get_BigHeat(top_lists$top_250,
+                            display_numbers = FALSE,
+                            silent = FALSE,
+                            show_rownames = FALSE,
+                            show_colnames = FALSE,
+                            legend_breaks = 0:1,
+                            fontsize = 17,
+                            drop_levels = TRUE,
+                            cluster_rows = TRUE,
+                            cluster_cols = TRUE,
+                            color = c("gray15", "darkslategray2"),
+                            border_color = NA,
+                            clustering_distance_rows = "binary",
+                            clustering_distance_cols = "binary",
+                            treeheight_row = 0,
+                            treeheight_col = 100)
+
+binary_heatm1000 <- get_BigHeat(top_lists$top_1000,
                             display_numbers = FALSE,
                             silent = FALSE,
                             show_rownames = FALSE,

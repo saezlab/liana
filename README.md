@@ -89,7 +89,7 @@ devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')
 ```
 
   
-#### Clone NATMI, as it is ran natively (i.e. in cmd)
+#### Clone NATMI, as it is run via the command line 
 ```{sh}
 git clone https://github.com/asrhou/NATMI.git
 ```

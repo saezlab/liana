@@ -50,7 +50,6 @@ spec_list <- list("CellChat" =
 
 
 
-
 #  PCA by Rank Frequencies
 rank_frequencies <- spec_list %>%
     get_rank_frequencies()

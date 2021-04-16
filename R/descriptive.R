@@ -881,6 +881,13 @@ classes_enrich <- function(data, entity, resource, var, ...){
             guide = guide_colorbar(
                 title = sprintf('Enrichment\nof %s', entity)
             )
+            # scale_fill_gradient2(low="midnightblue", mid="white", high="goldenrod1",
+            #                      midpoint=0,
+            #                      breaks=20,
+            #                      limits=c(-lim, lim),
+            #                      guide = guide_colorbar(
+            #                          title = sprintf('Enrichment\nof %s', entity)
+            #                      )) +
         ) +
         xlab('Resources') +
         ylab(
