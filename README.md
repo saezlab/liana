@@ -81,7 +81,8 @@ git clone https://github.com/asrhou/NATMI.git
 ```
   
 ## References
-*References to resources and methods to be added*
+
+  
   
   
 ### R sessionInfo()

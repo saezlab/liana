@@ -330,4 +330,15 @@ omnipath_partners <- function(side,
 }
 
 
+#' Ligand-receptor data for the descriptive part
+#'
+#' Ligands, receptors and connections from each resource in a nested list
+#' of tibbles.
+#'
+#' @seealso \code{\link{compile_ligrec}}
+compile_ligrec_descr <- function(){
+
+    compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
+
+}
 
