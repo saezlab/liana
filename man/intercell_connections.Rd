@@ -7,11 +7,20 @@
 intercell_connections(resource, ...)
 }
 \arguments{
-\item{resource}{Name of the resource. For a full list of resources
-see \code{get_lr_resources}.}
+\item{resource}{Name of current resource (taken from get_lr_resources)}
 
-\item{...}{Passed to \code{omnipath_intercell} or
-\code{OmnipathR::import_post_translational_interactions}.}
+\item{...}{
+  Arguments passed on to \code{\link[OmnipathR:import_post_translational_interactions]{OmnipathR::import_post_translational_interactions}}
+  \describe{
+    \item{\code{resources}}{interactions not reported in these databases are
+removed. See \code{\link[OmnipathR]{get_interaction_resources}} for more information.}
+    \item{\code{organism}}{Interactions are available for human, mouse and rat.
+Choose among: 9606 human (default), 10116 rat and 10090 Mouse}
+    \item{\code{exclude}}{datasets to exclude}
+    \item{\code{references_by_resource}}{if FALSE, removes the resource name prefixes
+from the references (PubMed IDs); this way the information which reference
+comes from which resource will be lost and the PubMed IDs will be unique.}
+  }}
 }
 \description{
 Retrieves the interactions from one ligand-receptor resource

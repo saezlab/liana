@@ -43,7 +43,8 @@ Remotes: Coolgenome/iTALK,
     sqjin/CellChat,
     bioc::3.12/BiRewire
 Depends:
-    R(>= 4.0),
+    R(>= 4.0)
+Imports:
     graphics,
     utils,
     tidyverse,

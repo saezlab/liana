@@ -62,8 +62,20 @@ names(top_lists$top_250) %>%
             plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 
+# 2. Upset Plots by Resource
+# assign CellPhoneDB to Squidpy default
+top250_resource_tool <- get_swapped_list(top_lists$top_250)
 
-# 2. Combine all binary results into heatmap
+# Plot and Save Upsets
+names(top250_resource_tool) %>%
+    map(function(r_name)
+        top250_resource_tool[[r_name]] %>%
+            prepForUpset() %>%
+            plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_resources/{r_name}_upset.png"))
+    )
+
+
+# 3. Combine all binary results into heatmap
 binary_heatm <- get_BigHeat(top_lists$top_250,
                             display_numbers = FALSE,
                             silent = FALSE,
@@ -81,37 +93,21 @@ binary_heatm <- get_BigHeat(top_lists$top_250,
                             treeheight_row = 0,
                             treeheight_col = 100)
 
-
-# 3. Binary PCA
-plot_freq_pca(top_lists$top_250 %>%
-                  get_binary_frequencies())
-
-
-# 4. Jaccard Index
+# 4. Activity by Cell Type Heatmap (Source and Target)
+get_activecell(top_lists$top_500)
 
 
 
-
-
-# 5. Upset Plots by Resource
-# assign CellPhoneDB to Squidpy default
-top250_resource_tool <- get_swapped_list(top_lists$top_250)
-
-# Plot and Save Upsets
-names(top250_resource_tool) %>%
-    map(function(r_name)
-        top250_resource_tool[[r_name]] %>%
-            prepForUpset() %>%
-            plotSaveUset(str_glue("~/Repos/ligrec_decoupleR/output/crc_res/plots/upset_resources/{r_name}_upset.png"))
-    )
-
-
-
-# II All Results ranked -------------------------------------------------------
+# 5. PCA by Rank Frequencies
 rank_frequencies <- spec_list %>%
     get_rank_frequencies()
 
-# 6. PCA by Rank Frequencies
+
+# 6. Get Numbers per Cell Type
 plot_freq_pca(rank_frequencies)
 
+
+
+# 7. Get Numbers per Cell Type
+get_cellnum("input/crc_data/crc_korean_form.rds")
 
