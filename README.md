@@ -1,4 +1,4 @@
-# Cell-Cell Communication Investigation
+# Systematic Comparison of Cell-Cell Communication Tools and Resources
 ![landingpage](ligrec_fig.png)
 
 ## Objectives
