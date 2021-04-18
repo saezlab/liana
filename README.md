@@ -1,8 +1,9 @@
 # Systematic Comparison of Cell-Cell Communication Tools and Resources
 ![landingpage](ligrec_fig.png)
-
+  
+  
 ## Objectives
-
+  
 The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
 an immense interest in understanding multi-cellular crosstalk. Multiple
 methods and resources that aid the investigation of cell-cell communication
@@ -32,34 +33,63 @@ The methods implemented in this repository are:
 - Connectome
 - SingleCellSignalR (SCAomni)
 - iTALK
-
+- scTalk - to be implemented
+- cell2cell - to be implemented
 
 
 ## Resources
 
-The intercellular signalling resources were queried from OmniPath and are the following:
-CellChatDB;
-CellPhoneDB;
-Ramilowski2015;
-Baccin2019;
-LRdb;
-Kiroauc2010;
-ICELLNET;
-iTALK;
-EMBRACE;
-HPMR;
-Guide2Pharma;
-connectomeDB2020;
-talklr;
-CellTalkDB;
-OmniPathDB - a composite resource from all resources.
+### Ligand-receptor resources
 
-Moreover, a Randomized resource can be generated via reshuffling any of the abovementioned using BiRewire, and each tool can be run with its 'Default' inbuilt resource.
+The following intercellular signalling (ligand-receptor interaction)
+resources are accessible by this package:
 
-
-
+- CellChatDB
+- CellPhoneDB
+- Ramilowski2015
+- Baccin2019
+- LRdb
+- Kiroauc2010
+- ICELLNET
+- iTALK
+- EMBRACE
+- HPMR
+- Guide2Pharma
+- connectomeDB2020
+- talklr
+- CellTalkDB
+- OmniPath
+  
+  
+### OmniPath
+  
+All the resources above are retrieved from OmniPath (https://omnipathdb.org/).
+OmniPath itself is also a composite resource combining all the ones listed
+above. However the cell-cell interactions in OmniPath are more than simply
+the union of the ligand-receptor resources. OmniPath uses several further
+databases to collect information about the roles of proteins in intercellular
+communication and again other databases to find connections between them. At
+the same time, OmniPath blacklists certain wrong annotations, removing some
+of the contents of the original resources. However the data of individual
+resources retrieved from the OmniPath web service is not affected by this,
+each resource supposed to be identical to its original form, apart from minor
+processing imperfections. OmniPath as a composite resource we use in four
+varieties: the full OmniPath intercellular network, only ligand-receptor
+interactions, quality filtered (50 percentile consensus score cut off), and
+ligand-receptor only quality filtered.
+  
+  
+### Random and default
+  
+Moreover, a Randomized resource can be generated via reshuffling any of the
+abovementioned using the `BiRewire` package, and each tool can be run with
+its 'Default' resource, the dataset used in its original publication.
+  
+  
+  
 ## Dependancies
-Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/biorxiv/intercell.yml) file (Recommended to use it to set up a conda environment) and then also install the following in R:
+Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/biorxiv/intercell.yml) file
+(Recommended to use it to set up a conda environment) and then also install the following in R:
    
    
 ```{r}
@@ -73,12 +103,13 @@ devtools::install_github(repo = "https://github.com/CostaLab/SingleCellSignalR_v
 # Install this repos
 devtools::install_github('saezlab/Cell_Cell_Investigation', ref = 'biorxiv')  
 ```
-
+  
   
 #### Clone NATMI, as it is run via the command line 
 ```{sh}
 git clone https://github.com/asrhou/NATMI.git
 ```
+  
   
 ## References
 Baccin, C., Al-Sabah, J., Velten, L., Helbling, P.M., Grünschläger, F., Hernández-Malmierca, P., Nombela-Arrieta, C., Steinmetz, L.M., Trumpp, A., and Haas, S. (2020). Combined single-cell and spatial transcriptomics reveal the molecular, cellular and spatial bone marrow niche organization. Nat. Cell Biol. 22, 38–48.
