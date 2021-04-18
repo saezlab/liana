@@ -1,5 +1,5 @@
 # Cell-Cell Communication Investigation
-![](https://github.com/saezlab/ligrec_delink/tree/biorxiv-clean/ligrec_fig.png)
+![landingpage](https://github.com/saezlab/ligrec_delink/tree/biorxiv-clean/ligrec_fig.png)
 
 ## Objectives
 
