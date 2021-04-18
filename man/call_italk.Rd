@@ -2,7 +2,7 @@
 % Please edit documentation in R/iTALK_pipe.R
 \name{call_italk}
 \alias{call_italk}
-\title{Function to call iTalk with databases from OmniPath}
+\title{Run iTALK with OmniPath data}
 \usage{
 call_italk(
   op_resource,
@@ -26,22 +26,12 @@ call_italk(
 \item{.DE}{bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)}
 
 \item{.deg}{if is NULL run FindAllMarkers}
-
-\item{...}{
-  Arguments passed on to \code{\link[iTALK:rawParse]{iTALK::rawParse}}
-  \describe{
-    \item{\code{data}}{Input data, raw or normalized count with 'cell_type' column}
-    \item{\code{top_genes}}{(scale 1 to 100) Top percent highly expressed genes used
-to find ligand-receptor pairs, default is 50}
-    \item{\code{stats}}{Whether calculates the mean or the median of the data. Available
-options are 'mean' and 'median'.}
-  }}
 }
 \value{
 An unfiltered iTALK df sorted by relevance
 }
 \description{
-Function to call iTalk with databases from OmniPath
+Run iTALK with OmniPath data
 }
 \details{
 Stats:

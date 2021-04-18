@@ -6,9 +6,20 @@
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
 #'  internal func
-#' @inheritDotParams CellChat::subsetCommunication
+# #' @inheritDotParams CellChat::subsetCommunication
+#'
 #' @return A DF of intercellular communication network
-#' @import CellChat
+#'
+# #' @importFrom CellChat subsetCommunication createCellChat computeCommunProb
+# #' @importFrom CellChat subsetData identifyOverExpressedGenes
+# #' @importFrom CellChat identifyOverExpressedInteractions filterCommunication
+# #' @importFrom Seurat Idents GetAssayData NormalizeData
+#' @importFrom purrr pmap
+#' @importFrom magrittr %>%
+#' @importFrom dplyr select mutate mutate_at distinct_at filter
+#' @importFrom tibble column_to_rownames enframe
+#' @importFrom tidyr unite unnest separate
+#' @importFrom stringr str_glue
 #' @export
 call_cellchat <- function(op_resource,
                           seurat_object,
@@ -22,17 +33,22 @@ call_cellchat <- function(op_resource,
                           .do_parallel = FALSE,
                           ...
                           ){
+
+    stringsAsFactors <- options('stringsAsFactors')[[1]]
+
     options(stringsAsFactors = FALSE)
 
     data.input <- as.matrix(GetAssayData(seurat_object,
                                          assay = assay,
                                          slot = "data")) # data matrix
     if(.normalize){
+        # function name NormalizeData is not capitalized?
         data.input <- normalizeData(data.input)
     }
 
     # create a dataframe of the cell labels
     labels <- Idents(seurat_object)
+
     meta <- data.frame(group = labels, row.names = names(labels))
 
     cellchat.omni <- createCellChat(object = data.input,
@@ -92,7 +108,7 @@ call_cellchat <- function(op_resource,
                                                 co_I_receptor
             ){
 
-                suppressMessages(message(interaction_name))
+                log_trace(interaction_name)
 
                 if(co_A_receptor=="" & co_I_receptor==""){
 
@@ -167,8 +183,8 @@ call_cellchat <- function(op_resource,
             filter(!(annotation %in% exclude_anns))
     }
 
-    message(str_glue("Number of interactions:
-                     {length(CellChatDB.omni$interaction$interaction_name)}"))
+    log_info("Number of interactions:
+                     {length(CellChatDB.omni$interaction$interaction_name)}")
 
     ## set the used database in the object
     cellchat.omni@DB <- CellChatDB.omni
@@ -205,5 +221,8 @@ call_cellchat <- function(op_resource,
                    pval)
     }
 
+    options(stringsAsFactors = stringsAsFactors)
+
     return(df.omni)
+
 }

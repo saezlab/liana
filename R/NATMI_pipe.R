@@ -12,12 +12,13 @@
 #' if true, we use Seurat object name to modify output and input, so that
 #' each subsampling is saved to a different dir
 #' @return DF with NATMI results
-#' @details This function will take omnipath resources saved to csvs and copy
-#'  them to the NATMI dbs folder, then it will natively call the python modules
-#'  in the NATMI dir and save the output into a specified directory.
-#'  It will then load and format the output to a DF.
 #'
-#' NB! Please stick to full paths.
+#' @details
+#'     This function will take omnipath resources saved to csvs and copy
+#'     them to the NATMI dbs folder, then it will natively call the Python
+#'     modules of NATMI in the NATMI dir and save the output into a specified
+#'     directory. It will then load and format the output to a DF.
+#'
 #'
 #' NATMI Arguments:
 #'   --interDB INTERDB
@@ -32,28 +33,40 @@
 #'   --out OUT             the path to save the analysis results
 #'
 #' Stats:
-#' 1) The mean-expression edge weights are calculated by multiplying the mean-expression level of the ligand in the
-#'   sending cell type by the mean expression of the receptor in the target cell type (no discriminatory information)
-#' 2) The specificity-based edge weights, help identify the most specific edges in the network
-#'  where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
-#'  divided by the sum of the mean expression of that ligand/receptor across all cell types
-#'  # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
-#'  @import rprojroot
-#'  @export
-call_natmi <- function(omni_resources,
-                       seurat_object = NULL,
-                       wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
-                       omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-                       natmi_path = "~/Repos/NATMI",
-                       em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-                       ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-                       output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-                       .assay = "SCT",
-                       .num_cor = 8,
-                       .format = TRUE,
-                       .write_data = FALSE,
-                       .subsampling_pipe = FALSE,
-                       .seed = 1004){
+#' 1) The mean-expression edge weights are calculated by multiplying the
+#'    mean-expression level of the ligand in the
+#'    sending cell type by the mean expression of the receptor in the target
+#'    cell type (no discriminatory information)
+#' 2) The specificity-based edge weights, help identify the most specific
+#'    edges in the network
+#'    where each specificity is defined as the mean expression of the
+#'    ligand/receptor in a given cell type
+#'    divided by the sum of the mean expression of that ligand/receptor
+#'    across all cell types
+#'  # * a weight of 1 means both the ligand and receptor are only expressed
+#'      in one (not necessarily the same) cell type
+#'
+#' @importFrom rprojroot find_rstudio_root_file
+#' @importFrom reticulate py_set_seed
+#' @importFrom stringr str_glue
+#' @importFrom Seurat GetAssayData Idents
+call_natmi <- function(
+    omni_resources,
+    seurat_object = NULL,
+    omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
+    natmi_path = "~/Repos/NATMI",
+    em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
+    ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
+    output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
+    .assay = "SCT",
+    .format = TRUE,
+    .write_data = FALSE,
+    .subsampling_pipe = FALSE,
+    .seed = 1004
+){
+
+    project_rootdir <- find_rstudio_root_file()
+
     py_set_seed(.seed)
 
     if(.subsampling_pipe){
@@ -63,23 +76,23 @@ call_natmi <- function(omni_resources,
     }
 
     if(.write_data){
-        message(str_glue("Writing EM to {em_path}"))
+        log_info("Writing EM to {em_path}")
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
                                                     assay = .assay,
                                                     slot = "data"))) - 1),
                   file = em_path,
                   row.names = TRUE)
-        message(str_glue("Writing Annotations to {ann_path}"))
+        log_info("Writing Annotations to {ann_path}")
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
                   file = ann_path,
                   row.names = FALSE)
 
-        message(str_glue("Saving resources to {omnidbs_path}"))
+        log_info("Saving resources to {omnidbs_path}")
         omni_to_NATMI(omni_resources, omnidbs_path)
     }
 
-    message(str_glue("Output to be saved and read from {output_path}"))
+    log_success("Output to be saved and read from {output_path}")
     dir.create(file.path(output_path), recursive = TRUE)
 
     # copy OmniPath resources to NATMI dir
@@ -108,7 +121,7 @@ call_natmi <- function(omni_resources,
     # Check issue with Default
     omni_list %>% map(function(resource){
 
-        message(str_glue("Now Running: {resource}"))
+        log_success("Now Running: {resource}")
 
         system(str_glue("python3 ExtractEdges.py ",
                         "--species human ",
@@ -153,12 +166,23 @@ omni_to_NATMI <- function(omni_resources,
 }
 
 
-#' Helper function to load NATMI results from folder and format appropriately
+#' Load NATMI results from folder and format appropriately
+#'
 #' @param output_path NATMI output path
 #' @param .format bool whether to format output
-#' @return A list of NATMI results per resource loaded from the output directory
-#' @export
-FormatNatmi <- function(output_path, .format=TRUE){
+#'
+#' @return A list of NATMI results per resource loaded from the output
+#'     directory.
+#'
+#' @importFrom tibble enframe deframe
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom dplyr mutate select
+#' @importFrom readr read_csv
+#' @importFrom tidyr separate
+#'
+FormatNatmi <- function(output_path, .format = TRUE){
+
     list.files(output_path,
                all.files = TRUE,
                recursive = TRUE,
@@ -182,9 +206,10 @@ FormatNatmi <- function(output_path, .format=TRUE){
 }
 
 
-#' Helper function to split and format strings for subsampling
+#' Split and format strings for subsampling
+#'
 #' @param path path to CSV (em/annotations) to split and format to the
-#' current subsampling taken from a seurat object project name
+#'     current subsampling taken from a seurat object project name
 #' @param project_name seurat object project name
 #' @return Path to save subsampling EM and Annotations
 str_split_helper <- function(path, project_name){

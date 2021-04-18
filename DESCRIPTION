@@ -8,14 +8,14 @@ Authors@R: c(
         family = "Dimitrov",
         role = "aut",
         email = "daniel.dimitrov@uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        comment = c(ORCID = "0000-0002-5197-2112")
     ),
     person(
         given = "Charlotte",
         family = "Boys",
         role = c("aut"),
         email = "mm228@stud.uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        comment = c(ORCID = "0000-0003-3955-5110")
     ),
     person(
         given = "Denes",
@@ -28,8 +28,8 @@ Authors@R: c(
         given = "James",
         family = "Nagai",
         role = c("aut"),
-        email = "mm228@stud.uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        email = "",
+        comment = c(ORCID = "0000-0002-7655-7206")
     ))
 Description: Comparative analysis of cell-cell communication resources and
     cell-cell communication inference tools.
@@ -38,6 +38,10 @@ URL: https://omnipathdb.org/
 BugReports: https://github.com/saezlab/Cell_Cell_Investigation/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
+Remotes: Coolgenome/iTALK,
+    msraredon/Connectome,
+    sqjin/CellChat,
+    bioc::3.12/BiRewire
 Depends:
     R(>= 4.0),
     graphics,
@@ -49,13 +53,20 @@ Depends:
     iTALK,
     Seurat,
     SCAomni,
+    rprojroot,
     reticulate,
     BiRewire,
     yardstick,
     magrittr,
+    tidyr,
+    tibble,
+    readr,
+    rlang,
+    dplyr,
     UpSetR,
     RColorBrewer,
     ggfortify,
+    ggplot2,
     logger,
     RCurl,
     Barnard,

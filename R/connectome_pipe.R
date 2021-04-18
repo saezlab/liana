@@ -2,7 +2,8 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
-#' @inheritDotParams Connectome::CreateConnectome
+# #' @inheritDotParams Connectome::CreateConnectome
+#'
 #' @return An unfiltered connectome df
 #'
 #' @details
@@ -13,7 +14,10 @@
 #'  and the receptor in each edge, and is of higher value when the ligand and receptor
 #'   are more specific to a given pair of cell types
 #' 3) p-val
-#' @import Connectome
+#'
+# #' @importFrom Connectome ncomms8866_human ScaleData CreateConnectome
+#' @importFrom magrittr %>%
+#' @importFrom dplyr arrange select mutate distinct
 #' @export
 call_connectome <- function(seurat_object,
                             op_resource,
@@ -74,13 +78,15 @@ call_connectome <- function(seurat_object,
 }
 
 #' Helper function to filter and format connectome
+#'
 #' @param conn connectome object
 #' @param .log whether to log weight
-#' @inheritDotParams Connectome::FilterConnectome
+# #' @inheritDotParams Connectome::FilterConnectome
+#'
+# #' @importFrom Connectome FilterConnectome
 #' @export
 FormatConnectome <- function(conn,
                              ...){
-    require(Connectome)
 
     conn <- conn %>%
         FilterConnectome(.,

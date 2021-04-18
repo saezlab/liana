@@ -7,7 +7,6 @@
 call_natmi(
   omni_resources,
   seurat_object = NULL,
-  wd_path = "/home/dbdimitrov/Repos/ligrec_decoupleR",
   omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
   natmi_path = "~/Repos/NATMI",
   em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
@@ -51,11 +50,10 @@ Call NATMI Pipeline from R with OmniPath
 }
 \details{
 This function will take omnipath resources saved to csvs and copy
- them to the NATMI dbs folder, then it will natively call the python modules
- in the NATMI dir and save the output into a specified directory.
- It will then load and format the output to a DF.
+    them to the NATMI dbs folder, then it will natively call the Python
+    modules of NATMI in the NATMI dir and save the output into a specified
+    directory. It will then load and format the output to a DF.
 
-NB! Please stick to full paths.
 
 NATMI Arguments:
   --interDB INTERDB
@@ -70,12 +68,16 @@ NATMI Arguments:
   --out OUT             the path to save the analysis results
 
 Stats:
-1) The mean-expression edge weights are calculated by multiplying the mean-expression level of the ligand in the
-  sending cell type by the mean expression of the receptor in the target cell type (no discriminatory information)
-2) The specificity-based edge weights, help identify the most specific edges in the network
- where each specificity is defined as the mean expression of the ligand/receptor in a given cell type
- divided by the sum of the mean expression of that ligand/receptor across all cell types
- # * a weight of 1 means both the ligand and receptor are only expressed in one (not necessarily the same) cell type
- @import rprojroot
- @export
+1) The mean-expression edge weights are calculated by multiplying the
+   mean-expression level of the ligand in the
+   sending cell type by the mean expression of the receptor in the target
+   cell type (no discriminatory information)
+2) The specificity-based edge weights, help identify the most specific
+   edges in the network
+   where each specificity is defined as the mean expression of the
+   ligand/receptor in a given cell type
+   divided by the sum of the mean expression of that ligand/receptor
+   across all cell types
+ # * a weight of 1 means both the ligand and receptor are only expressed
+     in one (not necessarily the same) cell type
 }

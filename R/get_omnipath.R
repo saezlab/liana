@@ -1,8 +1,9 @@
 #' Helper function that returns the name of each intercell resource in OmniPath
 #'
-#' @return a list of strings for each intercell resource in OmniPath
+#' @return A list of strings for each intercell resource in OmniPath
 #' @export
 get_lr_resources <- function(){
+
     return(
         list(
             'CellChatDB',
@@ -22,6 +23,7 @@ get_lr_resources <- function(){
             'OmniPath'
         )
     )
+
 }
 
 
@@ -88,9 +90,10 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
     # A list of OmniPath variants to be returned
     if(omni_variants){
         omnipath_variants <- list(
-            # OmniPath_q50 = list(quality = .5),
-            OmniPath_ligrec = list(ligrec = TRUE) #,
-            # OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
+            OmniPath_full = list(),
+            OmniPath_q50 = list(quality = .5),
+            OmniPath_ligrec = list(ligrec = TRUE),
+            OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
         )
     } else{
         omnipath_variants <- list()
@@ -119,20 +122,6 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     return(omni_resources)
 }
-
-
-#' Ligand-receptor data for the descriptive part
-#'
-#' Ligands, receptors and connections from each resource in a nested list
-#' of tibbles.
-#'
-#' @seealso \code{\link{compile_ligrec}}
-compile_ligrec_descr <- function(){
-
-    compile_ligrec(omni_variants = TRUE, lr_pipeline = FALSE)
-
-}
-
 
 
 

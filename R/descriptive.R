@@ -1,4 +1,3 @@
-#!/usr/bin/env Rscript
 
 #
 #  This file is part of the `intercell` R package
