@@ -32,11 +32,11 @@ The pipeline is open access and available in this repository.
 
 The tools implemented in this repository are:
 
-- CellPhoneDB algorithm (via Squidpy)
+- CellPhoneDB algorithm (via [Squidpy](https://squidpy.readthedocs.io/en/latest/))
 - CellChat
 - NATMI
 - Connectome
-- SingleCellSignalR (SCAomni)
+- SingleCellSignalR (SCA)
 - iTALK
   
   
@@ -45,8 +45,7 @@ The tools implemented in this repository are:
 
 ### Ligand-receptor resources
 
-The following intercellular signalling (ligand-receptor interaction)
-resources are accessible by this package:
+The following CCC resources are accessible via this pipeline:
 
 - CellChatDB
 - CellPhoneDB
