@@ -50,9 +50,9 @@ spec_list <- list("CellChat" =
 top_lists <- get_top_hits(spec_list,
                           n_ints=c(#50, # 100,
                                               250,
-                                              500,
-                                              1000
-                                              ))
+                                              500
+                                              )
+                          )
 
 
 # 1. UpSet Plots and Heatmaps by Tool
@@ -94,7 +94,7 @@ binary_heatm <- get_BigHeat(top_lists$top_250,
                             treeheight_col = 100)
 
 # 4. Activity by Cell Type Heatmap (Source and Target)
-get_activecell(top_lists$top_500)
+get_activecell(top_lists$top_250)
 
 
 
