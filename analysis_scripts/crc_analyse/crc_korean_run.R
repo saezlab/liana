@@ -10,7 +10,7 @@ saveRDS(crc_korean, "input/crc_data/crc_korean_form.rds")
 
 # Get Full Omni Resources
 omni_resources <- compile_ligrec(lr_pipeline = FALSE)
-# saveRDS(omni_resources, "input/omni_resources.rds")
+saveRDS(omni_resources, "input/omni_resources.rds")
 
 
 # 1. Squidpy -------------------------------------------------------------------
