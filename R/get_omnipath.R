@@ -103,7 +103,7 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
         map(function(resource){
             list(ligands = get_ligands(resource),
                  receptors = get_receptors(resource),
-                 connections = intercell_connections(resource))
+                 interactions = intercell_connections(resource))
         }) %>%
         setNames(get_lr_resources()) %>%
         c(map(
@@ -112,7 +112,7 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
                 args %<>% c(list(resource = 'OmniPath'))
                 list(ligands = do.call(get_ligands, args),
                      receptors = do.call(get_receptors, args),
-                     connections = do.call(intercell_connections, args))
+                     interactions = do.call(intercell_connections, args))
             }
         )) %>%
         {
@@ -132,7 +132,7 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 #' using their default resource)
 reform_omni <- function(omni_resources){
     map(omni_resources, function(x) x %>%
-            pluck("connections") %>%
+            pluck("interactions") %>%
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
                         .keep_all = TRUE)) %>%

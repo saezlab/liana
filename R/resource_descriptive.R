@@ -210,10 +210,10 @@ ligrec_overlap <- function(ligrec){
     grp_vars <- list(
         ligands = syms('uniprot'),
         receptors = syms('uniprot'),
-        connections = syms(c('source', 'target'))
+        interactions = syms(c('source', 'target'))
     )
 
-    keys <- c('ligands', 'receptors', 'connections')
+    keys <- c('ligands', 'receptors', 'interactions')
 
     keys %>%
     map(
@@ -295,7 +295,7 @@ summarize_overlaps <- function(ligrec_olap){
 #' Total vs. unique barplot
 #'
 #' Creates a barplot with the unique, shared and total number of ligands,
-#' receptors and connections in each resource.
+#' receptors and interactions in each resource.
 #'
 #' @param ligrec_olap Summarized ligand-receptor overlaps, as produced by
 #'     \code{summarize_overlaps}.
@@ -312,7 +312,7 @@ total_unique_bar <- function(ligrec_olap){
     log_success('Drawing overlap barplots.')
 
     res_order <-
-        ligrec_olap$connections %>%
+        ligrec_olap$interactions %>%
         filter(name == 'total') %>%
         arrange(value) %>%
         pull(resource) %>%
@@ -369,7 +369,7 @@ total_unique_bar <- function(ligrec_olap){
 }
 
 
-#' Upset plots of ligands, receptors and connections
+#' Upset plots of ligands, receptors and interactions
 #'
 #' @importFrom purrr cross2 map walk
 #' @importFrom magrittr %>%
@@ -390,7 +390,7 @@ ligand_receptor_upset <- function(data, upset_args = list()){
                     upset_args = upset_args
                 ),
                 `if`(
-                    args$label == 'connections',
+                    args$label == 'interactions',
                     quos(resource, source, target),
                     quos(resource, uniprot)
                 )
@@ -531,7 +531,7 @@ ligand_receptor_classes <- function(
         filter(!!!filter_annot) %>%
         mutate(!!attr := label_annot(!!attr))
 
-    ligrec$connections %<>%
+    ligrec$interactions %<>%
         annotated_network(annot = annot, !!attr) %>%
         filter(!!attr_src == !!attr_tgt) %>%
         select(-!!attr_tgt) %>%
@@ -567,7 +567,7 @@ hgnc_ligrec_classes <- function(ligrec, largest = 15){
     hgnc_lig <- hgnc_annot('ligand')
     hgnc_rec <- hgnc_annot('receptor')
 
-    ligrec$connections %<>%
+    ligrec$interactions %<>%
         left_join(hgnc_lig, by = c('source' = 'uniprot')) %>%
         left_join(
             hgnc_rec,
@@ -608,12 +608,12 @@ hgnc_annot <- function(parent){
 
 #' Ligand-receptor classification by localization
 #'
-#' Classifies ligands, receptors and their connections by localization:
+#' Classifies ligands, receptors and their interactions by localization:
 #' either plasmam mebrane transmembrane, plasma membrane peripheral or
 #' secreted. A receptor typically is not secreted, but here we keep this
 #' option just to see how many of them are eventually annotated as secreted.
 #' Such annotations are not always wrong, as some receptors indeed have
-#' secreted forms. The connections classified by all possible combinations
+#' secreted forms. The interactions classified by all possible combinations
 #' of ligand and receptor localizations.
 #'
 #' @param ligrec List of tibbles with ligand-receptor data, as produced by
@@ -643,7 +643,7 @@ localization_ligrec_classes <- function(ligrec){
         ) %>%
         distinct
 
-    ligrec$connections %<>%
+    ligrec$interactions %<>%
         left_join(annot, by = c('source' = 'uniprot')) %>%
         left_join(annot, by = c('target' = 'uniprot'),
             suffix = c('_source', '_target')
@@ -712,7 +712,7 @@ ligrec_classes_all <- function(ligrec){
 
 #' Ligand-receptor data stacked barplots with classification
 #'
-#' Assigns classes to ligands, receptors and their connections and for each
+#' Assigns classes to ligands, receptors and their interactions and for each
 #' of these entities creates a stacked barplot.
 #'
 #' @param ligrec List of tibbles with ligand-receptor data, as produced by
@@ -764,7 +764,7 @@ ligrec_classes_bar_enrich <- function(
 #' Stacked barplot from a data frame of classified entities
 #'
 #' @param data A data frame with classified entities (ligands, receptors or
-#'     connections).
+#'     interactions).
 #' @param entity The name of the entity, to be included in the output file
 #'     name and the y axis label.
 #' @param resource The name of the resource, to be included in the output
@@ -831,7 +831,7 @@ classes_bar <- function(data, entity, resource, var){
 #' Enrichment dot plot from a data frame of classified entities
 #'
 #' @param data A data frame with classified entities (ligands, receptors or
-#'     connections).
+#'     interactions).
 #' @param entity The name of the entity, to be included in the output file
 #'     name and the y axis label.
 #' @param resource The name of the resource, to be included in the output
