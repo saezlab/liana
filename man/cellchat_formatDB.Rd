@@ -4,9 +4,11 @@
 \alias{cellchat_formatDB}
 \title{Helper Function to Format CellChatDB}
 \usage{
-cellchat_formatDB(op_resource, exclude_anns)
+cellchat_formatDB(ccDB, op_resource, exclude_anns)
 }
 \arguments{
+\item{ccDB}{Inbuilt cellchatDB object}
+
 \item{op_resource}{OmniPath Intercell Resource DN}
 
 \item{exclude_anns}{Annotation criteria to be excluded}

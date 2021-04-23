@@ -6,7 +6,6 @@
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
 #'  internal func
-# #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
 #'
@@ -57,23 +56,24 @@ call_cellchat <- function(op_resource,
     }
 
     # load CellChatDB
-    CellChatDB.omni <- CellChat::CellChatDB.human
+    ccDB <- CellChat::CellChatDB.human
 
     if(!is.null(op_resource)){
-
-        CellChatDB.omni@DB <- cellchat_formatDB(op_resource, exclude_anns)
+        ccDB <- cellchat_formatDB(ccDB,
+                                  op_resource,
+                                  exclude_anns)
 
 
     } else{
-        CellChatDB.omni$interaction <- CellChatDB.omni$interaction %>%
+        ccDB$interaction <- ccDB$interaction %>%
             filter(!(annotation %in% exclude_anns))
     }
 
     log_info("Number of interactions:
-                     {length(CellChatDB.omni$interaction$interaction_name)}")
+                     {length(ccDB$interaction$interaction_name)}")
 
     ## set the used database in the object
-    cellchat.omni@DB <- CellChatDB.omni
+    cellchat.omni@DB <- ccDB
 
     ## subset the expression data of signaling genes
     cellchat.omni <- subsetData(cellchat.omni)
@@ -91,7 +91,6 @@ call_cellchat <- function(op_resource,
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
     cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 1)
-
 
     # Extract the inferred cellular communication network
     df.omni <- subsetCommunication(cellchat.omni, ...)
@@ -114,12 +113,12 @@ call_cellchat <- function(op_resource,
 
 
 #' Helper Function to Format CellChatDB
-#' @param op_resource OmniPath Intercell Resource DN
-#' @param exclude_anns Annotation criteria to be excluded
+#' @param ccDB Inbuilt cellchatDB object
+#' @inheritParams call_cellchat
 #' @import tibble
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_glue str_detect str_replace str_replace_all
-cellchat_formatDB <- function(op_resource, exclude_anns){
+cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
     # get complexes and interactions from omnipath
     complex_interactions <- op_resource %>%
         select(
@@ -227,10 +226,10 @@ cellchat_formatDB <- function(op_resource, exclude_anns){
         column_to_rownames("value")
 
     # Replace Default DB with OmniPath Resource
-    # Here, I filter ECM, as when I don't an error is encountered
-    # both with mine and their data set (they too filter for secreted signaling only)
-    CellChatDB.omni$interaction <- omni_interactions %>%
+    ccDB$interaction <- omni_interactions %>%
         filter(!(annotation %in% exclude_anns))
 
-    CellChatDB.omni$complex <- omni_complexes
+    ccDB$complex <- omni_complexes
+
+    return(ccDB)
 }
