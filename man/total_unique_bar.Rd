@@ -12,5 +12,5 @@ total_unique_bar(ligrec_olap)
 }
 \description{
 Creates a barplot with the unique, shared and total number of ligands,
-receptors and connections in each resource.
+receptors and interactions in each resource.
 }

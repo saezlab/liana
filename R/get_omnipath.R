@@ -27,63 +27,19 @@ get_lr_resources <- function(){
 }
 
 
-
-#' Function to get intercell resources as in OmniPath
-#' @return A list with intercellular resources from OmniPath
-#' @import OmnipathR tidyverse
-#' @export
-get_omni_resources <- function(){
-
-    omni_list <- get_lr_resources()
-
-    # Need to come back and expand on categories
-    # Replace ligand and receptor with more descriptive ones when available?
-    # Is cell-cell contact taken into account?
-    # adhesion, ECM, etc
-    setClass("OmniCriteria",
-             slots=list(interactions_param="list",
-                        transmitter_param="list",
-                        receiver_param="list"))
-
-
-    # Get a list with dataframes of omnipath resources
-    omni_resources <- omni_list %>%
-        map(function(x){
-            message(x)
-            if(x!="OmniPath"){
-                x_obj = methods::new("OmniCriteria",
-                                     interactions_param=list(resource=x),
-                                     transmitter_param=list(resource=x,
-                                                            category="ligand"),
-                                     receiver_param=list(resource=x,
-                                                         category="receptor"))
-
-                import_intercell_network(
-                    interactions_param = x_obj@interactions_param,
-                    transmitter_param = x_obj@transmitter_param,
-                    receiver_param = x_obj@receiver_param)
-            } else{
-                import_intercell_network(transmitter_param=list(category="ligand"),
-                                         receiver_param=list(category="receptor"))
-            }
-        }) %>%
-        setNames(omni_list)
-
-    return(omni_resources)
-}
-
-
 #' Function to get unfiltered intercell resources
 #' For each resource and OmniPath variant compiles tables of ligands,
 #' receptors and interactions
 #' @details calls on omnipath_intercell, intercell_connections, get_partners,
 #' and intercell_connections
-#' @import magrittr tidyverse
 #' @param omni_variants bool whether to get different OmniPath variants (e.g.
 #' _full, based on ligrec resource quality quartile, or if only lig_rec)
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
 #' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
 #' @return A list of OmniPath resources formatted according to the method pipes
+#' @import magrittr
+#' @import tibble
+#' @importFrom purrr pluck
 #' @export
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
@@ -130,6 +86,7 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 #' @return A list of OmniPath resources, including OmniPath composite DB,
 #' A reshuffled OmniPath, and a Default with NULL ( tool pipelines run
 #' using their default resource)
+#' @importFrom purrr pluck
 reform_omni <- function(omni_resources){
     map(omni_resources, function(x) x %>%
             pluck("interactions") %>%

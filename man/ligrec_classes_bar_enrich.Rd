@@ -21,6 +21,6 @@ all groups will be used.}
 \item{...}{Passed to \code{\link{ligand_receptor_classes}}.}
 }
 \description{
-Assigns classes to ligands, receptors and their connections and for each
+Assigns classes to ligands, receptors and their interactions and for each
 of these entities creates a stacked barplot.
 }

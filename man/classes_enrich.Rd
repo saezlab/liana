@@ -8,7 +8,7 @@ classes_enrich(data, entity, resource, var, ...)
 }
 \arguments{
 \item{data}{A data frame with classified entities (ligands, receptors or
-connections).}
+interactions).}
 
 \item{entity}{The name of the entity, to be included in the output file
 name and the y axis label.}

@@ -9,7 +9,7 @@ crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
 saveRDS(crc_korean, "input/crc_data/crc_korean_form.rds")
 
 # Get Full Omni Resources
-omni_resources <- compile_ligrec(lr_pipeline = FALSE)
+omni_resources <- compile_ligrec(lr_pipeline = TRUE)
 saveRDS(omni_resources, "input/omni_resources.rds")
 
 
@@ -83,7 +83,7 @@ saveRDS(italk_results, "output/crc_res/italk_results.rds")
 cellchat_results <- omni_resources %>%
     map(function(db) call_cellchat(op_resource = db,
                                    seurat_object = crc_korean,
-                                   nboot = 1000,
+                                   nboot = 100,
                                    exclude_anns = c(),
                                    thresh = 1,
                                    assay = "RNA",

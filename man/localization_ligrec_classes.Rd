@@ -11,11 +11,11 @@ localization_ligrec_classes(ligrec)
 \code{\link{ligrec_overlap}}.}
 }
 \description{
-Classifies ligands, receptors and their connections by localization:
+Classifies ligands, receptors and their interactions by localization:
 either plasmam mebrane transmembrane, plasma membrane peripheral or
 secreted. A receptor typically is not secreted, but here we keep this
 option just to see how many of them are eventually annotated as secreted.
 Such annotations are not always wrong, as some receptors indeed have
-secreted forms. The connections classified by all possible combinations
+secreted forms. The interactions classified by all possible combinations
 of ligand and receptor localizations.
 }

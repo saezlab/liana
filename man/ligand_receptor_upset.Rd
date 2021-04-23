@@ -2,10 +2,10 @@
 % Please edit documentation in R/resource_descriptive.R
 \name{ligand_receptor_upset}
 \alias{ligand_receptor_upset}
-\title{Upset plots of ligands, receptors and connections}
+\title{Upset plots of ligands, receptors and interactions}
 \usage{
 ligand_receptor_upset(data, upset_args = list())
 }
 \description{
-Upset plots of ligands, receptors and connections
+Upset plots of ligands, receptors and interactions
 }

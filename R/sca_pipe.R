@@ -5,6 +5,10 @@
 #' @param assay Seurat assay data to use
 #'
 #' @return An unfiltered iTALK df sorted by relevance
+#' @importFrom Seurat GetAssayData Idents
+#' @import SCAomni
+#' @import tibble
+#' @import magrittr
 #'
 #' @details
 #' Stats:
@@ -17,10 +21,6 @@ call_sca <- function(op_resource,
                      .format = TRUE,
                      assay = "SCT",
                      ...) {
-  require(Seurat)
-  require(SCAomni)
-  require(dplyr)
-
   # Format OmnipathR resource
   if(!is.null(op_resource)){
     op_resource <- op_resource %>%
@@ -74,6 +74,9 @@ call_sca <- function(op_resource,
 #' Helper function to format SingleCellSignalR results
 #' @param sca_res Unformatted SCA results
 #' @param remove.na bool whether to filter SCA output
+#' @import tibble
+#' @import magrittr
+#'
 #' @export
 FormatSCA <- function(sca_res, remove.na = TRUE) {
   sca_res <- sca_res %>%

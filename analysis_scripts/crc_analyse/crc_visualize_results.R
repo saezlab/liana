@@ -48,10 +48,9 @@ spec_list <- list("CellChat" =
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
-                          n_ints=c(#50, # 100,
-                                              250,
-                                              500
-                                              )
+                          n_ints=c(250,
+                                   500
+                                   )
                           )
 
 
@@ -101,13 +100,9 @@ get_activecell(top_lists$top_250)
 # 5. PCA by Rank Frequencies
 rank_frequencies <- spec_list %>%
     get_rank_frequencies()
-
-
-# 6. Get Numbers per Cell Type
 plot_freq_pca(rank_frequencies)
 
 
-
-# 7. Get Numbers per Cell Type
+# 6. Get Numbers per Cell Type
 get_cellnum("input/crc_data/crc_korean_form.rds")
 
