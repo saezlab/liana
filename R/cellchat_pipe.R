@@ -19,6 +19,7 @@
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
 #' @importFrom tibble column_to_rownames enframe
 #' @importFrom tidyr unite unnest separate
+#' @importFrom logger log_info
 #' @export
 call_cellchat <- function(op_resource,
                           seurat_object,
@@ -35,15 +36,14 @@ call_cellchat <- function(op_resource,
     stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
 
-    data.input <- as.matrix(GetAssayData(seurat_object,
-                                         assay = assay,
-                                         slot = "data")) # data matrix
 
     # create a dataframe of the cell labels
     labels <- Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))
 
-    cellchat.omni <- createCellChat(object = data.input,
+    cellchat.omni <- createCellChat(object = GetAssayData(seurat_object,
+                                                          assay = assay,
+                                                          slot = "data"),
                                meta = meta,
                                group.by = "group")
 
@@ -57,6 +57,7 @@ call_cellchat <- function(op_resource,
 
     # load CellChatDB
     ccDB <- CellChat::CellChatDB.human
+
 
     if(!is.null(op_resource)){
         ccDB <- cellchat_formatDB(ccDB,
@@ -85,7 +86,7 @@ call_cellchat <- function(op_resource,
     ## Compute the communication probability and infer cellular communication network
     cellchat.omni <- projectData(cellchat.omni, CellChat::PPI.human)
     cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use = TRUE,
+                                       raw.use = FALSE,
                                        seed.use = .seed,
                                        nboot = nboot)
 
