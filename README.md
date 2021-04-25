@@ -1,7 +1,7 @@
 # Systematic Comparison of Cell-Cell Communication Tools and Resources
-![landingpage](ligrec_ccc.png)
   
-  
+![landingpage](ligrec_pipe.png)
+
 ## Objectives
   
 The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
@@ -15,7 +15,8 @@ difference that the choice of resource and tool can have on the predicted
 CCC events. Thus, we attempt to shed some light on this topic via the
 systematic comparison of how different combinations might influence CCC
 inference.
-
+  
+  
 
 ## Pipeline
   
@@ -23,8 +24,6 @@ To this end we built a benchmark pipeline to decouple the tools from their corre
 In turn, we used the pipeline for the systematic comparison of all combinations between 15 resources and 6 tools.
   
 The pipeline is open access and available in this repository.
-  
-![landingpage](ligrec_pipe.png)
   
   
 

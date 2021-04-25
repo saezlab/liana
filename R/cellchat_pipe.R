@@ -41,18 +41,21 @@ call_cellchat <- function(op_resource,
     labels <- Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))
 
-    cellchat.omni <- createCellChat(object = GetAssayData(seurat_object,
-                                                          assay = assay,
-                                                          slot = "data"),
+    cellchat.omni <- createCellChat(object =  `if`(.normalize,
+                                                   GetAssayData(seurat_object,
+                                                                assay = assay,
+                                                                slot = "data"),
+                                                   CellChat::normalizeData(
+                                                       GetAssayData(seurat_object,
+                                                                    assay = assay,
+                                                                    slot = "data"))
+                                                   ),
                                meta = meta,
                                group.by = "group")
 
-    if(.normalize){
-        data.input <- CellChat::normalizeData(data.input)
-    }
 
     if(.do_parallel){
-        future::plan("multicore")
+        future::plan("multiprocess")
     }
 
     # load CellChatDB
