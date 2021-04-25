@@ -10,16 +10,23 @@ omni_resources <- readRDS("~/Repos/ligrec_decoupleR/input/omni_resources.rds")
 crc_data <- readRDS("~/Repos/ligrec_decoupleR/input/crc_data/crc_korean_form.rds")
 
 
-cellchat_results <- omni_resources %>%
-    map(function(db) call_cellchat(op_resource = db,
+# cellchat_results <- omni_resources %>%
+#     map(function(db) call_cellchat(op_resource = db,
+#                                    seurat_object = crc_data,
+#                                    nboot = 100,
+#                                    exclude_anns = c(),
+#                                    thresh = 1,
+#                                    assay = "RNA",
+#                                    .normalize = TRUE,
+#                                    .do_parallel = TRUE)) %>%
+#     setNames(names(omni_resources))
+cellchat_results <- call_cellchat(op_resource = NULL,
                                    seurat_object = crc_data,
-                                   nboot = 1000,
+                                   nboot = 100,
                                    exclude_anns = c(),
                                    thresh = 1,
                                    assay = "RNA",
-                                   .normalize = TRUE,
-                                   .do_parallel = TRUE)) %>%
-    setNames(names(omni_resources))
+                                  .normalize = FALSE,
+                                  .do_parallel = FALSE,
+                                  .raw_use = TRUE)
 saveRDS(cellchat_results, "~/Repos/ligrec_decoupleR/output/cellchat_local.rds")
-
-

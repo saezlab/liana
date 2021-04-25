@@ -5,7 +5,8 @@
 #' @param nboot number of bootstraps to calculate p-value
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
-#'  internal func
+#' @param .raw_use whether use the raw data or gene expression data pojectected
+#'    to a ppi
 #'
 #' @return A DF of intercellular communication network
 #'
@@ -31,6 +32,7 @@ call_cellchat <- function(op_resource,
                           .seed = 1004,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
+                          .raw_use = FALSE,
                           ...
                           ){
 
@@ -58,7 +60,7 @@ call_cellchat <- function(op_resource,
 
 
     if(.do_parallel){
-        future::plan("multiprocess")
+        future::plan("multiprocess", workers = 10)
     }
 
     # load CellChatDB
@@ -90,9 +92,12 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
-    cellchat.omni <- projectData(cellchat.omni, CellChat::PPI.human)
+    if(!.raw_use){
+        cellchat.omni <- projectData(cellchat.omni, CellChat::PPI.human)
+    }
+
     cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use = FALSE,
+                                       raw.use = .raw_use,
                                        seed.use = .seed,
                                        nboot = nboot)
 
