@@ -13,6 +13,7 @@
 #' @importFrom CellChat subsetData identifyOverExpressedGenes normalizeData
 #' @importFrom CellChat identifyOverExpressedInteractions filterCommunication
 #' @importFrom CellChat PPI.human CellChatDB.human projectData
+#' @importFrom CellChat addMeta setIdent
 #' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>%
