@@ -52,6 +52,8 @@ call_cellchat <- function(op_resource,
                                                    ),
                                meta = meta,
                                group.by = "group")
+    cellchat.omni <- addMeta(cellchat.omni, meta = meta)
+    cellchat.omni <- setIdent(cellchat.omni, ident.use = "group")
 
 
     if(.do_parallel){
