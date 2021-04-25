@@ -295,7 +295,11 @@ omnipath_partners <- function(side,
 #' @seealso \code{\link{compile_ligrec}}
 compile_ligrec_descr <- function(){
 
-    compile_ligrec(omni_variants = FALSE, lr_pipeline = FALSE)
+    compile_ligrec(omni_variants = FALSE, lr_pipeline = FALSE) # %>%
+        # map(function(resource) resource %>%
+        #         purrr::list_modify(both = bind_rows(.$ligand,
+        #                                             .$receptor) %>%
+        #                                distinct()))
 
 }
 

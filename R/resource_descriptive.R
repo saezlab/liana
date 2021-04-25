@@ -18,7 +18,7 @@
 #
 
 
-# colors from Daniel
+# colors from brewer.pal
 .palette1 <- c(
     '#8D4C6A',
     '#377EB8',
