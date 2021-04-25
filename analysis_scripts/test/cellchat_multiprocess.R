@@ -23,10 +23,13 @@ crc_data <- readRDS("~/Repos/ligrec_decoupleR/input/crc_data/crc_korean_form.rds
 cellchat_results <- call_cellchat(op_resource = NULL,
                                    seurat_object = crc_data,
                                    nboot = 100,
-                                   exclude_anns = c(),
+                                   exclude_anns = c("Secreted Signaling"),
                                    thresh = 1,
                                    assay = "RNA",
                                   .normalize = FALSE,
                                   .do_parallel = FALSE,
                                   .raw_use = TRUE)
 saveRDS(cellchat_results, "~/Repos/ligrec_decoupleR/output/cellchat_local.rds")
+
+
+cr <- readRDS("~/Repos/ligrec_decoupleR/output/cellchat_local.rds")

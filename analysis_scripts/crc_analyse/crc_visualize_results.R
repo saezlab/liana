@@ -48,9 +48,7 @@ spec_list <- list("CellChat" =
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
-                          n_ints=c(250,
-                                   500
-                                   )
+                          n_ints=c(250)
                           )
 
 
@@ -106,3 +104,72 @@ plot_freq_pca(rank_frequencies)
 # 6. Get Numbers per Cell Type
 get_cellnum("input/crc_data/crc_korean_form.rds")
 
+
+
+
+# Supp
+# Load results
+spec_list <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       # "pval"=FALSE,
+                                       "prob"=TRUE)),
+                  "Connectome" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Connectome",
+                                   method_results = readRDS("output/crc_res/conn_results.rds"),
+                                   method_scores=list(
+                                       "weight_sc"=TRUE,
+                                       "weight_norm"=TRUE
+                                   )),
+                  "iTALK" =
+                      methods::new("MethodSpecifics",
+                                   method_name="iTALK",
+                                   method_results = readRDS("output/crc_res/italk_results.rds"),
+                                   method_scores=list(
+                                       "weight_comb"=TRUE
+                                   )),
+                  "NATMI" =
+                      methods::new("MethodSpecifics",
+                                   method_name="NATMI",
+                                   method_results = readRDS("output/crc_res/natmi_results.rds"),
+                                   method_scores=list(
+                                       "edge_specificity"=TRUE,
+                                       "edge_avg_expr"=TRUE
+                                   )),
+                  "SCA" = methods::new("MethodSpecifics",
+                                       method_name="SCA",
+                                       method_results = readRDS("output/crc_res/sca_results.rds"),
+                                       method_scores=list(
+                                           "LRscore"=TRUE
+                                       )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       "means"=TRUE,
+                                       "pvalue"=FALSE
+                                   ))
+)
+
+top_lists <- get_top_hits(spec_list,
+                          n_ints=c(250)
+)
+
+
+# Supp. Check CellChat pva-lues
+cellchat_alone <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       "pval"=FALSE,
+                                       "prob"=TRUE))
+                      )
+
+top_cellchat <- get_top_hits(cellchat_alone,
+                             n_ints=c(250)
+                             )

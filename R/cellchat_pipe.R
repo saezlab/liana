@@ -10,11 +10,7 @@
 #'
 #' @return A DF of intercellular communication network
 #'
-#' @importFrom CellChat subsetCommunication createCellChat computeCommunProb
-#' @importFrom CellChat subsetData identifyOverExpressedGenes normalizeData
-#' @importFrom CellChat identifyOverExpressedInteractions filterCommunication
-#' @importFrom CellChat PPI.human CellChatDB.human projectData
-#' @importFrom CellChat addMeta setIdent
+#' @import CellChat
 #' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>%
@@ -23,6 +19,8 @@
 #' @importFrom tidyr unite unnest separate
 #' @importFrom logger log_info
 #' @export
+#' @details CellChat's objects are not documented/exported thus the
+#'    whole package has to be imported
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,

@@ -44,7 +44,7 @@ plotSaveUset <- function(upset_df, dir){
 #' @importFrom pheatmap pheatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
-#' @importFrom purrr map
+#' @importFrom purrr map flatten
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_glue
 get_BigHeat <- function(sig_list,
