@@ -374,6 +374,7 @@ total_unique_bar <- function(ligrec_olap){
 #'
 #' @importFrom purrr cross2 map walk
 #' @importFrom magrittr %>%
+#' @importFrom rlang quos
 ligand_receptor_upset <- function(data, upset_args = list()){
 
     log_success('Overlap upset plots.')
@@ -1167,5 +1168,173 @@ cluster_for_heatmap <- function(data, cat1, cat2, val){
         !!cat1 := factor(!!cat1, levels = cat1_ord, ordered = TRUE),
         !!cat2 := factor(!!cat2, levels = cat2_ord, ordered = TRUE)
     )
+
+}
+
+
+#' Origin of major location attributes of intercellular interactions
+#'
+#' @importFrom magrittr %>% %T>%
+#' @importFrom rlang exec !!! set_names
+#' @importFrom dplyr group_by mutate select filter ungroup bind_rows
+#' @importFrom dplyr summarize_all inner_join slice first
+#' @importFrom purrr map cross2
+#' @importFrom readr write_tsv
+#' @export
+localization_examples <- function(){
+
+    locations <- c(
+        'secreted',
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    )
+
+    suffix <- c('_transmitter', '_receiver')
+    src_up <- c('source' = 'uniprot')
+    tgt_up <- c('target' = 'uniprot')
+
+    icn <-
+        import_intercell_network(entity_types = 'protein') %>%
+        group_by(source, target) %>%
+        mutate(
+            categories_transmitter = paste(
+                unique(sprintf(
+                    '%s:%s',
+                    category_intercell_source,
+                    database_intercell_source
+                )),
+                collapse = '|'
+            ),
+            categories_receiver = paste(
+                unique(sprintf(
+                    '%s:%s',
+                    category_intercell_target,
+                    database_intercell_target
+                )),
+                collapse = '|'
+            )
+        ) %>%
+        summarize_all(first) %>%
+        ungroup() %>%
+        select(
+            source,
+            target,
+            source_genesymbol,
+            target_genesymbol,
+            is_directed,
+            is_stimulation,
+            is_inhibition,
+            sources,
+            references,
+            categories_transmitter,
+            categories_receiver
+        )
+
+    loc <-
+        locations %>%
+        map(
+            function(lo){
+                args <- list(
+                    aspect = 'locational',
+                    scope = 'generic',
+                    entity_types = 'protein'
+                )
+                args[[lo]] = TRUE
+                import_omnipath_intercell %>%
+                exec(!!!args) %>%
+                filter(parent != 'intracellular') %>%
+                select(uniprot, database, category)
+            }
+        ) %>%
+        set_names(locations)
+
+    up_annot <-
+        bind_rows(
+            uniprot_annot(keyword),
+            uniprot_annot(location),
+            uniprot_annot(topology)
+        ) %>%
+        group_by(uniprot) %>%
+        mutate(annot = paste(annot, collapse = ',')) %>%
+        summarize_all(first) %>%
+        ungroup()
+
+    locations %>%
+    cross2(.x = ., .y = .) %>%
+    map(
+        function(lo){
+            loc_transm <- loc[[lo[[1]]]]
+            loc_rec <- loc[[lo[[2]]]]
+            icn %>%
+            inner_join(
+                loc_transm,
+                by = src_up
+            ) %>%
+            inner_join(
+                loc_rec,
+                by = tgt_up,
+                suffix = suffix
+            ) %>%
+            group_by(source, target) %>%
+            mutate(
+                locations_transmitter = paste(
+                    unique(sprintf(
+                        '%s:%s',
+                        category_transmitter,
+                        database_transmitter
+                    )),
+                    collapse = '|'
+                ),
+                locations_receiver = paste(
+                    unique(sprintf(
+                        '%s:%s',
+                        category_receiver,
+                        database_receiver
+                    )),
+                    collapse = '|'
+                )
+            ) %>%
+            select(
+                -category_transmitter,
+                -category_receiver,
+                -database_transmitter,
+                -database_receiver
+            ) %>%
+            summarize_all(first) %>%
+            ungroup() %>%
+            left_join(up_annot, by = src_up) %>%
+            left_join(up_annot, by = tgt_up, suffix = suffix) %>%
+            mutate(major_location = exec(sprintf, '%s-%s', !!!lo)) %>%
+            slice(sample(1:n()))
+
+        }
+    ) %>%
+    bind_rows %T>%
+    write_tsv('localization_examples.tsv')
+
+}
+
+
+#' @importFrom magrittr %>%
+#' @importFrom rlang enquo quo_text !!
+#' @importFrom OmnipathR import_omnipath_annotations
+#' @importFrom dplyr select group_by mutate summarize_all ungroup first
+#' @noRd
+uniprot_annot <- function(var){
+
+    var <- enquo(var)
+    var_str <- quo_text(var)
+
+    import_omnipath_annotations(
+        resources = sprintf('UniProt_%s', var_str),
+        entity_types = 'protein',
+        wide = TRUE
+    ) %>%
+    select(uniprot, !!var) %>%
+    group_by(uniprot) %>%
+    mutate(annot = paste(!!var, collapse = ',')) %>%
+    select(uniprot, annot) %>%
+    summarize_all(first) %>%
+    ungroup()
 
 }
