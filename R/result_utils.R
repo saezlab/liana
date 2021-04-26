@@ -211,3 +211,51 @@ get_cellnum <- function(seurat_path){
 }
 
 
+
+
+#' Function to get bray curtis stats from a lits of top hits
+#' @param sig_list list of top hits per method-resource combo
+#' @details returns the results for the same method with different resources
+#' as well as results for the same resource with different methods. Furthermore,
+#' it returns summary statistics for each of these which include:
+#' mean and st dev of BC dissimilarities per method (and resource) as well as
+#' the mean of means and the mean of standard deviations
+#' @return A named list of BC dissimilarity stats
+#' @importFrom vegan vegdist
+#' @import tibble
+#' @import purrr
+get_bc_stats <- function(sig_list){
+    bc_list <- list()
+
+    bc_list$bc_met <- sig_list %>%
+        map(function(method)
+            method %>%
+                prepForUpset() %>%
+                select(-interaction) %>%
+                t() %>%
+                vegdist(method = "bray", diag=FALSE, upper = FALSE, binary = TRUE) %>%
+                replace(.,is.nan(.), 1)
+        )
+
+    bc_list$bc_res <- get_swapped_list(sig_list) %>%
+        map(function(resource)
+            resource %>%
+                prepForUpset() %>%
+                select(-interaction) %>%
+                t() %>%
+                vegdist(method = "bray", diag=FALSE, upper = FALSE, binary = TRUE) %>%
+                replace(.,is.nan(.), 1)
+        )
+
+    bc_list$bc_met_m <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist
+    bc_list$bc_met_sd <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist
+    bc_list$bc_met_mm <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% mean
+    bc_list$bc_met_sdm <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist %>% mean
+
+    bc_list$bc_res_m <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist
+    bc_list$bc_res_sd <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist
+    bc_list$bc_res_mm <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% mean
+    bc_list$bc_res_sdm <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist %>% mean
+
+    return(bc_list)
+}

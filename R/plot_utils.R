@@ -50,26 +50,10 @@ plotSaveUset <- function(upset_df, dir){
 #' @importFrom purrr map flatten
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_glue
-get_BigHeat <- function(sig_list,
+get_BinaryHeat <- function(sig_list,
                         ...){
 
-  # get method and resource names combined
-  lnames <- map(names(sig_list), function(m_name){
-    map(names(sig_list[[m_name]]), function(r_name){
-      str_glue("{m_name}_{r_name}")
-    })
-  }) %>%
-    unlist()
-
-
-  # get binarized significant hits list (1 for sig per method, 0 if absent)
-  heatmap_binary_df <- sig_list %>%
-    purrr::flatten() %>%
-    setNames(lnames) %>%
-    prepForUpset() %>%
-    as_tibble() %>%
-    column_to_rownames("interaction")
-
+  heatmap_binary_df <- get_binary_df(sig_list)
 
   # annotation groups (sequential vectors as in heatmap_binary_df)
   method_groups <- colnames(heatmap_binary_df) %>%
@@ -265,7 +249,6 @@ get_activecell <- function(top_list, ...){
                             show_colnames = FALSE,
                             color = colorRampPalette(c("darkslategray2",
                                                        "violetred2"))(20),
-                            labels_row = ,
                             fontsize = 15,
                             drop_levels = TRUE,
                             cluster_rows = TRUE,
@@ -276,3 +259,80 @@ get_activecell <- function(top_list, ...){
                             ...)
 }
 
+
+
+
+#' Bray-Curtis Heatmap Function
+#' @param sig_list list of significant hits
+#' @inheritDotParams pheatmap
+get_bc_heatmap <- function(sig_list,
+                           ...){
+
+  heatmap_binary_df <- get_binary_df(sig_list)
+
+  bc_df <- heatmap_binary_df %>%
+    t() %>%
+    vegdist(method = "bray", diag=TRUE, upper = TRUE, binary = TRUE) %>%
+    as.matrix()
+
+  method_groups <- colnames(heatmap_binary_df) %>%
+    enframe() %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
+    pull(method)
+  resource_groups <- colnames(heatmap_binary_df) %>%
+    enframe() %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
+    pull(resource)
+
+  # data frame with column annotations.
+  # with a column for resources and a column for methods
+  annotations_df <- data.frame(Resource = resource_groups,
+                               Method = method_groups)  %>%
+    mutate(rn = colnames(heatmap_binary_df)) %>%
+    column_to_rownames("rn")
+
+  # List with colors for each annotation.
+  mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                   Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))))
+  names(mycolors$Resource) <- unique(resource_groups)
+  names(mycolors$Method) <- unique(method_groups)
+
+
+  pheatmap(bc_df,
+           annotation_col = annotations_df,
+           annotation_row = annotations_df,
+           annotation_colors = mycolors,
+           display_numbers = FALSE,
+           silent = FALSE,
+           show_colnames = FALSE,
+           show_rownames = FALSE,
+           color = colorRampPalette(c("violetred2",
+                                      "darkslategray2"))(20),
+           fontsize = 15,
+           cluster_rows = FALSE,
+           cluster_cols = FALSE,
+           border_color = NA
+  )
+}
+
+
+
+#' Helper Function to get a binary top hits DF
+#' @param sig_list list of significant hits per method-resource combo
+get_binary_df <- function(sig_list){
+  # get method and resource names combined
+  lnames <- map(names(sig_list), function(m_name){
+    map(names(sig_list[[m_name]]), function(r_name){
+      str_glue("{m_name}_{r_name}")
+    })
+  }) %>%
+    unlist()
+
+  # get binarized significant hits list (1 for sig per method, 0 if absent)
+  heatmap_binary_df <- sig_list %>%
+    purrr::flatten() %>%
+    setNames(lnames) %>%
+    prepForUpset() %>%
+    as_tibble() %>%
+    column_to_rownames("interaction")
+}

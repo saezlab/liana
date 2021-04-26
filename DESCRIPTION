@@ -75,7 +75,8 @@ Imports:
     Barnard,
     DescTools,
     rlang,
-    viridis
+    viridis,
+    vegan
 Suggests:
     knitr,
     rmarkdown,

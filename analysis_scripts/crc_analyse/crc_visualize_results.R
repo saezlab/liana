@@ -55,40 +55,22 @@ top_lists <- get_top_hits(spec_list,
 
 
 # 1. Combine all binary results into heatmap
-binary_heatm <- get_BigHeat(top_lists$top_250,
-                            display_numbers = FALSE,
-                            silent = FALSE,
-                            show_rownames = FALSE,
-                            show_colnames = FALSE,
-                            legend_breaks = 0:1,
-                            fontsize = 17,
-                            drop_levels = TRUE,
-                            cluster_rows = TRUE,
-                            cluster_cols = TRUE,
-                            color = c("gray15", "darkslategray2"),
-                            border_color = NA,
-                            clustering_distance_rows = "binary",
-                            clustering_distance_cols = "binary",
-                            treeheight_row = 0,
-                            treeheight_col = 100)
-
-
-get_BigHeat(top_lists$top_250,
-            display_numbers = FALSE,
-            silent = FALSE,
-            show_rownames = FALSE,
-            show_colnames = FALSE,
-            legend_breaks = 0:1,
-            fontsize = 17,
-            drop_levels = TRUE,
-            cluster_rows = TRUE,
-            cluster_cols = TRUE,
-            # color = c("gray15", "darkslategray2"),
-            border_color = NA,
-            clustering_distance_rows = "euclidean",
-            clustering_distance_cols = "euclidean",
-            treeheight_row = 0,
-            treeheight_col = 100)
+binary_heatm <- get_BinaryHeat(top_lists$top_250,
+                               display_numbers = FALSE,
+                               silent = FALSE,
+                               show_rownames = FALSE,
+                               show_colnames = FALSE,
+                               legend_breaks = 0:1,
+                               fontsize = 17,
+                               drop_levels = TRUE,
+                               cluster_rows = TRUE,
+                               cluster_cols = TRUE,
+                               color = c("gray15", "darkslategray2"),
+                               border_color = NA,
+                               clustering_distance_rows = "binary",
+                               clustering_distance_cols = "binary",
+                               treeheight_row = 0,
+                               treeheight_col = 100)
 
 
 # 2. Activity by Cell Type Heatmap (Source and Target)
@@ -102,7 +84,6 @@ names(top_lists$top_250) %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
-
 # 4. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
 top250_resource_tool <- get_swapped_list(top_lists$top_250)
@@ -114,6 +95,8 @@ names(top250_resource_tool) %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("output/crc_res/plots/upset_resources/{r_name}_upset.png"))
     )
+
+
 
 
 # 5. PCA by Rank Frequencies
@@ -181,7 +164,7 @@ top_housekeep <- get_top_hits(housekeep_list,
 )
 
 # 7. Binary Housekeeping heatmap
-get_BigHeat(top_housekeep$top_250,
+get_BinaryHeat(top_housekeep$top_250,
             display_numbers = FALSE,
             silent = FALSE,
             show_rownames = FALSE,
@@ -220,9 +203,9 @@ cellchat_alone <- list("CellChat" =
                                    ))
 )
 
-cellchat_hits <- get_top_hits(cellchat_alone,
-                          n_ints=c(250)
-)
+cc_hits <- spec_list$CellChat@method_results %>%
+    map(function(resource) resource %>%
+            filter(pval == 0))
 
 # Check SCA above threshold
 sca_hits <- spec_list$SCA@method_results %>%
