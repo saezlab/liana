@@ -2,6 +2,9 @@
 #' @param named_list a named list with sugnificant LR results
 #' @return Matrix/DF of 0 and 1 where 1 means that the interaction
 #' is present and 0 means that it is not
+#' @importFrom tibble tibble
+#' @import dplyr
+#' @import purrr
 prepForUpset <- function(named_list){
   map(names(named_list), function(l_name){
       named_list[[l_name]] %>%
@@ -33,7 +36,7 @@ plotSaveUset <- function(upset_df, dir){
 }
 
 
-#' ??? heatmap
+#' Heatmap looking at binarized top in per method-resource combinations
 #'
 #' @param sig_list named list of significant hits. Named list of methods with
 #'     each element being a named list of resources
@@ -50,18 +53,9 @@ plotSaveUset <- function(upset_df, dir){
 get_BigHeat <- function(sig_list,
                         ...){
 
-  # remove OmniPath and Random resources, as they are much larger than the
-  # rest of the resources and result in too much sparsity to get meaningful
-  # clusters not completely align to them.
-  heatmap_sig_list <- sig_list # %>%
-    # map(function(x) x %>%
-    #       purrr::list_modify("OmniPath" = NULL) %>%
-    #       purrr::list_modify("Random" = NULL)
-    # )
-
   # get method and resource names combined
-  lnames <- map(names(heatmap_sig_list), function(m_name){
-    map(names(heatmap_sig_list[[m_name]]), function(r_name){
+  lnames <- map(names(sig_list), function(m_name){
+    map(names(sig_list[[m_name]]), function(r_name){
       str_glue("{m_name}_{r_name}")
     })
   }) %>%
@@ -69,7 +63,7 @@ get_BigHeat <- function(sig_list,
 
 
   # get binarized significant hits list (1 for sig per method, 0 if absent)
-  heatmap_binary_df <- heatmap_sig_list %>%
+  heatmap_binary_df <- sig_list %>%
     purrr::flatten() %>%
     setNames(lnames) %>%
     prepForUpset() %>%

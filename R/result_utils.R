@@ -11,12 +11,15 @@ get_top_hits <- function(spec_list, n_ints=c(100, 500, 5000)){
                 map(parnams, function(parm){
                     spec_list[[method_name]]@method_results %>%
                         map(function(res){
+                            parm_order <-
+                                spec_list[[method_name]]@method_scores[[parm]]
+
                             res %>%
                                 distinct() %>%
-                                top_n(n=if_else(spec_list[[method_name]]@method_scores[[parm]],
+                                top_enh(n=if_else(parm_order,
                                                 .tn,
                                                 -.tn),
-                                      wt=!!sym(parm)) %>%
+                                      wt=parm) %>%
                                 as_tibble()
                         })
                 }) %>%
@@ -30,6 +33,33 @@ get_top_hits <- function(spec_list, n_ints=c(100, 500, 5000)){
                                      pattern = "_",
                                      replacement = "\\."))
     }) %>% setNames(str_glue("top_{n_ints}"))
+}
+
+
+#' Helper Function to handle specific cases for CellChat and Squidpy
+#' @inheritDotParams dplyr::top_n
+#' @importFrom dplyr top_n
+#' @importFrom magrittr %>%
+#' @importFrom tibble tibble
+#' @return Ordered tibble/df as from top_n
+top_enh <- function(...){
+
+    elipses <- list(...)
+    elipses$wt <- sym(elipses$wt)
+
+    # Filter according to p-values for Squidpy pvalue and CellChat prob
+    if(elipses$wt == "prob"){
+        elipses[[1]] <- elipses[[1]] %>%
+            filter(pval <= 0.05)
+    } else if(elipses$wt == "pvalue"){
+        elipses[[1]] <- elipses[[1]] %>%
+            filter(pvalue <= 0.05)
+    } else if (elipses$wt == "LRscore"){
+        elipses[[1]] <- elipses[[1]] %>%
+            filter(LRscore >= 0.5)
+    }
+
+    return(do.call(top_n, elipses))
 }
 
 
@@ -148,8 +178,9 @@ reform_rank_frequencies <- function(frequencies_list){
 #' @name MethodSpecifics-class
 #'
 #' @field method_name name of the method (e.g. CellChat)
-#' @field method_results
-#' @field method_scores
+#' @field method_results Named list of method-resource results
+#' @field method_scores Named list of the measures provided by the method
+#'  and whether they should be interpreted in descending order as the value
 #'
 #' @exportClass MethodSpecifics
 setClass("MethodSpecifics",

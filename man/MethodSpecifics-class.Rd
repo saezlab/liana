@@ -10,6 +10,11 @@ S4 Class used to format benchmark output.
 \section{Fields}{
 
 \describe{
-\item{\code{method_scores}}{}
+\item{\code{method_name}}{name of the method (e.g. CellChat)}
+
+\item{\code{method_results}}{Named list of method-resource results}
+
+\item{\code{method_scores}}{Named list of the measures provided by the method
+and whether they should be interpreted in descending order as the value}
 }}
 

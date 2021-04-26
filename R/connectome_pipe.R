@@ -15,7 +15,8 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-#' @importFrom Connectome ncomms8866_human ScaleData CreateConnectome
+#' @import Connectome
+#' @importFrom Seurat ScaleData
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
 #' @export
