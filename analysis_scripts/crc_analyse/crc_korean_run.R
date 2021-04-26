@@ -1,7 +1,4 @@
 library(intercell)
-sapply(list.files("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/R/", pattern = ".R", full.names = TRUE), source)
-setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
-
 
 # Load Data and Format data
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
@@ -87,7 +84,9 @@ cellchat_results <- omni_resources %>%
                                    exclude_anns = c(),
                                    thresh = 1,
                                    assay = "RNA",
-                                   .normalize = TRUE,
-                                   .do_parallel = FALSE)) %>%
+                                   .normalize = FALSE,
+                                   .do_parallel = FALSE,
+                                   .raw_use = TRUE
+                                   )) %>%
     setNames(names(omni_resources))
 saveRDS(cellchat_results, "output/crc_res/cellchat_results.rds")

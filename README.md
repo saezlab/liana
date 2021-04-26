@@ -96,7 +96,8 @@ Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/
    
 ```{r}
 library(devtools)  
-Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...   
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...  
+install_github('saezlab/OmnipathR') # install latest version of OmnipathR
 devtools::install_github("sqjin/CellChat")  
 devtools::install_github('msraredon/Connectome', ref = 'master')   
 devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')   
