@@ -15,7 +15,7 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-# #' @importFrom Connectome ncomms8866_human ScaleData CreateConnectome
+#' @importFrom Connectome ncomms8866_human ScaleData CreateConnectome
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
 #' @export
@@ -81,9 +81,8 @@ call_connectome <- function(seurat_object,
 #'
 #' @param conn connectome object
 #' @param .log whether to log weight
-# #' @inheritDotParams Connectome::FilterConnectome
-#'
-# #' @importFrom Connectome FilterConnectome
+#' @inheritDotParams Connectome::FilterConnectome
+#' @importFrom Connectome FilterConnectome
 #' @export
 FormatConnectome <- function(conn,
                              ...){

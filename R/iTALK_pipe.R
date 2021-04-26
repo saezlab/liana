@@ -15,8 +15,8 @@
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
 #'
-# #' @importFrom iTALK rawParse FindLR
-# #' @importFrom Seurat Idents FindAllMarkers GetAssayData
+#' @importFrom iTALK rawParse FindLR
+#' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>%
 #' @importFrom tidyr unite
 #' @importFrom dplyr select rename mutate group_by group_split

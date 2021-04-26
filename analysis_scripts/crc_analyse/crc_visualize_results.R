@@ -160,7 +160,7 @@ top_lists <- get_top_hits(spec_list,
 )
 
 
-# Supp. Check CellChat pva-lues
+# Supp. Check CellChat p-values
 cellchat_alone <- list("CellChat" =
                       methods::new("MethodSpecifics",
                                    method_name="CellChat",

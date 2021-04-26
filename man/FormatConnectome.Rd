@@ -9,6 +9,23 @@ FormatConnectome(conn, ...)
 \arguments{
 \item{conn}{connectome object}
 
+\item{...}{
+  Arguments passed on to \code{\link[Connectome:FilterConnectome]{Connectome::FilterConnectome}}
+  \describe{
+    \item{\code{connectome}}{A connectomic edgelist output from CreateConnectome}
+    \item{\code{min.pct}}{Minimum fraction of cells within a given cluster expressing the ligand or receptor.}
+    \item{\code{max.p}}{Maximum p-value for ligand and receptor. Filtration on this column requires prior p-value calculation.}
+    \item{\code{min.DOR}}{Minimum log-normalized Diagnostic Odds Ratio for the ligand or receptor for its cell type within an edge.}
+    \item{\code{min.exp}}{Minimum normalized expression level of ligand and receptor.}
+    \item{\code{min.z}}{Minimum z-score for ligand and receptor.}
+    \item{\code{modes.include}}{String or vector signifying mode(s) of interest in include.}
+    \item{\code{sources.include}}{Source nodes of interest. Output will be limited to edges coming from these sources.}
+    \item{\code{targets.include}}{Target nodes of interest. Output will be limited to edges landing on these targets.}
+    \item{\code{mechanisms.include}}{Ligand - Receptor pairs of interest. The character string should match entries in the 'pair' column of the connectome.}
+    \item{\code{verbose}}{Whether to output feedback to user}
+    \item{\code{remove.na}}{Whether to remove edges containing 'NA' (no mapping to original object - only useful if investigating orphan ligands and receptors)}
+  }}
+
 \item{.log}{whether to log weight}
 }
 \description{

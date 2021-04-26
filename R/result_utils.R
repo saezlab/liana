@@ -147,7 +147,7 @@ reform_rank_frequencies <- function(frequencies_list){
 #' S4 Class used to format benchmark output.
 #' @name MethodSpecifics-class
 #'
-#' @field method_name
+#' @field method_name name of the method (e.g. CellChat)
 #' @field method_results
 #' @field method_scores
 #'
