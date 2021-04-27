@@ -26,6 +26,7 @@ sparsify_to_seurat <- function(counts_loc, meta_loc, save_loc){
 #' Helper function to format metadata for CRC data sets
 #' @param crc_seurat CRC Seurat Object
 #' @return Return a formatted Metadata for CCC inference
+#' @import stringr
 #' @export
 format_crc_meta <- function(crc_seurat){
     crc_seurat@meta.data <- crc_seurat@meta.data %>%

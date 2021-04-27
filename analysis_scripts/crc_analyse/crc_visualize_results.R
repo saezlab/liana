@@ -49,10 +49,7 @@ spec_list <- list("CellChat" =
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
-                          n_ints=c(250)
-                          )
-
-
+                          n_ints=c(250))
 
 # 1. Combine all binary results into heatmap
 binary_heatm <- get_BinaryHeat(top_lists$top_250,
@@ -109,6 +106,10 @@ plot_freq_pca(rank_frequencies)
 get_cellnum("input/crc_data/crc_korean_form.rds")
 
 
+# 7. Bray Curtis Heatmap and Stats
+get_bc_heatmap(top_lists$top_250) # All method-resource combinations BC heatmap
+bc <- get_bc_stats(top_lists$top_250) # Get BC stats
+
 
 
 # Housekeeping measures
@@ -160,10 +161,9 @@ housekeep_list <- list("CellChat" =
 )
 
 top_housekeep <- get_top_hits(housekeep_list,
-                          n_ints=c(250)
-)
+                              n_ints=c(250))
 
-# 7. Binary Housekeeping heatmap
+# 8. Binary Housekeeping heatmap
 get_BinaryHeat(top_housekeep$top_250,
             display_numbers = FALSE,
             silent = FALSE,
@@ -181,17 +181,23 @@ get_BinaryHeat(top_housekeep$top_250,
             treeheight_row = 0,
             treeheight_col = 100)
 
-# 8. Housekeeping Activity by Cell Type Heatmap
+
+# 9. Housekeeping Activity by Cell Type Heatmap
 get_activecell(top_housekeep$top_250)
 
 
-# 9. Housekeeping Rank Avg
+# 10. Housekeeping Rank Avg
 housekeep_frequencies <- housekeep_list %>%
     get_rank_frequencies()
 plot_freq_pca(housekeep_frequencies)
 
+# 11. Housekeeping Bray Curtis Info
+get_bc_heatmap(top_housekeep$top_250) # All method-resource combinations BC heatmap
+bc_hp <- get_bc_stats(top_housekeep$top_250) # Get BC stats
 
 
+
+# 12. Addititional Checks
 # Check CellChat P-values
 cellchat_alone <- list("CellChat" =
                       methods::new("MethodSpecifics",

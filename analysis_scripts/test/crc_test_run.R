@@ -1,25 +1,26 @@
 # Load Data
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
     format_crc_meta()
+library(reticulate)
+library(tidyverse)
 # saveRDS(crc_korean, "input/crc_data/crc_korean_mod.rds")
 
-crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data)[5000:7500])
-crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data))
+# crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data)[5000:7500])
+# crc_korean <- subset(crc_korean, cells = rownames(crc_korean@meta.data))
 
 # Get Full Omni Resources
-# omni_resources <- compile_ligrec()
+omni_resources <- compile_ligrec()
 # saveRDS(omni_resources, "input/omni_resources.rds")
 omni_resources <- readRDS("input/omni_resources.rds")
 omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
                        "ICELLNET" = omni_resources$ICELLNET)
-
 
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_korean_mod.rds"),
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  .ident = "Cell_subtype")
-saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
+saveRDS(squidpy_results, "output/crc_res/squidpy_results_nobh.rds")
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format

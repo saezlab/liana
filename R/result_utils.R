@@ -251,11 +251,15 @@ get_bc_stats <- function(sig_list){
     bc_list$bc_met_sd <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist
     bc_list$bc_met_mm <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% mean
     bc_list$bc_met_sdm <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist %>% mean
+    bc_list$bc_met_max <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% max
+    bc_list$bc_met_min <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% min
 
     bc_list$bc_res_m <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist
     bc_list$bc_res_sd <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist
     bc_list$bc_res_mm <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% mean
     bc_list$bc_res_sdm <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist %>% mean
+    bc_list$bc_res_max <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% max
+    bc_list$bc_res_min <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% min
 
     return(bc_list)
 }
