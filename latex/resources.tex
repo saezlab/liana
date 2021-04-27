@@ -113,8 +113,8 @@
         \begin{pgfonlayer}{nodes}
 
             \node (indb) [ntres] {InnateDB};
-            \node (i2dd) [ntres, below = of indb] {I2D};
-            \node (strg) [ntres, below = of i2dd] {STRING};
+            \node (i2dd) [ntres, left = of indb] {I2D};
+            \node (strg) [ntres, below left = 0mm and 10mm of i2dd] {STRING};
             \node (mxdb) [ntres, below = of strg] {MatrixDB};
             \node (inge) [ntres, below = of mxdb] {Ingenuity};
             \node (inta) [ntres, below = of inge] {IntAct};
@@ -123,7 +123,7 @@
             \node (reac) [ntres, below = of csig] {Reactome};
             \node (bgri) [ntres, below = of reac] {BioGRID};
             \node (hprd) [ntres, below = of bgri] {HPRD};
-            \node (unip) [ntres, below = of hprd] {UniProt};
+            \node (unip) [ntres, below right = 0cm and 1cm of hprd] {UniProt};
 
             \node (dlrp) [icres, right = 3cm of inge] {DIP-DLRP};
             \node (g2ph) [icres, below = of dlrp] {
