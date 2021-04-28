@@ -19,7 +19,6 @@
 #'     modules of NATMI in the NATMI dir and save the output into a specified
 #'     directory. It will then load and format the output to a DF.
 #'
-#'
 #' NATMI Arguments:
 #'   --interDB INTERDB
 #'                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension
@@ -172,7 +171,6 @@ omni_to_NATMI <- function(omni_resources,
 #' @importFrom dplyr mutate select
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
-#'
 FormatNatmi <- function(output_path, .format = TRUE){
 
     list.files(output_path,

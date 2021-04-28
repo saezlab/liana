@@ -1,17 +1,19 @@
 omni_resources <- compile_ligrec(lr_pipeline = TRUE)
 testdata <- SeuratData::LoadData("pbmc3k")
 testdata@meta.data <- testdata@meta.data %>%
-    filter(seurat_annotations %in% c("NK", "CD8 T", "B")) # %>%
-    # rownames_to_column("id") %>%
-    # group_by(seurat_annotations) %>%
-    # top_n(11, nCount_RNA) %>%
-    # as.data.frame() %>%
-    # column_to_rownames("id")
+    filter(seurat_annotations %in% c("NK", "CD8 T", "B")) %>%
+    rownames_to_column("id") %>%
+    group_by(seurat_annotations) %>%
+    top_n(11, nCount_RNA) %>%
+    as.data.frame() %>%
+    column_to_rownames("id")
 
 testdata <- subset(testdata, cells = rownames(testdata@meta.data))
 testdata <- SetIdent(testdata, value = testdata@meta.data$seurat_annotations)
 
-cc <- call_cellchat(op_resource = NULL,
+
+# CellChat
+cc_res <- call_cellchat(op_resource = omni_resources$CellPhoneDB,
                     seurat_object = testdata,
                     nboot = 100,
                     exclude_anns = c(),
@@ -21,33 +23,33 @@ cc <- call_cellchat(op_resource = NULL,
                     .do_parallel = FALSE,
                     .raw_use = TRUE)
 
+# Connectome (should I filter norm_weight also by p-value?)
+conn_res <- call_connectome(seurat_object = testdata,
+                            .spatial = FALSE,
+                            op_resource = omni_resources$CellPhoneDB,
+                            min.cells.per.ident = 1,
+                            p.values = TRUE,
+                            calculate.DOR = FALSE,
+                            assay = 'RNA',
+                            .format = TRUE)
+
+# iTALK
+italk_res <- call_italk(op_resource = omni_resources$CellPhoneDB,
+                        seurat_object = testdata,
+                        assay = 'RNA',
+                        .format = TRUE,
+                        .DE = TRUE)
 
 
-seurat_object <- testdata
-labels <- Idents(seurat_object)
-meta <- data.frame(group = labels, row.names = names(labels))
+# SCA
+sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
+                    seurat_object = testdata,
+                    assay = 'RNA',
+                    .format = TRUE,
+                    s.score = 0,
+                    logFC = log2(1.5)
+                    )
 
-
-library(CellChat)
-
-cellchat.omni <- createCellChat(object =
-                                   GetAssayData(seurat_object,
-                                                assay = "RNA",
-                                                slot = "data"),
-                           meta = meta,
-                           group.by = "group")
-
-cellchat.omni@DB <- CellChatDB.human
-
-cellchat.omni <- subsetData(cellchat.omni)
-
-cellchat.omni <- identifyOverExpressedGenes(cellchat.omni)
-cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
-cellchat.omni <- projectData(cellchat.omni, PPI.human)
-
-
-cellchat.omni <- computeCommunProb(cellchat.omni, raw.use = TRUE)
-cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 1)
-
-df.net <- subsetCommunication(cellchat.omni, thresh = 0.05)
+#NATMI
+natmi_res <- call_natmi
 

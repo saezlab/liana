@@ -93,7 +93,7 @@ reform_omni <- function(omni_resources){
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
                         .keep_all = TRUE)) %>%
-        append(list("Random" = shuffle_omnipath(.$connectomeDB2020),
+        append(list("Reshuffled" = shuffle_omnipath(.$connectomeDB2020),
                     "Default" = NULL),
                .)
 }

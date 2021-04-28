@@ -54,7 +54,6 @@ This function will take omnipath resources saved to csvs and copy
     modules of NATMI in the NATMI dir and save the output into a specified
     directory. It will then load and format the output to a DF.
 
-
 NATMI Arguments:
   --interDB INTERDB
                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension

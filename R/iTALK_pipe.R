@@ -6,7 +6,7 @@
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
 #' @param .deg if is NULL run FindAllMarkers
-# #' @inheritDotParams iTALK::rawParse
+#' @inheritDotParams iTALK::rawParse
 #'
 #' @return An unfiltered iTALK df sorted by relevance
 #'

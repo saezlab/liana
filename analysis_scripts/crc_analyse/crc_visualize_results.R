@@ -199,22 +199,13 @@ bc_hp <- get_bc_stats(top_housekeep$top_250) # Get BC stats
 
 # 12. Addititional Checks
 # Check CellChat P-values
-cellchat_alone <- list("CellChat" =
-                      methods::new("MethodSpecifics",
-                                   method_name="CellChat",
-                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
-                                   method_scores=list(
-                                       "pval"=FALSE,
-                                       "prob"=TRUE
-                                   ))
-)
-
 cc_hits <- spec_list$CellChat@method_results %>%
     map(function(resource) resource %>%
             filter(pval == 0))
+cc_hits
 
 # Check SCA above threshold
 sca_hits <- spec_list$SCA@method_results %>%
     map(function(resource) resource %>%
             filter(LRscore >= 0.5))
-
+sca_hits

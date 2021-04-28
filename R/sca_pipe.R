@@ -8,7 +8,7 @@
 #' @importFrom Seurat GetAssayData Idents
 #' @import SCAomni
 #' @import tibble
-#' @import magrittr
+#' @importFrom magrittr %>%
 #'
 #' @details
 #' Stats:
@@ -30,7 +30,7 @@ call_sca <- function(op_resource,
              PMIDs = references) %>%
       distinct()
   } else{
-    if(file.exists("input/LRdb.rda")){ # will change once I convert this into a package
+    if(file.exists("input/LRdb.rda")){
       load("input/LRdb.rda")
       op_resource <- LRdb
     }

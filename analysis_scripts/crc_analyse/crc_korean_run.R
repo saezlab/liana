@@ -32,7 +32,7 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             .subsampling_pipe = FALSE,
                             .assay = "RNA",
                             .num_cor = 64
-)
+                            )
 saveRDS(natmi_results, "output/crc_res/natmi_results.rds")
 
 
@@ -67,7 +67,7 @@ saveRDS(conn_results, "output/crc_res/conn_results.rds")
 italk_results <- omni_resources %>%
     map(function(db)
         call_italk(op_resource = db,
-                   crc_korean,
+                   seurat_object = crc_korean,
                    assay = 'RNA',
                    .format = TRUE,
                    .DE = TRUE

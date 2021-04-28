@@ -57,8 +57,11 @@ top_enh <- function(...){
     } else if (elipses$wt == "LRscore"){
         elipses[[1]] <- elipses[[1]] %>%
             filter(LRscore >= 0.5)
+    } else if (elipses$wt == "weight_sc"){
+        elipses[[1]] <- elipses[[1]] %>%
+            filter(p_val_adj.rec <= 0.05) %>%
+            filter(p_val_adj.lig <= 0.05)
     }
-
     return(do.call(top_n, elipses))
 }
 
