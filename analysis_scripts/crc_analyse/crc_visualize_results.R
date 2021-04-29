@@ -106,9 +106,19 @@ plot_freq_pca(rank_frequencies)
 get_cellnum("input/crc_data/crc_korean_form.rds")
 
 
-# 7. Bray Curtis Heatmap and Stats
-get_bc_heatmap(top_lists$top_250) # All method-resource combinations BC heatmap
-bc <- get_bc_stats(top_lists$top_250) # Get BC stats
+# 7. Similarity Heatmap and Stats
+get_simdist_heatmap(top_lists$top_250,
+                    sim_dist = "simil",
+                    method = "Jaccard",
+                    diag = TRUE,
+                    upper = TRUE)
+
+
+jaccard_per_mr <- simdist_resmet(top_lists$top_250,
+                                 sim_dist = "simil",
+                                 method = "Jaccard")
+list_stats(meth = jaccard_per_mr$meth,
+           reso = jaccard_per_mr$reso)
 
 
 
@@ -192,7 +202,7 @@ housekeep_frequencies <- housekeep_list %>%
 plot_freq_pca(housekeep_frequencies)
 
 # 11. Housekeeping Bray Curtis Info
-get_bc_heatmap(top_housekeep$top_250) # All method-resource combinations BC heatmap
+get_simdist_heatmap(top_housekeep$top_250) # All method-resource combinations BC heatmap
 bc_hp <- get_bc_stats(top_housekeep$top_250) # Get BC stats
 
 

@@ -9,6 +9,9 @@ reform_rank_frequencies(frequencies_list)
 \arguments{
 \item{frequencies_list}{list with all resources ranked to frequencies df}
 }
+\value{
+rank frequencies df
+}
 \description{
 Helper function to convert list with all resources ranked to frequencies df
 }

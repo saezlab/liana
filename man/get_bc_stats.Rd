@@ -2,7 +2,7 @@
 % Please edit documentation in R/result_utils.R
 \name{get_bc_stats}
 \alias{get_bc_stats}
-\title{Function to get bray curtis stats from a lits of top hits}
+\title{Function to get Similarity/Dissimilarity stats from a lits of top hits}
 \usage{
 get_bc_stats(sig_list)
 }
@@ -10,15 +10,15 @@ get_bc_stats(sig_list)
 \item{sig_list}{list of top hits per method-resource combo}
 }
 \value{
-A named list of BC dissimilarity stats
+A named list of  similarity/dissimilarity stats
 }
 \description{
-Function to get bray curtis stats from a lits of top hits
+Function to get Similarity/Dissimilarity stats from a lits of top hits
 }
 \details{
 returns the results for the same method with different resources
-as well as results for the same resource with different methods. Furthermore,
-it returns summary statistics for each of these which include:
-mean and st dev of BC dissimilarities per method (and resource) as well as
-the mean of means and the mean of standard deviations
+  as well as results for the same resource with different methods.
+  Furthermore, it returns summary stats for each of these which include:
+  mean and st dev of  /similarity/dissimilarities per method (and resource)
+  as well as the mean of means and the mean of standard deviations
 }

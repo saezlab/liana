@@ -6,7 +6,7 @@ Authors@R: c(
     person(
         given = "Daniel",
         family = "Dimitrov",
-        role = "aut",
+        role = c("cre", "aut"),
         email = "daniel.dimitrov@uni-heidelberg.de",
         comment = c(ORCID = "0000-0002-5197-2112")
     ),
@@ -20,7 +20,7 @@ Authors@R: c(
     person(
         given = "Denes",
         family = "Turei",
-        role = c("cre", "aut"),
+        role = c("aut"),
         email = "turei.denes@gmail.com",
         comment = c(ORCID = "0000-0002-7249-9379")
     ),
@@ -76,7 +76,7 @@ Imports:
     DescTools,
     rlang,
     viridis,
-    vegan
+    proxy
 Suggests:
     knitr,
     rmarkdown,

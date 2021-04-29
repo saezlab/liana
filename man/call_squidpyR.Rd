@@ -32,5 +32,5 @@ Call Squidpy Pipeline via reticulate with OmniPath and format results
 CellPhoneDB v2 algorithm implementation in Python
 Stats:
 Mean expr
-pval from shuffle clusts
+pval from shuffled clusters
 }

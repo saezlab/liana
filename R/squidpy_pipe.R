@@ -7,7 +7,7 @@
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #' Stats:
 #' Mean expr
-#' pval from shuffle clusts
+#' pval from shuffled clusters
 #' @export
 call_squidpyR <- function(seurat_object,
                           omni_resources,
@@ -26,7 +26,7 @@ call_squidpyR <- function(seurat_object,
     op_resources <- map(omni_resources, function(x) x %>%
                               select(source = source_genesymbol,
                                      target = target_genesymbol)) %>%
-        unname() # unname list, so that it is passed as list not dict to Python
+        unname() # unname list, so passed as list not dict to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
@@ -47,9 +47,9 @@ call_squidpyR <- function(seurat_object,
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means)) %>%
-        setNames(names(omni_resources)) %>% #*
-        # swap positions for means and pvalue
-        map(function(x) x %>%
+        setNames(names(omni_resources)) %>%
+        map(function(res) res %>%
+                # swap positions for means and pvalue
                 select(1:3, means, pvalue) %>%
                 rename(ligand = source,
                        receptor = target) %>%

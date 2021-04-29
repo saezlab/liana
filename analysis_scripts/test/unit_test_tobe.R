@@ -50,6 +50,11 @@ sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
                     logFC = log2(1.5)
                     )
 
-#NATMI
-natmi_res <- call_natmi
+# Squidpy
+
+
+
+
+
+# NATMI (make it so that the full path is not needed?)
 

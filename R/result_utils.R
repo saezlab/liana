@@ -155,8 +155,8 @@ format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
 
 
 #' Helper function to convert list with all resources ranked to frequencies df
-#'
 #' @param frequencies_list list with all resources ranked to frequencies df
+#' @return rank frequencies df
 reform_rank_frequencies <- function(frequencies_list){
 
     # Combine all results into tool_resource list
@@ -214,55 +214,116 @@ get_cellnum <- function(seurat_path){
 }
 
 
+#' Helper Function to get Similarties and Distances from binary dfs
+#' @importFrom proxy dist simil
+#' @return a similarity/dissimilarity matrix
+get_simil_dist <- function(sim_dist = "simil", ...){
+    do.call(sim_dist,
+            list(...))
+}
 
 
-#' Function to get bray curtis stats from a lits of top hits
-#' @param sig_list list of top hits per method-resource combo
-#' @details returns the results for the same method with different resources
-#' as well as results for the same resource with different methods. Furthermore,
-#' it returns summary statistics for each of these which include:
-#' mean and st dev of BC dissimilarities per method (and resource) as well as
-#' the mean of means and the mean of standard deviations
-#' @return A named list of BC dissimilarity stats
-#' @importFrom vegan vegdist
+#' Helper Function to get a binary top hits DF (for all method-resource combos)
+#' @param sig_list list of significant hits per method-resource combo
+get_binary_df <- function(sig_list){
+    # get method and resource names combined
+    lnames <- map(names(sig_list), function(m_name){
+        map(names(sig_list[[m_name]]), function(r_name){
+            str_glue("{m_name}_{r_name}")
+        })
+    }) %>%
+        unlist()
+
+    # get binarized significant hits list (1 for sig per method, 0 if absent)
+    binary_df <- sig_list %>%
+        purrr::flatten() %>%
+        setNames(lnames) %>%
+        prepForUpset() %>%
+        as_tibble() %>%
+        column_to_rownames("interaction")
+}
+
+
+
+#' Get (Dis)Similarities per Resource/Method Combinations
+#' @param sig_list list of top hits
+#' @inheritDotParams proxy::simil
 #' @import tibble
 #' @import purrr
-get_bc_stats <- function(sig_list){
-    bc_list <- list()
+simdist_resmet <- function(sig_list,
+                           ...){
+    binary_df <- get_binary_df(sig_list)
+    excl_res <- c("Random",
+                  "Reshuffled",
+                  "Default")
 
-    bc_list$bc_met <- sig_list %>%
-        map(function(method)
-            method %>%
-                prepForUpset() %>%
-                select(-interaction) %>%
-                t() %>%
-                vegdist(method = "bray", diag=FALSE, upper = FALSE, binary = TRUE) %>%
-                replace(.,is.nan(.), 1)
-        )
+    methods <- names(sig_list)
+    resources <- names(sig_list[[1]])
+    resources <- resources[!(resources %in% excl_res)] # remove these
 
-    bc_list$bc_res <- get_swapped_list(sig_list) %>%
-        map(function(resource)
-            resource %>%
-                prepForUpset() %>%
-                select(-interaction) %>%
-                t() %>%
-                vegdist(method = "bray", diag=FALSE, upper = FALSE, binary = TRUE) %>%
-                replace(.,is.nan(.), 1)
-        )
+    # Get Sim/Diss between Methods
+    method_sim <- methods %>% map(function(met){
+        binary_df %>%
+            select(starts_with(met)) %>%
+            select(!ends_with(excl_res))
+    }) %>% map(function(met_binary)
+        get_simil_dist(
+            x = t(met_binary),
+            ...)) %>%
+        setNames(methods)
 
-    bc_list$bc_met_m <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist
-    bc_list$bc_met_sd <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist
-    bc_list$bc_met_mm <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% mean
-    bc_list$bc_met_sdm <- bc_list$bc_met %>% map(function(method) sd(method)) %>% unlist %>% mean
-    bc_list$bc_met_max <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% max
-    bc_list$bc_met_min <- bc_list$bc_met %>% map(function(method) mean(method)) %>% unlist %>% min
+    resource_sim <- resources %>% map(function(resource){
+        binary_df %>%
+            select(ends_with(resource))
+    }) %>% map(function(res_binary)
+        get_simil_dist(
+            x = t(res_binary),
+            ...)) %>%
+        setNames(resources)
 
-    bc_list$bc_res_m <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist
-    bc_list$bc_res_sd <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist
-    bc_list$bc_res_mm <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% mean
-    bc_list$bc_res_sdm <- bc_list$bc_res %>% map(function(resource) sd(resource)) %>% unlist %>% mean
-    bc_list$bc_res_max <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% max
-    bc_list$bc_res_min <- bc_list$bc_res %>% map(function(resource) mean(resource)) %>% unlist %>% min
+    # This can be extended with other combinations of (dis)similarity lists
 
-    return(bc_list)
+    return(list(
+        "meth" = method_sim,
+        "reso"= resource_sim))
+}
+
+
+
+#' Get Similarity/Dissimilarity Stats from lists with binary matrices
+#' @param ... Any list with with DFs (typically binarized) for which we wish to
+#'  to calculate the mean, median, sd, and length.
+#' @return a summary tibble
+#' @import tibble
+list_stats <- function(...){
+    args <- list(...)
+
+    # combined (i.e. vectorised simdists)
+    df_comb <- args %>%
+        enframe(value="simdist") %>%
+        mutate(name = str_glue("{name}_comb")) %>%
+        mutate(simdist = simdist %>%
+                   map(function(sim_mat) as.vector(sim_mat) %>% unlist))
+    # averaged simdists per each element in the list
+    df_mean <- args %>%
+        enframe(value="simdist") %>%
+        mutate(name = str_glue("{name}_mean")) %>%
+        rowwise() %>%
+        mutate(simdist = list(simdist %>%
+                                  map(function(sim_mat)
+                                      mean(sim_mat))
+                              %>% unlist)
+        ) %>%
+        ungroup()
+
+    # bind and calculate averages
+    df_stats <- bind_rows(df_comb, df_mean) %>%
+        rowwise() %>%
+        mutate(mn = mean(simdist),
+               med = median(simdist),
+               len = length(simdist),
+               sd = sd(simdist)) %>%
+        ungroup()
+
+    return(df_stats)
 }

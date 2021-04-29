@@ -262,18 +262,28 @@ get_activecell <- function(top_list, ...){
 
 
 
-#' Bray-Curtis Heatmap Function
+#' Jaccard Similarities Heatmap Function
 #' @param sig_list list of significant hits
-#' @inheritDotParams pheatmap
-get_bc_heatmap <- function(sig_list,
-                           ...){
+#' @inheritDotParams get_simil_dist
+get_simdist_heatmap <- function(sig_list,
+                                ...){
+
+
 
   heatmap_binary_df <- get_binary_df(sig_list)
 
-  bc_df <- heatmap_binary_df %>%
+  simdif_df <- heatmap_binary_df %>%
     t() %>%
-    vegdist(method = "bray", diag=TRUE, upper = TRUE, binary = TRUE) %>%
+    get_simil_dist(.,
+                   ...) %>%
     as.matrix()
+
+  args <- list(...)
+  if(args$method == "Jaccard" && args$sim_dist == "simil"){
+    # fix Jaccard diagonal NA bug...
+    diag(simdif_df) <- 1
+  }
+
 
   method_groups <- colnames(heatmap_binary_df) %>%
     enframe() %>%
@@ -298,7 +308,7 @@ get_bc_heatmap <- function(sig_list,
   names(mycolors$Method) <- unique(method_groups)
 
 
-  pheatmap(bc_df,
+  pheatmap(simdif_df,
            annotation_col = annotations_df,
            annotation_row = annotations_df,
            annotation_colors = mycolors,
@@ -306,7 +316,7 @@ get_bc_heatmap <- function(sig_list,
            silent = FALSE,
            show_colnames = FALSE,
            show_rownames = FALSE,
-           color = colorRampPalette(c("violetred2",
+           color = colorRampPalette(c("gray15",
                                       "darkslategray2"))(20),
            fontsize = 15,
            cluster_rows = FALSE,
@@ -315,24 +325,3 @@ get_bc_heatmap <- function(sig_list,
   )
 }
 
-
-
-#' Helper Function to get a binary top hits DF
-#' @param sig_list list of significant hits per method-resource combo
-get_binary_df <- function(sig_list){
-  # get method and resource names combined
-  lnames <- map(names(sig_list), function(m_name){
-    map(names(sig_list[[m_name]]), function(r_name){
-      str_glue("{m_name}_{r_name}")
-    })
-  }) %>%
-    unlist()
-
-  # get binarized significant hits list (1 for sig per method, 0 if absent)
-  heatmap_binary_df <- sig_list %>%
-    purrr::flatten() %>%
-    setNames(lnames) %>%
-    prepForUpset() %>%
-    as_tibble() %>%
-    column_to_rownames("interaction")
-}
