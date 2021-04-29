@@ -268,8 +268,6 @@ get_activecell <- function(top_list, ...){
 get_simdist_heatmap <- function(sig_list,
                                 ...){
 
-
-
   heatmap_binary_df <- get_binary_df(sig_list)
 
   simdif_df <- heatmap_binary_df %>%
