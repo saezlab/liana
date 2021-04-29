@@ -278,9 +278,12 @@ get_simdist_heatmap <- function(sig_list,
                    ...) %>%
     as.matrix()
 
+  # fix Jaccard diagonal NA bug...
+  # Any other distance and similarity works just fine
+  # but Jaccard results in NAs in the diagonal,
+  # and as.matrix replaces them with 0s..., while class(dist) is immutable
   args <- list(...)
   if(args$method == "Jaccard" && args$sim_dist == "simil"){
-    # fix Jaccard diagonal NA bug...
     diag(simdif_df) <- 1
   }
 
