@@ -1,5 +1,3 @@
-
-
 CellChatNC <- omni_resources$CellChatDB %>%
     separate(target_genesymbol, into = c("target_genesymbol1",
                                          "target_genesymbol2",
@@ -63,10 +61,13 @@ pheatmap(jacc_mat,
          border_color = NA,
          na_col="white")
 
-# Contained in
+# Replace 1s with the interactions
 tmp <- resources_binary %>%
     as_tibble() %>%
     dplyr::mutate(dplyr::across(!starts_with("interaction"),~ifelse(.==1,interaction,.)))
+
+
+
 
 length(intersect(tmp$OmniPath, tmp$CellChatDB))/length(tmp$CellChatDB)
 length(intersect(tmp$OmniPath, tmp$CellChatDB))/length(tmp$CellChatDB[tmp$CellChatDB!=0])
@@ -77,3 +78,24 @@ length(intersect(tmp$OmniPath, tmp$CellChatDB_NC))/length(tmp$CellChatDB_NC[tmp$
 
 length(intersect(tmp$OmniPath, tmp$Baccin2019))/length(tmp$Baccin2019)
 length(intersect(tmp$OmniPath, tmp$Baccin2019))/length(tmp$Baccin2019[tmp$Baccin2019!=0])
+
+
+#
+tmp2 <- tmp %>% pivot_longer(-interaction,
+                             names_to = "resource",
+                             values_to = "interact") %>%
+    filter(interact != 0) %>%
+    select(resource, interaction = interact) %>%
+    group_by(resource) %>%
+    group_nest() %>%
+    mutate(interaction = data %>% map(function(i) i$interaction))
+
+
+
+xd <- seq(length(tmp2$interaction)) %>%
+    map(function(i)
+        map(length(tmp2$interaction), function(j){
+            setdiff(tmp2$interaction[i],
+                      tmp2$interaction[j])
+        })
+    )

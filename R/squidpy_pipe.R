@@ -7,14 +7,14 @@
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #' Stats:
 #' Mean expr
-#' pval from shuffled clusters
+#' pval from shuffled cluster
+#' @import reticulate tibble
 #' @export
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          .ident = "seurat_annotations",
-                          .default = TRUE){
+                          .ident = "seurat_annotations"){
 
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")

@@ -46,10 +46,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
     # A list of OmniPath variants to be returned
     if(omni_variants){
         omnipath_variants <- list(
-            OmniPath_full = list(),
             OmniPath_q50 = list(quality = .5),
-            OmniPath_ligrec = list(ligrec = TRUE),
-            OmniPath_ligrec_q50 = list(ligrec = TRUE, quality = .5)
+            OmniPath_hq = list()
         )
     } else{
         omnipath_variants <- list()
@@ -294,12 +292,6 @@ omnipath_partners <- function(side,
 #'
 #' @seealso \code{\link{compile_ligrec}}
 compile_ligrec_descr <- function(){
-
-    compile_ligrec(omni_variants = FALSE, lr_pipeline = FALSE) # %>%
-        # map(function(resource) resource %>%
-        #         purrr::list_modify(both = bind_rows(.$ligand,
-        #                                             .$receptor) %>%
-        #                                distinct()))
-
+    compile_ligrec(omni_variants = FALSE, lr_pipeline = FALSE)
 }
 
