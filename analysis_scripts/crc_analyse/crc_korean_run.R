@@ -1,8 +1,4 @@
-# Data Prep
-# Processed Counts Sparsify and Convert to Seurat
-sparsify_to_seurat(counts_loc = "input/crc_data/GSE132465_GEO_processed_CRC_10X_raw_UMI_count_matrix.txt",
-                   meta_loc = "input/crc_data/GSE132465_GEO_processed_CRC_10X_cell_annotation.txt",
-                   save_loc = "input/crc_data/crc_korean.rds")
+library(intercell)
 
 # Load Data and Format data
 crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
