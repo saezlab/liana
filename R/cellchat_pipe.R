@@ -65,13 +65,14 @@ call_cellchat <- function(op_resource,
     ccDB <- CellChat::CellChatDB.human
 
 
-    if(!is.null(op_resource)){
+
+    if(!is.null(op_resource)){ # OmniPath resource conversion
         ccDB <- cellchat_formatDB(ccDB,
                                   op_resource,
                                   exclude_anns)
 
 
-    } else{
+    } else{ # default CellChatDB
         ccDB$interaction <- ccDB$interaction %>%
             filter(!(annotation %in% exclude_anns))
     }
