@@ -30,7 +30,7 @@ call_cellchat <- function(op_resource,
                           .seed = 1004,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
-                          .raw_use = FALSE,
+                          .raw_use = TRUE,
                           ...
                           ){
 

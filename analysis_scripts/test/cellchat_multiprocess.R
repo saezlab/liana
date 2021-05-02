@@ -6,8 +6,8 @@ require(logger)
 source("~/Repos/ligrec_decoupleR/R/cellchat_pipe.R")
 
 # Load Data
-omni_resources <- readRDS("~/Repos/ligrec_decoupleR/input/omni_resources.rds")
-crc_data <- readRDS("~/Repos/ligrec_decoupleR/input/crc_data/crc_korean_form.rds")
+# omni_resources <- readRDS("~/Repos/ligrec_decoupleR/input/omni_resources.rds")
+# crc_data <- readRDS("~/Repos/ligrec_decoupleR/input/crc_data/crc_korean_form.rds")
 
 
 # cellchat_results <- omni_resources %>%
@@ -21,15 +21,13 @@ crc_data <- readRDS("~/Repos/ligrec_decoupleR/input/crc_data/crc_korean_form.rds
 #                                    .do_parallel = TRUE)) %>%
 #     setNames(names(omni_resources))
 cellchat_results <- call_cellchat(op_resource = NULL,
-                                   seurat_object = crc_data,
-                                   nboot = 100,
-                                   exclude_anns = c("Secreted Signaling"),
-                                   thresh = 1,
+                                   seurat_object = readRDS("input/crc_data/crc_belgian_form.rds"),
+                                   nboot = 1000,
+                                   # exclude_anns = c("Secreted Signaling"),
+                                   thresh = 0.05,
                                    assay = "RNA",
                                   .normalize = FALSE,
-                                  .do_parallel = FALSE,
+                                  .do_parallel = TRUE,
                                   .raw_use = TRUE)
 saveRDS(cellchat_results, "~/Repos/ligrec_decoupleR/output/cellchat_local.rds")
-
-
-cr <- readRDS("~/Repos/ligrec_decoupleR/output/cellchat_local.rds")
+cc_res <- readRDS("~/Repos/ligrec_decoupleR/output/cellchat_local.rds")
