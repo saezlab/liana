@@ -1288,7 +1288,9 @@ interactions_shared <- function(ligrec_binary){
             values_from = shared_prop
         ) %>%
         pivot_longer(-resource) %>%
-        as.data.frame()
+        as.data.frame() %>%
+        mutate_at(vars(resource, "name"),
+                  list(~recode(., .x=!!!.resource_short)))
 
     return(shared_per_resource)
 }
@@ -1313,7 +1315,9 @@ jacc_pairwise <- function(ligrec_binary){
         as.data.frame() %>%
         rownames_to_column("resource")  %>%
         pivot_longer(-resource) %>%
-        as.data.frame()
+        as.data.frame() %>%
+        mutate_at(vars(resource, "name"),
+                  list(~recode(., .x=!!!.resource_short)))
 
     return(jacc_df)
 }

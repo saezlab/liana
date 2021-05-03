@@ -53,7 +53,8 @@ jacc_df <- jacc_mat %>%
     as.data.frame() %>%
     rownames_to_column("resource")  %>%
     pivot_longer(-resource) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    mutate_at(vars(resource, "name"), list(~recode(., .x=!!!.resource_short)))
 
 
 
