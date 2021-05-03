@@ -253,12 +253,12 @@ ligrec_overlap <- function(ligrec){
     log_success('Finding overlaps between resources.')
 
     grp_vars <- list(
-        ligands = syms('uniprot'),
-        receptors = syms('uniprot'),
+        transmitters = syms('uniprot'),
+        receivers = syms('uniprot'),
         interactions = syms(c('source', 'target'))
     )
 
-    keys <- c('ligands', 'receptors', 'interactions')
+    keys <- c('transmitters', 'receivers', 'interactions')
 
     keys %>%
     map(
@@ -638,10 +638,10 @@ ligand_receptor_classes <- function(
 
     annot %<>% select(uniprot, !!attr)
 
-    ligrec$ligands %<>%
+    ligrec$transmitters %<>%
         left_join(annot, by = 'uniprot')
 
-    ligrec$receptors %<>%
+    ligrec$receivers %<>%
         left_join(annot, by = 'uniprot')
 
     ligrec %<>% map(largest_groups, !!attr, largest = largest)
@@ -677,8 +677,8 @@ hgnc_ligrec_classes <- function(ligrec, largest = 15){
         select(-category_target) %>%
         rename(category = category_source)
 
-    ligrec$ligands %<>% left_join(hgnc_lig, by = 'uniprot')
-    ligrec$receptors %<>% left_join(hgnc_rec, by = 'uniprot')
+    ligrec$transmitters %<>% left_join(hgnc_lig, by = 'uniprot')
+    ligrec$receivers %<>% left_join(hgnc_rec, by = 'uniprot')
 
     ligrec %<>% map(largest_groups, category, largest = largest)
 
@@ -763,10 +763,10 @@ localization_ligrec_classes <- function(ligrec){
             -location_target
         )
 
-    ligrec$ligands %<>%
+    ligrec$transmitters %<>%
         left_join(annot, by = 'uniprot')
 
-    ligrec$receptors %<>%
+    ligrec$receivers %<>%
         left_join(annot, by = 'uniprot')
 
     return(ligrec)

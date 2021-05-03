@@ -55,8 +55,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
     omni_resources <- get_lr_resources() %>%
         map(function(resource){
-            list(ligands = get_ligands(resource),
-                 receptors = get_receptors(resource),
+            list(transmitters = get_ligands(resource),
+                 receivers = get_receptors(resource),
                  interactions = intercell_connections(resource))
         }) %>%
         setNames(get_lr_resources()) %>%
@@ -64,8 +64,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
             omnipath_variants,
             function(args){
                 args %<>% c(list(resource = 'OmniPath'))
-                list(ligands = do.call(get_ligands, args),
-                     receptors = do.call(get_receptors, args),
+                list(transmitters = do.call(get_ligands, args),
+                     receivers = do.call(get_receptors, args),
                      interactions = do.call(intercell_connections, args))
             }
         )) %>%
