@@ -9,8 +9,7 @@ call_squidpyR(
   omni_resources,
   python_path,
   .seed = 1004,
-  .ident = "seurat_annotations",
-  .default = TRUE
+  .ident = "seurat_annotations"
 )
 }
 \arguments{

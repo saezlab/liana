@@ -2,7 +2,7 @@
 % Please edit documentation in R/cellchat_pipe.R
 \name{call_cellchat}
 \alias{call_cellchat}
-\title{Connectome x Omni Pipe function}
+\title{CellChat x Omni Pipe function}
 \usage{
 call_cellchat(
   op_resource,
@@ -14,7 +14,7 @@ call_cellchat(
   .seed = 1004,
   .normalize = FALSE,
   .do_parallel = FALSE,
-  .raw_use = FALSE,
+  .raw_use = TRUE,
   ...
 )
 }
@@ -38,7 +38,7 @@ to a ppi}
 A DF of intercellular communication network
 }
 \description{
-Connectome x Omni Pipe function
+CellChat x Omni Pipe function
 }
 \details{
 CellChat's objects are not documented/exported thus the

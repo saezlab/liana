@@ -1,4 +1,4 @@
-#' Connectome x Omni Pipe function
+#' CellChat x Omni Pipe function
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param exclude_anns Annotation criteria to be excluded
