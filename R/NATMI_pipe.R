@@ -1,5 +1,4 @@
 #' Call NATMI Pipeline from R with OmniPath
-#'
 #' @param omni_resources List of OmniPath resources
 #' @param omnidbs_path path of saved omnipath resources
 #' @param natmi_path path of NATMI code and dbs
@@ -10,9 +9,8 @@
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
 #' @param .subsampling_pipe bool whether ran as part of the robustness pipe:
-#'     if true, we use Seurat object name to modify output and input, so that
-#'     each subsampling is saved to a different dir
-#'
+#' if true, we use Seurat object name to modify output and input, so that
+#' each subsampling is saved to a different dir
 #' @return DF with NATMI results
 #'
 #' @details
@@ -20,7 +18,6 @@
 #'     them to the NATMI dbs folder, then it will natively call the Python
 #'     modules of NATMI in the NATMI dir and save the output into a specified
 #'     directory. It will then load and format the output to a DF.
-#'
 #'
 #' NATMI Arguments:
 #'   --interDB INTERDB
@@ -35,23 +32,19 @@
 #'   --out OUT             the path to save the analysis results
 #'
 #' Stats:
-#' 1) The mean-expression edge weights are calculated by multiplying the
-#'    mean-expression level of the ligand in the
-#'    sending cell type by the mean expression of the receptor in the target
-#'    cell type (no discriminatory information)
-#' 2) The specificity-based edge weights, help identify the most specific
-#'    edges in the network
-#'    where each specificity is defined as the mean expression of the
-#'    ligand/receptor in a given cell type
-#'    divided by the sum of the mean expression of that ligand/receptor
-#'    across all cell types
-#'  # * a weight of 1 means both the ligand and receptor are only expressed
-#'      in one (not necessarily the same) cell type
+#' 1) The mean-expression edge weights
+#' 2) The specificity-based edge weights
+#' * a weight of 1 means both the ligand and receptor are only expressed
+#'  in one cell type
 #'
 #' @importFrom rprojroot find_rstudio_root_file
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
-#' @importFrom Seurat GetAssayData Idents
+### These packages could go to "Suggests" in DESCRIPTION
+### because not all users want to install all the tools
+### to run one of them. Functions from these packages
+### should be referred by :: to avoid warnings
+# #' @importFrom Seurat GetAssayData Idents
 call_natmi <- function(
     omni_resources,
     seurat_object = NULL,
@@ -92,7 +85,6 @@ call_natmi <- function(
 
         log_info("Saving resources to {omnidbs_path}")
         omni_to_NATMI(omni_resources, omnidbs_path)
-
     }
 
     log_success("Output to be saved and read from {output_path}")
@@ -131,7 +123,7 @@ call_natmi <- function(
                         "--emFile {em_path} ",
                         "--annFile {ann_path} ",
                         "--interDB {resource} ",
-                        "--coreNum 8 ",
+                        "--coreNum {.num_cor} ",
                         "--out {output_path}/{resource}",
                         sep = " "))
     })
@@ -183,7 +175,6 @@ omni_to_NATMI <- function(omni_resources,
 #' @importFrom dplyr mutate select
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
-#'
 FormatNatmi <- function(output_path, .format = TRUE){
 
     list.files(output_path,
@@ -193,15 +184,15 @@ FormatNatmi <- function(output_path, .format = TRUE){
         enframe() %>%
         separate(value, into = c("resource", "file"), remove = FALSE) %>%
         mutate(value =  value %>% map(function(csv)
-            read_csv(str_glue("{output_path}/{csv}")))) %>%
+            read.csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
         mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
-            df %>% select(source = `Sending cluster`,
-                          target = `Target cluster`,
-                          ligand = `Ligand symbol`,
-                          receptor = `Receptor symbol`,
-                          edge_avg_expr = `Edge average expression weight`,
-                          edge_specificity = `Edge average expression derived specificity`)
+            df %>% select(source = Sending.cluster,
+                          target = Target.cluster,
+                          ligand = Ligand.symbol,
+                          receptor = Receptor.symbol,
+                          edge_avg_expr = Edge.average.expression.weight,
+                          edge_specificity = Edge.average.expression.derived.specificity)
         }), result)) %>%
         deframe() %>%
         purrr::list_modify("lrc2a" = NULL) %>% # remove putative res if present
@@ -214,10 +205,7 @@ FormatNatmi <- function(output_path, .format = TRUE){
 #' @param path path to CSV (em/annotations) to split and format to the
 #'     current subsampling taken from a seurat object project name
 #' @param project_name seurat object project name
-#'
 #' @return Path to save subsampling EM and Annotations
-#'
-#' @importFrom stringr str_split str_glue
 str_split_helper <- function(path, project_name){
     split_path <- str_split(path, pattern = "\\.", n = 2)[[1]][1]
     str_glue("{split_path}_{project_name}.csv")

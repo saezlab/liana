@@ -8,8 +8,6 @@ FormatConnectome(conn, ...)
 }
 \arguments{
 \item{conn}{connectome object}
-
-\item{.log}{whether to log weight}
 }
 \description{
 Helper function to filter and format connectome

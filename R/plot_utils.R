@@ -2,6 +2,9 @@
 #' @param named_list a named list with sugnificant LR results
 #' @return Matrix/DF of 0 and 1 where 1 means that the interaction
 #' is present and 0 means that it is not
+#' @importFrom tibble tibble
+#' @import dplyr
+#' @import purrr
 prepForUpset <- function(named_list){
   map(names(named_list), function(l_name){
       named_list[[l_name]] %>%
@@ -9,7 +12,7 @@ prepForUpset <- function(named_list){
       unite("interaction", source, target,
             ligand, receptor, sep="_") %>%
       mutate(!!l_name := 1)
-  }) %>% reduce(., full_join) %>%
+  }) %>% reduce(., full_join, by = "interaction") %>%
     mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
     mutate_at(vars(2:ncol(.)), ~ replace(., . != 0, 1)) %>%
     as.data.frame()
@@ -33,7 +36,7 @@ plotSaveUset <- function(upset_df, dir){
 }
 
 
-#' ??? heatmap
+#' Heatmap looking at binarized top in per method-resource combinations
 #'
 #' @param sig_list named list of significant hits. Named list of methods with
 #'     each element being a named list of resources
@@ -44,63 +47,38 @@ plotSaveUset <- function(upset_df, dir){
 #' @importFrom pheatmap pheatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
-#' @importFrom purrr map
+#' @importFrom purrr map flatten
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_glue
-get_BigHeat <- function(sig_list,
+get_BinaryHeat <- function(sig_list,
                         ...){
 
-  # remove OmniPath and Random resources, as they are much larger than the
-  # rest of the resources and result in too much sparsity to get meaningful
-  # clusters not completely align to them.
-  heatmap_sig_list <- sig_list %>%
-    map(function(x) x %>%
-          purrr::list_modify("OmniPath" = NULL) %>%
-          purrr::list_modify("Random" = NULL)
-    )
+  heatmap_binary_df <- get_binary_df(sig_list)
 
-  # get method and resource names combined
-  lnames <- map(names(heatmap_sig_list), function(m_name){
-    map(names(heatmap_sig_list[[m_name]]), function(r_name){
-      str_glue("{m_name}_{r_name}")
-    })
-  }) %>%
-    unlist()
-
-
-  # get binarized significant hits list (1 for sig per method, 0 if absent)
-  heatmap_binary_list <- heatmap_sig_list %>%
-    purrr::flatten() %>%
-    setNames(lnames) %>%
-    prepForUpset() %>%
-    as_tibble() %>%
-    column_to_rownames("interaction")
-
-
-  # annotation groups (sequential vectors as in heatmap_binary_list)
-  method_groups <- colnames(heatmap_binary_list) %>%
+  # annotation groups (sequential vectors as in heatmap_binary_df)
+  method_groups <- colnames(heatmap_binary_df) %>%
     enframe() %>%
-    separate(value, into = c("method", "resource")) %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(method)
-  resource_groups <- colnames(heatmap_binary_list) %>%
+  resource_groups <- colnames(heatmap_binary_df) %>%
     enframe() %>%
-    separate(value, into = c("method", "resource")) %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
     pull(resource)
 
   # data frame with column annotations.
   # with a column for resources and a column for methods
   annotations_df <- data.frame(Resource = resource_groups,
                                Method = method_groups)  %>%
-    mutate(rn = colnames(heatmap_binary_list)) %>%
+    mutate(rn = colnames(heatmap_binary_df)) %>%
     column_to_rownames("rn")
 
   # List with colors for each annotation.
-  mycolors <- list(Method = brewer.pal(6, "Dark2"),
-                   Resource = colorRampPalette(brewer.pal(8, "Set1"))(length(unique(resource_groups))))
+  mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                   Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))))
   names(mycolors$Resource) <- unique(resource_groups)
   names(mycolors$Method) <- unique(method_groups)
 
-  binary_heatmap <- pheatmap(heatmap_binary_list,
+  binary_heatmap <- pheatmap(heatmap_binary_df,
                              annotation_col = annotations_df,
                              annotation_colors = mycolors,
                              ...
@@ -129,7 +107,7 @@ get_swapped_list <- function(sig_list){
                               str_glue("{m_name}_{r_name}")
                             })
                       }) %>% unlist()) %>%
-    separate(name, into = c("method", "resource")) %>%
+    separate(name, into = c("method", "resource"), sep = "_") %>%
     mutate(value = value %>% setNames(method)) %>%
     group_by(resource)
 
@@ -162,10 +140,9 @@ plot_freq_pca <- function(freq_df){
                 id_cols = name,
                 values_fill = 0) %>%
     as.data.frame() %>%
-    separate(name, into = c("Method", "Resource"), remove = FALSE) %>%
+    separate(name, into = c("Method", "Resource"), remove = FALSE, sep="_") %>%
     mutate(Method = factor(Method, # prevent ggplot2 from rearranging
-                           levels = c("CellChat", "Squidpy", "NATMI",
-                                      "iTALK", "Connectome", "SCA"))) %>%
+                           )) %>%
     mutate(Resource = factor(Resource)) %>%
     column_to_rownames("name")
 
@@ -177,84 +154,175 @@ plot_freq_pca <- function(freq_df){
   pca_freq <- autoplot(pca_res, data = cell_pair_frequency,
                        colour = "Method", shape = "Resource",
                        size = 6, position = "jitter") +
-    scale_color_manual(values=brewer.pal(6, "Dark2")) + theme_bw(base_size = 26) +
+    scale_color_manual(values=colorRampPalette(brewer.pal(8, "Dark2"))(nlevels(cell_pair_frequency$Method))) +
+    theme_bw(base_size = 26) +
     scale_shape_manual(values=1:nlevels(cell_pair_frequency$Resource))
-
-
-
 
   return(pca_freq)
 }
 
 
-#' Get binary activity frequencies per cell-cell pair
-#' @param sig_list named list of significant hits. Named list of methods with
-#' each element being a named list of resources
-#' @return A tibble of cell pair frequencies, based on binarized activity
-get_binary_frequencies <- function(sig_list){
-  sig_list %>%
-    enframe() %>%
-    unnest(value) %>%
-    mutate(name = map(names(sig_list), # get combined method and resource names
-                      function(m_name){
-                        map(names(sig_list[[m_name]]),
-                            function(r_name){
-                              str_glue("{m_name}_{r_name}")
-                            })
-                      }) %>% unlist()) %>%
-    mutate(value = value %>%
-             map(function(res) res %>%
-                   unite(source, target, col = "clust_pair") %>%
-                   group_by(clust_pair) %>%
-                   summarise(cn = n()) %>%
-                   mutate(freq = cn / sum(cn)) %>%
-                   select(clust_pair, freq)
-             )) %>%
-    unnest(value)
-}
 
 
-#' Helper function to get cell pair activity from rank averages
+
+#' Function to get Activity per Cell Type heatmap
 #'
-#' @param result Result for a specific Tool-resource combinations
-#' @param score_col Score column name provided by the tool
-#' @param .desc_order Whether the most significant hits are in descending order,
-#' i.e. the highest is the most sig
-#' @details Cell pair ranks are averaged, then converted to z-scores, which
-#' are multiplied by -1 as we want the lowest average ranks to have the highest
-#' z scores
-format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
-  result %>%
-    as_tibble() %>%
-    filter(source!=target) %>%
-    select(source, target, ligand, receptor, !!score_col) %>%
-    filter(!is.nan(!!rlang::sym(score_col))) %>%
-    mutate(edge_rank := if_else(rep(.desc_order, nrow(.)),
-                                ntile(desc(!!rlang::sym(score_col)), 1000),
-                                ntile(!!rlang::sym(score_col), 1000)))  %>%
-    unite(source, target, col = "clust_pair") %>%
-    group_by(clust_pair) %>%
-    summarise(avg_rank = (mean(edge_rank))) %>%
-    mutate(freq = -1*scale(avg_rank)[, 1])
-}
-
-
-#' Helper function to convert list with all resources ranked to frequencies df
+#' @param top_list A resource-tool list with top hits for each combination.
 #'
-#' @param full_list list with all resources ranked to frequencies df
-get_rank_frequencies <- function(full_list){
-  # Combine all results into tool_resource list
-  lnames <- map(names(full_list), function(l_name){
-    map(names(full_list[[l_name]]), function(r_name){
-      str_glue("{l_name}_{r_name}")
-    })
-  }) %>% unlist()
+#' @return Cell Type Activity Heatmap
+#'
+#' @import pheatmap tidyverse
+#' @inheritDotParams pheatmap::pheatmap
+get_activecell <- function(top_list, ...){
+  # Split by source/target cell
+  top_frac <- top_list %>%
+    map(function(db){
+      db %>%
+        enframe(name = "resource", value = "results") %>%
+        mutate(results = results %>% map(function(res) res %>%
+                                           select(source, target))) %>%
+        unnest(results) %>%
+        pivot_longer(cols = c(source, target),
+                     names_to = "cat",
+                     values_to = "cell") %>%
+        group_by(resource) %>%
+        mutate(total_count = n()) %>%
+        ungroup() %>%
+        group_by(resource, cat, cell) %>%
+        mutate(cell_count = n()) %>%
+        group_by(resource, cat, cell) %>%
+        mutate(cell_fraq = cell_count/total_count) %>%
+        distinct() %>%
+        unite(cell, cat, col = "cell_cat") %>%
+        pivot_wider(id_cols = resource,
+                    names_from = cell_cat,
+                    values_from = cell_fraq,
+                    values_fill = 0)
+    }) %>%
+    enframe(name = "method", value = "results_resource") %>%
+    unnest(results_resource) %>%
+    unite(method, resource, col = "mr") %>%
+    mutate_all(~ replace(., is.na(.), 0))
 
-  freq_df <- full_list %>%
-    purrr::flatten() %>%
-    setNames(lnames) %>%
-    enframe() %>%
-    unnest(value)
 
-  return(freq_df)
+  # annotation groups (sequential vectors as in heatmap_binary_list)
+  method_groups <- top_frac %>%
+    separate(mr, into = c("method", "resource"), sep = "_") %>%
+    pull(method)
+  resource_groups <- top_frac %>%
+    separate(mr, into = c("method", "resource"), sep = "_") %>%
+    pull(resource)
+
+  # data frame with column annotations.
+  # with a column for resources and a column for methods
+  annotations_df <- data.frame(Resource = resource_groups,
+                               Method = method_groups)  %>%
+    mutate(rn = top_frac$mr) %>%
+    column_to_rownames("rn")
+
+  annotations_row <- data.frame(cell_cat = colnames(top_frac)[-1]) %>%
+    separate(cell_cat, sep="_", into = c("Cell", "Category"), remove = FALSE) %>%
+    column_to_rownames("cell_cat") %>%
+    select(Category)
+
+  # List with colors for each annotation.
+  mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                   Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))),
+                   Category = c("#E41A1C", "#377EB8"))
+  names(mycolors$Resource) <- unique(resource_groups)
+  names(mycolors$Method) <- unique(method_groups)
+  names(mycolors$Category) <- unique(annotations_row$Category)
+
+  lab_rows <- annotations_row %>%
+    rownames_to_column("cellname") %>%
+    separate(cellname, into = c("cell", "cat"), sep = "_") %>%
+    pull(cell)
+
+  cellfraq_heat <- pheatmap(top_frac %>%
+                              column_to_rownames("mr") %>%
+                              t(),
+                            annotation_row = annotations_row,
+                            annotation_col = annotations_df,
+                            annotation_colors = mycolors,
+                            display_numbers = FALSE,
+                            silent = FALSE,
+                            show_colnames = FALSE,
+                            color = colorRampPalette(c("darkslategray2",
+                                                       "violetred2"))(20),
+                            fontsize = 15,
+                            drop_levels = TRUE,
+                            cluster_rows = TRUE,
+                            cluster_cols = TRUE,
+                            border_color = NA,
+                            treeheight_row = 0,
+                            treeheight_col = 100,
+                            ...)
 }
+
+
+
+
+#' Jaccard Similarities Heatmap Function
+#' @param sig_list list of significant hits
+#' @inheritDotParams get_simil_dist
+get_simdist_heatmap <- function(sig_list,
+                                ...){
+
+  heatmap_binary_df <- get_binary_df(sig_list)
+
+  simdif_df <- heatmap_binary_df %>%
+    t() %>%
+    get_simil_dist(.,
+                   ...) %>%
+    as.matrix()
+
+  # Assign 1 to diagonal
+  # Any other distance and similarity works just fine
+  # but Jaccard results in NAs in the diagonal,
+  # and as.matrix replaces them with 0s..., while class(dist) is immutable
+  args <- list(...)
+  if(args$method == "Jaccard" && args$sim_dist == "simil"){
+    diag(simdif_df) <- 1
+  }
+
+
+  method_groups <- colnames(heatmap_binary_df) %>%
+    enframe() %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
+    pull(method)
+  resource_groups <- colnames(heatmap_binary_df) %>%
+    enframe() %>%
+    separate(value, into = c("method", "resource"), sep = "_") %>%
+    pull(resource)
+
+  # data frame with column annotations.
+  # with a column for resources and a column for methods
+  annotations_df <- data.frame(Resource = resource_groups,
+                               Method = method_groups)  %>%
+    mutate(rn = colnames(heatmap_binary_df)) %>%
+    column_to_rownames("rn")
+
+  # List with colors for each annotation.
+  mycolors <- list(Method = colorRampPalette(brewer.pal(8, "Dark2"))(length(unique(method_groups))),
+                   Resource = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(resource_groups))))
+  names(mycolors$Resource) <- unique(resource_groups)
+  names(mycolors$Method) <- unique(method_groups)
+
+
+  pheatmap(simdif_df,
+           annotation_col = annotations_df,
+           annotation_row = annotations_df,
+           annotation_colors = mycolors,
+           display_numbers = FALSE,
+           silent = FALSE,
+           show_colnames = FALSE,
+           show_rownames = FALSE,
+           color = colorRampPalette(c("gray15",
+                                      "darkslategray2"))(20),
+           fontsize = 15,
+           cluster_rows = FALSE,
+           cluster_cols = FALSE,
+           border_color = NA
+  )
+}
+

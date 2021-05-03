@@ -7,9 +7,10 @@
 omnipath_intercell(quality = NULL, ligrec = FALSE)
 }
 \arguments{
-\item{quality}{Numeric: a quality threshold for OmniPath between 0 and 1.}
+\item{quality}{Quality measures for OmniPath CompositeDB (biased due to the
+prevalence of e.g. Ramilowski in the resources)}
 
-\item{ligrec}{Use only ligand-receptor interactions from OmniPath.}
+\item{ligrec}{whether to filter according to side}
 }
 \value{
 A tibble with Intercell interactions from OmnIPath

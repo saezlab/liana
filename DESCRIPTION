@@ -6,21 +6,21 @@ Authors@R: c(
     person(
         given = "Daniel",
         family = "Dimitrov",
-        role = "aut",
+        role = c("cre", "aut"),
         email = "daniel.dimitrov@uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        comment = c(ORCID = "0000-0002-5197-2112")
     ),
     person(
         given = "Charlotte",
         family = "Boys",
         role = c("aut"),
         email = "mm228@stud.uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        comment = c(ORCID = "0000-0003-3955-5110")
     ),
     person(
         given = "Denes",
         family = "Turei",
-        role = c("cre", "aut"),
+        role = c("aut"),
         email = "turei.denes@gmail.com",
         comment = c(ORCID = "0000-0002-7249-9379")
     ),
@@ -28,8 +28,8 @@ Authors@R: c(
         given = "James",
         family = "Nagai",
         role = c("aut"),
-        email = "mm228@stud.uni-heidelberg.de",
-        comment = c(ORCID = "Enter your ORCID")
+        email = "",
+        comment = c(ORCID = "0000-0002-7655-7206")
     ))
 Description: Comparative analysis of cell-cell communication resources and
     cell-cell communication inference tools.
@@ -47,12 +47,14 @@ Depends:
 Imports:
     graphics,
     utils,
+    tidyverse,
     OmnipathR,
-    plyr,
     rprojroot,
     reticulate,
     yardstick,
+    stringr,
     magrittr,
+    purrr,
     tidyr,
     tibble,
     readr,
@@ -65,13 +67,16 @@ Imports:
     logger,
     RCurl,
     Barnard,
-    DescTools
+    DescTools,
+    rlang,
+    viridis,
+    proxy
 Suggests:
-    knitr,
-    rmarkdown,
     Connectome,
     CellChat,
-    BiRewire,
     iTALK,
-    Seurat
+    knitr,
+    rmarkdown,
+    Seurat,
+    SCAomni
 RoxygenNote: 7.1.1

@@ -2,18 +2,19 @@
 % Please edit documentation in R/cellchat_pipe.R
 \name{call_cellchat}
 \alias{call_cellchat}
-\title{Connectome x Omni Pipe function}
+\title{CellChat x Omni Pipe function}
 \usage{
 call_cellchat(
   op_resource,
   seurat_object,
   .format = TRUE,
-  exclude_anns = c("ecm-receptor", "cell_surface_ligand-receptor"),
+  exclude_anns = c(),
   nboot = 100,
-  assay = "SCT",
+  assay = "RNA",
   .seed = 1004,
   .normalize = FALSE,
   .do_parallel = FALSE,
+  .raw_use = TRUE,
   ...
 )
 }
@@ -28,12 +29,18 @@ call_cellchat(
 
 \item{nboot}{number of bootstraps to calculate p-value}
 
-\item{.normalize}{# bool whether to normalize non-normalized data with
-internal func}
+\item{.normalize}{# bool whether to normalize non-normalized data with}
+
+\item{.raw_use}{whether use the raw data or gene expression data pojectected
+to a ppi}
 }
 \value{
 A DF of intercellular communication network
 }
 \description{
-Connectome x Omni Pipe function
+CellChat x Omni Pipe function
+}
+\details{
+CellChat's objects are not documented/exported thus the
+   whole package has to be imported
 }

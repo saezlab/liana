@@ -6,7 +6,11 @@
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 
-    library(BiRewire)
+    ### These packages could go to "Suggests" in DESCRIPTION
+    ### because not all users want to install all the tools
+    ### to run one of them. Functions from these packages
+    ### should be referred by :: to avoid warnings
+    # library(BiRewire)
     set.seed(.seed)
 
     # make a vector proportional to the number of consesus directions

@@ -1,0 +1,683 @@
+---
+title: "OmniLR_Explore"
+author: "Daniel Dimitrov"
+date: "5/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load_omni, include=FALSE}
+require(OmnipathR)
+require(magrittr)
+
+icn <- import_intercell_network()
+```
+
+# Explore OmniPath Curation Filterings
+My reasoning was to build on the proposals from Denes and see how they would impact the different resources.
+For this reason, I pick 4 resources which I assume are of 4 relatively different quality efforts.
+
+
+
+## 1) Explore Filters with CellTalkDB
+### (supposedly 100% literature supported)
+```{r celltalkdb}
+CellTalkDB <- icn %>%
+    filter_by_resource(resources = "CellTalkDB")
+
+# Unique Pairs in CellTalkDB
+CellTalkDB %>% unique_intercell_network %>% nrow
+# 3001
+
+# No filter intercellnetwork 
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('sec', 'pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2741 (results in less interactions?)
+
+
+# CellTalkDB only Transmembrane Receiver
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 0,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2706 (Almost No Difference)
+
+
+# Exclude Secreted Recievers alone
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 0,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2711
+
+
+# Exclude Secreted Receivers alone (+ loc threshold > half)
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 0,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2635 
+
+# min_curation_effort = 1 (excl. Secreted Receivers) 
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 0,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2686 (Still Remains almost intact)
+
+
+# min_curation_effort = 2  (excl. Secreted Receivers) 
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm'),
+    min_curation_effort = 2,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 0,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 1809 (~35% of the interactions are gone)
+
+
+# consensus percentiles 30-30, provenances >= 2
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 2,
+    consensus_percentile = 30,
+    loc_consensus_percentile = 30,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2538
+
+
+# Consensus Percentile = 75
+CellTalkDB %>%
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 2241
+
+
+```
+
+
+## 2) OmniPath Filtering Proposals
+Please see the filtering proposals that I favour (in order).
+I) and II) both keep most of the interactions in CellTalkDB
+```{r omnipath_proposals}
+
+# I) Min. Curation Effort = 1, loc. consensus > half
+icn %>%
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 6475
+
+# II) Consensus Percentile = 75, loc consensus > half
+icn %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 5934
+
+# III) LR curated resources + Other Currated Resources + location filtering
+icn %>%
+    filter_by_resource(resources =
+                           c(as.character(c(get_lr_resources(),
+                             "Adhesome", # * 
+                             "BioGRID", # * 
+                             "ConsensusPathDB", # * 
+                             "Dinarello2013", # Cytokine-focused
+                             "DIP", # *
+                             "HPRD", # *
+                             "KEA", # Kinase-substrate interactions
+                             "MatrixDB", # ECM-focus
+                             "MINT",  # *
+                             "NetPath",# Signal transaction focus
+                             "SignaLink3",
+                             "SIGNOR", #* Source of ~2,000 unique interactions;
+                             "Zhong2015"
+                             # *General PPI resource
+                             )))) %>%
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+    ) %>% nrow
+# 6360
+
+
+```
+
+
+```{r celltalk_proposed}
+# Proposed Filters Impact on CellTalkDB (We assume its the highest quality)
+
+CellTalkDB <- icn %>%
+    filter_by_resource(resources = "CellTalkDB")
+
+# CellTalkDB #nofilter 
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('sec', 'pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2741
+
+
+# I) Min. Curation Effort = 1, loc. consensus > half
+CellTalkDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 2615 (out of 2741; Omni with same filtering = 6475)
+
+
+# II) Consensus Percentile = 75, loc consensus > half
+CellTalkDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 2208 (out of 2741; Omni with same filtering = 5934)
+
+# III) Min. Curation Effort = 1, loc. consensus = 75
+CellTalkDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 75,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 1674 (out of 2741; Omni with same filtering = 5430)
+# -> possibly too high of a loc threshold then
+
+```
+
+
+```{r cellchat}
+# Proposed Filters Impact on CellChatDB - manually curated, not 100% Lit Supported (i.e. lets say med-high quality)
+
+CellChatDB <- icn %>%
+    filter_by_resource(resources = "CellChatDB")
+
+CellChatDB %>% unique_intercell_network %>% nrow
+# 2124
+
+# CellChatDB #nofilter (Presumably?)
+CellChatDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('sec', 'pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 1772
+
+# I) Min. Curation Effort = 1, loc. consensus > half
+CellChatDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 998 (out of 1772; Omni with same filtering = 6475)
+
+
+# II) Consensus Percentile = 75, loc consensus > half
+CellChatDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 1474 (out of 1772; Omni with same filtering = 5934)
+
+# III) Min. Curation Effort = 1, loc. consensus = 75
+CellChatDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 75,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 660 (out of 1772; Omni with same filtering = 5430)
+
+```
+
+
+
+```{r cellphonedb}
+# Proposed Filters Impact on CellPhoneDB - presumably 26% literature supported
+
+CellPhoneDB <- icn %>%
+    filter_by_resource(resources = "CellPhoneDB")
+
+CellPhoneDB %>% unique_intercell_network %>% nrow
+# 1213
+
+# iTALK #nofilter (Presumably?)
+CellPhoneDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('sec', 'pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 1134
+
+# I) Min. Curation Effort = 1, loc. consensus > half
+CellPhoneDB %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 920 (out of 1134; Omni with same filtering = 6475)
+
+# II) Consensus Percentile = 75, loc consensus > half
+CellPhoneDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 917 (out of 1134; Omni with same filtering = 5934)
+
+
+# III) Min. Curation Effort = 1, loc. consensus = 75
+CellPhoneDB %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 75,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 700 (out of 1134; Omni with same filtering = 5430)
+
+```
+
+
+```{r ramilowski}
+# Proposed Filters Impact on Ramilowski - baseline for many others 
+# ~14% literature support
+
+ramilowski <- icn %>%
+    filter_by_resource(resources = "Ramilowski2015")
+
+ramilowski %>% unique_intercell_network %>% nrow
+# 1713
+
+# ramilowski #nofilter (Presumably?)
+ramilowski %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('sec', 'pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = NULL,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 1566
+
+# I) Min. Curation Effort = 1, loc. consensus > half
+ramilowski %>% 
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    ligand_receptor = FALSE,
+    simplify = FALSE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    kinaseextra = FALSE,
+    pathwayextra = FALSE
+    ) %>%
+    nrow
+# 1523 (out of 1713; Omni with same filtering = 6475)
+
+# II) Min. Curation Effort = 1, loc. consensus = 75
+ramilowski %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 75,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 1040 (out of 2215; Omni with same filtering = 5430)
+
+
+# III) Consensus Percentile = 75, loc consensus > half
+ramilowski %>%
+filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 1,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = 75,
+    loc_consensus_percentile = 51,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+) %>% nrow
+# 1399 (out of 2215; Omni with same filtering = 5934)
+
+```

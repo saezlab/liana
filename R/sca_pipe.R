@@ -5,6 +5,14 @@
 #' @param assay Seurat assay data to use
 #'
 #' @return An unfiltered iTALK df sorted by relevance
+### These packages could go to "Suggests" in DESCRIPTION
+### because not all users want to install all the tools
+### to run one of them. Functions from these packages
+### should be referred by :: to avoid warnings
+# #' @importFrom Seurat GetAssayData Idents
+# #' @import SCAomni
+#' @importFrom magrittr %>%
+#' @importFrom dplyr distinct select
 #'
 #' @details
 #' Stats:
@@ -17,10 +25,6 @@ call_sca <- function(op_resource,
                      .format = TRUE,
                      assay = "SCT",
                      ...) {
-  require(Seurat)
-  require(SCAomni)
-  require(dplyr)
-
   # Format OmnipathR resource
   if(!is.null(op_resource)){
     op_resource <- op_resource %>%
@@ -30,7 +34,7 @@ call_sca <- function(op_resource,
              PMIDs = references) %>%
       distinct()
   } else{
-    if(file.exists("input/LRdb.rda")){ # will change once I convert this into a package
+    if(file.exists("input/LRdb.rda")){
       load("input/LRdb.rda")
       op_resource <- LRdb
     }
@@ -74,6 +78,11 @@ call_sca <- function(op_resource,
 #' Helper function to format SingleCellSignalR results
 #' @param sca_res Unformatted SCA results
 #' @param remove.na bool whether to filter SCA output
+#' @importFrom purrr pluck
+#' @importFrom tidyr separate
+#' @importFrom magrittr %>%
+#' @importFrom dplyr select
+#'
 #' @export
 FormatSCA <- function(sca_res, remove.na = TRUE) {
   sca_res <- sca_res %>%

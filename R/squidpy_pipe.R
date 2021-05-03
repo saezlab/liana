@@ -7,20 +7,14 @@
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #' Stats:
 #' Mean expr
-#' pval from shuffle clusts
+#' pval from shuffled cluster
+#' @import reticulate tibble
 #' @export
 call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          .ident = "seurat_annotations",
-                          .default = TRUE){
-
-    # prep seurat data for transfer
-    exprs <- GetAssayData(seurat_object)
-    meta <- seurat_object[[]]
-    feature_meta <- GetAssay(seurat_object)[[]]
-
+                          .ident = "seurat_annotations"){
 
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
@@ -32,15 +26,16 @@ call_squidpyR <- function(seurat_object,
     op_resources <- map(omni_resources, function(x) x %>%
                               select(source = source_genesymbol,
                                      target = target_genesymbol)) %>%
-        unname() # unname list, so that it is passed as list not dict to Python
+        unname() # unname list, so passed as list not dict to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
+    # pass seurat
     py$squidpy_results <- py$call_squidpy(op_resources,
-                                          exprs,
-                                          meta,
-                                          feature_meta,
+                                          GetAssayData(seurat_object), #expr
+                                          seurat_object[[]], # meta
+                                          GetAssay(seurat_object)[[]], # feature_meta
                                           .ident)
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
@@ -52,9 +47,9 @@ call_squidpyR <- function(seurat_object,
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means)) %>%
-        setNames(names(omni_resources)) %>% #*
-        # swap positions for means and pvalue
-        map(function(x) x %>%
+        setNames(names(omni_resources)) %>%
+        map(function(res) res %>%
+                # swap positions for means and pvalue
                 select(1:3, means, pvalue) %>%
                 rename(ligand = source,
                        receptor = target) %>%
@@ -87,4 +82,3 @@ squidpy_reformat <- function(.name,
     res_formatted <- left_join(x_pval, x_mean)
     return(res_formatted)
 }
-
