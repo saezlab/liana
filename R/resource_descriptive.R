@@ -144,6 +144,7 @@ descriptive_plots <- function(
 
     ligrec %>%
     ligrec_overlap %T>%
+    uniq_per_res %T>%
     ligand_receptor_upset(upset_args = upset_args) %>%
     ligrec_classes_all %>%
     summarize_overlaps %T>%
@@ -289,6 +290,41 @@ summarize_overlaps <- function(ligrec_olap){
         }
     )
 
+}
+
+#' Function to Calculate Unique Interactions Per Resource by Category
+#' @inheritParams summarize_overlaps
+#' @importFrom purrr map
+#' @importFrom magrittr %>%
+#' @import dplyr tidyr
+uniq_per_res <- function(ligrec_olap){
+
+    log_success('Summarizing unique stats.')
+
+    ligrec_olap %>%
+        map(function(cat){
+            cat %>%
+                group_by(resource, unique) %>%
+                summarise(unq_or_not = n()) %>%
+                ungroup() %>%
+                pivot_wider(id_cols = resource,
+                            names_from = unique,
+                            values_from = unq_or_not) %>%
+                mutate_all(~ replace(., is.na(.), 0)) %>%
+                bind_rows(summarise_all(filter(.), ~if(is.numeric(.)) sum(.) else "Total")) %>%
+                bind_rows(summarise_all(filter(., !(resource %in% c("OmniPath", "Total"))),
+                                        ~if(is.numeric(.)) sum(.) else "Total_excl_Omni")) %>%
+                mutate(unq_perc = `TRUE`/( `FALSE` + `TRUE`) * 100) %>%
+                bind_rows(summarise_all(filter(., !(resource %in% c("OmniPath", "Total", "Total_excl_Omni"))),
+                                        ~if(is.numeric(.)) median(.) else "Median_excl_Omni")) %>%
+                bind_rows(summarise_all(filter(., !(resource %in% c("Total"))),
+                                        ~if(is.numeric(.)) median(.) else "Median"))
+        }
+        ) %>%
+        bind_rows(.id = "category") %>%
+        select(category, resource, unq_perc) %>%
+        pivot_wider(names_from = category, id_cols = resource, values_from = unq_perc) %>%
+        write.csv(figure_path("uniqes_per_resource.csv"))
 }
 
 

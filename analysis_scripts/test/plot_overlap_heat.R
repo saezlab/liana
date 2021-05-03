@@ -1,25 +1,28 @@
+omni_resources <- compile_ligrec(lr_pipeline = FALSE)
+
+# CellChat No complex
 CellChatNC <- omni_resources$CellChatDB %>%
     separate(target_genesymbol, into = c("target_genesymbol1",
                                          "target_genesymbol2",
                                          "target_genesymbol3",
-                                         "target_genesymbol4")
+                                         "target_genesymbol4",
+                                         "target_genesymbol5")
     ) %>%
     pivot_longer(cols = c("target_genesymbol1",
                           "target_genesymbol2",
                           "target_genesymbol3",
-                          "target_genesymbol4"),
+                          "target_genesymbol4",
+                          "target_genesymbol5"),
                  values_to = "target_genesymbol",
                  names_to = NULL) %>%
     na.omit()
 
 
 omni_resources <- omni_resources %>%
-    purrr::list_modify("Random" = NULL,
-                       "Reshuffled" = NULL,
+    purrr::list_modify("Reshuffled" = NULL,
                        "Default" = NULL,
-                       "CellChatDB_NC" = CellChatNC)  %>%
+                       "CellChatDB_NC" = CellChatNC) %>%
     .[order(names(.))]
-
 
 prepForUpsetRes <- function(named_list){
     map(names(omni_resources), function(l_name){
@@ -67,8 +70,6 @@ tmp <- resources_binary %>%
     dplyr::mutate(dplyr::across(!starts_with("interaction"),~ifelse(.==1,interaction,.)))
 
 
-
-
 length(intersect(tmp$OmniPath, tmp$CellChatDB))/length(tmp$CellChatDB)
 length(intersect(tmp$OmniPath, tmp$CellChatDB))/length(tmp$CellChatDB[tmp$CellChatDB!=0])
 
@@ -85,17 +86,53 @@ tmp2 <- tmp %>% pivot_longer(-interaction,
                              names_to = "resource",
                              values_to = "interact") %>%
     filter(interact != 0) %>%
+    distinct() %>%
     select(resource, interaction = interact) %>%
     group_by(resource) %>%
     group_nest() %>%
-    mutate(interaction = data %>% map(function(i) i$interaction))
+    mutate(interaction = data %>% map(function(i) i$interaction)) %>%
+    mutate(intersect = interaction %>% get_intersect(resource)) %>%
+    rowwise() %>%
+    mutate(resource_len = length(interaction)) %>%
+    ungroup() %>%
+    unnest(intersect) %>%
+    mutate(resource2 = names(intersect)) %>%
+    unnest(intersect) %>%
+    select(resource, resource2, intersect, resource_len)
+
+tmp3 <- tmp2 %>%
+    mutate(shared_prop = intersect/resource_len) %>%
+    select(resource, resource2, shared_prop) %>%
+    pivot_wider(
+        id_cols = resource,
+        names_from = resource2,
+        values_from = shared_prop
+        ) %>%
+    as.data.frame() %>%
+    column_to_rownames("resource")
+
+pheatmap(tmp3,
+         display_numbers = TRUE,
+         number_color = "white",
+         silent = FALSE,
+         show_colnames = TRUE,
+         show_rownames = TRUE,
+         color = viridis::cividis(n=20),
+         fontsize = 15,
+         cluster_rows = FALSE,
+         cluster_cols = FALSE,
+         border_color = NA,
+         na_col="white")
 
 
-
-xd <- seq(length(tmp2$interaction)) %>%
+get_intersect <- function(interaction_list, .names){
+    seq(length(interaction_list)) %>%
     map(function(i)
-        map(length(tmp2$interaction), function(j){
-            setdiff(tmp2$interaction[i],
-                      tmp2$interaction[j])
-        })
+        map(seq(length(interaction_list)), function(j){
+            length(intersect(interaction_list[[i]],
+                             interaction_list[[j]]))
+        }) %>% setNames(.names)
     )
+}
+
+

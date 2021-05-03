@@ -94,3 +94,5 @@ squidpy_res <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_belgian
                              python_path = "/home/dbdimitrov/anaconda3/bin/python",
                              omni_resources = op_resources,
                              .ident = "Cell_subtype")
+
+

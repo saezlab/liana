@@ -222,7 +222,7 @@ I) and II) both keep most of the interactions in CellTalkDB
 ```{r omnipath_proposals}
 
 # I) Min. Curation Effort = 1, loc. consensus > half
-icn %>% 
+icn %>%
     filter_intercell_network(
     transmitter_topology = c('sec', 'pmtm', 'pmp'),
     receiver_topology = c('pmtm', 'pmp'),
@@ -262,9 +262,26 @@ filter_intercell_network(
 ) %>% nrow
 # 5934
 
-# III) Min. Curation Effort = 1, loc. consensus = 75
+# III) LR curated resources + Other Currated Resources + location filtering
 icn %>%
-filter_intercell_network(
+    filter_by_resource(resources =
+                           c(as.character(c(get_lr_resources(),
+                             "Adhesome", # * 
+                             "BioGRID", # * 
+                             "ConsensusPathDB", # * 
+                             "Dinarello2013", # Cytokine-focused
+                             "DIP", # *
+                             "HPRD", # *
+                             "KEA", # Kinase-substrate interactions
+                             "MatrixDB", # ECM-focus
+                             "MINT",  # *
+                             "NetPath",# Signal transaction focus
+                             "SignaLink3",
+                             "SIGNOR", #* Source of ~2,000 unique interactions;
+                             "Zhong2015"
+                             # *General PPI resource
+                             )))) %>%
+    filter_intercell_network(
     transmitter_topology = c('sec', 'pmtm', 'pmp'),
     receiver_topology = c('pmtm', 'pmp'),
     min_curation_effort = 1,
@@ -272,14 +289,14 @@ filter_intercell_network(
     min_references = 0,
     min_provenances = 0,
     consensus_percentile = NULL,
-    loc_consensus_percentile = 75,
+    loc_consensus_percentile = 51,
     unique_pairs = TRUE,
     omnipath = TRUE,
     ligrecextra = FALSE,
     pathwayextra = FALSE,
     kinaseextra = FALSE
-) %>% nrow
-# 5020
+    ) %>% nrow
+# 6360
 
 
 ```
