@@ -189,6 +189,24 @@ figure_path <- function(fname, ...){
 }
 
 
+#' Prepare Upsets for Jaccard
+#' @param interaction_list list resources with interactions alone
+#' @returns Returns a 1/0 dataframe where 1 is assigned to interactions
+#'    present in a given resource, 0 to absent interactions
+binarize_resources <- function(interaction_list){
+    map(names(interaction_list), function(l_name){
+        interaction_list[[l_name]] %>%
+            select(source_genesymbol, target_genesymbol) %>%
+            unite("interaction", source_genesymbol, target_genesymbol, sep="_") %>%
+            mutate(!!l_name := 1)
+    }) %>% reduce(., full_join, by = "interaction") %>%
+        mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
+        mutate_at(vars(2:ncol(.)), ~ replace(., . != 0, 1)) %>%
+        as.data.frame()
+}
+
+
+
 #' Overlaps between ligand-receptor resources
 #'
 #' Identifies the unique and shared ligands, receptors and interactions
@@ -325,6 +343,23 @@ uniq_per_res <- function(ligrec_olap){
         select(category, resource, unq_perc) %>%
         pivot_wider(names_from = category, id_cols = resource, values_from = unq_perc) %>%
         write.csv(figure_path("uniqes_per_resource.csv"))
+}
+
+
+
+#' Function to get the intersect of vectors within the same list
+#' @param vector_list List of character vectors (i.e. interactions per resource)
+#' @param .names names of the list elements
+get_intersect <- function(vector_list, .names){
+    seq(length(vector_list)) %>%
+        map(function(i)
+            map(seq(length(vector_list)), function(j){
+                length(intersect(
+                    vector_list[[i]],
+                    vector_list[[j]]
+                ))
+            }) %>% setNames(.names)
+        )
 }
 
 
@@ -1188,4 +1223,42 @@ cluster_for_heatmap <- function(data, cat1, cat2, val){
         !!cat2 := factor(!!cat2, levels = cat2_ord, ordered = TRUE)
     )
 
+}
+
+
+
+
+#' Save Overlap Heatmaps
+#' @param df df to be pivotted and used to plot the heatmap
+#' @param plotname name of the plot to be saved
+#' @import tibble tidyr ggplot2
+overheat_save <- function(df, plotname){
+    p <- ggplot(data = df, aes(resource, name, fill = value, label = value)) +
+        geom_tile() +
+        scale_fill_viridis(
+            option = 'cividis',
+            guide = guide_colorbar(
+                title = sprintf('Shared Interactions')
+            )
+        ) +
+        theme_minimal()+
+        theme(
+            axis.text.x = element_text(angle = 45, vjust = 1,
+                                       size = 16, hjust = 1),
+            axis.text.y = element_text(vjust = 1,
+                                       size = 16, hjust = 1),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            axis.ticks = element_blank()) +
+        xlab("Resource") +
+        geom_text(aes(resource, name, label = round(value, digits = 3)), color = "white", size = 5)
+
+    cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')
+
+    print(p)
+
+    dev.off()
 }
