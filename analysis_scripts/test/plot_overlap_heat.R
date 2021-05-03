@@ -36,7 +36,8 @@ ligrec_binary <- ligrec %>%
 
 
 
-# Jaccard between each resource combo
+
+
 jacc_mat <-
     ligrec_binary %>%
     select(-interaction) %>%
@@ -55,10 +56,11 @@ jacc_df <- jacc_mat %>%
     as.data.frame()
 
 
-overheat_save(jacc_df, "jacc.pdf")
 
 
-### Overlap between resources
+
+
+
 interacts_per_resource <- ligrec_binary %>%
     as_tibble() %>%
     dplyr::mutate(dplyr::across(!starts_with("interaction"),
@@ -93,9 +95,6 @@ shared_per_resource <- intersects_per_resource %>%
     ) %>%
     pivot_longer(-resource) %>%
     as.data.frame()
-
-
-overheat_save(shared_per_resource, "asdf.pdf")
 
 
 

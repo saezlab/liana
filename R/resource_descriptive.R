@@ -142,7 +142,8 @@ descriptive_plots <- function(
 
     ligrec %<>% `%||%`(compile_ligrec_descr())
 
-    ligrec %>%
+    ligrec %T>%
+    ligrec_overheats %>%
     ligrec_overlap %T>%
     uniq_per_res %T>%
     ligand_receptor_upset(upset_args = upset_args) %>%
@@ -189,7 +190,7 @@ figure_path <- function(fname, ...){
 }
 
 
-#' Prepare Upsets for Jaccard
+#' Helper Function to Convert a List of Resources into a binarized DF
 #' @param interaction_list list resources with interactions alone
 #' @returns Returns a 1/0 dataframe where 1 is assigned to interactions
 #'    present in a given resource, 0 to absent interactions
@@ -205,6 +206,31 @@ binarize_resources <- function(interaction_list){
         as.data.frame()
 }
 
+
+#' Jaccard and Shared Elements heatmaps
+#' @param ligrec List of lists with ligand-receptor data, as produced by
+#'     \code{\link{compile_ligrec_descr}}. (to be changed to ligrec following
+#'     ligrec_overlap)
+ligrec_overheats <- function(ligrec){
+
+    log_success('Plotting Pairwise Jaccard and Overlap.')
+
+    # To be extended to transmitters and receivers
+    ligrec_binary <- ligrec %>%
+        map(function(res) pluck(res, "interactions")) %>%
+        binarize_resources()
+
+    overheat_save(jacc_pairwise(ligrec_binary),
+                  figure_path("interactions_jaccard_heat.pdf"),
+                  "Jaccard Index")
+
+
+    overheat_save(interactions_shared(ligrec_binary),
+                  figure_path("interactions_shared_heat.pdf"),
+                  "Interactions Shared")
+
+    return(ligrec)
+}
 
 
 #' Overlaps between ligand-receptor resources
@@ -1225,20 +1251,85 @@ cluster_for_heatmap <- function(data, cat1, cat2, val){
 
 }
 
+#' Function to get the Overlap between resources pairwise
+#' @param ligrec_binary binarized df with interactions
+#' @return Shared elements between Resource Y and X dataframe
+interactions_shared <- function(ligrec_binary){
+    interacts_per_resource <- ligrec_binary %>%
+        as_tibble() %>%
+        dplyr::mutate(dplyr::across(!starts_with("interaction"),
+                                    ~ifelse(.==1,interaction,.))) %>%
+        pivot_longer(-interaction,
+                     names_to = "resource",
+                     values_to = "interact") %>%
+        filter(interact != 0) %>%
+        distinct()
 
+    intersects_per_resource <- interacts_per_resource %>%
+        select(resource, interaction = interact) %>%
+        group_by(resource) %>%
+        group_nest() %>%
+        mutate(interaction = data %>% map(function(i) i$interaction)) %>%
+        mutate(intersect = interaction %>% get_intersect(resource)) %>%
+        rowwise() %>%
+        mutate(resource_len = length(interaction)) %>%
+        ungroup() %>%
+        unnest(intersect)
+
+    shared_per_resource <- intersects_per_resource %>%
+        mutate(resource2 = names(intersect)) %>%
+        unnest(intersect) %>%
+        select(resource, resource2, intersect, resource_len) %>%
+        mutate(shared_prop = intersect/resource_len) %>%
+        select(resource, resource2, shared_prop) %>%
+        pivot_wider(
+            id_cols = resource,
+            names_from = resource2,
+            values_from = shared_prop
+        ) %>%
+        pivot_longer(-resource) %>%
+        as.data.frame()
+
+    return(shared_per_resource)
+}
+
+
+#' Pairwise Jaccard Index between resources
+#' @param ligrec_binary
+#' @return Returns a long Dataframe with Jaccard Indeces
+jacc_pairwise <- function(ligrec_binary){
+    jacc_mat <-
+        ligrec_binary %>%
+        select(-interaction) %>%
+        t() %>%
+        get_simil_dist(.,
+                       sim_dist = "simil",
+                       method = "Jaccard",
+                       diag = TRUE) %>%
+        as.matrix()
+    diag(jacc_mat) <- 1
+
+    jacc_df <- jacc_mat %>%
+        as.data.frame() %>%
+        rownames_to_column("resource")  %>%
+        pivot_longer(-resource) %>%
+        as.data.frame()
+
+    return(jacc_df)
+}
 
 
 #' Save Overlap Heatmaps
 #' @param df df to be pivotted and used to plot the heatmap
 #' @param plotname name of the plot to be saved
 #' @import tibble tidyr ggplot2
-overheat_save <- function(df, plotname){
+overheat_save <- function(df, plotname, guide_title){
     p <- ggplot(data = df, aes(resource, name, fill = value, label = value)) +
         geom_tile() +
         scale_fill_viridis(
             option = 'cividis',
             guide = guide_colorbar(
-                title = sprintf('Shared Interactions')
+                title = guide_title
             )
         ) +
         theme_minimal()+
