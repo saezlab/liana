@@ -4,10 +4,10 @@
 \alias{reform_omni}
 \title{Helper Function to Reformat Omni_resources for LR Pipeline}
 \usage{
-reform_omni(omni_resources)
+reform_omni(ligrec)
 }
 \arguments{
-\item{omni_resources}{OmniPath list returned by compile_ligrec}
+\item{ligrec}{OmniPath list returned by compile_ligrec}
 }
 \value{
 A list of OmniPath resources, including OmniPath composite DB,

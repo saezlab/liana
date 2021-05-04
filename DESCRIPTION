@@ -69,7 +69,8 @@ Imports:
     DescTools,
     rlang,
     viridis,
-    proxy
+    proxy,
+    BiRewire
 Suggests:
     Connectome,
     CellChat,
@@ -78,6 +79,5 @@ Suggests:
     rmarkdown,
     Seurat,
     SCAomni,
-    Seurat,
-    BiRewire
+    Seurat
 RoxygenNote: 7.1.1
