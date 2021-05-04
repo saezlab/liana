@@ -19,6 +19,7 @@
 #' @importFrom Seurat ScaleData
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
+#'
 #' @export
 call_connectome <- function(seurat_object,
                             op_resource,

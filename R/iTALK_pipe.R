@@ -19,6 +19,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom tidyr unite
 #' @importFrom dplyr select rename mutate group_by group_split
+#'
+#' @export
 call_italk <- function(
     op_resource,
     seurat_object,

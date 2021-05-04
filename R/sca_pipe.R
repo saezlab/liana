@@ -15,6 +15,7 @@
 #' LRScore = sqrt(LR product)/mean(raw counts) * sqrt(LR product) where
 #' expression of l > 0 and r > 0
 #' LRScore = 1 is the highest (~ most likely hit), 0 is the lowest.
+#'
 #' @export
 call_sca <- function(op_resource,
                      seurat_object,

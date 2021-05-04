@@ -36,10 +36,11 @@
 #' 2) The specificity-based edge weights
 #' * a weight of 1 means both the ligand and receptor are only expressed
 #'  in one cell type
-#'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
+#'
+#' @export
 call_natmi <- function(
     omni_resources,
     seurat_object = NULL,
