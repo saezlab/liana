@@ -40,11 +40,7 @@
 #' @importFrom rprojroot find_rstudio_root_file
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @importFrom Seurat GetAssayData Idents
+#' @importFrom Seurat GetAssayData Idents
 call_natmi <- function(
     omni_resources,
     seurat_object = NULL,

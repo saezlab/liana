@@ -28,6 +28,8 @@
 #'   Only relevant, if we decide that these pipes are to be provided for use
 #'   by users, which I'm not certain would be an objective of this framework.
 #'   Then Functions from Pipes should be referred by :: to avoid warnings.
+#'   Yet, honestly, if this is framework should only be distributed via a ,
+#'   otherwise it would be beyond impossible to maintain.
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,

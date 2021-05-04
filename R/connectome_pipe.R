@@ -15,12 +15,8 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @import Connectome
-# #' @importFrom Seurat ScaleData
+#' @import Connectome
+#' @importFrom Seurat ScaleData
 #' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
 #' @export

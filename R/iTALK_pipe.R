@@ -18,13 +18,8 @@
 #' Stats:
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
-#'
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @importFrom iTALK rawParse FindLR
-# #' @importFrom Seurat Idents FindAllMarkers GetAssayData
+#' @importFrom iTALK rawParse FindLR
+#' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>%
 #' @importFrom tidyr unite
 #' @importFrom dplyr select rename mutate group_by group_split

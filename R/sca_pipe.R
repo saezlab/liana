@@ -5,12 +5,8 @@
 #' @param assay Seurat assay data to use
 #'
 #' @return An unfiltered iTALK df sorted by relevance
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @importFrom Seurat GetAssayData Idents
-# #' @import SCAomni
+#' @importFrom Seurat GetAssayData Idents
+#' @import SCAomni
 #' @importFrom magrittr %>%
 #' @importFrom dplyr distinct select
 #'
