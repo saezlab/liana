@@ -37,7 +37,6 @@
 #' * a weight of 1 means both the ligand and receptor are only expressed
 #'  in one cell type
 #'
-#' @importFrom rprojroot find_rstudio_root_file
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
