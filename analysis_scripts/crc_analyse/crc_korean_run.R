@@ -1,6 +1,9 @@
 require(intercell)
 require(tibble)
 require(magrittr)
+require(purrr)
+
+setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
 
 # Load Data and Format data
 # crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
