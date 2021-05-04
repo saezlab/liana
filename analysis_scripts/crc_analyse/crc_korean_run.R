@@ -1,8 +1,9 @@
 require(intercell)
+require(tidyverse)
 
 # Load Data and Format data
-# crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
-#     format_crc_meta()
+crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
+    format_crc_meta()
 # saveRDS(crc_korean, "input/crc_data/crc_korean_form.rds")
 crc_korean <- readRDS("input/crc_data/crc_korean_form.rds")
 
