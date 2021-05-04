@@ -44,6 +44,7 @@
 call_natmi <- function(
     omni_resources,
     seurat_object = NULL,
+    wd_path = ".",
     omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
     natmi_path = "~/Repos/NATMI",
     em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
@@ -53,9 +54,8 @@ call_natmi <- function(
     .format = TRUE,
     .write_data = FALSE,
     .subsampling_pipe = FALSE,
-    .seed = 1004){
-
-    project_rootdir <- find_rstudio_root_file()
+    .seed = 1004,
+    .num_cor = 8){
 
     py_set_seed(.seed)
 

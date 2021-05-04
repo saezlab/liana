@@ -1,5 +1,6 @@
 require(intercell)
-require(tidyverse)
+require(tibble)
+require(magrittr)
 
 # Load Data and Format data
 # crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
@@ -82,7 +83,7 @@ saveRDS(italk_results, "output/crc_res/italk_results.rds")
 # cellchat_results <- omni_resources %>%
 #     map(function(db) call_cellchat(op_resource = db,
 #                                    seurat_object = crc_korean,
-#                                    nboot = 100,
+#                                    nboot = 1000,
 #                                    exclude_anns = c(),
 #                                    thresh = 1,
 #                                    assay = "RNA",
