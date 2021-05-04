@@ -19,20 +19,19 @@ get_lr_resources <- function(){
             'Guide2Pharma',
             'connectomeDB2020',
             'talklr',
-            'CellTalkDB',
-            'OmniPath'
+            'CellTalkDB'
         )
     )
 
 }
 
 # only the ones different from the current defaults:
-op_ic_quality_param <- list(
+op_ic_quality_param <- list( # used for nodes
     resource = 'OmniPath', # this is just necessary in all the calls
-    loc_consensus_percentile = 50,
-    consensus_percentile = 50
+    loc_consensus_percentile = 50
 )
 
+# used for interactions
 op_ia_quality_param <- list(
     min_curation_effort = 1,
     ligrecextra = FALSE
@@ -53,19 +52,10 @@ op_ia_quality_param <- list(
 #' @importFrom purrr pluck map
 #' @importFrom rlang !!! exec
 #' @export
-compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
+compile_ligrec <- function(lr_pipeline = TRUE){
 
-    # A list of OmniPath variants to be returned
-    if(omni_variants){
-        omnipath_variants <- list(
-            OmniPath_q50 = list(quality = .5),
-            OmniPath_hq = list()
-        )
-    } else{
-        omnipath_variants <- list()
-    }
-
-    omni_resources <- get_lr_resources() %>%
+    omni_resources <-
+        get_lr_resources() %>%
         map(function(resource){
             list(transmitters = get_ligands(resource),
                  receivers = get_receptors(resource),
@@ -121,8 +111,8 @@ reform_omni <- function(omni_resources){
 #' @importFrom OmnipathR import_intercell_network filter_intercell_network
 omnipath_intercell <- function(...){
 
-    import_intercell_network() %>%
-    filter_intercell_network(...)
+    import_intercell_network(entity_types = 'protein') %>%
+        filter_intercell_network(...)
 
 }
 
@@ -246,6 +236,5 @@ omnipath_partners <- function(side, ...){
 #'
 #' @seealso \code{\link{compile_ligrec}}
 compile_ligrec_descr <- function(){
-    compile_ligrec(omni_variants = FALSE, lr_pipeline = FALSE)
+    compile_ligrec(lr_pipeline = FALSE)
 }
-
