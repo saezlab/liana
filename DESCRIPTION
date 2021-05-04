@@ -48,7 +48,6 @@ Imports:
     graphics,
     utils,
     OmnipathR,
-    rprojroot,
     reticulate,
     yardstick,
     stringr,

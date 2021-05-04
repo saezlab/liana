@@ -67,7 +67,7 @@ call_cellchat <- function(op_resource,
 
 
     if(.do_parallel){
-        future::plan("multiprocess", workers = 10)
+        future::plan("multiprocess")
     }
 
     # load CellChatDB

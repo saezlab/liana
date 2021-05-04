@@ -23,7 +23,7 @@ cc_res <- call_cellchat(op_resource = NULL,
                         .do_parallel = FALSE,
                         .raw_use = TRUE)
 
-# Connectome (should I filter norm_weight also by p-value?)
+# Connectome
 conn_res <- call_connectome(seurat_object = testdata,
                             .spatial = FALSE,
                             op_resource = omni_resources$CellPhoneDB,
