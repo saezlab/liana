@@ -7,6 +7,7 @@
 #' @param .normalize # bool whether to normalize non-normalized data with
 #' @param .raw_use whether use the raw data or gene expression data pojectected
 #'    to a ppi
+#' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
 #'
@@ -22,6 +23,7 @@
 #' @importFrom tibble column_to_rownames enframe
 #' @importFrom tidyr unite unnest separate
 #' @importFrom logger log_info
+#' @import CellChat
 #' @export
 #' @details CellChat's objects are not documented/exported thus the
 #'    whole package has to be imported
