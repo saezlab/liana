@@ -26,6 +26,16 @@ call_italk(
 \item{.DE}{bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)}
 
 \item{.deg}{if is NULL run FindAllMarkers}
+
+\item{...}{
+  Arguments passed on to \code{\link[iTALK:rawParse]{iTALK::rawParse}}
+  \describe{
+    \item{\code{data}}{Input data, raw or normalized count with 'cell_type' column}
+    \item{\code{top_genes}}{(scale 1 to 100) Top percent highly expressed genes used
+to find ligand-receptor pairs, default is 50}
+    \item{\code{stats}}{Whether calculates the mean or the median of the data. Available
+options are 'mean' and 'median'.}
+  }}
 }
 \value{
 An unfiltered iTALK df sorted by relevance

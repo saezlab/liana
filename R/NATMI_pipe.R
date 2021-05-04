@@ -53,8 +53,7 @@ call_natmi <- function(
     .format = TRUE,
     .write_data = FALSE,
     .subsampling_pipe = FALSE,
-    .seed = 1004
-){
+    .seed = 1004){
 
     project_rootdir <- find_rstudio_root_file()
 

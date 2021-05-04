@@ -6,11 +6,7 @@
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
 #' @param .deg if is NULL run FindAllMarkers
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @inheritDotParams iTALK::rawParse
+#' @inheritDotParams iTALK::rawParse
 #'
 #' @return An unfiltered iTALK df sorted by relevance
 #'

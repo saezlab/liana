@@ -2,7 +2,7 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
-# #' @inheritDotParams Connectome::CreateConnectome
+#' @inheritDotParams Connectome::CreateConnectome
 #'
 #' @return An unfiltered connectome df
 #'
