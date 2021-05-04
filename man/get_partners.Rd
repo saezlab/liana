@@ -8,16 +8,15 @@ one ligand-receptor resource.}
 get_partners(side, resource, ...)
 }
 \arguments{
-\item{side}{'ligand' (trans), 'receptor' (rec) or 'both' (both short or long notation can be used)}
+\item{side}{'ligand' (trans), 'receptor' (rec) or 'both' (both short or
+long notation can be used)}
 
 \item{resource}{Name of current resource (taken from get_lr_resources)}
 
 \item{...}{
   Arguments passed on to \code{\link[=omnipath_intercell]{omnipath_intercell}}
   \describe{
-    \item{\code{quality}}{Quality measures for OmniPath CompositeDB (biased due to the
-prevalence of e.g. Ramilowski in the resources)}
-    \item{\code{ligrec}}{whether to filter according to side}
+    \item{\code{}}{}
   }}
 }
 \description{

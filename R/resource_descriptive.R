@@ -211,6 +211,7 @@ binarize_resources <- function(interaction_list){
 #' @param ligrec List of lists with ligand-receptor data, as produced by
 #'     \code{\link{compile_ligrec_descr}}. (to be changed to ligrec following
 #'     ligrec_overlap)
+#' @importFrom logger log_success
 ligrec_overheats <- function(ligrec){
 
     log_success('Plotting Pairwise Jaccard and Overlap.')
@@ -340,7 +341,10 @@ summarize_overlaps <- function(ligrec_olap){
 #' @inheritParams summarize_overlaps
 #' @importFrom purrr map
 #' @importFrom magrittr %>%
-#' @import dplyr tidyr
+#' @importFrom dplyr mutate_all group_by summarise ungroup bind_rows
+#' @importFrom dplyr select
+#' @importFrom tidyr pivot_wider
+#' @importFrom logger log_success
 uniq_per_res <- function(ligrec_olap){
 
     log_success('Summarizing unique stats.')
@@ -376,6 +380,7 @@ uniq_per_res <- function(ligrec_olap){
 #' Function to get the intersect of vectors within the same list
 #' @param vector_list List of character vectors (i.e. interactions per resource)
 #' @param .names names of the list elements
+#' @importFrom purrr map
 get_intersect <- function(vector_list, .names){
     seq(length(vector_list)) %>%
         map(function(i)
@@ -404,6 +409,7 @@ get_intersect <- function(vector_list, .names){
 #' @importFrom ggplot2 scale_fill_discrete guide_legend
 #' @importFrom stringr str_to_title
 #' @importFrom grDevices cairo_pdf
+#' @importFrom logger log_success
 total_unique_bar <- function(ligrec_olap){
 
     log_success('Drawing overlap barplots.')

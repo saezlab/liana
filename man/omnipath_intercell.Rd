@@ -4,16 +4,13 @@
 \alias{omnipath_intercell}
 \title{Retrieves intercellular interactions from OmniPath}
 \usage{
-omnipath_intercell(quality = NULL, ligrec = FALSE)
+omnipath_intercell(...)
 }
 \arguments{
-\item{quality}{Quality measures for OmniPath CompositeDB (biased due to the
-prevalence of e.g. Ramilowski in the resources)}
-
-\item{ligrec}{whether to filter according to side}
+\item{...}{Passed to \code{OmnipathR::import_omnipath_intercell}.}
 }
 \value{
-A tibble with Intercell interactions from OmnIPath
+A tibble with Intercell interactions from OmniPath
 }
 \description{
 Retrieves intercellular interactions from OmniPath

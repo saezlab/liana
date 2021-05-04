@@ -26,6 +26,18 @@ get_lr_resources <- function(){
 
 }
 
+# only the ones different from the current defaults:
+op_ic_quality_param <- list(
+    resource = 'OmniPath', # this is just necessary in all the calls
+    loc_consensus_percentile = 50,
+    consensus_percentile = 50
+)
+
+op_ia_quality_param <- list(
+    min_curation_effort = 1,
+    ligrecextra = FALSE
+)
+
 
 #' Function to get unfiltered intercell resources
 #' For each resource and OmniPath variant compiles tables of ligands,
@@ -39,6 +51,7 @@ get_lr_resources <- function(){
 #' @return A list of OmniPath resources formatted according to the method pipes
 #' @importFrom magrittr %>%
 #' @importFrom purrr pluck map
+#' @importFrom rlang !!! exec
 #' @export
 compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 
@@ -59,14 +72,16 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
                  interactions = intercell_connections(resource))
         }) %>%
         setNames(get_lr_resources()) %>%
-        c(map(
-            omnipath_variants,
-            function(args){
-                args %<>% c(list(resource = 'OmniPath'))
-                list(transmitters = do.call(get_ligands, args),
-                     receivers = do.call(get_receptors, args),
-                     interactions = do.call(intercell_connections, args))
-            }
+        c(list(
+            OmniPath = list(
+                transmitters = exec(get_ligands, !!!op_ic_quality_param),
+                receivers = exec(get_receptors, !!!op_ic_quality_param),
+                interactions = exec(
+                    intercell_connections,
+                    !!!op_ic_quality_param,
+                    !!!op_ia_quality_param
+                )
+            )
         )) %>%
         {
             if(lr_pipeline) reform_omni(.)
@@ -83,7 +98,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
 #' @return A list of OmniPath resources, including OmniPath composite DB,
 #' A reshuffled OmniPath, and a Default with NULL ( tool pipelines run
 #' using their default resource)
-#' @importFrom purrr pluck
+#' @importFrom purrr pluck map
+#' @importFrom dplyr distinct_at
 reform_omni <- function(omni_resources){
     map(omni_resources, function(x) x %>%
             pluck("interactions") %>%
@@ -99,66 +115,14 @@ reform_omni <- function(omni_resources){
 
 #' Retrieves intercellular interactions from OmniPath
 #' @inheritParams omnipath_partners
-#' @return A tibble with Intercell interactions from OmnIPath
-omnipath_intercell <- function(
-    quality = NULL,
-    ligrec = FALSE){
+#' @return A tibble with Intercell interactions from OmniPath
+#'
+#' @importFrom magrittr %>%
+#' @importFrom OmnipathR import_intercell_network filter_intercell_network
+omnipath_intercell <- function(...){
 
-    intracell <- c('intracellular_intercellular_related', 'intracellular')
-
-    transmitters <-
-        omnipath_partners(
-            side = 'ligand',
-            quality = quality,
-            ligrec = ligrec
-        ) %>%
-        filter(!parent %in% intracell) %>%
-        rename(category_source = source)
-
-    receivers <-
-        omnipath_partners(
-            side = 'receptor',
-            quality = quality,
-            ligrec = ligrec
-        ) %>%
-        filter(!parent %in% intracell) %>%
-        rename(category_source = source)
-
-    interactions <- import_post_translational_interactions()
-
-    interactions %>%
-        inner_join(
-            transmitters,
-            by = c('source' = 'uniprot')
-        ) %>%
-        group_by(
-            category, parent, source, target
-        ) %>%
-        mutate(
-            database = paste(database, collapse = ';')
-        ) %>%
-        summarize_all(first) %>%
-        inner_join(
-            receivers,
-            by = c('target' = 'uniprot'),
-            suffix = c('_intercell_source', '_intercell_target')
-        ) %>%
-        group_by(
-            category_intercell_source,
-            parent_intercell_source,
-            source,
-            target,
-            category_intercell_target,
-            parent_intercell_target
-        ) %>%
-        mutate(
-            database_intercell_target = paste(
-                database_intercell_target,
-                collapse = ';'
-            )
-        ) %>%
-        summarize_all(first) %>%
-        ungroup()
+    import_intercell_network() %>%
+    filter_intercell_network(...)
 
 }
 
@@ -168,6 +132,8 @@ omnipath_intercell <- function(
 #' Retrieves the interactions from one ligand-receptor resource
 #' @inheritDotParams OmnipathR::import_post_translational_interactions
 #' @inheritParams get_partners
+#'
+#' @importFrom OmnipathR import_post_translational_interactions
 intercell_connections <- function(resource, ...){
 
     if(resource == 'OmniPath'){
@@ -213,6 +179,8 @@ get_receptors <- function(resource, ...){
 #' @inheritParams omnipath_partners
 #' @param resource Name of current resource (taken from get_lr_resources)
 #' @inheritDotParams omnipath_intercell
+#' @importFrom rlang sym !!!
+#' @importFrom magrittr %>%
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){
@@ -249,14 +217,14 @@ get_partners <- function(side, resource, ...){
 
 #' Retrieves intercellular communication partners (transmitters or receivers)
 #' from OmniPath
-#' @param side 'ligand' (trans), 'receptor' (rec) or 'both' (both short or long notation can be used)
-#' @param quality Quality measures for OmniPath CompositeDB (biased due to the
-#' prevalence of e.g. Ramilowski in the resources)
-#' @param ligrec whether to filter according to side
-#' @import OmnipathR
-omnipath_partners <- function(side,
-                              quality = NULL,
-                              ligrec = FALSE){
+#'
+#' @param side 'ligand' (trans), 'receptor' (rec) or 'both' (both short or
+#'     long notation can be used)
+#' @param ... Passed to \code{OmnipathR::import_omnipath_intercell}.
+#'
+#' @importFrom OmnipathR import_omnipath_intercell
+#' @importFrom magrittr %>%
+omnipath_partners <- function(side, ...){
 
     causality <- list(ligand = 'trans', receptor = 'rec')
 
@@ -264,23 +232,10 @@ omnipath_partners <- function(side,
         causality = causality[[side]],
         scope = 'generic',
         source = 'composite',
-        entity_type = 'protein') %>%
-        as_tibble() %>%
-        {`if`(
-            is.null(quality),
-            .,
-            group_by(., parent) %>%
-                filter(
-                    consensus_score >=
-                        quantile(consensus_score, quality)
-                ) %>%
-                ungroup()
-        )} %>%
-        {`if`(
-            ligrec,
-            filter(., parent == side),
-            .
-        )}
+        entity_type = 'protein',
+        ...
+    )
+
 }
 
 
