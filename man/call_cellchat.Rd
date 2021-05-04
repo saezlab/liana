@@ -96,5 +96,9 @@ CellChat x Omni Pipe function
 }
 \details{
 CellChat's objects are not documented/exported thus the
-   whole package has to be imported
+  whole package has to be imported.
+  Alternatively, tool packages could go to "Suggests" in DESCRIPTION.
+  Only relevant, if we decide that these pipes are to be provided for use
+  by users, which I'm not certain would be an objective of this framework.
+  Then Functions from Pipes should be referred by :: to avoid warnings.
 }

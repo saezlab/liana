@@ -11,22 +11,23 @@
 #'
 #' @return A DF of intercellular communication network
 #'
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @import CellChat
-# #' @importFrom Seurat Idents GetAssayData
+#' @import CellChat
+#' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>%
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
 #' @importFrom tibble column_to_rownames enframe
 #' @importFrom tidyr unite unnest separate
 #' @importFrom logger log_info
-#' @import CellChat
+#'
 #' @export
+#'
 #' @details CellChat's objects are not documented/exported thus the
-#'    whole package has to be imported
+#'   whole package has to be imported.
+#'   Alternatively, tool packages could go to "Suggests" in DESCRIPTION.
+#'   Only relevant, if we decide that these pipes are to be provided for use
+#'   by users, which I'm not certain would be an objective of this framework.
+#'   Then Functions from Pipes should be referred by :: to avoid warnings.
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,
