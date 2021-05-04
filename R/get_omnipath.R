@@ -19,8 +19,7 @@ get_lr_resources <- function(){
             'Guide2Pharma',
             'connectomeDB2020',
             'talklr',
-            'CellTalkDB',
-            'OmniPath'
+            'CellTalkDB'
         )
     )
 
@@ -30,11 +29,11 @@ get_lr_resources <- function(){
 op_ic_quality_param <- list(
     resource = 'OmniPath', # this is just necessary in all the calls
     loc_consensus_percentile = 50,
-    consensus_percentile = 50
+    consensus_percentile = 75
 )
 
 op_ia_quality_param <- list(
-    min_curation_effort = 1,
+    min_curation_effort = 0,
     ligrecextra = FALSE
 )
 
@@ -65,7 +64,8 @@ compile_ligrec <- function(omni_variants = FALSE, lr_pipeline = TRUE){
         omnipath_variants <- list()
     }
 
-    omni_resources <- get_lr_resources() %>%
+    omni_resources <-
+        get_lr_resources() %>%
         map(function(resource){
             list(transmitters = get_ligands(resource),
                  receivers = get_receptors(resource),
@@ -121,7 +121,7 @@ reform_omni <- function(omni_resources){
 #' @importFrom OmnipathR import_intercell_network filter_intercell_network
 omnipath_intercell <- function(...){
 
-    import_intercell_network() %>%
+    import_intercell_network(entity_types = 'protein') %>%
     filter_intercell_network(...)
 
 }
