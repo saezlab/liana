@@ -18,12 +18,12 @@ inference.
   
   
 
-## Pipeline
+## Framework
   
 To this end we built a benchmark pipeline to decouple the tools from their corresponding resources.
 In turn, we used the pipeline for the systematic comparison of all combinations between 15 resources and 6 tools.
   
-The pipeline is open access and available in this repository.
+The Framework is open access and available in this repository.
   
   
 
@@ -75,15 +75,12 @@ the same time, OmniPath blacklists certain wrong annotations, removing some
 of the contents of the original resources. However the data of individual
 resources retrieved from the OmniPath web service is not affected by this,
 each resource supposed to be identical to its original form, apart from minor
-processing imperfections. OmniPath as a composite resource we use in four
-varieties: the full OmniPath intercellular network, only ligand-receptor
-interactions, quality filtered (50 percentile consensus score cut off), and
-ligand-receptor only quality filtered.
+processing imperfections.
   
   
-### Random and default
+### Reshuffled and Default Resources
   
-Moreover, a Randomized resource can be generated via reshuffling any of the
+Moreover, a Reshuffled resource can be generated via reshuffling any of the
 abovementioned using the `BiRewire` package, and each tool can be run with
 its 'Default' resource, the dataset used in its original publication.
   
@@ -96,7 +93,7 @@ Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/
    
 ```{r}
 library(devtools)  
-Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # iTALK throws a warning...  
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
 install_github('saezlab/OmnipathR') # install latest version of OmnipathR
 devtools::install_github("sqjin/CellChat")  
 devtools::install_github('msraredon/Connectome', ref = 'master')   
