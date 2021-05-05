@@ -205,10 +205,10 @@ ligrec_decomplexify <- function(ligrec){
                            # CellTalkDB - no complexes in our version
     )
 
-    cats <- list(transmitters = "genesymbol",
-                 receivers = "genesymbol",
-                 interactions = c("source_genesymbol",
-                                  "target_genesymbol"))
+    cats <- list(transmitters = "uniprot",
+                 receivers = "uniprot",
+                 interactions = c("source",
+                                  "target"))
 
     ligrec <-
         ligrec %>% map2(names(.),
@@ -224,7 +224,7 @@ ligrec_decomplexify <- function(ligrec){
 
 #' Helper Function to 'decomplexify' a column or vector of columns in a resource
 #' @param resource a ligrec resource
-#' @param column column to separate and pivot long (e.g. genesymbol)
+#' @param column column to separate and pivot long (e.g. genesymbol or uniprot)
 #'
 #' @return returns a longer tibble with complex subunits on seperate rows
 decomplexify <- function(resource, column){
@@ -256,8 +256,8 @@ decomplexify <- function(resource, column){
 binarize_resources <- function(interaction_list){
     map(names(interaction_list), function(l_name){
         interaction_list[[l_name]] %>%
-            select(source_genesymbol, target_genesymbol) %>%
-            unite("interaction", source_genesymbol, target_genesymbol, sep="_") %>%
+            select(source, target) %>%
+            unite("interaction", source, target, sep="_") %>%
             mutate(!!l_name := 1)
     }) %>% reduce(., full_join, by = "interaction") %>%
         mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
@@ -278,8 +278,8 @@ ligrec_overheats <- function(ligrec){
     # To be extended to transmitters and receivers
     ligrec_binary <- ligrec %>%
         map(function(res) pluck(res, "interactions") %>%
-                distinct_at(.vars = c("target_genesymbol",
-                                      "source_genesymbol"))
+                distinct_at(.vars = c("target",
+                                      "source"))
             ) %>%
         binarize_resources()
 
@@ -1613,7 +1613,8 @@ overheat_save <- function(df, plotname, guide_title){
             panel.background = element_blank(),
             axis.ticks = element_blank()) +
         xlab("Resource") +
-        geom_text(aes(resource, name, label = round(value, digits = 3)), color = "white", size = 5)
+        geom_text(aes(resource, name, label = round(value, digits = 3)),
+                  color = "white", size = 5)
 
     cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')
 

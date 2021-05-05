@@ -681,3 +681,29 @@ filter_intercell_network(
 # 1399 (out of 2215; Omni with same filtering = 5934)
 
 ```
+
+```{r}
+# III) LR curated resources + Other Currated Resources + location filtering
+icn %>%
+    filter_by_resource(resources =
+                           c(as.character(c(get_lr_resources()
+                             )))) %>%
+    filter_intercell_network(
+    transmitter_topology = c('sec', 'pmtm', 'pmp'),
+    receiver_topology = c('pmtm', 'pmp'),
+    min_curation_effort = 0,
+    min_resources = 0,
+    min_references = 0,
+    min_provenances = 0,
+    consensus_percentile = NULL,
+    loc_consensus_percentile = 20,
+    unique_pairs = TRUE,
+    omnipath = TRUE,
+    ligrecextra = FALSE,
+    pathwayextra = FALSE,
+    kinaseextra = FALSE
+    ) %>% nrow
+# 6360
+
+
+```

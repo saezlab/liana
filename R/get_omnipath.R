@@ -39,7 +39,7 @@ op_ia_quality_param <- list(
                              'plasma_membrane_peripheral'),
     receiver_topology = c('plasma_membrane_transmembrane',
                           'plasma_membrane_peripheral'),
-    min_curation_effort = 0,
+    min_curation_effort = 1,
     ligrecextra = FALSE
 )
 
@@ -86,9 +86,11 @@ compile_ligrec <- function(lr_pipeline = TRUE){
 
     # Keep only nodes that are part of the interactions
     ligrec$OmniPath$receivers %<>%
-        filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol)
+        filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol) %>%
+        distinct_at(.vars="genesymbol", .keep_all = TRUE)
     ligrec$OmniPath$transmitters %<>%
-        filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol)
+        filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol) %>%
+        distinct_at(.vars="genesymbol", .keep_all = TRUE)
 
     return(ligrec)
 }
@@ -124,8 +126,6 @@ reform_omni <- function(ligrec){
 #' @import OmnipathR
 omnipath_intercell <- function(...){
     import_intercell_network(entity_types = 'protein') %>%
-        filter_by_resource(resources =
-                               c(as.character(get_lr_resources()))) %>%
         filter_intercell_network(...)
 }
 
