@@ -83,16 +83,16 @@ saveRDS(italk_results, "output/crc_res/italk_results.rds")
 
 
 # 6. CellChat -----------------------------------------------------------------
-# cellchat_results <- omni_resources %>%
-#     map(function(db) call_cellchat(op_resource = db,
-#                                    seurat_object = crc_korean,
-#                                    nboot = 1000,
-#                                    exclude_anns = c(),
-#                                    thresh = 1,
-#                                    assay = "RNA",
-#                                    .normalize = FALSE,
-#                                    .do_parallel = FALSE,
-#                                    .raw_use = TRUE
-#                                    )) %>%
-#     setNames(names(omni_resources))
-# saveRDS(cellchat_results, "output/crc_res/cellchat_results.rds")
+cellchat_results <- omni_resources %>%
+    map(function(db) call_cellchat(op_resource = db,
+                                   seurat_object = crc_korean,
+                                   nboot = 1000,
+                                   exclude_anns = c(),
+                                   thresh = 1,
+                                   assay = "RNA",
+                                   .normalize = FALSE,
+                                   .do_parallel = FALSE,
+                                   .raw_use = TRUE
+                                   )) %>%
+    setNames(names(omni_resources))
+saveRDS(cellchat_results, "output/crc_res/cellchat_results.rds")

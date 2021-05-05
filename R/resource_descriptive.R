@@ -142,7 +142,8 @@ descriptive_plots <- function(
 
     ligrec %<>% `%||%`(compile_ligrec_descr())
 
-    ligrec %T>%
+    ligrec %>%
+    ligrec_decomplexify %T>%
     ligrec_overheats %>%
     ligrec_overlap %T>%
     uniq_per_res %T>%
@@ -189,6 +190,64 @@ figure_path <- function(fname, ...){
 
 }
 
+#' Decomplexify specific resources that contain complexes
+#' @param ligrec Nested list with ligand-receptor resources statistics, as
+#'    produced by \code{compile_ligrec}.
+#'
+#' @return `ligrec` contents but complexes were split into rows of subunits
+#'    and each interaction between a complex and another protein is duplicated
+#'    for each subunit
+ligrec_decomplexify <- function(ligrec){
+    complex_resources <- c("CellChatDB",
+                           "CellPhoneDB",
+                           "Baccin2019", #*
+                           "ICELLNET" #* Complexes present? Why?
+                           # CellTalkDB - no complexes in our version
+    )
+
+    cats <- list(transmitters = "genesymbol",
+                 receivers = "genesymbol",
+                 interactions = c("source_genesymbol",
+                                  "target_genesymbol"))
+
+    ligrec <-
+        ligrec %>% map2(names(.),
+                        function(res, resname) map2(cats, names(cats),
+                                                    function(col, cat)
+                                                        if(resname %in% complex_resources){
+                                                            decomplexify(res[[cat]], col)
+                                                        } else{ res[[cat]] }
+                        )
+        )
+    return(ligrec)
+}
+
+#' Helper Function to 'decomplexify' a column or vector of columns in a resource
+#' @param resource a ligrec resource
+#' @param column column to separate and pivot long (e.g. genesymbol)
+#'
+#' @return returns a longer tibble with complex subunits on seperate rows
+decomplexify <- function(resource, column){
+    column %>%
+        map(function(col){
+            sep_cols <- c(str_glue("col{rep(1:5)}"))
+            resource <<- resource %>%
+                separate(col,
+                         into = sep_cols,
+                         sep = "_",
+                         extra = "drop",
+                         fill = "right") %>%
+                pivot_longer(cols = sep_cols,
+                             values_to = col,
+                             names_to = NULL) %>%
+                tidyr::drop_na(col) %>%
+                distinct()
+        })
+    return(resource)
+}
+
+
+
 
 #' Helper Function to Convert a List of Resources into a binarized DF
 #' @param interaction_list list resources with interactions alone
@@ -218,7 +277,10 @@ ligrec_overheats <- function(ligrec){
 
     # To be extended to transmitters and receivers
     ligrec_binary <- ligrec %>%
-        map(function(res) pluck(res, "interactions")) %>%
+        map(function(res) pluck(res, "interactions") %>%
+                distinct_at(.vars = c("target_genesymbol",
+                                      "source_genesymbol"))
+            ) %>%
         binarize_resources()
 
     overheat_save(jacc_pairwise(ligrec_binary),

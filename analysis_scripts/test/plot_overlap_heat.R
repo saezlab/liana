@@ -29,7 +29,6 @@ omni_resources <- ligrec %>%
 
 
 
-
 ligrec_binary <- ligrec %>%
     map(function(res) pluck(res, "interactions")) %>%
     binarize_resources()

@@ -11,16 +11,16 @@ library(tidyverse)
 # Get Full Omni Resources
 omni_resources <- compile_ligrec()
 # saveRDS(omni_resources, "input/omni_resources.rds")
-omni_resources <- readRDS("input/omni_resources.rds")
-omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
-                       "ICELLNET" = omni_resources$ICELLNET)
+# omni_resources <- readRDS("input/omni_resources.rds")
+# omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
+#                        "ICELLNET" = omni_resources$ICELLNET)
 
 # 1. Squidpy -------------------------------------------------------------------
-squidpy_results <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_korean_mod.rds"),
+squidpy_results <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_korean_form.rds"),
                                  omni_resources = omni_resources,
                                  python_path = "/home/dbdimitrov/anaconda3/bin/python",
                                  .ident = "Cell_subtype")
-saveRDS(squidpy_results, "output/crc_res/squidpy_results_nobh.rds")
+saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
 
 # 2. NATMI --------------------------------------------------------------------
 # save OmniPath Resource to NATMI format

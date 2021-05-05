@@ -2,7 +2,7 @@
 #' @param op_resource Intrcell DB to shuffle
 #' @param .seed Value for set.seed
 #' @return A shuffled omnipath-formatted resource
-#' @import BiRewire
+#' @import BiRewire tibble
 #' @export
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
@@ -72,7 +72,8 @@ shuffle_omnipath <- function(op_resource,
             references = "BiRewire",
             entity_type_intercell_source = "protein",
             entity_type_intercell_target
-            )
+            ) %>%
+        as_tibble()
 
 
 }
