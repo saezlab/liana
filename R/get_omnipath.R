@@ -28,12 +28,18 @@ get_lr_resources <- function(){
 # only the ones different from the current defaults:
 op_ic_quality_param <- list( # used for nodes
     resource = 'OmniPath', # this is just necessary in all the calls
-    loc_consensus_percentile = 50
+    loc_consensus_percentile = 30,
+    consensus_percentile = NULL
 )
 
 # used for interactions
 op_ia_quality_param <- list(
-    min_curation_effort = 1,
+    transmitter_topology = c('secreted',
+                             'plasma_membrane_transmembrane',
+                             'plasma_membrane_peripheral'),
+    receiver_topology = c('plasma_membrane_transmembrane',
+                          'plasma_membrane_peripheral'),
+    min_curation_effort = 0,
     ligrecextra = FALSE
 )
 
@@ -54,7 +60,7 @@ op_ia_quality_param <- list(
 #' @export
 compile_ligrec <- function(lr_pipeline = TRUE){
 
-    omni_resources <-
+    ligrec <-
         get_lr_resources() %>%
         map(function(resource){
             list(transmitters = get_ligands(resource),
@@ -78,20 +84,26 @@ compile_ligrec <- function(lr_pipeline = TRUE){
             else .
         }
 
-    return(omni_resources)
+    # Keep only nodes that are part of the interactions
+    ligrec$OmniPath$receivers %<>%
+        filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol)
+    ligrec$OmniPath$transmitters %<>%
+        filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol)
+
+    return(ligrec)
 }
 
 
 
-#' Helper Function to Reformat Omni_resources for LR Pipeline
-#' @param omni_resources OmniPath list returned by compile_ligrec
+#' Helper Function to Reformat ligrec for LR Pipeline
+#' @param ligrec OmniPath list returned by compile_ligrec
 #' @return A list of OmniPath resources, including OmniPath composite DB,
 #' A reshuffled OmniPath, and a Default with NULL ( tool pipelines run
 #' using their default resource)
 #' @importFrom purrr pluck map
 #' @importFrom dplyr distinct_at
-reform_omni <- function(omni_resources){
-    map(omni_resources, function(x) x %>%
+reform_omni <- function(ligrec){
+    map(ligrec, function(x) x %>%
             pluck("interactions") %>%
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
@@ -108,12 +120,13 @@ reform_omni <- function(omni_resources){
 #' @return A tibble with Intercell interactions from OmniPath
 #'
 #' @importFrom magrittr %>%
-#' @importFrom OmnipathR import_intercell_network filter_intercell_network
+# #'@importFrom OmnipathR import_intercell_network filter_intercell_network
+#' @import OmnipathR
 omnipath_intercell <- function(...){
-
     import_intercell_network(entity_types = 'protein') %>%
+        filter_by_resource(resources =
+                               c(as.character(get_lr_resources()))) %>%
         filter_intercell_network(...)
-
 }
 
 

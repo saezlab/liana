@@ -266,7 +266,7 @@ filter_intercell_network(
 icn %>%
     filter_by_resource(resources =
                            c(as.character(c(get_lr_resources(),
-                             "Adhesome", # * 
+                             "Adhesome", #
                              "BioGRID", # * 
                              "ConsensusPathDB", # * 
                              "Dinarello2013", # Cytokine-focused
