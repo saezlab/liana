@@ -740,9 +740,10 @@ localization_ligrec_classes <- function(ligrec){
     annot <-
         import_omnipath_intercell(
             aspect = 'locational',
-            source = 'composite',
-            parent = locations %>% names
+            parent = locations %>% names,
+            consensus_percentile = 50
         ) %>%
+        filter(source == 'composite') %>%
         select(uniprot, location = category) %>%
         mutate(
             location = exec(recode, .x = location, !!!locations)
