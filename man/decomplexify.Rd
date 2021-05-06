@@ -9,7 +9,7 @@ decomplexify(resource, column)
 \arguments{
 \item{resource}{a ligrec resource}
 
-\item{column}{column to separate and pivot long (e.g. genesymbol)}
+\item{column}{column to separate and pivot long (e.g. genesymbol or uniprot)}
 }
 \value{
 returns a longer tibble with complex subunits on seperate rows
