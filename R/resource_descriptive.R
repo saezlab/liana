@@ -289,7 +289,7 @@ ligrec_overheats <- function(ligrec){
 
     overheat_save(interactions_shared(ligrec_binary),
                   figure_path("interactions_shared_heat.pdf"),
-                  "Proportion Shared")
+                  "% Present")
 
     return(ligrec)
 }
@@ -803,9 +803,10 @@ localization_ligrec_classes <- function(ligrec){
     annot <-
         import_omnipath_intercell(
             aspect = 'locational',
-            source = 'composite',
-            parent = locations %>% names
+            parent = locations %>% names,
+            consensus_percentile = 50
         ) %>%
+        filter(source == 'composite') %>%
         select(uniprot, location = category) %>%
         mutate(
             location = exec(recode, .x = location, !!!locations)
@@ -1555,7 +1556,8 @@ interactions_shared <- function(ligrec_binary){
         mutate_at(vars(resource, "name"),
                   list(~recode(., .x=!!!.resource_short))) %>%
         mutate_if(is.character, as.factor)  %>%
-        mutate(resource = fct_relevel(resource, "Mean Shared", after = Inf))
+        mutate(resource = fct_relevel(resource, "Mean Shared", after = Inf)) %>%
+        mutate(value = value * 100)
 
     return(shared_per_resource)
 }
@@ -1682,7 +1684,7 @@ overheat_save <- function(df, plotname, guide_title){
             panel.spacing = unit(1.5, "lines")
         ) +
         xlab("Resource") +
-        geom_text(aes(name, resource, label = round(value, digits = 2)),
+        geom_text(aes(name, resource, label = round(value, digits = 1)),
                   color = "white", size = 5) +
         facet_grid(.~name, scales='free_x', space="free_x") +
         scale_x_discrete(position = "top")  +
