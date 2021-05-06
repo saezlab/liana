@@ -200,9 +200,8 @@ figure_path <- function(fname, ...){
 ligrec_decomplexify <- function(ligrec){
     complex_resources <- c("CellChatDB",
                            "CellPhoneDB",
-                           "Baccin2019", #*
-                           "ICELLNET" #* Complexes present? Why?
-                           # CellTalkDB - no complexes in our version
+                           "Baccin2019",
+                           "ICELLNET"
     )
 
     cats <- list(transmitters = "uniprot",
@@ -283,14 +282,14 @@ ligrec_overheats <- function(ligrec){
             ) %>%
         binarize_resources()
 
-    overheat_save(jacc_pairwise(ligrec_binary),
+    jaccheat_save(jacc_pairwise(ligrec_binary),
                   figure_path("interactions_jaccard_heat.pdf"),
                   "Jaccard Index")
 
 
     overheat_save(interactions_shared(ligrec_binary),
                   figure_path("interactions_shared_heat.pdf"),
-                  "Interactions Shared")
+                  "Proportion Shared")
 
     return(ligrec)
 }
@@ -620,12 +619,14 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
             mb.ratio = c(.5, .5),
             nsets = length(data),
             nintersects = 30,
-            scale.intersections = `if`(omnipath, 'log10', 'identity'),
+            # scale.intersections = `if`(omnipath, 'log10', 'identity'),
+            scale.intersections = "identity",
             show.numbers = 'no',
             sets.x.label = str_to_title(label),
-            mainbar.y.label = `if`(omnipath,
-                                   str_glue("Shared {label} (log10)"),
-                                   sprintf('Shared %s', label))
+            # mainbar.y.label = `if`(omnipath,
+            #                        str_glue("Shared {label} (log10)"),
+            #                        sprintf('Shared %s', label))
+            mainbar.y.label = sprintf('Shared %s', label)
         )
     )
 
@@ -1503,11 +1504,12 @@ uniprot_annot <- function(var){
 #' @importFrom rlang !!!
 #' @importFrom purrr map
 #' @importFrom tidyselect starts_with
+#' @importFrom forcats fct_relevel
 interactions_shared <- function(ligrec_binary){
     interacts_per_resource <- ligrec_binary %>%
         as_tibble() %>%
         mutate(across(!starts_with("interaction"),
-                                    ~ifelse(.==1,interaction,.))) %>%
+                      ~ifelse(.==1,interaction,.))) %>%
         pivot_longer(-interaction,
                      names_to = "resource",
                      values_to = "interact") %>%
@@ -1525,12 +1527,24 @@ interactions_shared <- function(ligrec_binary){
         ungroup() %>%
         unnest(intersect)
 
+
     shared_per_resource <- intersects_per_resource %>%
         mutate(resource2 = names(intersect)) %>%
         unnest(intersect) %>%
         select(resource, resource2, intersect, resource_len) %>%
         mutate(shared_prop = intersect/resource_len) %>%
-        select(resource, resource2, shared_prop) %>%
+        select(resource, resource2, shared_prop)
+
+
+    mean_shared <- shared_per_resource %>%
+        filter(resource != resource2) %>%
+        group_by(resource2) %>%
+        summarise(shared_prop = mean(shared_prop)) %>%
+        mutate(resource = "Mean Shared")
+
+    shared_per_resource <- shared_per_resource %>%
+        bind_rows(mean_shared) %>%
+        distinct() %>%
         pivot_wider(
             id_cols = resource,
             names_from = resource2,
@@ -1539,7 +1553,9 @@ interactions_shared <- function(ligrec_binary){
         pivot_longer(-resource) %>%
         as.data.frame() %>%
         mutate_at(vars(resource, "name"),
-                  list(~recode(., .x=!!!.resource_short)))
+                  list(~recode(., .x=!!!.resource_short))) %>%
+        mutate_if(is.character, as.factor)  %>%
+        mutate(resource = fct_relevel(resource, "Mean Shared", after = Inf))
 
     return(shared_per_resource)
 }
@@ -1581,6 +1597,55 @@ jacc_pairwise <- function(ligrec_binary){
 }
 
 
+#' Save Jaccard Heatmaps
+#'
+#' @param df Data frame to be pivoted and used to plot the heatmap.
+#' @param plotname Name of the plot to be saved.
+#'
+#' @importFrom ggplot2 ggplot aes geom_tile
+#' @importFrom ggplot2 theme xlab theme_minimal element_text element_blank
+#' @importFrom ggplot2 guide_colorbar geom_text
+#' @importFrom grDevices cairo_pdf dev.off
+#' @importFrom viridis scale_fill_viridis
+jaccheat_save <- function(df, plotname, guide_title){
+    p <- ggplot(data = df) +
+        geom_tile(aes(name, resource, fill = value)) +
+        scale_fill_viridis(
+            option = 'cividis',
+            guide = guide_colorbar(
+                title = guide_title
+            )
+        ) +
+        theme_minimal() +
+        theme(
+            axis.text.x = element_text(vjust = 1, angle = 45,
+                                       size = 16, hjust = 1),
+            axis.text.y = element_text(vjust = 1,
+                                       size = 16, hjust = 1),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            axis.ticks = element_blank(),
+            legend.title = element_text(size=16),
+            strip.text.x = element_blank(),
+            panel.spacing = unit(1.5, "lines")
+        ) +
+        xlab("Resource") +
+        geom_text(aes(name, resource, label = round(value, digits = 3)),
+                  color = "white", size = 5) +
+        scale_y_discrete(limits=rev)
+
+    cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')
+
+    print(p)
+
+    dev.off()
+}
+
+
+
 #' Save Overlap Heatmaps
 #'
 #' @param df Data frame to be pivoted and used to plot the heatmap.
@@ -1592,17 +1657,17 @@ jacc_pairwise <- function(ligrec_binary){
 #' @importFrom grDevices cairo_pdf dev.off
 #' @importFrom viridis scale_fill_viridis
 overheat_save <- function(df, plotname, guide_title){
-    p <- ggplot(data = df, aes(resource, name, fill = value, label = value)) +
-        geom_tile() +
+    p <- ggplot(data = df) +
+        geom_tile(aes(name, resource, fill = value)) +
         scale_fill_viridis(
             option = 'cividis',
             guide = guide_colorbar(
                 title = guide_title
             )
         ) +
-        theme_minimal()+
+        theme_minimal() +
         theme(
-            axis.text.x = element_text(angle = 45, vjust = 1,
+            axis.text.x = element_text(vjust = 1, angle = 325,
                                        size = 16, hjust = 1),
             axis.text.y = element_text(vjust = 1,
                                        size = 16, hjust = 1),
@@ -1611,10 +1676,17 @@ overheat_save <- function(df, plotname, guide_title){
             panel.grid.major = element_blank(),
             panel.border = element_blank(),
             panel.background = element_blank(),
-            axis.ticks = element_blank()) +
+            axis.ticks = element_blank(),
+            legend.title = element_text(size=14),
+            strip.text.x = element_blank(),
+            panel.spacing = unit(1.5, "lines")
+        ) +
         xlab("Resource") +
-        geom_text(aes(resource, name, label = round(value, digits = 3)),
-                  color = "white", size = 5)
+        geom_text(aes(name, resource, label = round(value, digits = 2)),
+                  color = "white", size = 5) +
+        facet_grid(.~name, scales='free_x', space="free_x") +
+        scale_x_discrete(position = "top")  +
+        scale_y_discrete(limits=rev)
 
     cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')
 

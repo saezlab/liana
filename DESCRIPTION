@@ -78,5 +78,6 @@ Suggests:
     rmarkdown,
     Seurat,
     SCAomni,
-    Seurat
+    Seurat,
+    forcats
 RoxygenNote: 7.1.1
