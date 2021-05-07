@@ -1609,6 +1609,7 @@ jacc_pairwise <- function(ligrec_binary){
 #' @importFrom ggplot2 guide_colorbar geom_text
 #' @importFrom grDevices cairo_pdf dev.off
 #' @importFrom viridis scale_fill_viridis
+#' @details to be merged with overheat_save
 jaccheat_save <- function(df, plotname, guide_title){
     p <- ggplot(data = df) +
         geom_tile(aes(name, resource, fill = value)) +
@@ -1680,14 +1681,16 @@ overheat_save <- function(df, plotname, guide_title){
             panel.background = element_blank(),
             axis.ticks = element_blank(),
             legend.title = element_text(size=14),
+            legend.text = element_text(size=12),
             strip.text.x = element_blank(),
-            panel.spacing = unit(1.5, "lines")
+            panel.spacing = unit(1, "lines")
         ) +
         xlab("Resource") +
-        geom_text(aes(name, resource, label = round(value, digits = 1)),
-                  color = "white", size = 5) +
+        shadowtext::geom_shadowtext(aes(name, resource,
+                                        label = round(value, digits = 1)),
+                                    color = "white", size = 5, bg.colour='gray25') +
         facet_grid(.~name, scales='free_x', space="free_x") +
-        scale_x_discrete(position = "top")  +
+        scale_x_discrete(position = "top") +
         scale_y_discrete(limits=rev)
 
     cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')

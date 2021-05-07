@@ -11,7 +11,7 @@ library(tidyverse)
 # Get Full Omni Resources
 omni_resources <- compile_ligrec()
 # saveRDS(omni_resources, "input/omni_resources.rds")
-# omni_resources <- readRDS("input/omni_resources.rds")
+omni_resources <- readRDS("input/omni_resources.rds")
 # omni_resources <- list("Kirouac2010" = omni_resources$Kirouac2010,
 #                        "ICELLNET" = omni_resources$ICELLNET)
 

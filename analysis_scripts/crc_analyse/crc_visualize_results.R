@@ -45,14 +45,15 @@ spec_list <- list("CellChat" =
                                        "pvalue"=FALSE
                                    ))
                   )
-
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
-                          n_ints=c(250))
+                          n_ints=c(500))
+
+spec_list$NATMI@method_results$Random <- NULL
 
 # 1. Combine all binary results into heatmap
-binary_heatm <- get_BinaryHeat(top_lists$top_250,
+binary_heatm <- get_BinaryHeat(top_lists$top_500,
                                display_numbers = FALSE,
                                silent = FALSE,
                                show_rownames = FALSE,
@@ -60,7 +61,7 @@ binary_heatm <- get_BinaryHeat(top_lists$top_250,
                                legend_breaks = 0:1,
                                fontsize = 17,
                                drop_levels = TRUE,
-                               cluster_rows = TRUE,
+                               cluster_rows = FALSE,
                                cluster_cols = TRUE,
                                color = c("gray15", "darkslategray2"),
                                border_color = NA,
@@ -68,22 +69,23 @@ binary_heatm <- get_BinaryHeat(top_lists$top_250,
                                clustering_distance_cols = "binary",
                                treeheight_row = 0,
                                treeheight_col = 100)
+binary_heatm
 
 
 # 2. Activity by Cell Type Heatmap (Source and Target)
-get_activecell(top_lists$top_250)
+get_activecell(top_lists$top_500)
 
 
 # Supplementary figures =====
 # 3. UpSet Plots  by Tool
-names(top_lists$top_250) %>%
-    map(function(m_name) top_lists$top_250[[m_name]] %>%
+names(top_lists$top_500) %>%
+    map(function(m_name) top_lists$top_500[[m_name]] %>%
             prepForUpset() %>%
             plotSaveUset(str_glue("output/crc_res/plots/upset_tools/{m_name}_upset.png")))
 
 # 4. Upset Plots by Resource
 # assign CellPhoneDB to Squidpy default
-top250_resource_tool <- get_swapped_list(top_lists$top_250)
+top250_resource_tool <- get_swapped_list(top_lists$top_500)
 
 # Plot and Save Upsets
 names(top250_resource_tool) %>%
@@ -107,14 +109,14 @@ get_cellnum("input/crc_data/crc_korean_form.rds")
 
 
 # 7. Similarity Heatmap and Stats
-get_simdist_heatmap(top_lists$top_250,
+get_simdist_heatmap(top_lists$top_500,
                     sim_dist = "simil",
                     method = "Jaccard",
                     diag = TRUE,
                     upper = TRUE)
 
 
-jaccard_per_mr <- simdist_resmet(top_lists$top_250,
+jaccard_per_mr <- simdist_resmet(top_lists$top_500,
                                  sim_dist = "simil",
                                  method = "Jaccard")
 list_stats(meth = jaccard_per_mr$meth,
@@ -131,7 +133,7 @@ housekeep_list <- list("CellChat" =
                                        # "pval"=FALSE,
                                        "prob"=TRUE
                                        )),
-                  "Connectome" =
+                      "Connectome" =
                       methods::new("MethodSpecifics",
                                    method_name="Connectome",
                                    method_results = readRDS("output/crc_res/conn_results.rds"),
@@ -139,14 +141,14 @@ housekeep_list <- list("CellChat" =
                                        # "weight_sc"=TRUE,
                                        "weight_norm"=TRUE
                                    )),
-                  "iTALK" =
+                      "iTALK" =
                       methods::new("MethodSpecifics",
                                    method_name="iTALK",
                                    method_results = readRDS("output/crc_res/italk_results.rds"),
                                    method_scores=list(
                                        "weight_comb"=TRUE
                                    )),
-                  "NATMI" =
+                      "NATMI" =
                       methods::new("MethodSpecifics",
                                    method_name="NATMI",
                                    method_results = readRDS("output/crc_res/natmi_results.rds"),
@@ -154,13 +156,13 @@ housekeep_list <- list("CellChat" =
                                        # "edge_specificity"=TRUE,
                                        "edge_avg_expr"=TRUE
                                    )),
-                  "SCA" = methods::new("MethodSpecifics",
+                      "SCA" = methods::new("MethodSpecifics",
                                        method_name="SCA",
                                        method_results = readRDS("output/crc_res/sca_results.rds"),
                                        method_scores=list(
                                            "LRscore"=TRUE
                                        )),
-                  "Squidpy" =
+                      "Squidpy" =
                       methods::new("MethodSpecifics",
                                    method_name="Squidpy",
                                    method_results = readRDS("output/crc_res/squidpy_results.rds"),
@@ -171,10 +173,10 @@ housekeep_list <- list("CellChat" =
 )
 
 top_housekeep <- get_top_hits(housekeep_list,
-                              n_ints=c(250))
+                              n_ints=c(500))
 
 # 8. Binary Housekeeping heatmap
-get_BinaryHeat(top_housekeep$top_250,
+get_BinaryHeat(top_housekeep$top_500,
             display_numbers = FALSE,
             silent = FALSE,
             show_rownames = FALSE,
@@ -193,7 +195,7 @@ get_BinaryHeat(top_housekeep$top_250,
 
 
 # 9. Housekeeping Activity by Cell Type Heatmap
-get_activecell(top_housekeep$top_250)
+get_activecell(top_housekeep$top_500)
 
 
 # 10. Housekeeping Rank Avg
@@ -202,8 +204,8 @@ housekeep_frequencies <- housekeep_list %>%
 plot_freq_pca(housekeep_frequencies)
 
 # 11. Housekeeping Bray Curtis Info
-get_simdist_heatmap(top_housekeep$top_250) # All method-resource combinations BC heatmap
-bc_hp <- get_bc_stats(top_housekeep$top_250) # Get BC stats
+get_simdist_heatmap(top_housekeep$top_500) # All method-resource combinations BC heatmap
+bc_hp <- get_bc_stats(top_housekeep$top_500) # Get BC stats
 
 
 
@@ -219,3 +221,47 @@ sca_hits <- spec_list$SCA@method_results %>%
     map(function(resource) resource %>%
             filter(LRscore >= 0.5))
 sca_hits
+
+
+
+
+
+# CellChat x Squidpy
+cellchat_x_squidpy <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       "pval"=FALSE #,
+                                       # "prob"=TRUE
+                                       )),
+                      "Squidpy" =
+                          methods::new("MethodSpecifics",
+                                       method_name="Squidpy",
+                                       method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                       method_scores=list(
+                                           # "means"=TRUE,
+                                           "pvalue"=FALSE
+                     ))
+)
+
+top_lists <- get_top_hits(cellchat_x_squidpy,
+                          n_ints=c(15000))
+
+binary_heatm <- get_BinaryHeat(top_lists$top_15000,
+                               display_numbers = FALSE,
+                               silent = FALSE,
+                               show_rownames = FALSE,
+                               show_colnames = FALSE,
+                               legend_breaks = 0:1,
+                               fontsize = 17,
+                               drop_levels = TRUE,
+                               cluster_rows = FALSE,
+                               cluster_cols = TRUE,
+                               color = c("gray15", "darkslategray2"),
+                               border_color = NA,
+                               clustering_distance_rows = "binary",
+                               clustering_distance_cols = "binary",
+                               treeheight_row = 0,
+                               treeheight_col = 100)
+binary_heatm

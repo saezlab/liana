@@ -51,7 +51,7 @@ call_cellchat <- function(op_resource,
     labels <- Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))
 
-    cellchat.omni <- createCellChat(object =  `if`(.normalize,
+    cellchat.omni <- createCellChat(object =  `if`(!.normalize,
                                                    GetAssayData(seurat_object,
                                                                 assay = assay,
                                                                 slot = "data"),
