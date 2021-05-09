@@ -707,6 +707,8 @@ ligand_receptor_classes <- function(
     ligrec$receivers %<>%
         left_join(annot, by = 'uniprot')
 
+    ligrec$genesets <- bind_rows(ligrec$receivers, ligrec$transmitters)
+
     ligrec %<>% map(largest_groups, !!attr, largest = largest)
 
     return(ligrec)
@@ -742,6 +744,8 @@ hgnc_ligrec_classes <- function(ligrec, largest = 15){
 
     ligrec$transmitters %<>% left_join(hgnc_lig, by = 'uniprot')
     ligrec$receivers %<>% left_join(hgnc_rec, by = 'uniprot')
+
+    ligrec$genesets <- bind_rows(ligrec$transmitters, ligrec$receivers)
 
     ligrec %<>% map(largest_groups, category, largest = largest)
 
@@ -838,6 +842,12 @@ localization_ligrec_classes <- function(ligrec){
 
     ligrec$receivers %<>%
         left_join(annot, by = 'uniprot')
+
+    ligrec$genesets <-
+        bind_rows(
+            ligrec$receivers,
+            ligrec$transmitters
+        )
 
     return(ligrec)
 
