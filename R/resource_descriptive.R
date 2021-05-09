@@ -616,13 +616,9 @@ upset_generic <- function(data, label, omnipath, upset_args, ...){
             mb.ratio = c(.5, .5),
             nsets = length(data),
             nintersects = 30,
-            # scale.intersections = `if`(omnipath, 'log10', 'identity'),
             scale.intersections = "identity",
             show.numbers = 'no',
             sets.x.label = str_to_title(label),
-            # mainbar.y.label = `if`(omnipath,
-            #                        str_glue("Shared {label} (log10)"),
-            #                        sprintf('Shared %s', label))
             mainbar.y.label = sprintf('Shared %s', label)
         )
     )
@@ -798,12 +794,12 @@ localization_ligrec_classes <- function(ligrec){
     )
 
     location_groups <- list(
-        P_P = "Direct Signalling",
-        P_T = "Direct Signalling",
-        T_P = "Direct Signalling",
-        T_T = "Direct Signalling",
-        S_P = "Secreted Signalling",
-        S_T = "Secreted Signalling",
+        P_P = "Direct",
+        P_T = "Direct",
+        T_P = "Direct",
+        T_T = "Direct",
+        S_P = "Secreted",
+        S_T = "Secreted",
         T_S = "Others",
         S_S = "Others",
         P_S = "Others"
@@ -925,6 +921,12 @@ ligrec_classes_bar_enrich <- function(
     ) %>%
     walk2(
         names(.),
+        classes_bar_perc,
+        resource,
+        !!attr
+    ) %>%
+    walk2(
+        names(.),
         classes_enrich,
         resource,
         !!attr
@@ -1000,6 +1002,103 @@ classes_bar <- function(data, entity, resource, var){
     dev.off()
 
 }
+
+
+
+#' Percentage Stacked barplot from a data frame of classified entities
+#'
+#' @param data A data frame with classified entities (ligands, receptors or
+#'     interactions).
+#' @param entity The name of the entity, to be included in the output file
+#'     name and the y axis label.
+#' @param resource The name of the resource, to be included in the output
+#'     file name.
+#' @param var Name of the classifying variable.
+#'
+#' @return Returns `NULL`.
+#'
+#' @importFrom magrittr %>% %<>%
+#' @importFrom rlang enquo !! quo_text :=
+#' @importFrom ggplot2 ggplot aes geom_bar xlab ylab theme_bw theme
+#' @importFrom ggplot2 scale_fill_manual guide_legend element_text
+#' @importFrom dplyr filter mutate pull
+#' @importFrom stringr str_to_title str_replace
+#' @importFrom grDevices cairo_pdf
+classes_bar_perc <- function(data, entity, resource, var){
+
+    var <- enquo(var)
+
+    legend_title <- sprintf(
+        '%s (%s)',
+        var %>% quo_text %>% str_to_title,
+        resource %>% str_replace('_.*$', '')
+    )
+
+    path <- figure_path('classes_perc_%s_%s.pdf', entity, resource)
+
+    data %<>%
+        filter(!is.na(!!var)) %>%
+        order_by_group_size(resource) %>%
+        mutate(
+            !!var := factor(
+                !!var,
+                levels = sort(unique(!!var)),
+                ordered = TRUE
+            )
+        ) %>%
+        dplyr::group_by(resource, !!var) %>%
+        summarise(n = n()) %>%
+        mutate(perc = n / sum(n)) %>%
+        ungroup()
+
+    mean_perc <- data %>%
+        dplyr::group_by(!!var) %>%
+        summarise(perc = mean(perc), .groups = "keep") %>%
+        mutate(resource = "Average")
+
+    data %<>% bind_rows(mean_perc)
+
+    p <- ggplot(data, aes(x = resource, y = perc,
+                          fill = factor(!!var))) +
+        geom_bar(stat = "identity") +
+        scale_fill_manual(
+            values = .palette1,
+            guide = guide_legend(title = legend_title)
+        )  +
+        ylab(str_to_title(entity)) +
+        xlab('Resources') +
+        geom_text(
+            aes(label = round(perc*100)),
+            position = position_stack(vjust = 0.5), size = 2, color = "white") +
+        scale_y_continuous(labels = scales::percent) +
+        theme_bw() +
+        theme(
+            axis.text.x = element_text(angle = 45,
+                                       size = 7, hjust = 1),
+            axis.text.y = element_text(vjust = 1,
+                                       size = 6, hjust = 1),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            axis.ticks = element_blank(),
+            legend.title = element_text(size=6),
+            legend.text = element_text(size=5),
+            strip.text.x = element_blank(),
+            legend.key.size = unit(3, 'mm')
+        )
+
+    wide <- (data %>% pull(!!var) %>% as.character %>% nchar %>% max) > 30
+
+    cairo_pdf(path, width = `if`(wide, 7, 5), height = 3, family = 'DINPro')
+
+    print(p)
+
+    dev.off()
+
+}
+
 
 #' Enrichment dot plot from a data frame of classified entities
 #'
