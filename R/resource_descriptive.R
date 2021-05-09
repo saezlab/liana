@@ -968,11 +968,14 @@ ligrec_classes_bar_enrich <- function(
 classes_bar <- function(data, entity, resource, var){
 
     var <- enquo(var)
-    legend_title <- sprintf(
-        '%s (%s)',
-        var %>% quo_text %>% str_to_title,
-        resource %>% str_replace('_.*$', '')
-    )
+    legend_title <- ifelse(entity=="interactions" & quo_text(var)=="location",
+                           "Signalling (OP-L)",
+                           sprintf(
+                               '%s (%s)',
+                               var %>% quo_text %>% str_to_title,
+                               resource %>% str_replace('_.*$', '')
+                               )
+                           )
 
     path <- figure_path('classes_%s_%s.pdf', entity, resource)
 
@@ -1038,10 +1041,13 @@ classes_bar_perc <- function(data, entity, resource, var){
 
     var <- enquo(var)
 
-    legend_title <- sprintf(
-        '%s (%s)',
-        var %>% quo_text %>% str_to_title,
-        resource %>% str_replace('_.*$', '')
+    legend_title <- ifelse(entity=="interactions" & quo_text(var)=="location",
+                           "Signalling (OP-L)",
+                           sprintf(
+                               '%s (%s)',
+                               var %>% quo_text %>% str_to_title,
+                               resource %>% str_replace('_.*$', '')
+                           )
     )
 
     path <- figure_path('classes_perc_%s_%s.pdf', entity, resource)
@@ -1061,12 +1067,13 @@ classes_bar_perc <- function(data, entity, resource, var){
         mutate(perc = n / sum(n)) %>%
         ungroup()
 
-    mean_perc <- data %>%
-        dplyr::group_by(!!var) %>%
-        summarise(perc = mean(perc), .groups = "keep") %>%
-        mutate(resource = "Average")
+    # mean_perc <- data %>%
+    #     dplyr::group_by(!!var) %>%
+    #     summarise(perc = mean(perc), .groups = "keep") %>%
+    #     mutate(resource = "Average")
 
-    data %<>% bind_rows(mean_perc)
+    # data %<>% bind_rows(mean_perc) %>%
+    #     mutate(label = perc)
 
     p <- ggplot(data, aes(x = resource, y = perc,
                           fill = factor(!!var))) +
@@ -1077,10 +1084,11 @@ classes_bar_perc <- function(data, entity, resource, var){
         )  +
         ylab(str_to_title(entity)) +
         xlab('Resources') +
-        geom_text(
-            aes(label = round(perc*100)),
-            position = position_stack(vjust = 0.5), size = 2, color = "white") +
         scale_y_continuous(labels = scales::percent) +
+        geom_text(
+            aes(label = if_else(perc>0.029, str_glue("{round(perc*100)}%"), "")),
+            position = position_stack(vjust = 0.5), size = 2, color = "white"
+        ) +
         theme_bw() +
         theme(
             axis.text.x = element_text(angle = 45,
@@ -1092,8 +1100,8 @@ classes_bar_perc <- function(data, entity, resource, var){
             panel.border = element_blank(),
             panel.background = element_blank(),
             axis.ticks = element_blank(),
-            legend.title = element_text(size=6),
-            legend.text = element_text(size=5),
+            legend.title = element_text(size=8),
+            legend.text = element_text(size=7),
             strip.text.x = element_blank(),
             legend.key.size = unit(3, 'mm')
         )
