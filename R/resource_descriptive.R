@@ -1078,7 +1078,6 @@ classes_bar_perc <- function(data, entity, resource, var){
             axis.text.y = element_text(vjust = 1,
                                        size = 6, hjust = 1),
             axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
             panel.grid.major = element_blank(),
             panel.border = element_blank(),
             panel.background = element_blank(),
