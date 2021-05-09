@@ -101,7 +101,7 @@ devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')
 # A modified version of SingleCellSignalR (SCA) that enables external resources
 devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
 # Install this repos
-devtools::install_github('saezlab/Cell_Cell_Investigation')
+devtools::install_github('saezlab/ligrec_decoupler')
 ```
   
   

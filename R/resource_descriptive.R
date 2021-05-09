@@ -1,5 +1,3 @@
-
-#
 #  This file is part of the `intercell` R package
 #
 #  Copyright
@@ -15,7 +13,6 @@
 #      https://directory.fsf.org/wiki/License:Expat
 #
 #  Git repo: https://github.com/saezlab/Cell_Cell_Investigation
-#
 
 
 # colors from brewer.pal
@@ -800,6 +797,18 @@ localization_ligrec_classes <- function(ligrec){
         plasma_membrane_peripheral = 'P'
     )
 
+    location_groups <- list(
+        P_P = "Direct Signalling",
+        P_T = "Direct Signalling",
+        T_P = "Direct Signalling",
+        T_T = "Direct Signalling",
+        S_P = "Secreted Signalling",
+        S_T = "Secreted Signalling",
+        T_S = "Others",
+        S_S = "Others",
+        P_S = "Others"
+    )
+
     annot <-
         import_omnipath_intercell(
             aspect = 'locational',
@@ -816,22 +825,16 @@ localization_ligrec_classes <- function(ligrec){
     ligrec$interactions %<>%
         left_join(annot, by = c('source' = 'uniprot')) %>%
         left_join(annot, by = c('target' = 'uniprot'),
-            suffix = c('_source', '_target')
+                  suffix = c('_source', '_target')
         ) %>%
         filter(
             !is.na(location_source) &
-            !is.na(location_target)
+                !is.na(location_target)
         ) %>%
+        unite(location_source, location_target,
+              col="location", sep = "_") %>%
         mutate(
-            location = sprintf(
-                '%s \u2192 %s',
-                location_source,
-                location_target
-            )
-        ) %>%
-        select(
-            -location_source,
-            -location_target
+            location = exec(recode, .x = location, !!!location_groups)
         )
 
     ligrec$transmitters %<>%
