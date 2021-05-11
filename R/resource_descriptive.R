@@ -1790,7 +1790,7 @@ overheat_save <- function(df, plotname, guide_title){
         ) +
         theme_minimal() +
         theme(
-            axis.text.x = element_text(vjust = 1, angle = 325,
+            axis.text.x = element_text(vjust = 1, angle = 90,
                                        size = 16, hjust = 1),
             axis.text.y = element_text(vjust = 1,
                                        size = 16, hjust = 1),
@@ -1803,15 +1803,15 @@ overheat_save <- function(df, plotname, guide_title){
             legend.title = element_text(size=14),
             legend.text = element_text(size=12),
             strip.text.x = element_blank(),
+            strip.text.y = element_blank(),
             panel.spacing = unit(1, "lines")
         ) +
         xlab("Resource") +
         shadowtext::geom_shadowtext(aes(name, resource,
                                         label = round(value, digits = 1)),
                                     color = "white", size = 5, bg.colour='gray25') +
-        facet_grid(.~name, scales='free_x', space="free_x") +
-        scale_x_discrete(position = "top") +
-        scale_y_discrete(limits=rev)
+        facet_grid(name~., scales='free_y', space="free_y") +
+        coord_flip()
 
     cairo_pdf(plotname, width = 16, height = 9, family = 'DINPro')
 

@@ -296,7 +296,8 @@ spec_list <- list("CellChat" =
                                    method_results = readRDS("output/crc_res/squidpy_results.rds"),
                                    method_scores=list(
                                        "pvalue"=FALSE
-                                   )))
+                                   ))
+                  )
 
 spec_list$CellChat@method_results %<>% keep(names(.) %in% complex_resources)
 spec_list$Squidpy@method_results %<>% keep(names(.) %in% complex_resources[-5])
@@ -330,7 +331,7 @@ get_activecell(sig_list$top_5000)
 
 
 # 3. Percentages of Complexes
-sig_list$top_5000 %>%
+compl_perc <- sig_list$top_5000 %>%
     enframe(name = "method") %>%
     unnest(value) %>%
     mutate(resource = names(value)) %>%
@@ -343,6 +344,8 @@ sig_list$top_5000 %>%
     mutate(prop = complex/total) %>%
     select(resource, method, prop) %>%
     distinct()
+
+mean(compl_perc$prop)
 
 
 sig_list$top_5000$CellChat$Default %>%

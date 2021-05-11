@@ -1,4 +1,5 @@
 omni_resources <- compile_ligrec(lr_pipeline = TRUE)
+
 testdata <- SeuratData::LoadData("pbmc3k")
 testdata <- testdata %>% FindVariableFeatures()
 testdata@meta.data <- testdata@meta.data %>%

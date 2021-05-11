@@ -78,19 +78,17 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                     !!!op_ia_quality_param
                 )
             )
-        )) %>%
-        {
-            if(lr_pipeline) reform_omni(.)
-            else .
-        }
+        ))
 
     # Keep only nodes that are part of the interactions
     ligrec$OmniPath$receivers %<>%
-        filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol) %>%
+        dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol) %>%
         distinct_at(.vars="genesymbol", .keep_all = TRUE)
     ligrec$OmniPath$transmitters %<>%
-        filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol) %>%
+        dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol) %>%
         distinct_at(.vars="genesymbol", .keep_all = TRUE)
+
+    ligrec %<>% {if(lr_pipeline) reform_omni(.) else .}
 
     return(ligrec)
 }
