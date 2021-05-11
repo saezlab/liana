@@ -168,12 +168,14 @@ plot_freq_pca <- function(freq_df){
 #' Function to get Activity per Cell Type heatmap
 #'
 #' @param top_list A resource-tool list with top hits for each combination.
-#'
+#' @param cap_value Cap cell fraction (prop cell activity) to a given value
 #' @return Cell Type Activity Heatmap
 #'
 #' @import pheatmap tidyverse
 #' @inheritDotParams pheatmap::pheatmap
-get_activecell <- function(top_list, ...){
+get_activecell <- function(top_list,
+                           cap_value = 1,
+                           ...){
   # Split by source/target cell
   top_frac <- top_list %>%
     map(function(db){
@@ -192,6 +194,9 @@ get_activecell <- function(top_list, ...){
         mutate(cell_count = n()) %>%
         group_by(resource, cat, cell) %>%
         mutate(cell_fraq = cell_count/total_count) %>%
+        mutate(cell_fraq = if_else(cell_fraq > cap_value,
+                                   cap_value,
+                                   cell_fraq)) %>%
         distinct() %>%
         unite(cell, cat, col = "cell_cat") %>%
         pivot_wider(id_cols = resource,
@@ -204,6 +209,7 @@ get_activecell <- function(top_list, ...){
     unite(method, resource, col = "mr") %>%
     mutate_all(~ replace(., is.na(.), 0))
 
+  print(top_frac)
 
   # annotation groups (sequential vectors as in heatmap_binary_list)
   method_groups <- top_frac %>%

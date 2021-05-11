@@ -19,8 +19,9 @@ call_squidpyR <- function(seurat_object,
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
-    if("DEFAULT" %in% toupper(names(omni_resources))){
-        omni_resources$Default <- omni_resources$CellPhoneDB
+    if("DEFAULT" %in% toupper(names(omni_resources))){ # to be replaced
+        # omni_resources$Default <- omni_resources$CellPhoneDB
+        omni_resources$Default <- NULL
     }
 
     op_resources <- map(omni_resources, function(x) x %>%

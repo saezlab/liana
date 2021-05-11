@@ -45,12 +45,15 @@ spec_list <- list("CellChat" =
                                        "pvalue"=FALSE
                                    ))
                   )
+spec_list$Squidpy@method_results$Default <- NULL
+
+
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
                           n_ints=c(500))
 
-spec_list$NATMI@method_results$Random <- NULL
+
 
 # 1. Combine all binary results into heatmap
 binary_heatm <- get_BinaryHeat(top_lists$top_500,
@@ -73,7 +76,7 @@ binary_heatm
 
 
 # 2. Activity by Cell Type Heatmap (Source and Target)
-get_activecell(top_lists$top_500)
+get_activecell(top_lists$top_500, cap_value = 0.2)
 
 
 # Supplementary figures =====
@@ -119,8 +122,8 @@ get_simdist_heatmap(top_lists$top_500,
 jaccard_per_mr <- simdist_resmet(top_lists$top_500,
                                  sim_dist = "simil",
                                  method = "Jaccard")
-list_stats(meth = jaccard_per_mr$meth,
-           reso = jaccard_per_mr$reso)
+jac <- list_stats(meth = jaccard_per_mr$meth,
+                  reso = jaccard_per_mr$reso)
 
 
 
@@ -141,13 +144,6 @@ housekeep_list <- list("CellChat" =
                                        # "weight_sc"=TRUE,
                                        "weight_norm"=TRUE
                                    )),
-                      "iTALK" =
-                      methods::new("MethodSpecifics",
-                                   method_name="iTALK",
-                                   method_results = readRDS("output/crc_res/italk_results.rds"),
-                                   method_scores=list(
-                                       "weight_comb"=TRUE
-                                   )),
                       "NATMI" =
                       methods::new("MethodSpecifics",
                                    method_name="NATMI",
@@ -156,12 +152,6 @@ housekeep_list <- list("CellChat" =
                                        # "edge_specificity"=TRUE,
                                        "edge_avg_expr"=TRUE
                                    )),
-                      "SCA" = methods::new("MethodSpecifics",
-                                       method_name="SCA",
-                                       method_results = readRDS("output/crc_res/sca_results.rds"),
-                                       method_scores=list(
-                                           "LRscore"=TRUE
-                                       )),
                       "Squidpy" =
                       methods::new("MethodSpecifics",
                                    method_name="Squidpy",
@@ -199,17 +189,74 @@ get_activecell(top_housekeep$top_500)
 
 
 # 10. Housekeeping Rank Avg
-housekeep_frequencies <- housekeep_list %>%
-    get_rank_frequencies()
-plot_freq_pca(housekeep_frequencies)
+housekeep_list %>%
+    get_rank_frequencies() %>%
+    plot_freq_pca()
 
 # 11. Housekeeping Bray Curtis Info
-get_simdist_heatmap(top_housekeep$top_500) # All method-resource combinations BC heatmap
-bc_hp <- get_bc_stats(top_housekeep$top_500) # Get BC stats
+get_simdist_heatmap(top_housekeep$top_500,
+                    sim_dist = "simil",
+                    method = "Jaccard",
+                    diag = TRUE,
+                    upper = TRUE)
+
+jaccard_house <- simdist_resmet(top_housekeep$top_500,
+                                 sim_dist = "simil",
+                                 method = "Jaccard")
+list_stats(meth = jaccard_house$meth,
+           reso = jaccard_house$reso)
+
 
 
 
 # 12. Addititional Checks
+# Universe of only those 4 methods
+spec_list <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       # "pval"=FALSE,
+                                       "prob"=TRUE
+                                   )),
+                  "Connectome" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Connectome",
+                                   method_results = readRDS("output/crc_res/conn_results.rds"),
+                                   method_scores=list(
+                                       "weight_sc"=TRUE #,
+                                       # "weight_norm"=TRUE
+                                   )),
+                  "NATMI" =
+                      methods::new("MethodSpecifics",
+                                   method_name="NATMI",
+                                   method_results = readRDS("output/crc_res/natmi_results.rds"),
+                                   method_scores=list(
+                                       "edge_specificity"=TRUE # ,
+                                       # "edge_avg_expr"=TRUE
+                                   )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       # "means"=TRUE,
+                                       "pvalue"=FALSE
+                                   ))
+)
+
+top_lists <- get_top_hits(spec_list,
+                          n_ints=c(500))
+
+
+jaccard_per_mr <- simdist_resmet(top_lists$top_500,
+                                 sim_dist = "simil",
+                                 method = "Jaccard")
+list_stats(meth = jaccard_per_mr$meth,
+           reso = jaccard_per_mr$reso)
+
+
+
 # Check CellChat P-values
 cc_hits <- spec_list$CellChat@method_results %>%
     map(function(resource) resource %>%
@@ -222,46 +269,81 @@ sca_hits <- spec_list$SCA@method_results %>%
             filter(LRscore >= 0.5))
 sca_hits
 
+sq_hits <- spec_list$Squidpy@method_results %>%
+    map(function(resource) resource %>%
+            filter(pvalue <= 0.05))
+sq_hits
 
 
 
+# Supp Note 2 Complexes
+complex_resources <-  c("Baccin2019",
+                        "CellChatDB",
+                        "CellPhoneDB",
+                        "ICELLNET",
+                        "Default")
 
-# CellChat x Squidpy
-cellchat_x_squidpy <- list("CellChat" =
+spec_list <- list("CellChat" =
                       methods::new("MethodSpecifics",
                                    method_name="CellChat",
                                    method_results = readRDS("output/crc_res/cellchat_results.rds"),
                                    method_scores=list(
-                                       "pval"=FALSE #,
-                                       # "prob"=TRUE
-                                       )),
-                      "Squidpy" =
-                          methods::new("MethodSpecifics",
-                                       method_name="Squidpy",
-                                       method_results = readRDS("output/crc_res/squidpy_results.rds"),
-                                       method_scores=list(
-                                           # "means"=TRUE,
-                                           "pvalue"=FALSE
-                     ))
-)
+                                       "pval"=FALSE
+                                   )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       "pvalue"=FALSE
+                                   )))
 
-top_lists <- get_top_hits(cellchat_x_squidpy,
-                          n_ints=c(15000))
+spec_list$CellChat@method_results %<>% keep(names(.) %in% complex_resources)
+spec_list$Squidpy@method_results %<>% keep(names(.) %in% complex_resources[-5])
 
-binary_heatm <- get_BinaryHeat(top_lists$top_15000,
-                               display_numbers = FALSE,
-                               silent = FALSE,
-                               show_rownames = FALSE,
-                               show_colnames = FALSE,
-                               legend_breaks = 0:1,
-                               fontsize = 17,
-                               drop_levels = TRUE,
-                               cluster_rows = FALSE,
-                               cluster_cols = TRUE,
-                               color = c("gray15", "darkslategray2"),
-                               border_color = NA,
-                               clustering_distance_rows = "binary",
-                               clustering_distance_cols = "binary",
-                               treeheight_row = 0,
-                               treeheight_col = 100)
-binary_heatm
+# Get Significant hits for Squidpy and CellChat
+sig_list <- get_top_hits(spec_list,
+                         n_ints=c(5000))
+
+# Sig hit heatmap
+get_BinaryHeat(sig_list$top_5000,
+               display_numbers = FALSE,
+               silent = FALSE,
+               show_rownames = FALSE,
+               show_colnames = FALSE,
+               legend_breaks = 0:1,
+               fontsize = 17,
+               drop_levels = TRUE,
+               cluster_rows = FALSE,
+               cluster_cols = TRUE,
+               color = c("gray15", "darkslategray2"),
+               border_color = NA,
+               clustering_distance_rows = "binary",
+               clustering_distance_cols = "binary",
+               treeheight_row = 0,
+               treeheight_col = 100)
+
+
+
+# 2. Activity by Cell Type Heatmap (Source and Target)
+get_activecell(sig_list$top_5000)
+
+
+# 3. Percentages of Complexes
+sig_list$top_5000 %>%
+    enframe(name = "method") %>%
+    unnest(value) %>%
+    mutate(resource = names(value)) %>%
+    unnest(value) %>%
+    select(method, resource, ligand, receptor) %>%
+    group_by(method, resource) %>%
+    add_count(name = "total") %>%
+    filter((str_detect(receptor, "_") | str_detect(ligand, "_"))) %>%
+    add_count(name = "complex") %>%
+    mutate(prop = complex/total) %>%
+    select(resource, method, prop) %>%
+    distinct()
+
+
+sig_list$top_5000$CellChat$Default %>%
+    filter(str_detect(receptor, "_"))

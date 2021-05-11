@@ -51,6 +51,9 @@ top_enh <- function(...){
     if(elipses$wt == "prob"){
         elipses[[1]] <- elipses[[1]] %>%
             filter(pval <= 0.05)
+    } else if(elipses$wt == "pval"){
+        elipses[[1]] <- elipses[[1]] %>%
+            filter(pval <= 0.05)
     } else if(elipses$wt == "pvalue"){
         elipses[[1]] <- elipses[[1]] %>%
             filter(pvalue <= 0.05)
@@ -253,9 +256,10 @@ get_binary_df <- function(sig_list){
 simdist_resmet <- function(sig_list,
                            ...){
     binary_df <- get_binary_df(sig_list)
-    excl_res <- c("Random",
-                  "Reshuffled",
-                  "Default")
+    excl_res <- c(
+        "Reshuffled",
+        "Default"
+        )
 
     methods <- names(sig_list)
     resources <- names(sig_list[[1]])
@@ -272,6 +276,7 @@ simdist_resmet <- function(sig_list,
             ...)) %>%
         setNames(methods)
 
+    # Get Sim/Diss between Resources
     resource_sim <- resources %>% map(function(resource){
         binary_df %>%
             select(ends_with(resource))
@@ -322,7 +327,9 @@ list_stats <- function(...){
         mutate(mn = mean(simdist),
                med = median(simdist),
                len = length(simdist),
-               sd = sd(simdist)) %>%
+               sd = sd(simdist),
+               .min = min(simdist),
+               .max = max(simdist)) %>%
         ungroup()
 
     return(df_stats)

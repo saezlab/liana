@@ -1067,13 +1067,14 @@ classes_bar_perc <- function(data, entity, resource, var){
         mutate(perc = n / sum(n)) %>%
         ungroup()
 
-    # mean_perc <- data %>%
-    #     dplyr::group_by(!!var) %>%
-    #     summarise(perc = mean(perc), .groups = "keep") %>%
-    #     mutate(resource = "Average")
+    if (quo_text(var)=="location"){
+        mean_perc <- data %>%
+            dplyr::group_by(!!var) %>%
+            summarise(perc = mean(perc), .groups = "keep") %>%
+            mutate(resource = "Average")
 
-    # data %<>% bind_rows(mean_perc) %>%
-    #     mutate(label = perc)
+        data %<>% bind_rows(mean_perc)
+    }
 
     p <- ggplot(data, aes(x = resource, y = perc,
                           fill = factor(!!var))) +
