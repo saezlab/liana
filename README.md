@@ -42,7 +42,7 @@ The tools implemented in this repository are:
   
 ## Resources
 
-### Ligand-receptor resources
+### Cell-cell Communication resources
 
 The following CCC resources are accessible via this pipeline:
 
