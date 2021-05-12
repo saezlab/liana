@@ -8,9 +8,9 @@ The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
 an immense interest in understanding intercellular crosstalk. Multiple
 tools and resources that aid the investigation of cell-cell communication (CCC)
 were published recently.
-However, these tools and resources are usually in a fixed combination of a
+However, these methods and resources are usually in a fixed combination of a
 tool and its corresponding resource, but in principle any resource could be
-combined with any tool. Yet, it is largely unclear the
+combined with any method. Yet, it is largely unclear the
 difference that the choice of resource and tool can have on the predicted
 CCC events. Thus, we attempt to shed some light on this topic via the
 systematic comparison of how different combinations might influence CCC
