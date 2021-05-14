@@ -1,7 +1,9 @@
-omni_resources <- compile_ligrec(lr_pipeline = TRUE)
+# omni_resources <- compile_ligrec(lr_pipeline = TRUE)
+omni_resources <- readRDS("input/omni_resources.rds")
+op_resources <- list("CellChatDB" = omni_resources$CellChatDB)
+op_resources$CellChatDB %<>% filter(str_detect(target_genesymbol, "_"))
 
 testdata <- SeuratData::LoadData("pbmc3k")
-testdata <- testdata %>% FindVariableFeatures()
 testdata@meta.data <- testdata@meta.data %>%
     filter(seurat_annotations %in% c("NK", "CD8 T", "B"))# %>%
     # rownames_to_column("id") %>%
@@ -9,6 +11,7 @@ testdata@meta.data <- testdata@meta.data %>%
     # top_n(11, nCount_RNA) %>%
     # as.data.frame() %>%
     # column_to_rownames("id")
+testdata <- testdata %>% FindVariableFeatures()
 testdata <- subset(testdata, cells = rownames(testdata@meta.data))
 testdata <- SetIdent(testdata, value = testdata@meta.data$seurat_annotations)
 
@@ -20,7 +23,7 @@ cc_res <- call_cellchat(op_resource = NULL,
                         exclude_anns = c(),
                         thresh = 1,
                         assay = "RNA",
-                        .normalize = FALSE,
+                        .normalize = TRUE,
                         .do_parallel = FALSE,
                         .raw_use = TRUE)
 
@@ -52,11 +55,8 @@ sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
                     )
 
 # Squidpy
-op_resources <- list("CellChatDB" = omni_resources$CellChatDB,
-                     "CellPhoneDB" = omni_resources$CellPhoneDB)
-
 squidpy_res <- call_squidpyR(seurat_object = testdata,
-                             python_path = "/home/dbdimitrov/anaconda3/bin/python",
+                             python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
                              omni_resources = op_resources)
 
 
@@ -78,7 +78,7 @@ squidpy_res <- call_squidpyR(seurat_object = testdata,
 start <- Sys.time()
 cc_res <- call_cellchat(op_resource = NULL,
                         seurat_object = readRDS("input/crc_data/crc_belgian_form.rds"),
-                        nboot = 1000,
+                        nboot = 100,
                         exclude_anns = c(),
                         thresh = 0.05,
                         assay = "RNA",
