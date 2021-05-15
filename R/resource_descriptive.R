@@ -413,6 +413,7 @@ uniq_per_res <- function(ligrec_olap){
         map(function(cat){
             cat %>%
                 group_by(resource, unique) %>%
+                distinct() %>%
                 summarise(unq_or_not = n()) %>%
                 ungroup() %>%
                 pivot_wider(id_cols = resource,
@@ -429,9 +430,11 @@ uniq_per_res <- function(ligrec_olap){
                                         ~if(is.numeric(.)) median(.) else "Median"))
         }
         ) %>%
-        bind_rows(.id = "category") %>%
-        select(category, resource, unq_perc) %>%
-        pivot_wider(names_from = category, id_cols = resource, values_from = unq_perc) %>%
+        bind_rows(.id = "entity") %>%
+        select(entity, resource, unq_perc) %>%
+        pivot_wider(names_from = entity,
+                    id_cols = resource,
+                    values_from = unq_perc) %>%
         write.csv(figure_path("uniqes_per_resource.csv"))
 }
 
@@ -481,53 +484,73 @@ total_unique_bar <- function(ligrec_olap){
         pull(resource) %>%
         unique
 
-    ligrec_olap %>%
-    map2(
-        names(.),
-        function(data, label){
+    ligrec_olap %<>%
+        map2(
+            names(.),
+            function(data, label){
 
-            data %<>%
-                filter(name != 'total') %>%
-                mutate(
-                    resource = factor(
-                        resource,
-                        levels = res_order,
-                        ordered = TRUE
-                    ),
-                    name = factor(
-                        name,
-                        levels = c('n_shared', 'n_unique'),
-                        ordered = TRUE
+                data %<>%
+                    filter(name != 'total') %>%
+                    mutate(
+                        resource = factor(
+                            resource,
+                            levels = res_order,
+                            ordered = TRUE
+                        ),
+                        name = factor(
+                            name,
+                            levels = c('n_shared', 'n_unique'),
+                            ordered = TRUE
+                        )
                     )
-                )
+            }
+        )  %>%
+        bind_rows(.id="entity") %>%
+        mutate(entity = str_to_title(entity)) %>%
+        group_by(entity, resource) %>%
+        mutate(perc = round((value/sum(value))*100))
 
-            p <- ggplot(data, aes(y = resource, x = value, fill = name)) +
-                geom_col() +
-                scale_fill_manual(
-                    values = c('#B3C5E9', '#4268B3'),
-                    label = c(n_shared = 'Shared', n_unique = 'Unique'),
-                    guide = guide_legend(title = '')
-                ) +
-                xlab(str_to_title(label)) +
-                ylab('Resources') +
-                theme_bw()
 
-            cairo_pdf(
-                figure_path('size_overlap_%s.pdf', label),
-                width = 5,
-                height = 4,
-                family = 'DINPro'
-            )
 
-            print(p)
+    p <- ggplot(ligrec_olap, aes(y = resource, x = value, fill = name)) +
+        geom_col() +
+        scale_fill_manual(
+            values = c('#B3C5E9', '#4268B3'),
+            label = c(n_shared = 'Shared', n_unique = 'Unique'),
+            guide = guide_legend(title = '')
+        ) +
+        xlab('') +
+        ylab('Resources') +
+        facet_grid(.~entity, scales='free_x')  +
+        shadowtext::geom_shadowtext(
+            aes(label = if_else(perc > 5, str_glue("{round(perc)}%"), "")),
+            position = position_stack(vjust = 0.7),
+            size = 5, color = "white"
+            ) +
+        theme_bw() +
+        theme(
+            axis.text.x = element_text(size = 16),
+            axis.text.y = element_text(size = 17),
+            axis.title.y = element_text(size = 20),
+            panel.grid.major = element_blank(),
+            panel.background = element_blank(),
+            axis.ticks = element_blank(),
+            legend.title = element_text(size=18),
+            legend.text = element_text(size=16),
+            strip.text.x = element_text(size=17),
+            legend.key.size = unit(17, 'mm')
+        )
 
-            dev.off()
+    cairo_pdf(
+        figure_path('size_overlap_combined.pdf'),
+        width = 19,
+        height = 9,
+        family = 'DINPro'
+    )
 
-            return(data)
+    print(p)
 
-        }
-    ) %>%
-    invisible()
+    dev.off()
 
 }
 
@@ -806,9 +829,9 @@ localization_ligrec_classes <- function(ligrec){
         T_T = "Direct",
         S_P = "Secreted",
         S_T = "Secreted",
-        T_S = "Others",
-        S_S = "Others",
-        P_S = "Others"
+        T_S = "Other",
+        S_S = "Other",
+        P_S = "Other"
     )
 
     annot <-

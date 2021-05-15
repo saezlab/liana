@@ -79,5 +79,6 @@ Suggests:
     Seurat,
     SCAomni,
     Seurat,
-    forcats
+    forcats,
+    shadowtext
 RoxygenNote: 7.1.1
