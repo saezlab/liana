@@ -12,7 +12,7 @@
 #  See accompanying file `LICENSE` or find a copy at
 #      https://directory.fsf.org/wiki/License:Expat
 #
-#  Git repo: https://github.com/saezlab/Cell_Cell_Investigation
+#  Git repo: https://github.com/saezlab/ligrec_decoupler
 
 
 # colors from brewer.pal
@@ -206,14 +206,14 @@ ligrec_decomplexify <- function(ligrec){
                  interactions = c("source",
                                   "target"))
 
-    ligrec <-
-        ligrec %>% map2(names(.),
-                        function(res, resname) map2(cats, names(cats),
-                                                    function(col, cat)
-                                                        if(resname %in% complex_resources){
-                                                            decomplexify(res[[cat]], col)
-                                                        } else{ res[[cat]] }
-                        )
+    ligrec %<>% map2(names(.),
+                     function(res, resname)
+                         map2(cats, names(cats),
+                              function(col, cat)
+                                  if(resname %in% complex_resources){
+                                      decomplexify(res[[cat]], col)
+                                      } else{ res[[cat]] }
+                              )
         )
     return(ligrec)
 }
@@ -237,7 +237,9 @@ decomplexify <- function(resource, column){
                              values_to = col,
                              names_to = NULL) %>%
                 tidyr::drop_na(col) %>%
-                distinct()
+                distinct() %>%
+                mutate_at(.vars = c(col),
+                          ~str_replace(., "COMPLEX:", ""))
         })
     return(resource)
 }
