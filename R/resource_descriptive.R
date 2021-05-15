@@ -245,19 +245,18 @@ decomplexify <- function(resource, column){
 }
 
 
-
-
 #' Helper Function to Convert a List of Resources into a binarized DF
-#' @param interaction_list list resources with interactions alone
-#' @returns Returns a 1/0 dataframe where 1 is assigned to interactions
-#'    present in a given resource, 0 to absent interactions
-binarize_resources <- function(interaction_list){
-    map(names(interaction_list), function(l_name){
-        interaction_list[[l_name]] %>%
-            select(source, target) %>%
-            unite("interaction", source, target, sep="_") %>%
+#' @param entity_list list resources with tibbles for entities
+#'    (i.e. interactions, transmitters, receivers)
+#' @returns Returns a list of 1/0 tibbles for each entity where 1 is assigned
+#'    to entities present in a given resource, 0s to absent ones
+binarize_resources <- function(entity_list, cols){
+    map(names(entity_list), function(l_name){
+        entity_list[[l_name]] %>%
+            select(!!cols) %>%
+            unite("entity", !!cols, sep="_") %>%
             mutate(!!l_name := 1)
-    }) %>% reduce(., full_join, by = "interaction") %>%
+    }) %>% reduce(., full_join, by = "entity") %>%
         mutate_at(vars(1:ncol(.)), ~ replace(., is.na(.), 0)) %>%
         mutate_at(vars(2:ncol(.)), ~ replace(., . != 0, 1)) %>%
         as.data.frame()
@@ -273,22 +272,30 @@ ligrec_overheats <- function(ligrec){
 
     log_success('Plotting Pairwise Jaccard and Overlap.')
 
-    # To be extended to transmitters and receivers
-    ligrec_binary <- ligrec %>%
-        map(function(res) pluck(res, "interactions") %>%
-                distinct_at(.vars = c("target",
-                                      "source"))
-            ) %>%
-        binarize_resources()
+    cats <- list(transmitters = "uniprot",
+                 receivers = "uniprot",
+                 interactions = c("source",
+                                  "target")
+    )
 
-    jaccheat_save(jacc_pairwise(ligrec_binary),
-                  figure_path("interactions_jaccard_heat.pdf"),
-                  "Jaccard Index")
+    cats %>%
+        map2(names(.),
+             function(cols, entity){
+                 ligrec %>% map(function(res)
+                     res[[entity]] %>%
+                         select(!!cols)
+                 ) %>%
+                     binarize_resourcesx(cols)
+             }) %>% map2(names(.), function(bindata, entity){
+                 jaccheat_save(jacc_pairwise(bindata),
+                               figure_path(str_glue("{entity}_jaccard_heat.pdf")),
+                               "Jaccard Index")
 
 
-    overheat_save(interactions_shared(ligrec_binary),
-                  figure_path("interactions_shared_heat.pdf"),
-                  "% Present")
+                 overheat_save(interactions_shared(bindata),
+                               figure_path(str_glue("{entity}_shared_heat.pdf")),
+                               "% Present")
+             })
 
     return(ligrec)
 }
@@ -1654,22 +1661,22 @@ uniprot_annot <- function(var){
 interactions_shared <- function(ligrec_binary){
     interacts_per_resource <- ligrec_binary %>%
         as_tibble() %>%
-        mutate(across(!starts_with("interaction"),
-                      ~ifelse(.==1,interaction,.))) %>%
-        pivot_longer(-interaction,
+        mutate(across(!starts_with("entity"),
+                      ~ifelse(.==1,entity,.))) %>%
+        pivot_longer(-entity,
                      names_to = "resource",
                      values_to = "interact") %>%
         filter(interact != 0) %>%
         distinct()
 
     intersects_per_resource <- interacts_per_resource %>%
-        select(resource, interaction = interact) %>%
+        select(resource, entity = interact) %>%
         group_by(resource) %>%
         group_nest() %>%
-        mutate(interaction = data %>% map(function(i) i$interaction)) %>%
-        mutate(intersect = interaction %>% get_intersect(resource)) %>%
+        mutate(entity = data %>% map(function(i) i$entity)) %>%
+        mutate(intersect = entity %>% get_intersect(resource)) %>%
         rowwise() %>%
-        mutate(resource_len = length(interaction)) %>%
+        mutate(resource_len = length(entity)) %>%
         ungroup() %>%
         unnest(intersect)
 
@@ -1722,7 +1729,7 @@ jacc_pairwise <- function(ligrec_binary){
 
     jacc_mat <-
         ligrec_binary %>%
-        select(-interaction) %>%
+        select(-entity) %>%
         t() %>%
         get_simil_dist(.,
                        sim_dist = "simil",
@@ -1777,8 +1784,8 @@ jaccheat_save <- function(df, plotname, guide_title){
             panel.background = element_blank(),
             axis.ticks = element_blank(),
             legend.title = element_text(size=16),
-            strip.text.x = element_blank(),
-            panel.spacing = unit(1.5, "lines")
+            legend.text = element_text(size=12),
+            strip.text.x = element_blank()
         ) +
         xlab("Resource") +
         geom_text(aes(name, resource, label = round(value, digits = 3)),
