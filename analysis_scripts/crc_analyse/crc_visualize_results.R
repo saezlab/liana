@@ -61,24 +61,76 @@ top_lists <- get_top_hits(spec_list,
 
 
 
-# 1. Combine all binary results into heatmap
-binary_heatm <- get_BinaryHeat(top_lists$top_500,
-                               display_numbers = FALSE,
-                               silent = FALSE,
-                               show_rownames = FALSE,
-                               show_colnames = FALSE,
-                               legend_breaks = 0:1,
-                               fontsize = 17,
-                               drop_levels = TRUE,
-                               cluster_rows = FALSE,
-                               cluster_cols = TRUE,
-                               color = c("gray15", "darkslategray2"),
-                               border_color = NA,
-                               clustering_distance_rows = "binary",
-                               clustering_distance_cols = "binary",
-                               treeheight_row = 0,
-                               treeheight_col = 100)
-binary_heatm
+# 1. Combine all binary results into heatmap (top500 into main)
+get_BinaryHeat(top_lists$top_500,
+               display_numbers = FALSE,
+               silent = FALSE,
+               show_rownames = FALSE,
+               show_colnames = FALSE,
+               legend_breaks = 0:1,
+               fontsize = 17,
+               drop_levels = TRUE,
+               cluster_rows = FALSE,
+               cluster_cols = TRUE,
+               color = c("gray15", "darkslategray2"),
+               border_color = NA,
+               clustering_distance_rows = "binary",
+               clustering_distance_cols = "binary",
+               treeheight_row = 0,
+               treeheight_col = 100)
+
+# Supp Figs with different ranks
+get_BinaryHeat(top_lists$top_100,
+               display_numbers = FALSE,
+               silent = FALSE,
+               show_rownames = FALSE,
+               show_colnames = FALSE,
+               legend_breaks = 0:1,
+               fontsize = 17,
+               drop_levels = TRUE,
+               cluster_rows = FALSE,
+               cluster_cols = TRUE,
+               color = c("gray15", "darkslategray2"),
+               border_color = NA,
+               clustering_distance_rows = "binary",
+               clustering_distance_cols = "binary",
+               treeheight_row = 0,
+               treeheight_col = 100)
+
+
+get_BinaryHeat(top_lists$top_250,
+               display_numbers = FALSE,
+               silent = FALSE,
+               show_rownames = FALSE,
+               show_colnames = FALSE,
+               legend_breaks = 0:1,
+               fontsize = 17,
+               drop_levels = TRUE,
+               cluster_rows = FALSE,
+               cluster_cols = TRUE,
+               color = c("gray15", "darkslategray2"),
+               border_color = NA,
+               clustering_distance_rows = "binary",
+               clustering_distance_cols = "binary",
+               treeheight_row = 0,
+               treeheight_col = 100)
+
+get_BinaryHeat(top_lists$top_1000,
+               display_numbers = FALSE,
+               silent = FALSE,
+               show_rownames = FALSE,
+               show_colnames = FALSE,
+               legend_breaks = 0:1,
+               fontsize = 17,
+               drop_levels = TRUE,
+               cluster_rows = FALSE,
+               cluster_cols = TRUE,
+               color = c("gray15", "darkslategray2"),
+               border_color = NA,
+               clustering_distance_rows = "binary",
+               clustering_distance_cols = "binary",
+               treeheight_row = 0,
+               treeheight_col = 100)
 
 
 # 2. Activity by Cell Type Heatmap (Source and Target)

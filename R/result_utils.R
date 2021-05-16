@@ -46,7 +46,6 @@ top_enh <- function(...){
 
     elipses <- list(...)
     elipses$wt <- sym(elipses$wt)
-    print(elipses)
 
     # Filter according to:
     if(elipses$wt == "prob"){ # CellChat Probabilities
