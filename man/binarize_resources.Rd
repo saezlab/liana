@@ -4,14 +4,15 @@
 \alias{binarize_resources}
 \title{Helper Function to Convert a List of Resources into a binarized DF}
 \usage{
-binarize_resources(interaction_list)
+binarize_resources(entity_list, cols)
 }
 \arguments{
-\item{interaction_list}{list resources with interactions alone}
+\item{entity_list}{list resources with tibbles for entities
+(i.e. interactions, transmitters, receivers)}
 }
 \value{
-Returns a 1/0 dataframe where 1 is assigned to interactions
-   present in a given resource, 0 to absent interactions
+Returns a list of 1/0 tibbles for each entity where 1 is assigned
+   to entities present in a given resource, 0s to absent ones
 }
 \description{
 Helper Function to Convert a List of Resources into a binarized DF

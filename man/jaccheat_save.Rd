@@ -14,3 +14,6 @@ jaccheat_save(df, plotname, guide_title)
 \description{
 Save Jaccard Heatmaps
 }
+\details{
+to be merged with overheat_save
+}

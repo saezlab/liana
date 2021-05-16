@@ -4,10 +4,12 @@
 \alias{get_activecell}
 \title{Function to get Activity per Cell Type heatmap}
 \usage{
-get_activecell(top_list, ...)
+get_activecell(top_list, cap_value = 1, ...)
 }
 \arguments{
 \item{top_list}{A resource-tool list with top hits for each combination.}
+
+\item{cap_value}{Cap cell fraction (prop cell activity) to a given value}
 
 \item{...}{
   Arguments passed on to \code{\link[pheatmap:pheatmap]{pheatmap::pheatmap}}

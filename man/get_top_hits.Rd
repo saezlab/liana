@@ -4,7 +4,7 @@
 \alias{get_top_hits}
 \title{Get top hits}
 \usage{
-get_top_hits(spec_list, n_ints = c(100, 500, 5000))
+get_top_hits(spec_list, n_ints = c(100, 250, 500, 1000))
 }
 \arguments{
 \item{spec_list}{list of spec objects with ligrec results}
