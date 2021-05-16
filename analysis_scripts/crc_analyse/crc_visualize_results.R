@@ -1,4 +1,4 @@
-# To become an .rmd
+# To become an .rmd + get specific distance nums
 
 # Load results
 spec_list <- list("CellChat" =
