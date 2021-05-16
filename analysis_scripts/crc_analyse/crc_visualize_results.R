@@ -1,3 +1,5 @@
+# To become an .rmd
+
 # Load results
 spec_list <- list("CellChat" =
                       methods::new("MethodSpecifics",
@@ -45,13 +47,17 @@ spec_list <- list("CellChat" =
                                        "pvalue"=FALSE
                                    ))
                   )
-spec_list$Squidpy@method_results$Default <- NULL
+
 
 
 # I. Overlap
 # Top X Top Hits for each tool
 top_lists <- get_top_hits(spec_list,
-                          n_ints=c(500))
+                          n_ints=c(100,
+                                   250,
+                                   500,
+                                   1000)
+                          )
 
 
 

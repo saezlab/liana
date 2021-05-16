@@ -1,7 +1,7 @@
 #' Get top hits
 #' @param spec_list list of spec objects with ligrec results
 #' @return A list of top hits per tool/tool_parameter
-get_top_hits <- function(spec_list, n_ints=c(100, 500, 5000)){
+get_top_hits <- function(spec_list, n_ints=c(100, 250, 500, 1000)){
     map(n_ints, function(.tn){
         names(spec_list) %>%
             map(function(method_name){
@@ -46,23 +46,19 @@ top_enh <- function(...){
 
     elipses <- list(...)
     elipses$wt <- sym(elipses$wt)
+    print(elipses)
 
-    # Filter according to p-values for Squidpy pvalue and CellChat prob
-    if(elipses$wt == "prob"){
-        elipses[[1]] <- elipses[[1]] %>%
-            filter(pval <= 0.05)
-    } else if(elipses$wt == "pval"){
-        elipses[[1]] <- elipses[[1]] %>%
-            filter(pval <= 0.05)
-    } else if(elipses$wt == "pvalue"){
-        elipses[[1]] <- elipses[[1]] %>%
-            filter(pvalue <= 0.05)
-    } else if (elipses$wt == "LRscore"){
-        elipses[[1]] <- elipses[[1]] %>%
-            filter(LRscore >= 0.5)
-    } else if (elipses$wt == "weight_sc"){
-        elipses[[1]] <- elipses[[1]] %>%
-            filter(p_val_adj.rec <= 0.05) %>%
+    # Filter according to:
+    if(elipses$wt == "prob"){ # CellChat Probabilities
+        elipses[[1]] %<>% filter(pval <= 0.05)
+    } else if(elipses$wt == "pval"){ # CellChat pval
+        elipses[[1]] %<>% filter(pval <= 0.05)
+    } else if(elipses$wt == "pvalue"){ # Squidpy pvalue
+        elipses[[1]] %<>% filter(pvalue <= 0.05)
+    } else if (elipses$wt == "LRscore"){ # SCA LRscore
+        elipses[[1]] %<>% filter(LRscore >= 0.5)
+    } else if (elipses$wt == "weight_sc"){ # Connectome DE ligrecs
+        elipses[[1]] %<>% filter(p_val_adj.rec <= 0.05) %>%
             filter(p_val_adj.lig <= 0.05)
     }
     return(do.call(top_n, elipses))
