@@ -405,6 +405,5 @@ compl_perc <- sig_list$top_5000 %>%
 
 mean(compl_perc$prop)
 
-
 sig_list$top_5000$CellChat$Default %>%
     filter(str_detect(receptor, "_"))

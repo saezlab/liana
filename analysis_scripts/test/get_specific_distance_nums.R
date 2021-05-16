@@ -1,3 +1,5 @@
+# This becomes an rmd together with visualize results
+
 get_jacc <- function(sig_list, methods, resources){
     get_binary_df(sig_list) %>%
         dplyr::select(ends_with(resources)) %>%
@@ -11,8 +13,6 @@ get_jacc <- function(sig_list, methods, resources){
 get_jacc(top_lists$top_500,
          c("iTALK", "CellChat"),
          as.character("Kirouac2010", "ICELLNET"))
-
-
 methods <- c("iTALK", "CellChat", "Squidpy", "Connectome", "NATMI", "SCA")
 
 # pairwise JI between methods
@@ -65,6 +65,8 @@ resources_jacc
 
 
 # Same Method different resources
+#  (i.e. similarity among combinations using the same method)
+# or in other words how consistent each method is
 methods %>% map(function(met){
     get_jacc(top_lists$top_500,
              met,
@@ -72,3 +74,25 @@ methods %>% map(function(met){
         mean()
 }) %>% setNames(methods)
 
+
+# Inbuilt vs Default
+methods_default <- list("iTALK" = "iTALK",
+                        "CellChat" = "CellChatDB",
+                        "Connectome" = "Ramilowski2015",
+                        "NATMI" = "connectomeDB2020",
+                        "SCA" = "LRdb")
+
+methods_default %>%
+    enframe(name = "method", value = "default") %>%
+    unnest(default) %>%
+    mutate(default = as.character(str_glue("{method}_{default}"))) %>%
+    mutate(inbuilt = str_replace(default, "\\_..*", "_Default")) %>%
+    mutate(jacc = pmap_dbl(list(default, inbuilt),
+                       .f = function(x, y){
+                           get_binary_df(top_lists$top_1000) %>%
+                               select(c(as_string(x), as_string(y))) %>%
+                               t() %>%
+                               get_simil_dist(sim_dist = "simil", "Jaccard")
+                           }
+                       )
+           )

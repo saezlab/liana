@@ -39,7 +39,7 @@ format_crc_meta <- function(crc_seurat){
         filter(!(str_starts("Unspecified Plasma", Cell_clusters))) %>%
         # Remove Stromal Cells
         filter(!str_detect(Cell_type,"Stromal cells")) %>%
-        # Myoloids_SPP1+A/B into Myoloids_SPP1+ (+ fix typo)
+        # Myoloids_SPP1+A/B into Myeloids_SPP1+ (+ fix typo)
         mutate(Cell_clusters = if_else(str_detect(Cell_clusters, "SPP1"),
                                        "Myoloids_SPP1+",
                                        Cell_clusters)
