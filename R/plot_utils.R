@@ -26,12 +26,12 @@ prepForUpset <- function(named_list){
 #' @return Null
 #' @import UpSetR
 #' @export
-plotSaveUset <- function(upset_df ,file_name){
+plotSaveUset <- function(upset_df, file_name, entity_name){
   up <- upset(upset_df, nsets = ncol(upset_df), order.by = "freq",
-        point.size = 7, line.size = 2, text.scale	= 2,
-        mainbar.y.label = "Significant Interactions Intersect",
-        sets.x.label = "Interactions per tool")
-  png(file_name, width = 1400, height = 900)
+        point.size = 8, line.size = 3, text.scale	= 3,
+        mainbar.y.label = str_glue("Interactions Intersect ({entity_name})"),
+        sets.x.label = "Number of Interactions")
+  png(file_name, width = 2100, height = 1300)
   print(up)
   dev.off()
 

@@ -12,11 +12,10 @@ invisible(require(tidyverse))
 ```
 
 #### Background
-
-This markdown represents the comparative Analysis of CCC predictions from different
+This markdown contains the results presented in the comparative Analysis of CCC predictions from different
 method-resource combinations using publicly available [colorectal cancer data](https://www.nature.com/articles/s41588-020-0636-z).
 Specifically, we focused on the interactions between tumour cells subclassified
-by their resemblance of CRC consensus molecular subtypes (CMS) and immune cells from tumour samples
+by their resemblance of CRC consensus molecular subtypes (CMS) and immune cells from tumour samples.
 
 
 
@@ -103,7 +102,7 @@ png(filename = figure_path_mr('crc_activityheat_top500.png'),
     width = 3600,
     height = 1700)
 
-# Cap to 0.2
+# Cap to 0.2 (due to high activity in SCA)
 p <- get_activecell(top_lists$top_500, cap_value = 0.2)
 invisible(dev.off())
 grid::grid.draw(p$gtable)
@@ -205,28 +204,29 @@ sq_hits %>% map(function(x) nrow(x)) %>% enframe(name="method", value="n_hits") 
 
 
 ### Supplementary Plots
-####  Upset Plots by Method highest ranked 500 interactions (CRC)
+####  Upset Plots by Method for highest ranked 500 interactions (CRC)
 ```{r upsets_by_method, fig.width=36, fig.height=18}
 names(top_lists$top_500) %>%
     map(function(m_name){
-        message(m_name)
         top_lists$top_500[[m_name]] %>%
             prepForUpset() %>%
-            plotSaveUset(figure_path_mr(as.character(str_glue("crc_{m_name}_top500_upset_method.png"))))
-    })
+            plotSaveUset(figure_path_mr(as.character(str_glue("crc_{m_name}_top500_upset_method.png"))),
+                         m_name)
+        }
+    )
 ```
 
-####  Upset Plots by Resource highest ranked 500 interactions (CRC)
+####  Upset Plots by Resource for highest ranked 500 interactions (CRC)
 ```{r upsets_by_resource, fig.width=36, fig.height=18}
 top250_resource_tool <- get_swapped_list(top_lists$top_500)
 
 # Plot and Save Upsets
 names(top250_resource_tool) %>%
     map(function(r_name){
-        message(r_name)
         top250_resource_tool[[r_name]] %>%
             prepForUpset() %>%
-            plotSaveUset(figure_path_mr(as.character(str_glue("crc_{r_name}_top500_upset_resource.png"))))
+            plotSaveUset(figure_path_mr(as.character(str_glue("crc_{r_name}_top500_upset_resource.png"))),
+                         r_name)
         }
     )
 

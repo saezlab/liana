@@ -4,7 +4,7 @@
 \alias{plotSaveUset}
 \title{Helper function to save Upset plot}
 \usage{
-plotSaveUset(upset_df, file_name)
+plotSaveUset(upset_df, file_name, entity_name)
 }
 \arguments{
 \item{upset_df}{prepForUpset output}
