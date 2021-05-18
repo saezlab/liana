@@ -85,13 +85,12 @@ to binary (Jaccard index) distances. SCA refers to the SingleCellSignalR method.
 ```{r binary_heat_main, fig.width=46, fig.height=23}
 
 png(filename = figure_path_mr('crc_binheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 
 p <- get_BinaryHeat(top_lists$top_500)
-print(p)
-invisible(dev.off())
 grid::grid.draw(p$gtable)
+invisible(dev.off())
 ```
 
 #### Activity per Cell type
@@ -99,11 +98,12 @@ grid::grid.draw(p$gtable)
 ```{r binary_cell_activity_main, fig.width=46, fig.height=23}
 
 png(filename = figure_path_mr('crc_activityheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 
 # Cap to 0.2 (due to high activity in SCA)
 p <- get_activecell(top_lists$top_500, cap_value = 0.2)
+grid::grid.draw(p$gtable)
 invisible(dev.off())
 grid::grid.draw(p$gtable)
 ```
@@ -120,9 +120,9 @@ p <- get_simdist_heatmap(top_lists$top_500,
 png(filename = figure_path_mr('crc_jaccard_top500.png'),
     width = 3200,
     height = 2800)
-print(p)
+grid::grid.draw(p$gtable)
 invisible(dev.off())
-print(p)
+grid::grid.draw(p$gtable)
 
 # Get Jaccard Stats
 jaccard_per_mr <- simdist_resmet(top_lists$top_500,
@@ -236,19 +236,19 @@ names(top250_resource_tool) %>%
 ```{r binary_heat_supp, fig.width=32, fig.height=17}
 
 png(filename = figure_path_mr('crc_binheat_top100.png'),
-    width = 3600,
+    width = 3000,
     height = 1660)
 get_BinaryHeat(top_lists$top_100)
 invisible(dev.off())
 
 png(filename = figure_path_mr('crc_binheat_top250.png'),
-    width = 3600,
+    width = 3000,
     height = 1600)
 get_BinaryHeat(top_lists$top_250)
 invisible(dev.off())
 
 png(filename = figure_path_mr('crc_binheat_top1000.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 get_BinaryHeat(top_lists$top_1000)
 invisible(dev.off())
@@ -308,10 +308,6 @@ methods_default %>%
                            }
                        )
            )
-
-
-
-
 ```
 
 #### Protein Complexes
@@ -357,37 +353,40 @@ nonspec_top_list <- get_top_hits(nonspec_list,
 ```
 
 
-#### Produce plots
+#### Cluster-unspecific measures plots
 ```{r nonspec_res, fig.width=32, fig.height=17}
 # Interactions Overlap Binary Heatmap
 png(filename = figure_path_mr('crc_nonspec_binheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 
-p <- get_BinaryHeat(nonspec_top_list$top_500)
-grid::grid.draw(p$gtable)
+p1 <- get_BinaryHeat(nonspec_top_list$top_500)
+grid::grid.draw(p1$gtable)
 invisible(dev.off())
-p
 
 
 # Activity per Cell Type Heatmap
 png(filename = figure_path_mr('crc_nonspec_activityheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
-
-# Cap to 0.2
-p <- get_activecell(nonspec_top_list$top_500)
-grid::grid.draw(p$gtable)
+p2 <- get_activecell(nonspec_top_list$top_500)
+grid::grid.draw(p2$gtable)
 invisible(dev.off())
-grid::grid.draw(p)
 
-# Jaccard Stats Heatmap
-get_simdist_heatmap(nonspec_top_list$top_500,
-                    sim_dist = "simil",
-                    method = "Jaccard",
-                    diag = TRUE,
-                    upper = TRUE)
+# Jaccard Heatmap
+p3 <- get_simdist_heatmap(top_lists$top_500,
+                         sim_dist = "simil",
+                         method = "Jaccard",
+                         diag = TRUE,
+                         upper = TRUE)
 
+png(filename = figure_path_mr('crc_nonspec_jaccard_top500.png'),
+    width = 3200,
+    height = 2800)
+grid::grid.draw(p3$gtable)
+invisible(dev.off())
+
+# Jaccard Stats
 jaccard_nonspec <- simdist_resmet(nonspec_top_list$top_500,
                                  sim_dist = "simil",
                                  method = "Jaccard")
@@ -395,4 +394,7 @@ jaccard_nonspec <- simdist_resmet(nonspec_top_list$top_500,
 list_stats(meth = jaccard_nonspec$meth,
            reso = jaccard_nonspec$reso)
 
+print(p1)
+print(p2)
+print(p3)
 ```

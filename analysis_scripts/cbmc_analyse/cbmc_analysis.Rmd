@@ -12,7 +12,7 @@ require(tidyverse)
 ```
 
 ### Background
-scRNA-Seq data was aquired via SeuratData for human [Cord Blood Mononuclear Cells](https://www.nature.com/articles/nmeth.4380?source=post_page#Abs2)
+##### scRNA-Seq data was aquired via SeuratData for human [Cord Blood Mononuclear Cells](https://www.nature.com/articles/nmeth.4380?source=post_page#Abs2).
      
      
 
@@ -82,7 +82,7 @@ to binary (Jaccard index) distances. SCA refers to the SingleCellSignalR method.
 ```{r binary_heat_main, fig.width=46, fig.height=23}
 
 png(filename = figure_path_mr('cbmc_binheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 
 p <- get_BinaryHeat(top_lists$top_500)
@@ -98,7 +98,7 @@ grid::grid.draw(p$gtable)
 p <- get_activecell(top_lists$top_500)
 
 png(filename = figure_path_mr('cbmc_activityheat_top500.png'),
-    width = 3600,
+    width = 3000,
     height = 1700)
 grid::grid.draw(p$gtable)
 invisible(dev.off())
