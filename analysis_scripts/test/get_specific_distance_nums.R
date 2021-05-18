@@ -9,12 +9,6 @@ get_jacc <- function(sig_list, methods, resources){
         get_simil_dist(sim_dist = "simil", "Jaccard")
 }
 
-# JI between iTALK and CellChat for Kirouac and ICELLNET
-get_jacc(top_lists$top_500,
-         c("iTALK", "CellChat"),
-         as.character("Kirouac2010", "ICELLNET"))
-methods <- c("iTALK", "CellChat", "Squidpy", "Connectome", "NATMI", "SCA")
-
 # pairwise JI between methods
 methods_jacc <- methods %>%
     combn(2) %>%

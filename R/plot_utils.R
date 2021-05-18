@@ -5,6 +5,7 @@
 #' @importFrom tibble tibble
 #' @import dplyr
 #' @import purrr
+#' @export
 prepForUpset <- function(named_list){
   map(names(named_list), function(l_name){
       named_list[[l_name]] %>%
@@ -24,15 +25,17 @@ prepForUpset <- function(named_list){
 #' @param dir path to save upset plot
 #' @return Null
 #' @import UpSetR
-plotSaveUset <- function(upset_df, dir){
+#' @export
+plotSaveUset <- function(upset_df ,file_name){
   up <- upset(upset_df, nsets = ncol(upset_df), order.by = "freq",
         point.size = 7, line.size = 2, text.scale	= 2,
         mainbar.y.label = "Significant Interactions Intersect",
         sets.x.label = "Interactions per tool")
-  file_name = paste(str_glue(dir))
   png(file_name, width = 1400, height = 900)
   print(up)
   dev.off()
+
+  return(up)
 }
 
 
@@ -50,6 +53,7 @@ plotSaveUset <- function(upset_df, dir){
 #' @importFrom purrr map flatten
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_glue
+#' @export
 get_BinaryHeat <- function(sig_list,
                         ...){
 
@@ -81,6 +85,21 @@ get_BinaryHeat <- function(sig_list,
   binary_heatmap <- pheatmap(heatmap_binary_df,
                              annotation_col = annotations_df,
                              annotation_colors = mycolors,
+                             display_numbers = FALSE,
+                             silent = FALSE,
+                             show_rownames = FALSE,
+                             show_colnames = FALSE,
+                             legend_breaks = 0:1,
+                             fontsize = 34,
+                             drop_levels = TRUE,
+                             cluster_rows = FALSE,
+                             cluster_cols = TRUE,
+                             color = c("gray15", "darkslategray2"),
+                             border_color = NA,
+                             clustering_distance_rows = "binary",
+                             clustering_distance_cols = "binary",
+                             treeheight_row = 0,
+                             treeheight_col = 100,
                              ...
                              )
 
@@ -95,6 +114,7 @@ get_BinaryHeat <- function(sig_list,
 #'
 #' @details Swap from nested resource lists to nested method lists,
 #'  previously the resources were nested by method, this returns the opposite
+#' @export
 get_swapped_list <- function(sig_list){
 
   sig_df <- sig_list %>%
@@ -131,6 +151,7 @@ get_swapped_list <- function(sig_list){
 #' each element being a named list of resources
 #' @return A ggplot2 object
 #' @import ggfortify ggplot2 RColorBrewer
+#' @export
 plot_freq_pca <- function(freq_df){
   # format to df with frequencies and
   # Resource and Method columns as factors
@@ -173,6 +194,7 @@ plot_freq_pca <- function(freq_df){
 #'
 #' @import pheatmap tidyverse
 #' @inheritDotParams pheatmap::pheatmap
+#' @export
 get_activecell <- function(top_list,
                            cap_value = 1,
                            ...){
@@ -208,8 +230,6 @@ get_activecell <- function(top_list,
     unnest(results_resource) %>%
     unite(method, resource, col = "mr") %>%
     mutate_all(~ replace(., is.na(.), 0))
-
-  print(top_frac)
 
   # annotation groups (sequential vectors as in heatmap_binary_list)
   method_groups <- top_frac %>%
@@ -255,7 +275,7 @@ get_activecell <- function(top_list,
                             show_colnames = FALSE,
                             color = colorRampPalette(c("darkslategray2",
                                                        "violetred2"))(20),
-                            fontsize = 15,
+                            fontsize = 30,
                             drop_levels = TRUE,
                             cluster_rows = TRUE,
                             cluster_cols = TRUE,
@@ -271,6 +291,7 @@ get_activecell <- function(top_list,
 #' Jaccard Similarities Heatmap Function
 #' @param sig_list list of significant hits
 #' @inheritDotParams get_simil_dist
+#' @export
 get_simdist_heatmap <- function(sig_list,
                                 ...){
 
@@ -325,7 +346,7 @@ get_simdist_heatmap <- function(sig_list,
            show_rownames = FALSE,
            color = colorRampPalette(c("gray15",
                                       "darkslategray2"))(20),
-           fontsize = 15,
+           fontsize = 20,
            cluster_rows = FALSE,
            cluster_cols = FALSE,
            border_color = NA

@@ -1,6 +1,7 @@
 #' Get top hits
 #' @param spec_list list of spec objects with ligrec results
 #' @return A list of top hits per tool/tool_parameter
+#' @export
 get_top_hits <- function(spec_list, n_ints=c(100, 250, 500, 1000)){
     map(n_ints, function(.tn){
         names(spec_list) %>%
@@ -70,6 +71,7 @@ top_enh <- function(...){
 #' @param sig_list List of significant hits per Method-resource combination.
 #'  Named list of methods with each element being a named list of resources.
 #' @return A tibble of cell pair frequencies, based on binarized activity
+#' @export
 get_binary_frequencies <- function(sig_list){
     sig_list %>%
         enframe() %>%
@@ -99,6 +101,7 @@ get_binary_frequencies <- function(sig_list){
 #' @return a tibble with cell_pair frequencies represented by the ranked
 #' normalized scores for each method by cell_pair
 #' @details See format_rank_frequencies for details
+#' @export
 get_rank_frequencies <- function(spec_list){
     names(spec_list) %>%
         map(function(method_name){
@@ -135,6 +138,7 @@ get_rank_frequencies <- function(spec_list){
 #' @details Cell pair ranks are averaged, then converted to z-scores, which
 #' are multiplied by -1 as we want the lowest average ranks to have the highest
 #' z scores
+#' @export
 format_rank_frequencies <- function(result, score_col, .desc_order = TRUE){
     result %>%
         as_tibble() %>%
@@ -197,6 +201,7 @@ setClass("MethodSpecifics",
 #'
 #' @return A tibble with Cell_subtype and Cell Number columns
 #' @import Seurat dplyr tibble
+#' @export
 get_cellnum <- function(seurat_path){
     crc_form <- readRDS(seurat_path)
     crc_meta <- crc_form@meta.data
@@ -215,6 +220,7 @@ get_cellnum <- function(seurat_path){
 #' Helper Function to get Similarties and Distances from binary dfs
 #' @importFrom proxy dist simil
 #' @return a similarity/dissimilarity matrix
+#' @export
 get_simil_dist <- function(sim_dist = "simil", ...){
     do.call(sim_dist,
             list(...))
@@ -223,6 +229,7 @@ get_simil_dist <- function(sim_dist = "simil", ...){
 
 #' Helper Function to get a binary top hits DF (for all method-resource combos)
 #' @param sig_list list of significant hits per method-resource combo
+#' @export
 get_binary_df <- function(sig_list){
     # get method and resource names combined
     lnames <- map(names(sig_list), function(m_name){
@@ -248,6 +255,7 @@ get_binary_df <- function(sig_list){
 #' @inheritDotParams proxy::simil
 #' @import tibble
 #' @import purrr
+#' @export
 simdist_resmet <- function(sig_list,
                            ...){
     binary_df <- get_binary_df(sig_list)
@@ -295,6 +303,7 @@ simdist_resmet <- function(sig_list,
 #'  to calculate the mean, median, sd, and length.
 #' @return a summary tibble
 #' @import tibble
+#' @export
 list_stats <- function(...){
     args <- list(...)
 
@@ -328,4 +337,48 @@ list_stats <- function(...){
         ungroup()
 
     return(df_stats)
+}
+
+
+#' Creates a path for a figure output
+#'
+#' @importFrom magrittr %>% %<>%
+#' @importFrom rlang !!! exec
+#' @export
+figure_path_mr <- function(fname,
+                           dir_vec,
+                           outdir = NULL,
+                           ...){
+
+    args <- list(...)
+    outdir <- args$outdir
+    args$outdir <- NULL
+    fname %<>% {exec(sprintf, ., !!!args)}
+
+     outdir %>%
+         `%||%`(options('intercell.fig_meth_res')[[1]]) %>%
+         `%||%`(file.path("figures","method_resource")) %T>%
+         dir.create(showWarnings = FALSE, recursive = TRUE) %>%
+         file.path(fname)
+
+}
+
+
+
+#' Get Jaccard indeces between specific combination of resources or methods
+#' @param sig_list List of significant hits per Method-resource combination.
+#'  Named list of methods with each element being a named list of resources.
+#' @param methods character vector of method names
+#' @param resources character vector of resource names
+#'
+#' @return Returns a Jaccard index between all combinations of the supplied
+#'   resources and methods
+#' @export
+get_jacc <- function(sig_list, methods, resources){
+    get_binary_df(sig_list) %>%
+        dplyr::select(ends_with(resources)) %>%
+        select(starts_with(methods)) %>%
+        filter(rowMeans(.) != 0) %>%
+        t() %>%
+        get_simil_dist(sim_dist = "simil", "Jaccard")
 }

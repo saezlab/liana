@@ -79,6 +79,7 @@ get_BinaryHeat(top_lists$top_500,
                treeheight_row = 0,
                treeheight_col = 100)
 
+
 # Supp Figs with different ranks
 get_BinaryHeat(top_lists$top_100,
                display_numbers = FALSE,
@@ -182,7 +183,7 @@ jaccard_per_mr <- simdist_resmet(top_lists$top_500,
                                  method = "Jaccard")
 jac <- list_stats(meth = jaccard_per_mr$meth,
                   reso = jaccard_per_mr$reso)
-
+jac
 
 
 # Housekeeping measures
@@ -246,12 +247,7 @@ get_BinaryHeat(top_housekeep$top_500,
 get_activecell(top_housekeep$top_500)
 
 
-# 10. Housekeeping Rank Avg
-housekeep_list %>%
-    get_rank_frequencies() %>%
-    plot_freq_pca()
-
-# 11. Housekeeping Bray Curtis Info
+# 10. Housekeeping Jaccard Stats
 get_simdist_heatmap(top_housekeep$top_500,
                     sim_dist = "simil",
                     method = "Jaccard",
@@ -274,7 +270,6 @@ spec_list <- list("CellChat" =
                                    method_name="CellChat",
                                    method_results = readRDS("output/crc_res/cellchat_results.rds"),
                                    method_scores=list(
-                                       # "pval"=FALSE,
                                        "prob"=TRUE
                                    )),
                   "Connectome" =
@@ -282,8 +277,7 @@ spec_list <- list("CellChat" =
                                    method_name="Connectome",
                                    method_results = readRDS("output/crc_res/conn_results.rds"),
                                    method_scores=list(
-                                       "weight_sc"=TRUE #,
-                                       # "weight_norm"=TRUE
+                                       "weight_sc"=TRUE
                                    )),
                   "NATMI" =
                       methods::new("MethodSpecifics",
@@ -312,26 +306,6 @@ jaccard_per_mr <- simdist_resmet(top_lists$top_500,
                                  method = "Jaccard")
 list_stats(meth = jaccard_per_mr$meth,
            reso = jaccard_per_mr$reso)
-
-
-
-# Check CellChat P-values
-cc_hits <- spec_list$CellChat@method_results %>%
-    map(function(resource) resource %>%
-            filter(pval == 0))
-cc_hits
-
-# Check SCA above threshold
-sca_hits <- spec_list$SCA@method_results %>%
-    map(function(resource) resource %>%
-            filter(LRscore >= 0.5))
-sca_hits
-
-sq_hits <- spec_list$Squidpy@method_results %>%
-    map(function(resource) resource %>%
-            filter(pvalue <= 0.05))
-sq_hits
-
 
 
 # Supp Note 2 Complexes
@@ -365,22 +339,7 @@ sig_list <- get_top_hits(spec_list,
                          n_ints=c(5000))
 
 # Sig hit heatmap
-get_BinaryHeat(sig_list$top_5000,
-               display_numbers = FALSE,
-               silent = FALSE,
-               show_rownames = FALSE,
-               show_colnames = FALSE,
-               legend_breaks = 0:1,
-               fontsize = 17,
-               drop_levels = TRUE,
-               cluster_rows = FALSE,
-               cluster_cols = TRUE,
-               color = c("gray15", "darkslategray2"),
-               border_color = NA,
-               clustering_distance_rows = "binary",
-               clustering_distance_cols = "binary",
-               treeheight_row = 0,
-               treeheight_col = 100)
+get_BinaryHeat(top_lists$top_500)
 
 
 
