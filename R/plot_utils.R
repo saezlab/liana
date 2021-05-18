@@ -188,24 +188,25 @@ plot_freq_pca <- function(freq_df){
 
 #' Function to get Activity per Cell Type heatmap
 #'
-#' @param top_list A resource-tool list with top hits for each combination.
+#' @param sig_list A resource-tool list with top hits for each combination.
 #' @param cap_value Cap cell fraction (prop cell activity) to a given value
 #' @return Cell Type Activity Heatmap
 #'
 #' @import pheatmap tidyverse
 #' @inheritDotParams pheatmap::pheatmap
 #' @export
-get_activecell <- function(top_list,
+get_activecell <- function(sig_list,
                            cap_value = 1,
                            ...){
   # Split by source/target cell
-  top_frac <- top_list %>%
+  top_frac <- sig_list %>%
     map(function(db){
       db %>%
         enframe(name = "resource", value = "results") %>%
         mutate(results = results %>% map(function(res) res %>%
                                            select(source, target))) %>%
         unnest(results) %>%
+        mutate_at(.vars = c("source", "target"), ~str_replace(., "_", ".")) %>%
         pivot_longer(cols = c(source, target),
                      names_to = "cat",
                      values_to = "cell") %>%
@@ -346,7 +347,7 @@ get_simdist_heatmap <- function(sig_list,
            show_rownames = FALSE,
            color = colorRampPalette(c("gray15",
                                       "darkslategray2"))(20),
-           fontsize = 20,
+           fontsize = 30,
            cluster_rows = FALSE,
            cluster_cols = FALSE,
            border_color = NA

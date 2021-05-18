@@ -7,8 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
-invisible(require(intercell))
-invisible(require(tidyverse))
+require(intercell)
+require(tidyverse)
 ```
 
 #### Background
@@ -118,8 +118,8 @@ p <- get_simdist_heatmap(top_lists$top_500,
                          upper = TRUE)
 
 png(filename = figure_path_mr('crc_jaccard_top500.png'),
-    width = 3600,
-    height = 1700)
+    width = 3200,
+    height = 2800)
 print(p)
 invisible(dev.off())
 print(p)

@@ -16,12 +16,12 @@ get_top_hits <- function(spec_list, n_ints=c(100, 250, 500, 1000)){
                                 spec_list[[method_name]]@method_scores[[parm]]
 
                             res %>%
-                                distinct() %>%
                                 top_enh(n=if_else(parm_order,
                                                 .tn,
                                                 -.tn),
                                       wt=parm) %>%
-                                as_tibble()
+                                as_tibble() %>%
+                                distinct()
                         })
                 }) %>%
                     {if(length(spec_list[[method_name]]@method_scores) > 1)
@@ -245,6 +245,7 @@ get_binary_df <- function(sig_list){
         setNames(lnames) %>%
         prepForUpset() %>%
         as_tibble() %>%
+        distinct() %>%
         column_to_rownames("interaction")
 }
 
