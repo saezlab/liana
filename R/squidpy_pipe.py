@@ -4,7 +4,7 @@ import squidpy as sp
 import re
 
 
-def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
+def get_squidpy_res(op_resource, adata_seurat, **kwargs):
     """ Helper function to map over each resource and call the CellPhoneDB implementation of SquidPy
      Parameters
         ----------
@@ -12,20 +12,15 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
             OmniPath database resource to use in LR inference
         adata_seurat
             Anndata/ScanPy clustering object
-        ident
-            Cluster identity column
         Returns
             A LigRec Results Object"""
     try:
         res = sp.gr.ligrec(
             adata_seurat,
-            ident,
-            fdr_method=None, copy=True,
+            copy=True,
             interactions=op_resource,
-            corr_method = None,
-            threshold=0.1, seed=1004,
-            n_perms=10000, n_jobs = 10
-            ) # should replace with kwargs and elipses
+            **kwargs
+            )
         return res
     except ValueError as e:
         print(e)
@@ -33,8 +28,8 @@ def get_squidpy_res(op_resource, adata_seurat, ident, **kwargs):
         return None
 
 
-def get_ligrec(intercell_resources, adata_seurat, ident):
-    return list(map(lambda x: (x, get_squidpy_res(x, adata_seurat, ident)), intercell_resources))
+def get_ligrec(intercell_resources, adata_seurat, kwargs):
+    return list(map(lambda x: (x, get_squidpy_res(x, adata_seurat, **kwargs)), intercell_resources))
 
 
 def reformat(x):
@@ -70,7 +65,7 @@ def convert_anndata(exprs,
     return adata_seurat
 
 
-def call_squidpy(intercell_resources, exprs, meta, feature_meta, ident):
+def call_squidpy(intercell_resources, exprs, meta, feature_meta, kwargs):
     """Call Squidpy
     Parameters
     ----------
@@ -82,14 +77,12 @@ def call_squidpy(intercell_resources, exprs, meta, feature_meta, ident):
         Clustering metadata
     feature_meta
         Feature metadata (e.g. vst parameters from Seurat)
-    ident
-        Cluster identity column
     Returns
         Two lists: One with LR interaction pvalue results for each resource, and one with means.
     """
     adata_seurat = convert_anndata(exprs, meta, feature_meta)
     # call squidpy
-    squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
+    squidpy_res = get_ligrec(intercell_resources, adata_seurat, kwargs)
     
     # reformat results
     squidpy_pvalues = list(map(lambda x: reformat(x[1]["pvalues"]), squidpy_res))

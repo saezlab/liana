@@ -57,7 +57,11 @@ sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
 # Squidpy
 squidpy_res <- call_squidpyR(seurat_object = testdata,
                              python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
-                             omni_resources = op_resources)
+                             omni_resources = op_resources,
+                             n_perms=10000,
+                             threshold=0.1,
+                             seed=as.integer(1004),
+                             cluster_key="seurat_annotations")
 
 
 testdata <- SeuratData::LoadData("pbmc3k") %>% FindVariableFeatures()

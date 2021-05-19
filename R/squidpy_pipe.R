@@ -14,13 +14,14 @@ call_squidpyR <- function(seurat_object,
                           omni_resources,
                           python_path,
                           .seed = 1004,
-                          .ident = "seurat_annotations"){
+                          ...){
+
+    kwargs <- list(...) # convert elipses to kwargs
 
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
-    if("DEFAULT" %in% toupper(names(omni_resources))){ # to be replaced
-        # omni_resources$Default <- omni_resources$CellPhoneDB
+    if("DEFAULT" %in% toupper(names(omni_resources))){
         omni_resources$Default <- NULL
     }
 
@@ -33,17 +34,18 @@ call_squidpyR <- function(seurat_object,
                                   category_intercell_source,
                                   category_intercell_target
                                   )) %>%
-        unname() # unname list, so passed as list not dict to Python
+        unname() # unname list, so its passed as list to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
 
-    py$squidpy_results <- py$call_squidpy(op_resources, # to include **kwargs
+    py$squidpy_results <- py$call_squidpy(op_resources,
                                           GetAssayData(seurat_object), #expr
                                           seurat_object[[]], # meta
                                           GetAssay(seurat_object)[[]], # feature_meta
-                                          .ident)
+                                          kwargs # passed to squidpy.gr.ligrec
+                                          )
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
     squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
