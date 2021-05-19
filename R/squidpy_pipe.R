@@ -25,15 +25,21 @@ call_squidpyR <- function(seurat_object,
     }
 
     op_resources <- map(omni_resources, function(x) x %>%
-                              select(source = source_genesymbol,
-                                     target = target_genesymbol)) %>%
+                              select(
+                                  uniprot_source = source,
+                                  unprot_target = target,
+                                  source = source_genesymbol,
+                                  target = target_genesymbol,
+                                  category_intercell_source,
+                                  category_intercell_target
+                                  )) %>%
         unname() # unname list, so passed as list not dict to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
     py_set_seed(.seed)
-    # pass seurat
-    py$squidpy_results <- py$call_squidpy(op_resources,
+
+    py$squidpy_results <- py$call_squidpy(op_resources, # to include **kwargs
                                           GetAssayData(seurat_object), #expr
                                           seurat_object[[]], # meta
                                           GetAssay(seurat_object)[[]], # feature_meta
@@ -41,17 +47,18 @@ call_squidpyR <- function(seurat_object,
 
     squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
     squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
+    squidpy_metadata <- py$squidpy_results$meta %>% setNames(names(omni_resources))
 
 
     squidpy_results <- map(names(omni_resources),
                            function(x)
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
-                                                .mean_list = squidpy_means)) %>%
+                                                .mean_list = squidpy_means,
+                                                .meta_list = squidpy_metadata)) %>%
         setNames(names(omni_resources)) %>%
         map(function(res) res %>%
-                # swap positions for means and pvalue
-                select(1:3, means, pvalue) %>%
+                select(1:3, means, pvalue, uniprot_source, unprot_target) %>%
                 rename(ligand = source,
                        receptor = target) %>%
                 separate(pair, sep = "_", into=c("source", "target")))
@@ -67,7 +74,8 @@ call_squidpyR <- function(seurat_object,
 #' @export
 squidpy_reformat <- function(.name,
                              .pval_list,
-                             .mean_list){
+                             .mean_list,
+                             .meta_list){
     x_pval <- .pval_list[[.name]] %>%
         py_to_r() %>%
         pivot_longer(cols = 3:ncol(.),
@@ -80,6 +88,11 @@ squidpy_reformat <- function(.name,
                      values_to = "means",
                      names_to = "pair")
 
-    res_formatted <- left_join(x_pval, x_mean)
+    x_meta <- .meta_list[[.name]] %>% py_to_r()
+
+    res_formatted <- left_join(x_pval, x_mean,
+                               by = c("source", "target", "pair")) %>%
+        left_join(x_meta, by = c("source", "target"))
+
     return(res_formatted)
 }

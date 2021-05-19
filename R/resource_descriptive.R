@@ -435,7 +435,7 @@ uniq_per_res <- function(ligrec_olap){
                                         ~if(is.numeric(.)) median(.) else "Median_excl_Omni")) %>%
                 bind_rows(summarise_all(filter(., !(resource %in% c("Total"))),
                                         ~if(is.numeric(.)) median(.) else "Median"))
-        }
+            }
         ) %>%
         bind_rows(.id = "entity") %>%
         select(entity, resource, unq_perc) %>%

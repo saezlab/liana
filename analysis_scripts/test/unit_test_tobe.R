@@ -60,12 +60,22 @@ squidpy_res <- call_squidpyR(seurat_object = testdata,
                              omni_resources = op_resources)
 
 
-
+testdata <- SeuratData::LoadData("pbmc3k") %>% FindVariableFeatures()
+seurat_object = testdata
+omni_resources <- readRDS("input/omni_resources.rds")
+op_resources <- list("CellChatDB" = omni_resources$CellChatDB)
+op_resources$CellChatDB %<>% filter(str_detect(target_genesymbol, "_"))
+python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python"
+omni_resources = op_resources
+.ident = "seurat_annotations"
+.seed = 1004
 
 # NATMI (make it so that the full path is not needed?)
 
 
+xd <- py$squidpy_results$meta
 
+xd[[1]][[2]]$metadata
 
 # Real data test --------
 # Test with real data
@@ -89,7 +99,7 @@ end <- Sys.time()
 
 # Squidpy
 squidpy_res <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_belgian_form.rds"),
-                             python_path = "/home/dbdimitrov/anaconda3/bin/python",
+                             python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
                              omni_resources = op_resources,
                              .ident = "Cell_subtype")
 

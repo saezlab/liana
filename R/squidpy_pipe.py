@@ -70,30 +70,23 @@ def convert_anndata(exprs,
     return adata_seurat
 
 
-def call_squidpy(intercell_resources,
-                 exprs,
-                 meta,
-                 feature_meta,
-                 ident):
+def call_squidpy(intercell_resources, exprs, meta, feature_meta, ident):
     """Call Squidpy
-         Parameters
-        ----------
-        intercell_resources
-            List with OmniPath resources
-
-        exprs
-            Expression Matrix
-        meta
-            Clustering metadata
-        feature_meta
-            Feature metadata (e.g. vst parameters from Seurat)
-        ident
-            Cluster identity column
-
-        Returns
-            Two lists: One with LR interaction pvalue results for each resource, and one with means.
+    Parameters
+    ----------
+    intercell_resources
+        List with OmniPath resources
+    exprs
+        Expression Matrix
+    meta
+        Clustering metadata
+    feature_meta
+        Feature metadata (e.g. vst parameters from Seurat)
+    ident
+        Cluster identity column
+    Returns
+        Two lists: One with LR interaction pvalue results for each resource, and one with means.
     """
-    
     adata_seurat = convert_anndata(exprs, meta, feature_meta)
     # call squidpy
     squidpy_res = get_ligrec(intercell_resources, adata_seurat, ident)
@@ -101,5 +94,7 @@ def call_squidpy(intercell_resources,
     # reformat results
     squidpy_pvalues = list(map(lambda x: reformat(x[1]["pvalues"]), squidpy_res))
     squidpy_means = list(map(lambda x: reformat(x[1]["means"]), squidpy_res))
+    squidpy_meta = list(map(lambda x: pd.DataFrame(x[1]["metadata"].to_records()), squidpy_res))
+    
+    return {"pvalues": squidpy_pvalues, "means": squidpy_means, "meta" : squidpy_meta}
 
-    return {"pvalues": squidpy_pvalues, "means": squidpy_means}
