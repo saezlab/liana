@@ -374,7 +374,7 @@ grid::grid.draw(p2$gtable)
 invisible(dev.off())
 
 # Jaccard Heatmap
-p3 <- get_simdist_heatmap(top_lists$top_500,
+p3 <- get_simdist_heatmap(nonspec_top_list$top_500,
                          sim_dist = "simil",
                          method = "Jaccard",
                          diag = TRUE,

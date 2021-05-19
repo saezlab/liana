@@ -285,7 +285,7 @@ ligrec_overheats <- function(ligrec){
                      res[[entity]] %>%
                          select(!!cols)
                  ) %>%
-                     binarize_resourcesx(cols)
+                     binarize_resources(cols)
              }) %>% map2(names(.), function(bindata, entity){
                  jaccheat_save(jacc_pairwise(bindata),
                                figure_path(str_glue("{entity}_jaccard_heat.pdf")),
@@ -529,23 +529,22 @@ total_unique_bar <- function(ligrec_olap){
         xlab('') +
         ylab('Resources') +
         facet_grid(.~entity, scales='free_x')  +
-        shadowtext::geom_shadowtext(
-            aes(label = if_else(perc > 5, str_glue("{round(perc)}%"), "")),
-            position = position_stack(vjust = 0.7),
-            size = 5, color = "white"
-            ) +
+        # shadowtext::geom_shadowtext(
+        #     aes(label = if_else(perc > 5 & value > 100, str_glue("{round(perc)}%"), "")),
+        #     position = position_stack(vjust = 0.7),
+        #     size = 5, color = "white"
+        #     ) +
         theme_bw() +
         theme(
-            axis.text.x = element_text(size = 16),
-            axis.text.y = element_text(size = 17),
-            axis.title.y = element_text(size = 20),
+            axis.text.x = element_text(size = 22),
+            axis.text.y = element_text(size = 23),
+            axis.title.y = element_text(size = 34),
             panel.grid.major = element_blank(),
             panel.background = element_blank(),
             axis.ticks = element_blank(),
-            legend.title = element_text(size=18),
-            legend.text = element_text(size=16),
-            strip.text.x = element_text(size=17),
-            legend.key.size = unit(17, 'mm')
+            legend.text = element_text(size=21),
+            strip.text.x = element_text(size=21),
+            legend.key.size = unit(21, 'mm')
         )
 
     cairo_pdf(

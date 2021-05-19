@@ -88,9 +88,6 @@ cc_res <- call_cellchat(op_resource = NULL,
 end <- Sys.time()
 
 # Squidpy
-op_resources <- list("CellChatDB" = omni_resources$CellChatDB,
-                     "CellPhoneDB" = omni_resources$CellPhoneDB)
-
 squidpy_res <- call_squidpyR(seurat_object = readRDS("input/crc_data/crc_belgian_form.rds"),
                              python_path = "/home/dbdimitrov/anaconda3/bin/python",
                              omni_resources = op_resources,

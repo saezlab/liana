@@ -1,12 +1,12 @@
 ligrec <- compile_ligrec_descr()
 
-ligrecx <- list("CellChatDB" = ligrec$CellChatDB)
-
-ligrec <- ligrec %>%
-    ligrec_decomplexify
-
-ligrec_decomplex$CellChatDB$interactions %>%
-    distinct_at(.vars = c("target", "source"))
+# ligrecx <- list("CellChatDB" = ligrec$CellChatDB)
+#
+# ligrec <- ligrec %>%
+#     ligrec_decomplexify
+#
+# ligrec_decomplex$CellChatDB$interactions %>%
+#     distinct_at(.vars = c("target", "source"))
 
 
 ligrec_olap <- ligrec %>%
@@ -17,8 +17,8 @@ ligrec_olap <- ligrec %>%
 
 ligrec_olap$interactions
 
-ligrec_olap$interactions %>%
-    filter(name == 'total')
+# ligrec_olap$interactions %>%
+    # filter(name == 'total')
 
 
 
@@ -136,9 +136,11 @@ total_unique_bar <- function(ligrec_olap){
         mutate(perc = round((value/sum(value))*100))
 
 
+    ligrec_olap %<>% rename(typ)
 
-        p <- ggplot(data, aes(y = resource, x = value, fill = name)) +
-            geom_col() +
+
+     ggplot(ligrec_olap, aes(y = resource, x = value, fill = typ)) +
+         geom_col() +
             scale_fill_manual(
                 values = c('#B3C5E9', '#4268B3'),
                 label = c(n_shared = 'Shared', n_unique = 'Unique'),
@@ -148,9 +150,10 @@ total_unique_bar <- function(ligrec_olap){
             ylab('Resources') +
             facet_grid(.~entity, scales='free_x')  +
             geom_text(
-                aes(label = if_else(perc > 5, str_glue("{round(perc)}%"), "")),
-                position = position_stack(vjust = 0.6),
-                size = 5.5, color = "white"
+                aes(label = if_else((perc > 3 & typ!="n_shared"), str_glue("{round(perc)}%"), "")),
+                position = position_stack(vjust = 0.6, reverse = TRUE),
+                size = 8, color = "black",
+                inherit.aes = TRUE, check_overlap = TRUE
             ) +
             theme_bw() +
             theme(
