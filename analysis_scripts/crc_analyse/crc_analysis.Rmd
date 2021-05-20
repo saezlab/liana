@@ -216,7 +216,7 @@ names(top250_resource_tool) %>%
 ```
 
 #### Binary heatmaps (Supp interactions: 100, 250, and 1000)
-```{r binary_heat_supp, fig.width=32, fig.height=17}
+```{r binary_heat_supp, fig.width=46, fig.height=23}
 
 get_BinaryHeat(top_lists$top_100)
 grid::grid.newpage()

@@ -108,7 +108,7 @@ grid::grid.draw(p$gtable)
    
    
 #### Jaccard index Heatmap
-```{r jacc_index, fig.width=46, fig.height=23}
+```{r jacc_index, fig.width=40, fig.height=36}
 # Similarity Heatmap (according to Jaccard index)
 p <- get_simdist_heatmap(top_lists$top_500,
                          sim_dist = "simil",
