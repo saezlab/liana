@@ -5,17 +5,24 @@ require(purrr)
 
 setwd("/net/data.isilon/ag-saez/bq_ddimitrov/Repos/Cell_Cell_Investigation/")
 
+
 # Load Data and Format data
-# crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
-#     format_crc_meta()
+
+# Processed counts were converted to a sparsified Seurat object using the
+# crc_convert script
+# Here we load and format the resulting Seurat object
+crc_korean <- readRDS("input/crc_data/crc_korean.rds") %>%
+    format_crc_meta()
 # saveRDS(crc_korean, "input/crc_data/crc_korean_form.rds")
-crc_korean <- readRDS("input/crc_data/crc_korean_form.rds")
+# crc_korean <- readRDS("input/crc_data/crc_korean_form.rds")
 
-# Get Full Omni Resources
-# omni_resources <- compile_ligrec(lr_pipeline = TRUE)
+# Get all CCC Resources via OmniPath
+omni_resources <- compile_ligrec(lr_pipeline = TRUE)
 # saveRDS(omni_resources, "input/omni_resources.rds")
-omni_resources <- readRDS("input/omni_resources.rds")
+# omni_resources <- readRDS("input/omni_resources.rds")
 
+
+# Run each of the methods
 # 1. Squidpy -------------------------------------------------------------------
 squidpy_results <- call_squidpyR(seurat_object = crc_korean,
                                  omni_resources = omni_resources,
@@ -41,7 +48,7 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             .write_data = TRUE,
                             .subsampling_pipe = FALSE,
                             .assay = "RNA",
-                            .num_cor = 64
+                            .num_cor = 24
                             )
 saveRDS(natmi_results, "output/crc_res/natmi_results.rds")
 

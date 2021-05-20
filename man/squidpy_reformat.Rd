@@ -4,7 +4,7 @@
 \alias{squidpy_reformat}
 \title{Helper function to reformat squidpy function r}
 \usage{
-squidpy_reformat(.name, .pval_list, .mean_list)
+squidpy_reformat(.name, .pval_list, .mean_list, .meta_list)
 }
 \arguments{
 \item{.name}{omnipath resource name}

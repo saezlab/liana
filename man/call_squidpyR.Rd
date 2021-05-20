@@ -4,13 +4,7 @@
 \alias{call_squidpyR}
 \title{Call Squidpy Pipeline via reticulate with OmniPath and format results}
 \usage{
-call_squidpyR(
-  seurat_object,
-  omni_resources,
-  python_path,
-  .seed = 1004,
-  .ident = "seurat_annotations"
-)
+call_squidpyR(seurat_object, omni_resources, python_path, .seed = 1004, ...)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}
