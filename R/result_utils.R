@@ -383,3 +383,29 @@ get_jacc <- function(sig_list, methods, resources){
         t() %>%
         get_simil_dist(sim_dist = "simil", "Jaccard")
 }
+
+
+
+#' Helper function to convert CRC data to sparse Seurat
+#' @param counts_loc expression counts location
+#' @param meta_loc location of the metadata file
+#' @param save_loc save location
+sparsify_to_seurat <- function(counts_loc, meta_loc, save_loc){
+    counts <- read_delim(counts_loc,
+                         delim = "\t") %>%
+        as.data.frame() %>%
+        column_to_rownames("Index")
+
+    meta <- read_delim(meta_loc,
+                       delim = "\t") %>%
+        as.data.frame() %>%
+        column_to_rownames("Index")
+
+    CreateSeuratObject(counts = Seurat::as.sparse(crc_korean_counts),
+                       project = "10X_CRC") %>%
+        Seurat::AddMetaData(meta) %>%
+        Seurat::NormalizeData() %>%
+        Seurat::FindVariableFeatures() %>%
+        saveRDS(., save_loc)
+}
+

@@ -2,7 +2,7 @@
 title: "Colorectal Cancer CCC Prediction Comparison"
 author: "Daniel Dimitrov"
 date: "5/18/2021"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
