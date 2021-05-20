@@ -98,7 +98,7 @@ grid::grid.newpage()
 ```
 
 #### Jaccard Index exploration
-```{r jacc_index, fig.width=46, fig.height=23}
+```{r jacc_index, fig.width=40, fig.height=36}
 # Similarity Heatmap (according to Jaccard index)
 get_simdist_heatmap(top_lists$top_500,
                          sim_dist = "simil",
@@ -248,7 +248,7 @@ spec_list %>%
 
 ### Supplementary Note 2
 #### Conversion Differences
-```{r conversion_diff, fig.width=32, fig.height=17}
+```{r conversion_diff, fig.width=35, fig.height=19}
 
 # Jaccard index between the Inbuilt resource for each method
 # and the omnipath querried counterpart of the same resource
@@ -389,7 +389,7 @@ nonspec_top_list <- get_top_hits(nonspec_list,
 
 
 #### Cluster-unspecific measures plots
-```{r nonspec_res, fig.width=32, fig.height=17}
+```{r nonspec_res, fig.width=35, fig.height=19}
 # Interactions Overlap Binary Heatmap
 get_BinaryHeat(nonspec_top_list$top_500)
 grid::grid.newpage()
