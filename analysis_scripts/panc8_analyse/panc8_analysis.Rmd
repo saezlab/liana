@@ -46,21 +46,21 @@ spec_list <- list("CellChat" =
                                    method_name="NATMI",
                                    method_results = readRDS("output/panc8_res/natmi_results.rds"),
                                    method_scores=list(
-                                       "edge_specificity"=TRUE
-                                       )),
+                                      "edge_specificity"=TRUE
+                                      )),
                   "SCA" = methods::new("MethodSpecifics",
                                        method_name="SCA",
                                        method_results = readRDS("output/panc8_res/sca_results.rds"),
                                        method_scores=list(
-                                           "LRscore"=TRUE
-                                           )),
+                                          "LRscore"=TRUE
+                                          )),
                   "Squidpy" =
                       methods::new("MethodSpecifics",
                                    method_name="Squidpy",
                                    method_results = readRDS("output/panc8_res/squidpy_results.rds"),
                                    method_scores=list(
-                                       "pvalue"=FALSE
-                                   ))
+                                      "pvalue"=FALSE
+                                      ))
                   )
 # Define the numbers of highest interactions that we wish to explore
 # and get a list with each threshold as its element

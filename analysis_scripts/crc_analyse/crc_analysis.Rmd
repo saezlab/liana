@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 require(intercell)
 require(tidyverse)
+require(magrittr)
 ```
 
 #### Background
@@ -84,45 +85,27 @@ of methods and resources. Method-resource combinations were clustered according
 to binary (Jaccard index) distances. SCA refers to the SingleCellSignalR method.
 ```{r binary_heat_main, fig.width=46, fig.height=23}
 
-png(filename = figure_path_mr('crc_binheat_top500.png'),
-    width = 3000,
-    height = 1700)
-
-p <- get_BinaryHeat(top_lists$top_500)
-grid::grid.draw(p$gtable)
-invisible(dev.off())
+get_BinaryHeat(top_lists$top_500)
+grid::grid.newpage()
 ```
 
 #### Activity per Cell type
 ##### Inferred as the proportion of interaction edges that stem from Source Cell clusters or lead to Target Cell clusters in the highest ranked interactions. 
 ```{r binary_cell_activity_main, fig.width=46, fig.height=23}
-
-png(filename = figure_path_mr('crc_activityheat_top500.png'),
-    width = 3000,
-    height = 1700)
-
 # Cap to 0.2 (due to high activity in SCA)
-p <- get_activecell(top_lists$top_500, cap_value = 0.2)
-grid::grid.draw(p$gtable)
-invisible(dev.off())
-grid::grid.draw(p$gtable)
+get_activecell(top_lists$top_500, cap_value = 0.2)
+grid::grid.newpage()
 ```
 
 #### Jaccard Index exploration
 ```{r jacc_index, fig.width=46, fig.height=23}
 # Similarity Heatmap (according to Jaccard index)
-p <- get_simdist_heatmap(top_lists$top_500,
+get_simdist_heatmap(top_lists$top_500,
                          sim_dist = "simil",
                          method = "Jaccard",
                          diag = TRUE,
                          upper = TRUE)
-
-png(filename = figure_path_mr('crc_jaccard_top500.png'),
-    width = 3200,
-    height = 2800)
-grid::grid.draw(p$gtable)
-invisible(dev.off())
-grid::grid.draw(p$gtable)
+grid::grid.newpage()
 
 # Get Jaccard Stats
 jaccard_per_mr <- simdist_resmet(top_lists$top_500,
@@ -232,26 +215,17 @@ names(top250_resource_tool) %>%
 
 ```
 
-#### Binary Jaccard index heatmaps (Supp interactions: 100, 250, and 1000)
+#### Binary heatmaps (Supp interactions: 100, 250, and 1000)
 ```{r binary_heat_supp, fig.width=32, fig.height=17}
 
-png(filename = figure_path_mr('crc_binheat_top100.png'),
-    width = 3000,
-    height = 1660)
 get_BinaryHeat(top_lists$top_100)
-invisible(dev.off())
+grid::grid.newpage()
 
-png(filename = figure_path_mr('crc_binheat_top250.png'),
-    width = 3000,
-    height = 1600)
 get_BinaryHeat(top_lists$top_250)
-invisible(dev.off())
+grid::grid.newpage()
 
-png(filename = figure_path_mr('crc_binheat_top1000.png'),
-    width = 3000,
-    height = 1700)
 get_BinaryHeat(top_lists$top_1000)
-invisible(dev.off())
+grid::grid.newpage()
 
 ```
 
@@ -266,19 +240,9 @@ get_cellnum("input/crc_data/crc_korean_form.rds")
 #### PCA by Interaction Rank Frequencies
 i.e. Interaction ranks per Pairs of Cell types z-normalized
 ```{r pca_rank_activities, fig.width=24, fig.height=12}
-p <- spec_list %>%
+spec_list %>%
     get_rank_frequencies() %>%
     plot_freq_pca()
-
-png(filename = figure_path_mr('crc_rank_activity_pca.png'),
-    width = 1920,
-    height = 1024)
-
-print(p)
-invisible(dev.off())
-
-p
-
 ```
 
 
@@ -308,9 +272,80 @@ methods_default %>%
                            }
                        )
            )
+
 ```
 
-#### Protein Complexes
+#### Protein Complex Contents
+```{r complexes_content}
+
+# resources
+complex_resources <-  c("Baccin2019",
+                        "CellChatDB",
+                        "CellPhoneDB",
+                        "ICELLNET",
+                        "Default")
+
+# methods
+complex_list <- list("CellChat" =
+                      methods::new("MethodSpecifics",
+                                   method_name="CellChat",
+                                   method_results = readRDS("output/crc_res/cellchat_results.rds"),
+                                   method_scores=list(
+                                       "prob"=FALSE
+                                   )),
+                  "Squidpy" =
+                      methods::new("MethodSpecifics",
+                                   method_name="Squidpy",
+                                   method_results = readRDS("output/crc_res/squidpy_results.rds"),
+                                   method_scores=list(
+                                       "pvalue"=FALSE
+                                   ))
+                  )
+
+# keep only the complex resources
+complex_list$CellChat@method_results %<>% keep(names(.) %in% complex_resources)
+complex_list$Squidpy@method_results %<>% keep(names(.) %in% complex_resources[-5])
+
+# Get Significant hits for Squidpy and CellChat
+sig_list <- get_top_hits(complex_list,
+                         n_ints=c(500))
+
+
+
+# Percentages of Complexes
+compl_perc <- sig_list$top_500 %>%
+    enframe(name = "method") %>%
+    unnest(value) %>%
+    mutate(resource = names(value)) %>%
+    unnest(value)
+
+cellchat_perc <- compl_perc %>%
+    select(method, resource, ligand, receptor) %>%
+    group_by(method, resource) %>%
+    add_count(name = "total") %>%
+    filter((str_detect(receptor, "_") | str_detect(ligand, "_"))) %>%
+    add_count(name = "complex") %>%
+    mutate(prop = complex/total) %>%
+    select(resource, method, prop) %>%
+    distinct()
+cellchat_perc
+
+squidpy_perc <- compl_perc %>%
+    select(method, resource, uniprot_source, unprot_target) %>%
+    na.omit() %>%
+    group_by(method, resource) %>%
+    add_count(name = "total") %>%
+    filter((str_detect(uniprot_source, "COMPLEX:") | str_detect(unprot_target, "COMPLEX:"))) %>%
+    add_count(name = "complex") %>%
+    mutate(prop = complex/total) %>%
+    select(resource, method, prop) %>%
+    distinct()
+squidpy_perc
+
+
+
+```
+
 
 
 ### Supplementary Note 3 
@@ -356,35 +391,21 @@ nonspec_top_list <- get_top_hits(nonspec_list,
 #### Cluster-unspecific measures plots
 ```{r nonspec_res, fig.width=32, fig.height=17}
 # Interactions Overlap Binary Heatmap
-png(filename = figure_path_mr('crc_nonspec_binheat_top500.png'),
-    width = 3000,
-    height = 1700)
-
-p1 <- get_BinaryHeat(nonspec_top_list$top_500)
-grid::grid.draw(p1$gtable)
-invisible(dev.off())
+get_BinaryHeat(nonspec_top_list$top_500)
+grid::grid.newpage()
 
 
 # Activity per Cell Type Heatmap
-png(filename = figure_path_mr('crc_nonspec_activityheat_top500.png'),
-    width = 3000,
-    height = 1700)
-p2 <- get_activecell(nonspec_top_list$top_500)
-grid::grid.draw(p2$gtable)
-invisible(dev.off())
+get_activecell(nonspec_top_list$top_500)
+grid::grid.newpage()
 
 # Jaccard Heatmap
-p3 <- get_simdist_heatmap(nonspec_top_list$top_500,
+get_simdist_heatmap(nonspec_top_list$top_500,
                          sim_dist = "simil",
                          method = "Jaccard",
                          diag = TRUE,
                          upper = TRUE)
-
-png(filename = figure_path_mr('crc_nonspec_jaccard_top500.png'),
-    width = 3200,
-    height = 2800)
-grid::grid.draw(p3$gtable)
-invisible(dev.off())
+grid::grid.newpage()
 
 # Jaccard Stats
 jaccard_nonspec <- simdist_resmet(nonspec_top_list$top_500,
@@ -394,7 +415,4 @@ jaccard_nonspec <- simdist_resmet(nonspec_top_list$top_500,
 list_stats(meth = jaccard_nonspec$meth,
            reso = jaccard_nonspec$reso)
 
-print(p1)
-print(p2)
-print(p3)
 ```

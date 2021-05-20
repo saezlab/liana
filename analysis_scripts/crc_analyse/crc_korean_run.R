@@ -17,11 +17,15 @@ crc_korean <- readRDS("input/crc_data/crc_korean_form.rds")
 omni_resources <- readRDS("input/omni_resources.rds")
 
 # 1. Squidpy -------------------------------------------------------------------
-# squidpy_results <- call_squidpyR(seurat_object = crc_korean,
-#                                  omni_resources = omni_resources,
-#                                  python_path = "/net/data.isilon/ag-saez/bq_ddimitrov/SOFTWARE/miniconda3/envs/ligrec/bin/python3.8",
-#                                  .ident = "Cell_subtype")
-# saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
+squidpy_results <- call_squidpyR(seurat_object = crc_korean,
+                                 omni_resources = omni_resources,
+                                 python_path = "/net/data.isilon/ag-saez/bq_ddimitrov/SOFTWARE/miniconda3/envs/ligrec/bin/python3.8",
+                                 n_perms=10000,
+                                 threshold=0.1,
+                                 seed=as.integer(1004),
+                                 n_jobs=as.integer(10),
+                                 cluster_key="Cell_subtype")
+saveRDS(squidpy_results, "output/crc_res/squidpy_results.rds")
 
 
 # 2. NATMI --------------------------------------------------------------------

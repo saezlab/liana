@@ -315,12 +315,12 @@ complex_resources <-  c("Baccin2019",
                         "ICELLNET",
                         "Default")
 
-spec_list <- list("CellChat" =
+complex_list <- list("CellChat" =
                       methods::new("MethodSpecifics",
                                    method_name="CellChat",
                                    method_results = readRDS("output/crc_res/cellchat_results.rds"),
                                    method_scores=list(
-                                       "pval"=FALSE
+                                       "prob"=FALSE
                                    )),
                   "Squidpy" =
                       methods::new("MethodSpecifics",
@@ -331,28 +331,24 @@ spec_list <- list("CellChat" =
                                    ))
                   )
 
-spec_list$CellChat@method_results %<>% keep(names(.) %in% complex_resources)
-spec_list$Squidpy@method_results %<>% keep(names(.) %in% complex_resources[-5])
+# keep only the complex resources
+complex_list$CellChat@method_results %<>% keep(names(.) %in% complex_resources)
+complex_list$Squidpy@method_results %<>% keep(names(.) %in% complex_resources[-5])
 
 # Get Significant hits for Squidpy and CellChat
-sig_list <- get_top_hits(spec_list,
-                         n_ints=c(5000))
-
-# Sig hit heatmap
-get_BinaryHeat(top_lists$top_500)
+sig_list <- get_top_hits(complex_list,
+                         n_ints=c(500))
 
 
 
-# 2. Activity by Cell Type Heatmap (Source and Target)
-get_activecell(sig_list$top_5000)
-
-
-# 3. Percentages of Complexes
-compl_perc <- sig_list$top_5000 %>%
+# Percentages of Complexes
+compl_perc <- sig_list$top_500 %>%
     enframe(name = "method") %>%
     unnest(value) %>%
     mutate(resource = names(value)) %>%
-    unnest(value) %>%
+    unnest(value)
+
+cellchat_perc <- compl_perc %>%
     select(method, resource, ligand, receptor) %>%
     group_by(method, resource) %>%
     add_count(name = "total") %>%
@@ -361,8 +357,26 @@ compl_perc <- sig_list$top_5000 %>%
     mutate(prop = complex/total) %>%
     select(resource, method, prop) %>%
     distinct()
+cellchat_perc
 
-mean(compl_perc$prop)
+squidpy_perc <- compl_perc %>%
+    select(method, resource, uniprot_source, unprot_target) %>%
+    na.omit() %>%
+    group_by(method, resource) %>%
+    add_count(name = "total") %>%
+    filter((str_detect(uniprot_source, "COMPLEX:") | str_detect(unprot_target, "COMPLEX:"))) %>%
+    add_count(name = "complex") %>%
+    mutate(prop = complex/total) %>%
+    select(resource, method, prop) %>%
+    distinct()
+squidpy_perc
 
-sig_list$top_5000$CellChat$Default %>%
-    filter(str_detect(receptor, "_"))
+
+
+# Sig hit heatmap
+get_BinaryHeat(sig_list$top_500)
+
+
+
+# Activity by Cell Type Heatmap (Source and Target)
+get_activecell(sig_list$top_500)
