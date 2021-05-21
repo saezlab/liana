@@ -16,7 +16,7 @@ call_squidpyR <- function(seurat_object,
                           .seed = 1004,
                           ...){
 
-    kwargs <- list(...) # convert elipses to kwargs
+    kwargs <- list(...) # convert elipses to named list (i.e python dict)
 
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")

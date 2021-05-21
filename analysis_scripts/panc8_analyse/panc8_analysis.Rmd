@@ -11,9 +11,12 @@ require(intercell)
 require(tidyverse)
 ```
 
+##### !use this .Rmd to recreate plot files
+
 ### Background
 scRNA-Seq data was aquired via SeuratData for human [pancreatic cells](https://www.nature.com/articles/nbt.4096)
    
+
    
 #### Load Results from different Method-Resource Combinations
 ##### Note that the objects loaded here were already generated via the pipeline for each method

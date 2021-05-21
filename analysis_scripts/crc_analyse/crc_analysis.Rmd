@@ -247,34 +247,6 @@ spec_list %>%
 
 
 ### Supplementary Note 2
-#### Conversion Differences
-```{r conversion_diff, fig.width=35, fig.height=19}
-
-# Jaccard index between the Inbuilt resource for each method
-# and the omnipath querried counterpart of the same resource
-methods_default <- list("iTALK" = "iTALK",
-                        "CellChat" = "CellChatDB",
-                        "Connectome" = "Ramilowski2015",
-                        "NATMI" = "connectomeDB2020",
-                        "SCA" = "LRdb")
-
-methods_default %>%
-    enframe(name = "method", value = "default") %>%
-    unnest(default) %>%
-    mutate(default = as.character(str_glue("{method}_{default}"))) %>%
-    mutate(inbuilt = stringr::str_replace(default, "\\_..*", "_Default")) %>%
-    mutate(jacc = pmap_dbl(list(default, inbuilt),
-                       .f = function(x, y){
-                           get_binary_df(top_lists$top_1000) %>%
-                               select(c(rlang::as_string(x), rlang::as_string(y))) %>%
-                               t() %>%
-                               get_simil_dist(sim_dist = "simil", "Jaccard")
-                           }
-                       )
-           )
-
-```
-
 #### Protein Complex Contents
 ```{r complexes_content}
 

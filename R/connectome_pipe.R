@@ -4,7 +4,7 @@
 #' @param .format bool whether to format output
 #' @inheritDotParams Connectome::CreateConnectome
 #'
-#' @return An unfiltered connectome df
+#' @return An unfiltered connectome results df
 #'
 #' @details
 #' Stats:

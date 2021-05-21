@@ -479,40 +479,6 @@ i.e. Interaction ranks per Pairs of Cell types z-normalized
 
 ### Supplementary Note 2
 
-#### Conversion Differences
-
-    # Jaccard index between the Inbuilt resource for each method
-    # and the omnipath querried counterpart of the same resource
-    methods_default <- list("iTALK" = "iTALK",
-                            "CellChat" = "CellChatDB",
-                            "Connectome" = "Ramilowski2015",
-                            "NATMI" = "connectomeDB2020",
-                            "SCA" = "LRdb")
-
-    methods_default %>%
-        enframe(name = "method", value = "default") %>%
-        unnest(default) %>%
-        mutate(default = as.character(str_glue("{method}_{default}"))) %>%
-        mutate(inbuilt = stringr::str_replace(default, "\\_..*", "_Default")) %>%
-        mutate(jacc = pmap_dbl(list(default, inbuilt),
-                           .f = function(x, y){
-                               get_binary_df(top_lists$top_1000) %>%
-                                   select(c(rlang::as_string(x), rlang::as_string(y))) %>%
-                                   t() %>%
-                                   get_simil_dist(sim_dist = "simil", "Jaccard")
-                               }
-                           )
-               )
-
-    ## # A tibble: 5 x 4
-    ##   method     default                   inbuilt             jacc
-    ##   <chr>      <chr>                     <chr>              <dbl>
-    ## 1 iTALK      iTALK_iTALK               iTALK_Default      0.567
-    ## 2 CellChat   CellChat_CellChatDB       CellChat_Default   0.705
-    ## 3 Connectome Connectome_Ramilowski2015 Connectome_Default 0.682
-    ## 4 NATMI      NATMI_connectomeDB2020    NATMI_Default      0.976
-    ## 5 SCA        SCA_LRdb                  SCA_Default        0.973
-
 #### Protein Complex Contents
 
     # resources
