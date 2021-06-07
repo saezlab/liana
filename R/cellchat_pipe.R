@@ -134,6 +134,7 @@ call_cellchat <- function(op_resource,
 #' @importFrom dplyr mutate mutate_at select filter
 #' @importFrom tidyselect everything
 #' @importFrom purrr pmap
+#' @export
 cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
     # get complexes and interactions from omnipath
     complex_interactions <- op_resource %>%
