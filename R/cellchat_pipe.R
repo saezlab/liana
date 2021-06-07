@@ -14,7 +14,7 @@
 #' @import CellChat
 #' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
 #' @importFrom tibble column_to_rownames enframe
 #' @importFrom tidyr unite unnest separate

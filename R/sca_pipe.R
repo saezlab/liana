@@ -7,7 +7,7 @@
 #' @return An unfiltered iTALK df sorted by relevance
 #' @importFrom Seurat GetAssayData Idents
 #' @import SCAomni
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr distinct select
 #'
 #' @details
@@ -24,12 +24,7 @@ call_sca <- function(op_resource,
                      ...) {
   # Format OmnipathR resource
   if(!is.null(op_resource)){
-    op_resource <- op_resource %>%
-      select(ligand = source_genesymbol,
-             receptor = target_genesymbol,
-             source = sources,
-             PMIDs = references) %>%
-      distinct()
+    op_resource %<>% sca_formatDB
   } else{
     if(file.exists("input/LRdb.rda")){
       load("input/LRdb.rda")
@@ -92,4 +87,17 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
              sep = "[.]") %>%
     select(source, ligand, target, receptor, LRscore)
   return(sca_res)
+}
+
+
+#' Helper Function to convert Omni to LRdb Format
+#' @param op_resource OmniPath resource
+#' @export
+sca_formatDB <- function(op_resource){
+  op_resource %>%
+  select(ligand = source_genesymbol,
+         receptor = target_genesymbol,
+         source = sources,
+         PMIDs = references) %>%
+    distinct()
 }

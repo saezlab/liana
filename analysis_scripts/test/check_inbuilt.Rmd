@@ -1,0 +1,13 @@
+---
+title: "check_inbuilt"
+author: "Daniel Dimitrov"
+date: "6/7/2021"
+output: md_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+require(intercell)
+require(tidyverse)
+require(magrittr)
+```

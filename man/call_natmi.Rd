@@ -67,6 +67,7 @@ NATMI Arguments:
   --idType IDTYPE       symbol (default) | entrez(https://www.ncbi.nlm.nih.gov/gene) | ensembl(https://www.ensembl.org/) | uniprot(https://www.uniprot.org/) | hgnc(https://www.genenames.org/) | mgi(http://www.informatics.jax.org/mgihome/nomen/index.shtml) | custom(gene identifier used in the expression matrix)
   --coreNum CORENUM     the number of CPU cores used, default is one
   --out OUT             the path to save the analysis results
+(Taken From NATMI's GitHub Page)
 
 Stats:
 1) The mean-expression edge weights

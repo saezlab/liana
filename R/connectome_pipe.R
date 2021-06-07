@@ -17,7 +17,7 @@
 #'
 #' @import Connectome
 #' @importFrom Seurat ScaleData
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
 #'
 #' @export
@@ -34,12 +34,7 @@ call_connectome <- function(seurat_object,
 
     if(!is.null(op_resource)){
         # Format db to connectome
-        lr_db <- op_resource %>%
-            select("source_genesymbol", "target_genesymbol") %>%
-            mutate(mode = "UNCAT") %>% # mode refers to interaction categories
-            arrange(.$source_genesymbol) %>%
-            distinct() %>%
-            as.data.frame()
+        lr_db %<>% conn_formatDB
 
         # scale genes to ligands and receptors available in the resource
         connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)
@@ -93,3 +88,15 @@ FormatConnectome <- function(conn,
                p_val_adj.rec)
 }
 
+
+#' Helper Function to convert Omni to Connectome resource Format
+#' @param op_resource OmniPath resource
+#' @export
+conn_formatDB <- function(op_resource){
+    op_resource %>%
+        select("source_genesymbol", "target_genesymbol") %>%
+        mutate(mode = "UNCAT") %>% # mode refers to interaction categories
+        arrange(.$source_genesymbol) %>%
+        distinct() %>%
+        as.data.frame()
+}
