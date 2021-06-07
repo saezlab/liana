@@ -48,14 +48,17 @@ call_connectome <- function(seurat_object,
                                  ...)
 
     } else{
-        connectome.genes <- union(Connectome::ncomms8866_human$Ligand.ApprovedSymbol,
-                                  Connectome::ncomms8866_human$Receptor.ApprovedSymbol)
+        lr_db <- Connectome::ncomms8866_human %>%
+            filter(Pair.Evidence == "literature supported")
+        connectome.genes <- union(lr_db$Ligand.ApprovedSymbol,
+                                  lr_db$Receptor.ApprovedSymbol)
         genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
 
         seurat_object <- ScaleData(object = seurat_object,
                                    features = genes)
         conn <- CreateConnectome(seurat_object,
-                                 species = 'human',
+                                 LR.database = 'custom',
+                                 custom.list = lr_db,
                                  ...)
     }
 

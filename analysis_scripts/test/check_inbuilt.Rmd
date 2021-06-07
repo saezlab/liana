@@ -179,7 +179,8 @@ conn_omni <- omni_resources$Ramilowski2015 %>%
     rename("Ligand.ApprovedSymbol" = source_genesymbol,
            "Receptor.ApprovedSymbol" = target_genesymbol)
 
-conn_inbuilt <- Connectome::ncomms8866_human
+conn_inbuilt <- Connectome::ncomms8866_human  %>%
+            filter(Pair.Evidence == "literature supported")
 
 # Glimpse Both
 conn_omni %>% glimpse()
@@ -199,6 +200,7 @@ get_uniques(conn_inbuilt, conn_omni, "Pair.Name") %>%
 ```{r conn_ligands}
 get_uniques(conn_omni, conn_inbuilt, "Ligand.ApprovedSymbol") %>%
   rmarkdown::paged_table() # Unique to OmniPath
+
 get_uniques(conn_inbuilt, conn_omni, "Ligand.ApprovedSymbol") %>%
   rmarkdown::paged_table() # Unique to Inbuilt
 ```
@@ -207,6 +209,7 @@ get_uniques(conn_inbuilt, conn_omni, "Ligand.ApprovedSymbol") %>%
 ```{r conn_receptors}
 get_uniques(conn_omni, conn_inbuilt, "Receptor.ApprovedSymbol") %>%
   rmarkdown::paged_table() # Unique to OmniPath
+
 get_uniques(conn_inbuilt, conn_omni, "Receptor.ApprovedSymbol") %>%
   rmarkdown::paged_table() # Unique to Inbuilt
 ```
