@@ -1,4 +1,4 @@
-# Systematic Comparison of Cell-Cell Communication Tools and Resources
+# LIANA: a LIgand-receptor ANalysis frAmework
   
 ![landingpage](ligrec_pipe.png)
 
@@ -10,20 +10,14 @@ tools and resources that aid the investigation of cell-cell communication (CCC)
 were published recently.
 However, these methods and resources are usually in a fixed combination of a
 tool and its corresponding resource, but in principle any resource could be
-combined with any method. Yet, it is largely unclear the
-difference that the choice of resource and tool can have on the predicted
-CCC events. Thus, we attempt to shed some light on this topic via the
-systematic comparison of how different combinations might influence CCC
-inference.
-  
-  
+combined with any method.
 
-## Framework
+## LIANA Framework
   
-To this end we built a benchmark pipeline to decouple the tools from their corresponding resources.
+To this end we built a framework to decouple the tools from their corresponding resources.
 In turn, we used the pipeline for the systematic comparison of all combinations between 15 resources and 6 tools.
   
-The Framework is open access and available in this repository.
+LIANA is open access and available in this repository.
   
   
 
@@ -81,7 +75,7 @@ processing imperfections.
 ### Reshuffled and Default Resources
   
 Moreover, a Reshuffled resource can be generated via reshuffling any of the
-abovementioned using the `BiRewire` package, and each tool can be run with
+aforementioned using the `BiRewire` package, and each tool can be run with
 its 'Default' resource, the dataset used in its original publication.
   
   
@@ -105,9 +99,11 @@ devtools::install_github('saezlab/ligrec_decoupler')
 ```
   
   
-#### Clone NATMI, as it is run via the command line 
+#### Clone modified NATMI into liana path, as it is run via the command line 
+##### NATMI was forked from https://github.com/asrhou/NATMI.git and changed to be agnostic of the working directory when loading the resources
 ```{sh}
-git clone https://github.com/asrhou/NATMI.git
+cd *insert fullpath*/liana
+git clone https://github.com/saezlab/NATMI
 ```
   
   
