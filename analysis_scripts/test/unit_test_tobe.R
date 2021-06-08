@@ -82,5 +82,5 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             output_path = "~/Repos/ligrec_decoupleR/output/test/natmi_run",
                             .write_data = TRUE,
                             .subsampling_pipe = FALSE,
-                            .assay = "SCT"
+                            .assay = "RNA"
 )
