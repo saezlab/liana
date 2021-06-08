@@ -8,9 +8,6 @@
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
-#' @param .subsampling_pipe bool whether ran as part of the robustness pipe:
-#' if true, we use Seurat object name to modify output and input, so that
-#' each subsampling is saved to a different dir
 #' @return DF with NATMI results
 #'
 #' @details
@@ -45,26 +42,18 @@
 call_natmi <- function(
     omni_resources,
     seurat_object = NULL,
-    wd_path = ".",
-    omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-    natmi_path = "~/Repos/NATMI",
-    em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-    ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-    output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-    .assay = "SCT",
+    omnidbs_path = "input/omnipath_NATMI",
+    natmi_path = "NATMI/",
+    em_path = "input/test_em.csv",
+    ann_path = "input/test_metadata.csv",
+    output_path = "output/NATMI_test",
+    .assay = "RNA",
     .format = TRUE,
     .write_data = FALSE,
-    .subsampling_pipe = FALSE,
     .seed = 1004,
-    .num_cor = 8){
+    .num_cor = 4){
 
     py_set_seed(.seed)
-
-    if(.subsampling_pipe){
-        em_path = str_split_helper(em_path, seurat_object@project.name)
-        ann_path = str_split_helper(ann_path, seurat_object@project.name)
-        output_path = str_glue("{output_path}/{seurat_object@project.name}")
-    }
 
     if(.write_data){
         log_info("Writing EM to {em_path}")
@@ -124,9 +113,6 @@ call_natmi <- function(
                         sep = " "))
     })
 
-    # set dir back to project
-    setwd(wd_path)
-
     # load results
     natmi_results <- FormatNatmi(output_path, .format)
 
@@ -141,12 +127,11 @@ call_natmi <- function(
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
 
-    op_resources <- omni_resources %>%
-        purrr::list_modify("Default" = NULL)
+    omni_resources %<>% purrr::list_modify("Default" = NULL)
 
-    names(op_resources) %>%
+    names(omni_resources) %>%
         map(function(x){
-            write.csv(op_resources[[x]]  %>%
+            write.csv(omni_resources[[x]]  %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
                           distinct() %>%
