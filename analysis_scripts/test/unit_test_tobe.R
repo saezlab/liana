@@ -81,6 +81,5 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             ann_path = "input/test_metadata.csv",
                             output_path = "output/NATMI_test",
                             .write_data = TRUE,
-                            .subsampling_pipe = FALSE,
                             .assay = "RNA"
-)
+                            )

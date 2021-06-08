@@ -49,30 +49,42 @@ call_natmi <- function(
     output_path = "output/NATMI_test",
     .assay = "RNA",
     .format = TRUE,
-    .write_data = FALSE,
+    .write_data = TRUE,
     .seed = 1004,
     .num_cor = 4){
 
     py_set_seed(.seed)
+    .wdir <- system.file(package = 'intercell')
+    .natmi_dir <- system.file('NATMI/', package = 'intercell')
+
+    # append default resources to OmniPath ones
+    if("DEFAULT" %in% toupper(names(omni_resources))){
+        omni_resources %<>% purrr::list_modify("Default" = NULL)
+        resource_names <- append(as.list(names(omni_resources)),
+                                "lrc2p"
+
+        )
+    }
+    resource_names
 
     if(.write_data){
-        log_info("Writing EM to {em_path}")
+        log_info(str_glue("Writing EM to {em_path}"))
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
                                                     assay = .assay,
                                                     slot = "data"))) - 1),
                   file = em_path,
                   row.names = TRUE)
-        log_info("Writing Annotations to {ann_path}")
+        log_info(str_glue("Writing Annotations to {ann_path}"))
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
                   file = ann_path,
                   row.names = FALSE)
 
-        log_info("Saving resources to {omnidbs_path}")
+        log_info(str_glue("Saving resources to {omnidbs_path}"))
         omni_to_NATMI(omni_resources, omnidbs_path)
     }
 
-    log_success("Output to be saved and read from {output_path}")
+    log_success(str_glue("Output to be saved and read from {output_path}"))
     dir.create(file.path(output_path), recursive = TRUE)
 
     # copy OmniPath resources to NATMI dir
@@ -81,37 +93,23 @@ call_natmi <- function(
               to=str_glue("{natmi_path}/lrdbs/"),
               overwrite = TRUE)
 
-    # set current dir to NATMI
-    setwd(natmi_path)
-
-    # append default resources to OmniPath ones
-    if("DEFAULT" %in% toupper(names(omni_resources))){
-        omni_list <- append(as.list(names(omni_resources)),
-                            list(
-                                "lrc2p" #,
-                                 # "lrc2a" contains putative LRs
-                                 )
-                            )
-        omni_list <- omni_list %>% purrr::list_modify("Default" = NULL)
-    } else{
-        omni_list <- as.list(names(omni_resources))
-    }
 
     # submit native sys requests
     # Check issue with Default
-    omni_list %>% map(function(resource){
+    resource_names %>% map(function(resource){
 
-        log_success("Now Running: {resource}")
+        log_success(str_glue("Now Running: {resource}"))
 
-        system(str_glue("python3 ExtractEdges.py ",
+        system(str_glue("python3 {.natmi_dir}/ExtractEdges.py ",
                         "--species human ",
                         "--emFile {em_path} ",
                         "--annFile {ann_path} ",
-                        "--interDB {resource} ",
+                        "--interDB {.natmi_dir}/lrdbs/{resource}.csv ",
                         "--coreNum {.num_cor} ",
                         "--out {output_path}/{resource}",
                         sep = " "))
     })
+
 
     # load results
     natmi_results <- FormatNatmi(output_path, .format)
@@ -122,7 +120,7 @@ call_natmi <- function(
 
 
 #' Reform OmniPath Resource to NATMI format and save to location
-#' @param omni_list list of omnipath resources
+#' @param resource_names list of omnipath resources
 #' @param omni_path directory in which to save OP resources
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
@@ -176,7 +174,6 @@ FormatNatmi <- function(output_path, .format = TRUE){
                           edge_specificity = Edge.average.expression.derived.specificity)
         }), result)) %>%
         deframe() %>%
-        purrr::list_modify("lrc2a" = NULL) %>% # remove putative res if present
         plyr::rename(., c("lrc2p" = "Default")) # change this to default
 }
 
