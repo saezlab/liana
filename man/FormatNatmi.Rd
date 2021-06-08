@@ -4,10 +4,12 @@
 \alias{FormatNatmi}
 \title{Load NATMI results from folder and format appropriately}
 \usage{
-FormatNatmi(output_path, .format = TRUE)
+FormatNatmi(output_path, resource_names, .format = TRUE)
 }
 \arguments{
 \item{output_path}{NATMI output path}
+
+\item{resource_names}{results for which resources to load}
 
 \item{.format}{bool whether to format output}
 }

@@ -7,18 +7,16 @@
 call_natmi(
   omni_resources,
   seurat_object = NULL,
-  wd_path = ".",
-  omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-  natmi_path = "~/Repos/NATMI",
-  em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-  ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-  output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-  .assay = "SCT",
+  omnidbs_path = "input/omnipath_NATMI",
+  natmi_path = "NATMI/",
+  em_path = "input/test_em.csv",
+  ann_path = "input/test_metadata.csv",
+  output_path = "output/NATMI_test",
+  .assay = "RNA",
   .format = TRUE,
-  .write_data = FALSE,
-  .subsampling_pipe = FALSE,
+  .write_data = TRUE,
   .seed = 1004,
-  .num_cor = 8
+  .num_cor = 4
 )
 }
 \arguments{
@@ -37,10 +35,6 @@ call_natmi(
 \item{.format}{bool whether to format output}
 
 \item{.write_data}{bool whether Extract data from Seurat Object}
-
-\item{.subsampling_pipe}{bool whether ran as part of the robustness pipe:
-if true, we use Seurat object name to modify output and input, so that
-each subsampling is saved to a different dir}
 
 \item{.default_run}{bool whether to run default DBs or not}
 }

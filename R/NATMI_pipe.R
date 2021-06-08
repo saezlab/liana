@@ -59,10 +59,7 @@ call_natmi <- function(
     # append default resources to OmniPath ones
     if("DEFAULT" %in% toupper(names(omni_resources))){
         omni_resources %<>% purrr::list_modify("Default" = NULL)
-        resource_names <- append(as.list(names(omni_resources)),
-                                "lrc2p"
-
-        )
+        resource_names <- append(as.list(names(omni_resources)), "lrc2p")
     } else{
         resource_names <- as.list(names(omni_resources))
     }
@@ -121,8 +118,6 @@ call_natmi <- function(
 omni_to_NATMI <- function(omni_resources,
                           omni_path = "input/omnipath_NATMI"){
 
-    omni_resources %<>% purrr::list_modify("Default" = NULL)
-
     names(omni_resources) %>%
         map(function(x){
             write.csv(omni_resources[[x]]  %>%
@@ -165,14 +160,22 @@ FormatNatmi <- function(output_path,
         mutate(value =  value %>% map(function(csv)
             read.csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
-        mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
-            df %>% select(source = Sending.cluster,
-                          target = Target.cluster,
-                          ligand = Ligand.symbol,
-                          receptor = Receptor.symbol,
-                          edge_avg_expr = Edge.average.expression.weight,
-                          edge_specificity = Edge.average.expression.derived.specificity)
-        }), result)) %>%
+        mutate(
+            result =
+                if_else(
+                    rep(.format, length(.data$result)),
+                    result %>% map(function(df){
+                        df %>%
+                            select(
+                                source = Sending.cluster,
+                                target = Target.cluster,
+                                ligand = Ligand.symbol,
+                                receptor = Receptor.symbol,
+                                edge_avg_expr = Edge.average.expression.weight,
+                                edge_specificity = Edge.average.expression.derived.specificity
+                                )
+                        }),
+                    result)) %>%
         deframe() %>%
         plyr::rename(., c("lrc2p" = "Default"), # change this to default
                      warn_missing = FALSE)

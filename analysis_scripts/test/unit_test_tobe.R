@@ -1,7 +1,6 @@
 # omni_resources <- compile_ligrec(lr_pipeline = TRUE)
 omni_resources <- readRDS("input/omni_resources.rds")
-op_resources <- list("CellChatDB" = omni_resources$CellChatDB)
-op_resources$CellChatDB %<>% filter(str_detect(target_genesymbol, "_"))
+op_resources <- omni_resources[1]
 
 # seurat_object <- SeuratData::LoadData("pbmc3k")
 # seurat_object@meta.data <- seurat_object@meta.data %>%
@@ -81,8 +80,4 @@ natmi_results <- call_natmi(omni_resources = op_resources,
                             ann_path = "input/test_metadata.csv",
                             output_path = "output/NATMI_test",
                             .write_data = TRUE,
-                            .assay = "RNA"
-                            )
-xd <- FormatNatmi(output_path,
-            names(op_resources),
-            TRUE)
+                            .assay = "RNA")

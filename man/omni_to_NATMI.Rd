@@ -9,7 +9,7 @@ omni_to_NATMI(omni_resources, omni_path = "input/omnipath_NATMI")
 \arguments{
 \item{omni_path}{directory in which to save OP resources}
 
-\item{omni_list}{list of omnipath resources}
+\item{resource_names}{list of omnipath resources}
 }
 \description{
 Reform OmniPath Resource to NATMI format and save to location
