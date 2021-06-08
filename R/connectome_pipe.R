@@ -17,7 +17,7 @@
 #'
 #' @import Connectome
 #' @importFrom Seurat ScaleData
-#' @importFrom magrittr %>% %<>%
+#' @importFrom magrittr %>%
 #' @importFrom dplyr arrange select mutate distinct
 #'
 #' @export
@@ -34,7 +34,7 @@ call_connectome <- function(seurat_object,
 
     if(!is.null(op_resource)){
         # Format db to connectome
-        lr_db %<>% conn_formatDB
+        lr_db <- conn_formatDB(op_resource)
 
         # scale genes to ligands and receptors available in the resource
         connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)

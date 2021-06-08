@@ -125,7 +125,7 @@ call_natmi <- function(
     })
 
     # set dir back to project
-    setwd(wd_path) # possibly hangs here
+    setwd(wd_path)
 
     # load results
     natmi_results <- FormatNatmi(output_path, .format)
