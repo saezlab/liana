@@ -73,7 +73,7 @@ squidpy_res <- call_squidpyR(seurat_object = seurat_object,
 
 
 # NATMI
-natmi_results <- call_natmi(omni_resources = omni_resources,
+natmi_results <- call_natmi(omni_resources = op_resources,
                             seurat_object = seurat_object,
                             omnidbs_path = "input/omnipath_NATMI",
                             natmi_path = "NATMI/",
@@ -83,3 +83,6 @@ natmi_results <- call_natmi(omni_resources = omni_resources,
                             .write_data = TRUE,
                             .assay = "RNA"
                             )
+xd <- FormatNatmi(output_path,
+            names(op_resources),
+            TRUE)

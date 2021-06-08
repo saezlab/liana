@@ -54,7 +54,6 @@ call_natmi <- function(
     .num_cor = 4){
 
     py_set_seed(.seed)
-    .wdir <- system.file(package = 'intercell')
     .natmi_dir <- system.file('NATMI/', package = 'intercell')
 
     # append default resources to OmniPath ones
@@ -64,8 +63,9 @@ call_natmi <- function(
                                 "lrc2p"
 
         )
+    } else{
+        resource_names <- as.list(names(omni_resources))
     }
-    resource_names
 
     if(.write_data){
         log_info(str_glue("Writing EM to {em_path}"))
@@ -82,24 +82,21 @@ call_natmi <- function(
 
         log_info(str_glue("Saving resources to {omnidbs_path}"))
         omni_to_NATMI(omni_resources, omnidbs_path)
+
+        # copy OmniPath resources to NATMI dir
+        file.copy(list.files(omnidbs_path, "*.csv$",
+                             full.names = TRUE),
+                  to=str_glue("{natmi_path}/lrdbs/"),
+                  overwrite = TRUE)
     }
 
     log_success(str_glue("Output to be saved and read from {output_path}"))
     dir.create(file.path(output_path), recursive = TRUE)
 
-    # copy OmniPath resources to NATMI dir
-    file.copy(list.files(omnidbs_path, "*.csv$",
-                         full.names = TRUE),
-              to=str_glue("{natmi_path}/lrdbs/"),
-              overwrite = TRUE)
-
-
-    # submit native sys requests
-    # Check issue with Default
+    # submit native sys request
     resource_names %>% map(function(resource){
 
         log_success(str_glue("Now Running: {resource}"))
-
         system(str_glue("python3 {.natmi_dir}/ExtractEdges.py ",
                         "--species human ",
                         "--emFile {em_path} ",
@@ -110,9 +107,8 @@ call_natmi <- function(
                         sep = " "))
     })
 
-
-    # load results
-    natmi_results <- FormatNatmi(output_path, .format)
+    # load and format results
+    natmi_results <- FormatNatmi(output_path, resource_names, .format)
 
     return(natmi_results)
 }
@@ -143,6 +139,7 @@ omni_to_NATMI <- function(omni_resources,
 #' Load NATMI results from folder and format appropriately
 #'
 #' @param output_path NATMI output path
+#' @param resource_names results for which resources to load
 #' @param .format bool whether to format output
 #'
 #' @return A list of NATMI results per resource loaded from the output
@@ -154,7 +151,9 @@ omni_to_NATMI <- function(omni_resources,
 #' @importFrom dplyr mutate select
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
-FormatNatmi <- function(output_path, .format = TRUE){
+FormatNatmi <- function(output_path,
+                        resource_names,
+                        .format = TRUE){
 
     list.files(output_path,
                all.files = TRUE,
@@ -162,6 +161,7 @@ FormatNatmi <- function(output_path, .format = TRUE){
                pattern ="Edges_") %>%
         enframe() %>%
         separate(value, into = c("resource", "file"), remove = FALSE) %>%
+        filter(resource %in% resource_names) %>%
         mutate(value =  value %>% map(function(csv)
             read.csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
@@ -174,17 +174,6 @@ FormatNatmi <- function(output_path, .format = TRUE){
                           edge_specificity = Edge.average.expression.derived.specificity)
         }), result)) %>%
         deframe() %>%
-        plyr::rename(., c("lrc2p" = "Default")) # change this to default
-}
-
-
-#' Split and format strings for subsampling
-#'
-#' @param path path to CSV (em/annotations) to split and format to the
-#'     current subsampling taken from a seurat object project name
-#' @param project_name seurat object project name
-#' @return Path to save subsampling EM and Annotations
-str_split_helper <- function(path, project_name){
-    split_path <- str_split(path, pattern = "\\.", n = 2)[[1]][1]
-    str_glue("{split_path}_{project_name}.csv")
+        plyr::rename(., c("lrc2p" = "Default"), # change this to default
+                     warn_missing = FALSE)
 }
