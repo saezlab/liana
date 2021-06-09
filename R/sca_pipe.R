@@ -74,6 +74,7 @@ call_sca <- function(op_resource,
 #' @importFrom tidyr separate
 #' @importFrom magrittr %>%
 #' @importFrom dplyr select
+#' @importFrom tibble as_tibble
 #'
 #' @export
 FormatSCA <- function(sca_res, remove.na = TRUE) {
@@ -85,7 +86,8 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
     separate(receptor,
              into = c("target", "receptor"),
              sep = "[.]") %>%
-    select(source, ligand, target, receptor, LRscore)
+    select(source, ligand, target, receptor, LRscore) %>%
+    as_tibble()
   return(sca_res)
 }
 

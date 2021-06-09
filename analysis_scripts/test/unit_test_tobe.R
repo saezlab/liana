@@ -21,7 +21,7 @@ op_resources <- omni_resources[1]
 # seurat_object %<>% FindVariableFeatures()
 # saveRDS(seurat_object, "input/testdata.rds")
 
-seurat_object <- readRDS("input/testdata.rds")
+seurat_object <- readRDS("data/input/testdata.rds")
 
 # Unit tests for each method
 
@@ -85,5 +85,7 @@ squidpy_res <- call_squidpyR(seurat_object = seurat_object,
                              threshold=0.01,
                              seed=as.integer(1004))
 
-
-
+# LIANA
+testrun <- liana_wrap(seurat_object,
+                     method = c('italk', 'sca', 'cellchat', 'connectome', 'squidpy', 'natmi'),
+                     resource = c('OmniPath'))
