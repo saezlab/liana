@@ -1,4 +1,5 @@
-# omni_resources <- compile_ligrec(lr_pipeline = TRUE)
+# Unit test for omni_resources
+omni_resources <- compile_ligrec(lr_pipeline = TRUE)
 omni_resources <- readRDS("input/omni_resources.rds")
 op_resources <- omni_resources[1]
 
@@ -22,11 +23,13 @@ op_resources <- omni_resources[1]
 
 seurat_object <- readRDS("input/testdata.rds")
 
+# Unit tests for each method
+
 # CellChat
 cc_res <- call_cellchat(op_resource = NULL,
                         seurat_object = seurat_object,
                         nboot = 10,
-                        exclude_anns = c(),
+                        exclude_anns = NULL,
                         thresh = 1,
                         assay = "RNA",
                         .normalize = TRUE,
@@ -35,8 +38,8 @@ cc_res <- call_cellchat(op_resource = NULL,
 
 # Connectome
 conn_res <- call_connectome(seurat_object = seurat_object,
-                            .spatial = FALSE,
                             op_resource = omni_resources$CellPhoneDB,
+                            .spatial = FALSE,
                             min.cells.per.ident = 1,
                             p.values = TRUE,
                             calculate.DOR = FALSE,
@@ -51,6 +54,19 @@ italk_res <- call_italk(op_resource = omni_resources$CellPhoneDB,
                         .DE = TRUE)
 
 
+
+# NATMI
+natmi_results <- call_natmi(op_resource = op_resources,
+                            seurat_object = seurat_object,
+                            omnidbs_path = "input/omnipath_NATMI",
+                            natmi_path = "NATMI/",
+                            em_path = "input/test_em.csv",
+                            ann_path = "input/test_metadata.csv",
+                            output_path = "output/NATMI_test",
+                            .write_data = TRUE,
+                            assay = "RNA")
+
+
 # SCA
 sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
                     seurat_object = seurat_object,
@@ -62,22 +78,12 @@ sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
 
 # Squidpy
 squidpy_res <- call_squidpyR(seurat_object = seurat_object,
+                             op_resource = op_resources,
                              python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
-                             omni_resources = op_resources,
-                             n_perms=100,
+                             cluster_key="seurat_annotations",
+                             n_perms=1000,
                              threshold=0.01,
-                             seed=as.integer(1004),
-                             cluster_key="seurat_annotations")
+                             seed=as.integer(1004))
 
 
 
-# NATMI
-natmi_results <- call_natmi(omni_resources = op_resources,
-                            seurat_object = seurat_object,
-                            omnidbs_path = "input/omnipath_NATMI",
-                            natmi_path = "NATMI/",
-                            em_path = "input/test_em.csv",
-                            ann_path = "input/test_metadata.csv",
-                            output_path = "output/NATMI_test",
-                            .write_data = TRUE,
-                            .assay = "RNA")

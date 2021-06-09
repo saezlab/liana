@@ -1,6 +1,6 @@
 #' Call Squidpy Pipeline via reticulate with OmniPath and format results
 #' @param seurat_object Seurat object as input
-#' @param omni_resources List of OmniPath resources
+#' @param op_resource List of OmniPath resources
 #' @param python_path path to python version to use in reticulate
 #' @param .seed used to python seed
 #' @returns A list of Squidpy results for each resource
@@ -11,7 +11,7 @@
 #' @import reticulate tibble
 #' @export
 call_squidpyR <- function(seurat_object,
-                          omni_resources,
+                          op_resource,
                           python_path,
                           .seed = 1004,
                           ...){
@@ -21,11 +21,11 @@ call_squidpyR <- function(seurat_object,
     reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
-    if("DEFAULT" %in% toupper(names(omni_resources))){
-        omni_resources$Default <- NULL
+    if("DEFAULT" %in% toupper(names(op_resource))){
+        op_resource$Default <- NULL
     }
 
-    op_resources <- map(omni_resources, function(x) x %>%
+    op_resources <- map(op_resource, function(x) x %>%
                               select(
                                   uniprot_source = source,
                                   unprot_target = target,
@@ -34,7 +34,7 @@ call_squidpyR <- function(seurat_object,
                                   category_intercell_source,
                                   category_intercell_target
                                   )) %>%
-        unname() # unname list, so its passed as list to Python
+        unname() # unname r list, so its passed as list to Python
 
     # Call Squidpy
     reticulate::source_python("R/squidpy_pipe.py")
@@ -47,18 +47,18 @@ call_squidpyR <- function(seurat_object,
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
 
-    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
-    squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
-    squidpy_metadata <- py$squidpy_results$meta %>% setNames(names(omni_resources))
+    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(op_resource))
+    squidpy_means <- py$squidpy_results$means %>% setNames(names(op_resource))
+    squidpy_metadata <- py$squidpy_results$meta %>% setNames(names(op_resource))
 
 
-    squidpy_results <- map(names(omni_resources),
+    squidpy_results <- map(names(op_resource),
                            function(x)
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means,
                                                 .meta_list = squidpy_metadata)) %>%
-        setNames(names(omni_resources)) %>%
+        setNames(names(op_resource)) %>%
         map(function(res) res %>%
                 select(1:3, means, pvalue, uniprot_source, unprot_target) %>%
                 rename(ligand = source,

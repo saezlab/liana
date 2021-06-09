@@ -327,6 +327,4 @@ shuffle_omnipath <- function(op_resource,
             entity_type_intercell_target
         ) %>%
         as_tibble()
-
-
 }

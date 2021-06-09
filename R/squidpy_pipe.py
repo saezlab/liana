@@ -12,6 +12,8 @@ def get_squidpy_res(op_resource, adata_seurat, **kwargs):
             OmniPath database resource to use in LR inference
         adata_seurat
             Anndata/ScanPy clustering object
+        kwargs
+            See options at <https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec>
         Returns
             A LigRec Results Object"""
     try:
@@ -24,7 +26,6 @@ def get_squidpy_res(op_resource, adata_seurat, **kwargs):
         return res
     except ValueError as e:
         print(e)
-        print(op_resource)
         return None
 
 
