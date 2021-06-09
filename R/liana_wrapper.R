@@ -3,6 +3,11 @@
 #' @param seurat_object seurat object
 #' @param method method(s) to be run via liana
 #' @param resource resource(s) to be used by the methods
+#' @param .simplify if methods are run with only 1 resource, return a list
+#'   of tibbles for each method, rather than a list of lists with
+#'   method-resource combinations
+#' @param ... Pass custom method parameters to the methods via the liana wrapper
+#'    See \link{liana::liana_defaults} for more information
 #'
 #' @import tibble rlang
 #' @importFrom purrr map map2
@@ -12,7 +17,13 @@
 #'
 #' @details LIANA wrapper method that can be used to call each method with
 #'  a given set of intercellular resources from the OmniPath universe
-liana_wrap <- function(seurat_object, method, resource){
+#'
+#' @export
+liana_wrap <- function(seurat_object,
+                       method,
+                       resource,
+                       .simplify = TRUE,
+                       ...){
     resource %<>% .select_resource
 
     .select_method(method) %>%
@@ -23,17 +34,17 @@ liana_wrap <- function(seurat_object, method, resource){
                          args <- append(
                              list(seurat_object = seurat_object,
                                   op_resource = reso),
-                             options(str_glue('{method_name}.defaults'))[[1]]
+                             liana_defaults(...)[[method_name]]
                          )
                          exec(.method,  !!!args)
-                     })
+                     }) %>% {`if`(.simplify, .list2tib(.)) }
                  } else{
                      args <- append(
                          list(seurat_object = seurat_object,
                               op_resource = resource),
-                         options(str_glue('{method_name}.defaults'))[[1]]
+                         liana_defaults(...)[[method_name]]
                      )
-                     exec(.method,  !!!args)
+                     exec(.method,  !!!args) %>% {`if`(.simplify, .list2tib(.)) }
                  }
              })
 }
@@ -51,8 +62,10 @@ liana_wrap <- function(seurat_object, method, resource){
 }
 
 
-#' Function to
+#' Function to return the appropriate method(s) to be executed
 #' @param method name of the method
+#'
+#' @return A list of method function names (to be called by the LIANA wrapper)
 #'
 #' @details Adapted from (jvelezmagic); decoupleR\https://github.com/saezlab/decoupleR/
 .select_method <- function(method){
@@ -73,7 +86,10 @@ liana_wrap <- function(seurat_object, method, resource){
 }
 
 
-# Helper Function to  Handle list or not list method calls
+#' Helper Function to  Handle list or not list method calls
+#' @param res list of lists (e.g. Method-Resource Results from the LIANA pipe)
+#'
+#' @return The first element of the list
 .list2tib <- function(res){
     if(length(res)==1){res %>% pluck(1)} else{res}
 }

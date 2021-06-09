@@ -1,6 +1,6 @@
 Package: liana
 Type: Package
-Title: Cell-cell communication resources and tools benchmark
+Title: Cell-cell communication resources and tools framework
 Version: 0.0.1
 Authors@R: c(
     person(
@@ -35,7 +35,7 @@ Description: Comparative analysis of cell-cell communication resources and
     cell-cell communication inference tools.
 License: MIT + file LICENSE
 URL: https://omnipathdb.org/
-BugReports: https://github.com/saezlab/Cell_Cell_Investigation/issues
+BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
 Remotes: Coolgenome/iTALK,

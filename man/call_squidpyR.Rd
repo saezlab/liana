@@ -4,16 +4,19 @@
 \alias{call_squidpyR}
 \title{Call Squidpy Pipeline via reticulate with OmniPath and format results}
 \usage{
-call_squidpyR(seurat_object, omni_resources, python_path, .seed = 1004, ...)
+call_squidpyR(seurat_object, op_resource, python_path, .seed = 1004, ...)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}
 
-\item{omni_resources}{List of OmniPath resources}
+\item{op_resource}{List of OmniPath resources}
 
 \item{python_path}{path to python version to use in reticulate}
 
 \item{.seed}{used to python seed}
+
+\item{...}{kwargs passed to Squidpy; For more information see:
+\https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
 }
 \value{
 A list of Squidpy results for each resource
@@ -23,7 +26,4 @@ Call Squidpy Pipeline via reticulate with OmniPath and format results
 }
 \details{
 CellPhoneDB v2 algorithm implementation in Python
-Stats:
-Mean expr
-pval from shuffled cluster
 }

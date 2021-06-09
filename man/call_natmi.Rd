@@ -5,14 +5,14 @@
 \title{Call NATMI Pipeline from R with OmniPath}
 \usage{
 call_natmi(
-  omni_resources,
-  seurat_object = NULL,
-  omnidbs_path = "input/omnipath_NATMI",
+  op_resource,
+  seurat_object,
+  omnidbs_path = "data/input/omnipath_NATMI",
   natmi_path = "NATMI/",
-  em_path = "input/test_em.csv",
-  ann_path = "input/test_metadata.csv",
-  output_path = "output/NATMI_test",
-  .assay = "RNA",
+  em_path = "data/input/test_em.csv",
+  ann_path = "data/input/test_metadata.csv",
+  output_path = "data/output/NATMI_test",
+  assay = "RNA",
   .format = TRUE,
   .write_data = TRUE,
   .seed = 1004,
@@ -20,7 +20,7 @@ call_natmi(
 )
 }
 \arguments{
-\item{omni_resources}{List of OmniPath resources}
+\item{op_resource}{List of OmniPath resources}
 
 \item{omnidbs_path}{path of saved omnipath resources}
 
@@ -31,6 +31,8 @@ call_natmi(
 \item{ann_path}{annotations (i.e. clusters) path}
 
 \item{output_path}{NATMI output path}
+
+\item{assay}{Seurat assay to be used}
 
 \item{.format}{bool whether to format output}
 

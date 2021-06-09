@@ -16,7 +16,7 @@ intercell_connections(resource, ...)
 removed. See \code{\link[OmnipathR]{get_interaction_resources}} for more information.}
     \item{\code{organism}}{Interactions are available for human, mouse and rat.
 Choose among: 9606 human (default), 10116 rat and 10090 Mouse}
-    \item{\code{exclude}}{datasets to exclude}
+    \item{\code{exclude}}{Character: datasets or resources to exclude.}
     \item{\code{references_by_resource}}{if FALSE, removes the resource name prefixes
 from the references (PubMed IDs); this way the information which reference
 comes from which resource will be lost and the PubMed IDs will be unique.}

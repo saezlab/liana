@@ -1,6 +1,6 @@
 # Unit test for omni_resources
 omni_resources <- compile_ligrec(lr_pipeline = TRUE)
-omni_resources <- readRDS("input/omni_resources.rds")
+omni_resources <- readRDS("data/input/omni_resources.rds")
 op_resources <- omni_resources[1]
 
 # seurat_object <- SeuratData::LoadData("pbmc3k")
@@ -87,5 +87,5 @@ squidpy_res <- call_squidpyR(seurat_object = seurat_object,
 
 # LIANA
 testrun <- liana_wrap(seurat_object,
-                     method = c('italk', 'sca', 'cellchat', 'connectome', 'squidpy', 'natmi'),
-                     resource = c('OmniPath'))
+                      method = c('italk', 'sca', 'cellchat', 'connectome', 'squidpy', 'natmi'),
+                      resource = c('OmniPath'))

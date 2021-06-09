@@ -67,3 +67,127 @@ run_liana <- function(seurat_object, method, resource){
 .list2tib <- function(res){
     if(length(res)==1){res %>% pluck(1)} else{res}
 }
+
+
+
+
+
+# Defaults
+#' Default Arguments Helper Function
+#' @param cellchat.defaults CellChat Default Parametres \link liana::call_cellchat
+#' @details etc
+liana_defaults <- function(
+    cellchat.defaults = NULL,
+    connectome.defaults = NULL,
+    italk.defaults = NULL,
+    natmi.defaults = NULL,
+    sca.defaults = NULL,
+    squidpy.defaults = NULL,
+    ...){
+
+    mod_args <- list(...)
+
+    default_args <- list(
+        "cellchat" = cellchat.defaults %<>%
+            `%||%`(list(
+                nboot = 100,
+                exclude_anns = NULL,
+                thresh = 1,
+                assay = "RNA",
+                .normalize = TRUE,
+                .do_parallel = FALSE,
+                .raw_use = TRUE
+            )),
+
+        'connectome' = connectome.defaults %<>%
+            `%||%`(list(
+                .spatial = FALSE,
+                min.cells.per.ident = 1,
+                p.values = TRUE,
+                calculate.DOR = FALSE,
+                assay = 'RNA',
+                .format = TRUE
+            )),
+
+        'italk' = italk.defaults %<>%
+            `%||%`(list(
+                assay = 'RNA',
+                .format = TRUE,
+                .DE = TRUE
+            )),
+
+        'natmi' = natmi.defaults %<>%
+            `%||%`(list(
+                omnidbs_path = "data/input/omnipath_NATMI",
+                natmi_path = "NATMI/",
+                em_path = "data/input/test_em.csv",
+                ann_path = "data/input/test_metadata.csv",
+                output_path = "data/output/NATMI_test",
+                assay = "RNA",
+                .format = TRUE,
+                .write_data = TRUE,
+                .seed = 1004,
+                .num_cor = 4)),
+
+        'sca' = sca.defaults %<>%
+            `%||%`(list(
+                assay = 'RNA',
+                .format = TRUE,
+                s.score = 0,
+                logFC = log2(1.5))),
+
+        'squidpy' = squidpy.defaults %<>%
+            `%||%`(list(
+                python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
+                cluster_key="seurat_annotations",
+                n_perms=1000,
+                threshold=0.01,
+                seed=as.integer(1004)
+            ))
+    )
+
+    default_args %<>%
+        map2(names(.), function(method, method_name){
+            default_args[[method_name]] %>%
+                map2(names(.), function(arg, arg_name){
+                    if(!is.null(mod_args[[method_name]][[arg_name]])){
+                        mod_args[[method_name]][[arg_name]]
+                    } else{
+                        arg
+                    }
+                })
+        })
+
+    default_args
+}
+
+
+liana_defaults()
+
+default_args <- liana_defaults()
+
+default_args$squidpy$python_path
+
+liana_defaults(cellchat.defaults = NULL,
+               connectome.defaults = NULL,
+               italk.defaults = NULL,
+               natmi.defaults = NULL,
+               sca.defaults = NULL,
+               squidpy.defaults = NULL,
+               "squidpy" = list("python_path" = ":)",
+                                "xd" = "):"))
+
+mod_args <- list("squidpy" = list("python_path" = ":)",
+                                  "xd" = "):"))
+
+default_args %>%
+    map2(names(.), function(method, method_name){
+        mod_args[[method_name]] %>%
+            map2(names(.), function(arg, arg_name){
+                if((arg_name %in% names(mod_args[[method_name]]))){
+                    arg
+                } else{
+                    .[[arg_name]]
+                }
+            })
+    })

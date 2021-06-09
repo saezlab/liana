@@ -3,11 +3,10 @@
 #' @param op_resource List of OmniPath resources
 #' @param python_path path to python version to use in reticulate
 #' @param .seed used to python seed
+#' @param ... kwargs passed to Squidpy; For more information see:
+#'   \https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec
 #' @returns A list of Squidpy results for each resource
 #' @details CellPhoneDB v2 algorithm implementation in Python
-#' Stats:
-#' Mean expr
-#' pval from shuffled cluster
 #' @import reticulate tibble
 #' @export
 call_squidpyR <- function(seurat_object,
