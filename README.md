@@ -88,14 +88,14 @@ Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/
 ```{r}
 library(devtools)  
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
-install_github('saezlab/OmnipathR') # install latest version of OmnipathR
+install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
 devtools::install_github("sqjin/CellChat")  
 devtools::install_github('msraredon/Connectome', ref = 'master')   
 devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')   
 # A modified version of SingleCellSignalR (SCA) that enables external resources
 devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
 # Install this repos
-devtools::install_github('saezlab/ligrec_decoupler')
+devtools::install_github('saezlab/ligrec_decoupler', ref='framework')
 ```
   
   
