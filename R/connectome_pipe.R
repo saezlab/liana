@@ -24,7 +24,7 @@
 call_connectome <- function(seurat_object,
                             op_resource,
                             .format = TRUE,
-                            .spatial = TRUE,
+                            .spatial = FALSE,
                             ...){
 
     if(.spatial){

@@ -18,60 +18,61 @@ liana_defaults <- function(
     italk.defaults = NULL,
     natmi.defaults = NULL,
     sca.defaults = NULL,
-    squidpy.defaults = NULL){
+    squidpy.defaults = NULL,
+    assay = "RNA"){
 
     default_args <- list(
         "cellchat" = cellchat.defaults %<>%
             `%||%`(list(
-                nboot = 100,
+                nboot = 1000,
                 exclude_anns = NULL,
                 thresh = 1,
-                assay = "RNA",
-                .normalize = TRUE,
+                assay = assay,
+                .normalize = FALSE,
                 .do_parallel = FALSE,
                 .raw_use = TRUE
                 )),
 
         'connectome' = connectome.defaults %<>%
         `%||%`(list(
-            .spatial = FALSE,
-            min.cells.per.ident = 1,
+            min.cells.per.ident = 10,
             p.values = TRUE,
             calculate.DOR = FALSE,
-            assay = 'RNA',
-            .format = TRUE
+            assay = assay,
+            .format = TRUE,
+            .spatial = FALSE
         )),
 
         'italk' = italk.defaults %<>%
                 `%||%`(list(
-                    assay = 'RNA',
+                    assay = assay,
                     .format = TRUE,
                     .DE = TRUE
                 )),
 
         'natmi' = natmi.defaults %<>%
             `%||%`(list(
-                omnidbs_path = "data/input/omnipath_NATMI",
-                natmi_path = "NATMI/",
-                em_path = "data/input/test_em.csv",
-                ann_path = "data/input/test_metadata.csv",
-                output_path = "data/output/NATMI_test",
+                omnidbs_dir = "omnipath_NATMI",
+                expr_file = "em.csv",
+                meta_file = "metadata.csv",
+                output_dir = "NATMI_test",
                 assay = "RNA",
+                num_cor = 4,
                 .format = TRUE,
                 .write_data = TRUE,
                 .seed = 1004,
-                .num_cor = 4)),
+                .natmi_path = NULL
+                )),
 
         'sca' = sca.defaults %<>%
             `%||%`(list(
-                assay = 'RNA',
+                assay = assay,
                 .format = TRUE,
                 s.score = 0,
                 logFC = log2(1.5))),
 
         'squidpy' = squidpy.defaults %<>%
            `%||%`(list(
-               python_path = "/home/dbdimitrov/anaconda3/envs/theisverse/bin/python",
                cluster_key="seurat_annotations",
                n_perms=1000,
                threshold=0.01,
@@ -79,3 +80,6 @@ liana_defaults <- function(
            ))
     )
 }
+
+
+

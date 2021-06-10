@@ -1,13 +1,14 @@
 #' Call NATMI Pipeline from R with OmniPath
 #' @param op_resource List of OmniPath resources
-#' @param omnidbs_path path of saved omnipath resources
-#' @param natmi_path path of NATMI code and dbs
-#' @param em_path expression matrix path
-#' @param ann_path annotations (i.e. clusters) path
-#' @param output_path NATMI output path
+#' @param seu
+#' @param omnidbs_dir path of saved omnipath resources
+#' @param expr_file expression matrix file name
+#' @param meta_file annotations (i.e. clusters) file name
+#' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
+#' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
 #' @param assay Seurat assay to be used
 #' @return DF with NATMI results
 #'
@@ -43,19 +44,21 @@
 call_natmi <- function(
     op_resource,
     seurat_object,
-    omnidbs_path = "data/input/omnipath_NATMI",
-    natmi_path = "NATMI/",
-    em_path = "data/input/test_em.csv",
-    ann_path = "data/input/test_metadata.csv",
-    output_path = "data/output/NATMI_test",
+    omnidbs_dir = "omnipath_NATMI",
+    expr_file = "em.csv",
+    meta_file = "metadata.csv",
+    output_dir = "NATMI_test",
     assay = "RNA",
+    num_cor = 4,
     .format = TRUE,
     .write_data = TRUE,
     .seed = 1004,
-    .num_cor = 4){
+    .natmi_path = NULL){
 
     py_set_seed(.seed)
-    .natmi_dir <- system.file('NATMI/', package = 'liana')
+    .input_path = system.file(package = 'liana', 'data', 'input')
+    .output_path = system.file(package = 'liana', 'data', 'output')
+    .natmi_path %<>% `%||%`(system.file('NATMI/', package = 'liana'))
 
     # append default resources to OmniPath ones
     if("DEFAULT" %in% toupper(names(op_resource))){
@@ -66,47 +69,48 @@ call_natmi <- function(
     }
 
     if(.write_data){
-        log_info(str_glue("Writing EM to {em_path}"))
+        log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
                                                     assay = assay,
                                                     slot = "data"))) - 1),
-                  file = em_path,
+                  file = str_glue("{.input_path}/{expr_file}"),
                   row.names = TRUE)
-        log_info(str_glue("Writing Annotations to {ann_path}"))
+        log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
-                  file = ann_path,
+                  file = str_glue(str_glue("{.input_path}/{meta_file}")),
                   row.names = FALSE)
 
-        log_info(str_glue("Saving resources to {omnidbs_path}"))
-        omni_to_NATMI(op_resource, omnidbs_path)
+        log_info(str_glue("Saving resources to {.input_path}/{omnidbs_dir}"))
+        omni_to_NATMI(op_resource, str_glue("{.input_path}/{omnidbs_dir}"))
 
         # copy OmniPath resources to NATMI dir
-        file.copy(list.files(omnidbs_path, "*.csv$",
+        file.copy(list.files(str_glue("{.input_path}/{omnidbs_dir}"),
+                             pattern = "*.csv$",
                              full.names = TRUE),
-                  to=str_glue("{natmi_path}/lrdbs/"),
+                  to=str_glue("{.natmi_path}/lrdbs/"),
                   overwrite = TRUE)
     }
 
-    log_success(str_glue("Output to be saved and read from {output_path}"))
-    dir.create(file.path(output_path), recursive = TRUE)
+    log_success(str_glue("Output to be saved and read from {.output_path}/{output_dir}"))
+    dir.create(file.path(str_glue("{.output_path}/{output_dir}")), recursive = TRUE)
 
     # submit native sys request
     resource_names %>% map(function(resource){
 
         log_success(str_glue("Now Running: {resource}"))
-        system(str_glue("python3 {.natmi_dir}/ExtractEdges.py ",
+        system(str_glue("python3 {.natmi_path}/ExtractEdges.py ",
                         "--species human ",
-                        "--emFile {em_path} ",
-                        "--annFile {ann_path} ",
-                        "--interDB {.natmi_dir}/lrdbs/{resource}.csv ",
-                        "--coreNum {.num_cor} ",
-                        "--out {output_path}/{resource}",
+                        "--emFile {.input_path}/{expr_file} ",
+                        "--annFile {.input_path}/{meta_file} ",
+                        "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
+                        "--coreNum {num_cor} ",
+                        "--out {.output_path}/{output_dir}/{resource}",
                         sep = " "))
     })
 
     # load and format results
-    natmi_results <- FormatNatmi(output_path, resource_names, .format)
+    natmi_results <- FormatNatmi(str_glue("{.output_path}/{output_dir}"), resource_names, .format)
 
     return(natmi_results)
 }
@@ -174,8 +178,8 @@ FormatNatmi <- function(output_path,
                                 receptor = Receptor.symbol,
                                 edge_avg_expr = Edge.average.expression.weight,
                                 edge_specificity = Edge.average.expression.derived.specificity
-                                )
-                        }),
+                            )
+                    }),
                     result)) %>%
         deframe() %>%
         plyr::rename(., c("lrc2p" = "Default"), # change this to default

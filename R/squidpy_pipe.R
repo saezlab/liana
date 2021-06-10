@@ -1,7 +1,6 @@
 #' Call Squidpy Pipeline via reticulate with OmniPath and format results
 #' @param seurat_object Seurat object as input
 #' @param op_resource List of OmniPath resources
-#' @param python_path path to python version to use in reticulate
 #' @param .seed used to python seed
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec
@@ -11,17 +10,16 @@
 #' @export
 call_squidpyR <- function(seurat_object,
                           op_resource,
-                          python_path,
                           .seed = 1004,
                           ...){
 
     kwargs <- list(...) # convert elipses to named list (i.e python dict)
 
-    reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
     if("DEFAULT" %in% toupper(names(op_resource))){
         op_resource$Default <- NULL
+
     }
 
     op_resources <- map(op_resource, function(x) x %>%
@@ -36,7 +34,7 @@ call_squidpyR <- function(seurat_object,
         unname() # unname r list, so its passed as list to Python
 
     # Call Squidpy
-    reticulate::source_python("R/squidpy_pipe.py")
+    reticulate::source_python(system.file(package = 'liana', "R/squidpy_pipe.py"))
     py_set_seed(.seed)
 
     py$squidpy_results <- py$call_squidpy(op_resources,

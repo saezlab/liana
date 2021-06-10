@@ -26,8 +26,8 @@ call_sca <- function(op_resource,
   if(!is.null(op_resource)){
     op_resource %<>% sca_formatDB
   } else{
-    if(file.exists("input/LRdb.rda")){
-      load("input/LRdb.rda")
+    if(file.exists("data/input/LRdb.rda")){
+      load(system.file(package = "liana", "data/input/LRdb.rda"))
       op_resource <- LRdb
     }
   }

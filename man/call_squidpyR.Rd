@@ -4,14 +4,12 @@
 \alias{call_squidpyR}
 \title{Call Squidpy Pipeline via reticulate with OmniPath and format results}
 \usage{
-call_squidpyR(seurat_object, op_resource, python_path, .seed = 1004, ...)
+call_squidpyR(seurat_object, op_resource, .seed = 1004, ...)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}
 
 \item{op_resource}{List of OmniPath resources}
-
-\item{python_path}{path to python version to use in reticulate}
 
 \item{.seed}{used to python seed}
 

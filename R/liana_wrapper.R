@@ -10,7 +10,8 @@
 #'    See \link{liana::liana_defaults} for more information
 #'
 #' @import tibble rlang
-#' @importFrom purrr map map2
+#' @importFrom magritrr %<>% %>%
+#' @importFrom purrr map map2 safely compact
 #'
 #' @returns A list of method-resource results - i.e. provided resources are run
 #' with each method
@@ -28,7 +29,7 @@ liana_wrap <- function(seurat_object,
 
     .select_method(method) %>%
         map2(names(.),
-             function(.method, method_name){
+             safely(function(.method, method_name){
                  if(!(method_name %in% c('squidpy', 'natmi'))){
                      map(resource, function(reso){
                          args <- append(
@@ -46,7 +47,8 @@ liana_wrap <- function(seurat_object,
                      )
                      exec(.method,  !!!args) %>% {`if`(.simplify, .list2tib(.)) }
                  }
-             })
+             }, quiet = FALSE)) %>%
+        map(function(elem) .list2tib(compact(elem))) # format result/errors
 }
 
 #' Helper Function to Handle resource choices

@@ -10,7 +10,8 @@ liana_defaults(
   italk.defaults = NULL,
   natmi.defaults = NULL,
   sca.defaults = NULL,
-  squidpy.defaults = NULL
+  squidpy.defaults = NULL,
+  assay = "RNA"
 )
 }
 \arguments{

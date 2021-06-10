@@ -58,17 +58,20 @@ italk_res <- call_italk(op_resource = omni_resources$CellPhoneDB,
 # NATMI
 natmi_results <- call_natmi(op_resource = op_resources,
                             seurat_object = seurat_object,
-                            omnidbs_path = "input/omnipath_NATMI",
-                            natmi_path = "NATMI/",
-                            em_path = "input/test_em.csv",
-                            ann_path = "input/test_metadata.csv",
-                            output_path = "output/NATMI_test",
+                            omnidbs_dir = "omnipath_NATMI",
+                            expr_file = "em.csv",
+                            meta_file = "metadata.csv",
+                            output_dir = "NATMI_test",
+                            assay = "RNA",
+                            num_cor = 4,
+                            .format = TRUE,
                             .write_data = TRUE,
-                            assay = "RNA")
+                            .seed = 1004,
+                            .natmi_path = NULL)
 
 
 # SCA
-sca_res <- call_sca(op_resource = omni_resources$CellPhoneDB,
+sca_res <- call_sca(op_resource = NULL,
                     seurat_object = seurat_object,
                     assay = 'RNA',
                     .format = TRUE,
@@ -85,7 +88,19 @@ squidpy_res <- call_squidpyR(seurat_object = seurat_object,
                              threshold=0.01,
                              seed=as.integer(1004))
 
+# check available resources
+get_lr_resources()
+
 # LIANA
 testrun <- liana_wrap(seurat_object,
                       method = c('italk', 'sca', 'cellchat', 'connectome', 'squidpy', 'natmi'),
-                      resource = c('OmniPath'))
+                      resource = c('OmniPath', 'connectomeDB2020'),
+                      cellchat.defaults = (list(
+                              nboot = 10,
+                              exclude_anns = NULL,
+                              thresh = 1,
+                              assay = "RNA",
+                              .normalize = FALSE,
+                              .do_parallel = FALSE,
+                              .raw_use = TRUE
+                          )))
