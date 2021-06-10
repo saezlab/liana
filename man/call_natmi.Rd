@@ -2,12 +2,11 @@
 % Please edit documentation in R/NATMI_pipe.R
 \name{call_natmi}
 \alias{call_natmi}
-\title{Call NATMI Pipeline from R with OmniPath}
+\title{Call NATMI Pipeline from R with Resources Querried from OmniPath}
 \usage{
 call_natmi(
   op_resource,
   seurat_object,
-  omnidbs_dir = "omnipath_NATMI",
   expr_file = "em.csv",
   meta_file = "metadata.csv",
   output_dir = "NATMI_test",
@@ -22,7 +21,7 @@ call_natmi(
 \arguments{
 \item{op_resource}{List of OmniPath resources}
 
-\item{omnidbs_dir}{path of saved omnipath resources}
+\item{seurat_object}{Seurat object}
 
 \item{expr_file}{expression matrix file name}
 
@@ -38,20 +37,26 @@ call_natmi(
 
 \item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
+\item{omnidbs_dir}{path of saved omnipath resources}
+
 \item{.default_run}{bool whether to run default DBs or not}
 }
 \value{
 DF with NATMI results
 }
 \description{
-Call NATMI Pipeline from R with OmniPath
+Call NATMI Pipeline from R with Resources Querried from OmniPath
 }
 \details{
-This function will take omnipath resources saved to csvs and copy
-    them to the NATMI dbs folder, then it will natively call the Python
-    modules of NATMI in the NATMI dir and save the output into a specified
-    directory. It will then load and format the output to a DF.
+This function will save NATMI dbs folder, then it will call the
+    NATMI Python from the NATMI dir and save the output into a specified
+    directory in NATMI's path.
+    It will then load the csvs and format the output to a list of lists.
 
+    By default, NATMI's path is set to that of LIANA, but any alternative
+    path can be passed
+
+==============================================================================
 NATMI Arguments:
   --interDB INTERDB
                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension

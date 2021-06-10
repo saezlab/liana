@@ -6,6 +6,7 @@
 #'   \link(https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec)
 #'
 #' @import reticulate tibble
+#' @importFrom tidyr pivot_longer
 #'
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #'

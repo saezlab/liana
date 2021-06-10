@@ -17,7 +17,7 @@
 #'
 #' @import Connectome
 #' @importFrom Seurat ScaleData
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
 #'
 #' @export
@@ -63,7 +63,7 @@ call_connectome <- function(seurat_object,
     }
 
     if(.format){
-        conn <- conn %>% FormatConnectome
+        conn %<>% FormatConnectome
     }
 
     return(conn)

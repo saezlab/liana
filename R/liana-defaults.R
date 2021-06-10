@@ -1,28 +1,30 @@
 #' Function to pass Default Arguments for each method
 #'
-#' @param cellchat.defaults CellChat Default Parameters \link{liana::call_cellchat}
-#' @param connectome.defaults Connectome Default Parameters \link{liana::call_connectome}
-#' @param italk.defaults iTALK Default Parameters \link{liana::call_italk}
-#' @param natmi.defaults NATMI Default Parameters \link{liana::call_natmi}
-#' @param sca.defaults SingleCellSignalR Default Parameters \link{liana::call_sca}
-#' @param squidpy.defaults Squidpy Default Parameters \link{liana::call_squidpy}
+#' @param cellchat.params CellChat Parameters \link{liana::call_cellchat}
+#' @param connectome.params Connectome Parameters \link{liana::call_connectome}
+#' @param italk.params iTALK Parameters \link{liana::call_italk}
+#' @param natmi.params NATMI Parameters \link{liana::call_natmi}
+#' @param sca.params SingleCellSignalR Parameters \link{liana::call_sca}
+#' @param squidpy.params Squidpy Parameters \link{liana::call_squidpy}
 #'
-#' @details Default parameters for each method can also be passed manually
+#' @details The default parameters for each method can also be overwritten by
+#'  manually passing a list of parameters for the appropraite method
+#'   \link{liana::liana_wrap}
 #'
-#' @return A list of the default parametres for each method
+#' @return A list of the default parameters for each method
 #'
 #' @export
 liana_defaults <- function(
-    cellchat.defaults = NULL,
-    connectome.defaults = NULL,
-    italk.defaults = NULL,
-    natmi.defaults = NULL,
-    sca.defaults = NULL,
-    squidpy.defaults = NULL,
+    cellchat.params = NULL,
+    connectome.params = NULL,
+    italk.params = NULL,
+    natmi.params = NULL,
+    sca.params = NULL,
+    squidpy.params = NULL,
     assay = "RNA"){
 
     default_args <- list(
-        "cellchat" = cellchat.defaults %<>%
+        "cellchat" = cellchat.params %<>%
             `%||%`(list(
                 nboot = 1000,
                 exclude_anns = NULL,
@@ -33,7 +35,7 @@ liana_defaults <- function(
                 .raw_use = TRUE
                 )),
 
-        'connectome' = connectome.defaults %<>%
+        'connectome' = connectome.params %<>%
         `%||%`(list(
             min.cells.per.ident = 10,
             p.values = TRUE,
@@ -43,16 +45,17 @@ liana_defaults <- function(
             .spatial = FALSE
         )),
 
-        'italk' = italk.defaults %<>%
+        'italk' = italk.params %<>%
                 `%||%`(list(
                     assay = assay,
                     .format = TRUE,
                     .DE = TRUE
                 )),
 
-        'natmi' = natmi.defaults %<>%
+        'natmi' = natmi.params %<>%
             `%||%`(list(
-                omnidbs_dir = "omnipath_NATMI",
+                op_resource,
+                seurat_object,
                 expr_file = "em.csv",
                 meta_file = "metadata.csv",
                 output_dir = "NATMI_test",
@@ -64,14 +67,14 @@ liana_defaults <- function(
                 .natmi_path = NULL
                 )),
 
-        'sca' = sca.defaults %<>%
+        'sca' = sca.params %<>%
             `%||%`(list(
                 assay = assay,
                 .format = TRUE,
                 s.score = 0,
                 logFC = log2(1.5))),
 
-        'squidpy' = squidpy.defaults %<>%
+        'squidpy' = squidpy.params %<>%
            `%||%`(list(
                cluster_key="seurat_annotations",
                n_perms=1000,

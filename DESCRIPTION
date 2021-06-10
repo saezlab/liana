@@ -1,6 +1,6 @@
 Package: liana
 Type: Package
-Title: Cell-cell communication resources and tools framework
+Title: LIANA: a LIgand-receptor ANalysis frAmework
 Version: 0.0.1
 Authors@R: c(
     person(
@@ -28,7 +28,7 @@ Authors@R: c(
         given = "James",
         family = "Nagai",
         role = c("aut"),
-        email = "",
+        email = "jshinitinaga@ukaachen.de",
         comment = c(ORCID = "0000-0002-7655-7206")
     ))
 Description: Comparative analysis of cell-cell communication resources and
@@ -45,9 +45,7 @@ Remotes: Coolgenome/iTALK,
 Depends:
     R(>= 4.0)
 Imports:
-    graphics,
     utils,
-    OmnipathR,
     reticulate,
     yardstick,
     stringr,
@@ -58,30 +56,30 @@ Imports:
     readr,
     rlang,
     dplyr,
+    Seurat,
+    logger
+Suggests:
+    Connectome,
+    CellChat,
+    SCAomni,
+    iTALK,
+    OmnipathR,
+    BiRewire,
+    knitr,
+    rmarkdown,
+    testthat,
+    forcats,
+    shadowtext,
+    testthat (>= 3.0.0),
+    viridis,
+    proxy,
     UpSetR,
     RColorBrewer,
     ggfortify,
     ggplot2,
-    logger,
     RCurl,
     Barnard,
     DescTools,
-    rlang,
-    viridis,
-    proxy,
-    BiRewire
-Suggests:
-    Connectome,
-    CellChat,
-    iTALK,
-    knitr,
-    rmarkdown,
-    Seurat,
-    SCAomni,
-    Seurat,
-    testthat,
-    forcats,
-    shadowtext,
-    testthat (>= 3.0.0)
+    graphics
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3

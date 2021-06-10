@@ -1,6 +1,6 @@
-#' Call NATMI Pipeline from R with OmniPath
+#' Call NATMI Pipeline from R with Resources Querried from OmniPath
 #' @param op_resource List of OmniPath resources
-#' @param seu
+#' @param seurat_object Seurat object
 #' @param omnidbs_dir path of saved omnipath resources
 #' @param expr_file expression matrix file name
 #' @param meta_file annotations (i.e. clusters) file name
@@ -13,11 +13,15 @@
 #' @return DF with NATMI results
 #'
 #' @details
-#'     This function will take omnipath resources saved to csvs and copy
-#'     them to the NATMI dbs folder, then it will natively call the Python
-#'     modules of NATMI in the NATMI dir and save the output into a specified
-#'     directory. It will then load and format the output to a DF.
+#'     This function will save NATMI dbs folder, then it will call the
+#'     NATMI Python from the NATMI dir and save the output into a specified
+#'     directory in NATMI's path.
+#'     It will then load the csvs and format the output to a list of lists.
 #'
+#'     By default, NATMI's path is set to that of LIANA, but any alternative
+#'     path can be passed
+#'
+#'==============================================================================
 #' NATMI Arguments:
 #'   --interDB INTERDB
 #'                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension
@@ -36,6 +40,7 @@
 #' 2) The specificity-based edge weights
 #' * a weight of 1 means both the ligand and receptor are only expressed
 #'  in one cell type
+#'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
@@ -44,7 +49,6 @@
 call_natmi <- function(
     op_resource,
     seurat_object,
-    omnidbs_dir = "omnipath_NATMI",
     expr_file = "em.csv",
     meta_file = "metadata.csv",
     output_dir = "NATMI_test",
@@ -56,9 +60,19 @@ call_natmi <- function(
     .natmi_path = NULL){
 
     py_set_seed(.seed)
-    .input_path = system.file(package = 'liana', 'data', 'input')
-    .output_path = system.file(package = 'liana', 'data', 'output')
     .natmi_path %<>% `%||%`(system.file('NATMI/', package = 'liana'))
+    .input_path = file.path(.natmi_path, 'data', 'input')
+    .output_path = file.path(.natmi_path, 'data', 'output', output_dir)
+
+    if(!dir.exists(file.path(.input_path))){
+        log_success(str_glue("Input path created: {.input_path}"))
+        dir.create(file.path(.input_path), recursive = TRUE)
+    }
+
+    if(!dir.exists(file.path(.output_path))){
+        log_success(str_glue("Output path created: {.output_path}"))
+        dir.create(file.path(.output_path), recursive = TRUE)
+    }
 
     # append default resources to OmniPath ones
     if("DEFAULT" %in% toupper(names(op_resource))){
@@ -73,28 +87,18 @@ call_natmi <- function(
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
                                                     assay = assay,
                                                     slot = "data"))) - 1),
-                  file = str_glue("{.input_path}/{expr_file}"),
+                  file = file.path(.input_path, expr_file),
                   row.names = TRUE)
         log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
-                  file = str_glue(str_glue("{.input_path}/{meta_file}")),
+                  file = file.path(.input_path, meta_file),
                   row.names = FALSE)
 
-        log_info(str_glue("Saving resources to {.input_path}/{omnidbs_dir}"))
-        omni_to_NATMI(op_resource, str_glue("{.input_path}/{omnidbs_dir}"))
+        # save OmniPath resources to NATMI dir
+        log_info(str_glue("Saving resources to {.natmi_path}/lrdbs"))
+        omni_to_NATMI(op_resource, file.path(.natmi_path, "lrdbs"))
 
-        # copy OmniPath resources to NATMI dir
-        file.copy(list.files(str_glue("{.input_path}/{omnidbs_dir}"),
-                             pattern = "*.csv$",
-                             full.names = TRUE),
-                  to=str_glue("{.natmi_path}/lrdbs/"),
-                  overwrite = TRUE)
-    }
-
-    log_success(str_glue("Output to be saved and read from {.output_path}/{output_dir}"))
-    if(!dir.exists(file.path(.output_path, output_dir))){
-        dir.create(file.path(.output_path, output_dir), recursive = TRUE)
     }
 
 
@@ -108,13 +112,12 @@ call_natmi <- function(
                             "--annFile {.input_path}/{meta_file} ",
                             "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
                             "--coreNum {num_cor} ",
-                            "--out {.output_path}/{output_dir}/{resource}",
+                            "--out {.output_path}/{resource}",
                             sep = " "))
     })
 
     # load and format results
-    natmi_results <- FormatNatmi(str_glue("{.output_path}/{output_dir}"),
-                                 resource_names, .format)
+    natmi_results <- FormatNatmi(.output_path, resource_names, .format)
 
     return(natmi_results)
 }
@@ -136,7 +139,7 @@ omni_to_NATMI <- function(op_resource,
                           as.data.frame(),
                       file = str_glue("{omni_path}/{x}.csv"),
                       row.names = FALSE)
-        })  %>% .list2tib()
+        })
 }
 
 
@@ -190,5 +193,6 @@ FormatNatmi <- function(output_path,
                     result)) %>%
         deframe() %>%
         plyr::rename(., c("lrc2p" = "Default"), # change this to default
-                     warn_missing = FALSE)
+                     warn_missing = FALSE)  %>%
+        .list2tib()
 }
