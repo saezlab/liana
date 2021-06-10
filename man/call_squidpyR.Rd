@@ -14,7 +14,7 @@ call_squidpyR(seurat_object, op_resource, .seed = 1004, ...)
 \item{.seed}{used to python seed}
 
 \item{...}{kwargs passed to Squidpy; For more information see:
-\link(https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec)}
+\link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}
 }
 \value{
 A list of Squidpy results for each resource

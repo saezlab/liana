@@ -4,7 +4,7 @@ seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 # Test
-test_that("multiplication works", {
+test_that("Test Connectome", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "conn_res.RDS"))
     res1 <- call_connectome(

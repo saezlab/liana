@@ -7,12 +7,11 @@ omni_resources <- readRDS(file.path(liana_path , "omni_resources.rds"))
 op_resource <- omni_resources["OmniPath"]
 
 # Test
-test_that("multiplication works", {
+test_that("Test NATMI", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "natmi_res.RDS"))
     res1 <- call_natmi(op_resource = op_resource,
                        seurat_object = seurat_object,
-                       omnidbs_dir = "omnipath_NATMI",
                        expr_file = "em.csv",
                        meta_file = "metadata.csv",
                        output_dir = "NATMI_test",

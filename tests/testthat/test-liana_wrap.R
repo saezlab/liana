@@ -4,7 +4,7 @@ seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 # Test
-test_that("multiplication works", {
+test_that("Test liana wrapper", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_res.RDS"))
     res1 <- liana_wrap(seurat_object,

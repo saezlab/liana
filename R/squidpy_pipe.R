@@ -3,10 +3,12 @@
 #' @param op_resource List of OmniPath resources
 #' @param .seed used to python seed
 #' @param ... kwargs passed to Squidpy; For more information see:
-#'   \link(https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec)
+#'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
 #'
 #' @import reticulate tibble
 #' @importFrom tidyr pivot_longer
+#' @importFrom Seurat GetAssay GetAssayData
+#' @importFrom dplyr left_join
 #'
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #'
@@ -35,11 +37,12 @@ call_squidpyR <- function(seurat_object,
                                   target = target_genesymbol,
                                   category_intercell_source,
                                   category_intercell_target
-                                  )) %>%
+                                  )
+                        ) %>%
         unname() # unname r list, so its passed as list to Python
 
     # Call Squidpy
-    reticulate::source_python(system.file(package = 'liana', "R/squidpy_pipe.py"))
+    reticulate::source_python(system.file(package = 'liana', "squidpy_pipe.py"))
     py_set_seed(.seed)
 
     py$squidpy_results <- py$call_squidpy(op_resources,
@@ -76,7 +79,10 @@ call_squidpyR <- function(seurat_object,
 #' @param .name omnipath resource name
 #' @param .pval_list p-value results from different dbs as a list from squidpy
 #' @param .mean_list mean list from squidpy
-#' @export
+#'
+#' @importFrom dplyr left_join
+#'
+#' @noRd
 squidpy_reformat <- function(.name,
                              .pval_list,
                              .mean_list,

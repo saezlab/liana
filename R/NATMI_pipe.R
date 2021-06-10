@@ -44,6 +44,7 @@
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
+#' @import dplyr
 #'
 #' @export
 call_natmi <- function(
@@ -155,7 +156,7 @@ omni_to_NATMI <- function(op_resource,
 #' @importFrom tibble enframe deframe
 #' @importFrom magrittr %>%
 #' @importFrom purrr map
-#' @importFrom dplyr mutate select
+#' @importFrom dplyr mutate select if_else
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
 FormatNatmi <- function(output_path,

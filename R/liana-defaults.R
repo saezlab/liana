@@ -37,7 +37,7 @@ liana_defaults <- function(
 
         'connectome' = connectome.params %<>%
         `%||%`(list(
-            min.cells.per.ident = 10,
+            min.cells.per.ident = 1,
             p.values = TRUE,
             calculate.DOR = FALSE,
             assay = assay,
