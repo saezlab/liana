@@ -93,24 +93,28 @@ call_natmi <- function(
     }
 
     log_success(str_glue("Output to be saved and read from {.output_path}/{output_dir}"))
-    dir.create(file.path(str_glue("{.output_path}/{output_dir}")), recursive = TRUE)
+    if(!dir.exists(file.path(.output_path, output_dir))){
+        dir.create(file.path(.output_path, output_dir), recursive = TRUE)
+    }
+
 
     # submit native sys request
     resource_names %>% map(function(resource){
 
         log_success(str_glue("Now Running: {resource}"))
-        system(str_glue("python3 {.natmi_path}/ExtractEdges.py ",
-                        "--species human ",
-                        "--emFile {.input_path}/{expr_file} ",
-                        "--annFile {.input_path}/{meta_file} ",
-                        "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
-                        "--coreNum {num_cor} ",
-                        "--out {.output_path}/{output_dir}/{resource}",
-                        sep = " "))
+            system(str_glue("python3 {.natmi_path}/ExtractEdges.py ",
+                            "--species human ",
+                            "--emFile {.input_path}/{expr_file} ",
+                            "--annFile {.input_path}/{meta_file} ",
+                            "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
+                            "--coreNum {num_cor} ",
+                            "--out {.output_path}/{output_dir}/{resource}",
+                            sep = " "))
     })
 
     # load and format results
-    natmi_results <- FormatNatmi(str_glue("{.output_path}/{output_dir}"), resource_names, .format)
+    natmi_results <- FormatNatmi(str_glue("{.output_path}/{output_dir}"),
+                                 resource_names, .format)
 
     return(natmi_results)
 }
@@ -132,7 +136,7 @@ omni_to_NATMI <- function(op_resource,
                           as.data.frame(),
                       file = str_glue("{omni_path}/{x}.csv"),
                       row.names = FALSE)
-        })
+        })  %>% .list2tib()
 }
 
 
@@ -160,7 +164,10 @@ FormatNatmi <- function(output_path,
                recursive = TRUE,
                pattern ="Edges_") %>%
         enframe() %>%
-        separate(value, into = c("resource", "file"), remove = FALSE) %>%
+        separate(value,
+                 into = c("resource", "file"),
+                 remove = FALSE,
+                 extra = "drop") %>%
         filter(resource %in% resource_names) %>%
         mutate(value =  value %>% map(function(csv)
             read.csv(str_glue("{output_path}/{csv}")))) %>%

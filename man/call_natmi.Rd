@@ -7,36 +7,36 @@
 call_natmi(
   op_resource,
   seurat_object,
-  omnidbs_path = "data/input/omnipath_NATMI",
-  natmi_path = "NATMI/",
-  em_path = "data/input/test_em.csv",
-  ann_path = "data/input/test_metadata.csv",
-  output_path = "data/output/NATMI_test",
+  omnidbs_dir = "omnipath_NATMI",
+  expr_file = "em.csv",
+  meta_file = "metadata.csv",
+  output_dir = "NATMI_test",
   assay = "RNA",
+  num_cor = 4,
   .format = TRUE,
   .write_data = TRUE,
   .seed = 1004,
-  .num_cor = 4
+  .natmi_path = NULL
 )
 }
 \arguments{
 \item{op_resource}{List of OmniPath resources}
 
-\item{omnidbs_path}{path of saved omnipath resources}
+\item{omnidbs_dir}{path of saved omnipath resources}
 
-\item{natmi_path}{path of NATMI code and dbs}
+\item{expr_file}{expression matrix file name}
 
-\item{em_path}{expression matrix path}
+\item{meta_file}{annotations (i.e. clusters) file name}
 
-\item{ann_path}{annotations (i.e. clusters) path}
-
-\item{output_path}{NATMI output path}
+\item{output_dir}{NATMI output directory}
 
 \item{assay}{Seurat assay to be used}
 
 \item{.format}{bool whether to format output}
 
 \item{.write_data}{bool whether Extract data from Seurat Object}
+
+\item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
 \item{.default_run}{bool whether to run default DBs or not}
 }

@@ -10,7 +10,7 @@
 #'    See \link{liana::liana_defaults} for more information
 #'
 #' @import tibble rlang
-#' @importFrom magritrr %<>% %>%
+#' @importFrom magrittr %<>% %>%
 #' @importFrom purrr map map2 safely compact
 #'
 #' @returns A list of method-resource results - i.e. provided resources are run
@@ -54,7 +54,8 @@ liana_wrap <- function(seurat_object,
 #' Helper Function to Handle resource choices
 #' @param resource names of the resources
 .select_resource <- function(resource){
-    omni_resources <- readRDS("data/input/omni_resources.rds")
+    omni_resources <-
+        readRDS(system.file(package = 'liana', "omni_resources.rds"))
 
     if(tolower(resource)=="all"){
         omni_resources[as.character(get_lr_resources())]
