@@ -49,20 +49,23 @@ call_sca <- function(op_resource,
                            LRdb = op_resource,
                            write = FALSE,
                            ...
-    )
+                           )
+
 
   # Compute intercellular gene networks
-  sca_res <- inter_network(data = input_data,
-                           signal = signal,
-                           genes = row.names(input_data),
-                           cluster = as.numeric(labels),
-                           c.names = levels(Idents(seurat_object)),
-                           write = FALSE
-    )
+  invisible(
+    sca_res <- inter_network(data = input_data,
+                             signal = signal,
+                             genes = row.names(input_data),
+                             cluster = as.numeric(labels),
+                             c.names = levels(Idents(seurat_object)),
+                             write = FALSE
+                             )
+  )
 
 
   if (.format) {
-    sca_res <- sca_res %>% FormatSCA(.data)
+    sca_res %<>% FormatSCA(.data)
   }
   return(sca_res)
 }

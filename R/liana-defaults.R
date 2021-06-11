@@ -15,18 +15,18 @@
 #'
 #' @export
 liana_defaults <- function(
+    assay = "RNA",
     cellchat.params = NULL,
     connectome.params = NULL,
     italk.params = NULL,
     natmi.params = NULL,
     sca.params = NULL,
-    squidpy.params = NULL,
-    assay = "RNA"){
+    squidpy.params = NULL){
 
     default_args <- list(
         "cellchat" = cellchat.params %<>%
             `%||%`(list(
-                nboot = 1000,
+                nboot = 100,
                 exclude_anns = NULL,
                 thresh = 1,
                 assay = assay,

@@ -95,12 +95,12 @@ devtools::install_github('Coolgenome/iTALK', ref = 'biorxiv')
 # A modified version of SingleCellSignalR (SCA) that enables external resources
 devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
 # Install this repos
-devtools::install_github('saezlab/ligrec_decoupler', ref='framework')
+devtools::install_github('saezlab/liana')
 ```
   
   
 #### Clone modified NATMI into liana path, as it is run via the command line 
-##### NATMI was forked from https://github.com/asrhou/NATMI.git and changed to be agnostic of the working directory when loading the resources
+##### NATMI was forked from its [github repo](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources:
 ```{sh}
 cd *insert fullpath*/liana
 git clone https://github.com/saezlab/NATMI

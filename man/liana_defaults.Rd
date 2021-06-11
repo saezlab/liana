@@ -5,13 +5,13 @@
 \title{Function to pass Default Arguments for each method}
 \usage{
 liana_defaults(
+  assay = "RNA",
   cellchat.params = NULL,
   connectome.params = NULL,
   italk.params = NULL,
   natmi.params = NULL,
   sca.params = NULL,
-  squidpy.params = NULL,
-  assay = "RNA"
+  squidpy.params = NULL
 )
 }
 \arguments{

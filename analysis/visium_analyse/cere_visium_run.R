@@ -1,4 +1,4 @@
-seurat_object <- readRDS("input/visium_converted/cere_visium.rds")
+seurat_object <- readRDS("data/input/visium_converted/cere_visium.rds")
 
 # Get Full Omni Resources
 omni_resources <- compile_ligrec()
@@ -84,3 +84,5 @@ italk_results <- omni_resources %>%
                    .DE = TRUE
         ))
 saveRDS(italk_results, "output/visium_runs/cere/italk_full.rds")
+
+xd <- readRDS("data/output/visium_runs/cere/natmi_full.rds")

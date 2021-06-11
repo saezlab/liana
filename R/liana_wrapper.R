@@ -25,6 +25,15 @@ liana_wrap <- function(seurat_object,
                        resource,
                        .simplify = TRUE,
                        ...){
+
+    if(length(setdiff(tolower(method), .get_methods())) > 0){
+        stop(str_glue("{setdiff(method, .get_methods())} not part of LIANA "))
+    }
+
+    if(length(setdiff(resource, get_resources())) > 0){
+        stop(str_glue("{setdiff(resource, get_resources())} not part of LIANA "))
+    }
+
     resource %<>% select_resource
 
     .select_method(method) %>%
@@ -60,7 +69,7 @@ select_resource <- function(resource){
         readRDS(system.file(package = 'liana', "omni_resources.rds"))
 
     if(tolower(resource)=="all"){
-        omni_resources[as.character(get_lr_resources())]
+        omni_resources[get_resources()]
     } else{
         omni_resources[resource]
     }
@@ -101,4 +110,18 @@ select_resource <- function(resource){
 #' @noRd
 .list2tib <- function(res){
     if(length(res)==1){res %>% pluck(1)} else{res}
+}
+
+#' Helper Function to return the methods in LIANA
+#' @noRd
+.get_methods <- function(){
+    c("italk", "squidpy", "natmi", "cellchat", "connectome", "sca")
+}
+
+#' Helper Function to return the Resources in LIANA
+#' @export
+get_resources <- function(){
+    as.character(names(
+        readRDS(system.file(package = 'liana', "omni_resources.rds"))
+        ))
 }
