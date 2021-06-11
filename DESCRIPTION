@@ -80,6 +80,7 @@ Suggests:
     RCurl,
     Barnard,
     DescTools,
-    graphics
+    graphics,
+    sessioninfo
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
