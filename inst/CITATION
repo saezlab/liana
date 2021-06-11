@@ -1,0 +1,26 @@
+citHeader("To cite liana in publications use:")
+
+citEntry(
+    entry="Article",
+    author = c(
+        person("Daniel", "Dimitrov"),
+        person("Charlotte", "Boys"),
+        person("Denes", "Turei"),
+        person("James", "S.", "Nagai"),
+        person("Ricardo", "O.", "Ramirez Flores"),
+        person("Hyojin", "Kim"),
+        person("Bence", "Szalai"),
+        person("Ivan", "G.", "Costa"),
+        person("Aurélien", "Dugourd"),
+        person("Alberto", "Valdeolivas"),
+        person("Julio", "Saez-Rodriguez")
+    ),
+    title = "Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data",
+    journal = "BioRxiv",
+    year = 2021,
+    doi = "10.1101/2021.05.21.445160",
+    textVersion = "Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R.,
+    Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and Saez-Rodriguez, J., 2021.
+    Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data. bioRxiv.",
+    encoding = "UTF-8"
+)

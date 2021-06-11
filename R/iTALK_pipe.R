@@ -16,7 +16,7 @@
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
 #' @importFrom iTALK rawParse FindLR
 #' @importFrom Seurat Idents FindAllMarkers GetAssayData
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom tidyr unite
 #' @importFrom dplyr select rename mutate group_by group_split
 #'
@@ -32,17 +32,7 @@ call_italk <- function(
 ){
 
   if(!is.null(op_resource)){
-    op_resource <- op_resource %>%
-      unite(col = "Pair.Name", source_genesymbol, target_genesymbol,
-            sep="_", remove = FALSE) %>%
-      rename('Ligand.ApprovedSymbol' = source_genesymbol,
-             'Receptor.ApprovedSymbol' = target_genesymbol) %>%
-      mutate("Classification" = "other",
-             'Receptor.Name' = Receptor.ApprovedSymbol,
-             'Ligand.Name' = Ligand.ApprovedSymbol) %>%
-      select(Pair.Name, Ligand.ApprovedSymbol, Ligand.Name,
-             Receptor.ApprovedSymbol, Receptor.Name, Classification) %>%
-      as.data.frame()
+    op_resource %<>% italk_formatDB
   }
 
   # create a dataframe of the cell labels
@@ -153,4 +143,22 @@ FormatiTALK <- function(italk_res,
   }
 
   return(italk_res)
+}
+
+
+#' Helper Function to convert Omni to iTALK resource Format
+#' @param op_resource OmniPath resource
+#' @export
+italk_formatDB <- function(op_resource){
+  op_resource %>%
+    unite(col = "Pair.Name", source_genesymbol, target_genesymbol,
+          sep="_", remove = FALSE) %>%
+    rename('Ligand.ApprovedSymbol' = source_genesymbol,
+           'Receptor.ApprovedSymbol' = target_genesymbol) %>%
+    mutate("Classification" = "other",
+           'Receptor.Name' = Receptor.ApprovedSymbol,
+           'Ligand.Name' = Ligand.ApprovedSymbol) %>%
+    select(Pair.Name, Ligand.ApprovedSymbol, Ligand.Name,
+           Receptor.ApprovedSymbol, Receptor.Name, Classification) %>%
+    as.data.frame()
 }

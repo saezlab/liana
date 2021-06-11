@@ -2,45 +2,42 @@
 % Please edit documentation in R/NATMI_pipe.R
 \name{call_natmi}
 \alias{call_natmi}
-\title{Call NATMI Pipeline from R with OmniPath}
+\title{Call NATMI Pipeline from R with Resources Querried from OmniPath}
 \usage{
 call_natmi(
-  omni_resources,
-  seurat_object = NULL,
-  wd_path = ".",
-  omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-  natmi_path = "~/Repos/NATMI",
-  em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-  ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-  output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-  .assay = "SCT",
+  op_resource,
+  seurat_object,
+  expr_file = "em.csv",
+  meta_file = "metadata.csv",
+  output_dir = "NATMI_test",
+  assay = "RNA",
+  num_cor = 4,
   .format = TRUE,
-  .write_data = FALSE,
-  .subsampling_pipe = FALSE,
+  .write_data = TRUE,
   .seed = 1004,
-  .num_cor = 8
+  .natmi_path = NULL
 )
 }
 \arguments{
-\item{omni_resources}{List of OmniPath resources}
+\item{op_resource}{List of OmniPath resources}
 
-\item{omnidbs_path}{path of saved omnipath resources}
+\item{seurat_object}{Seurat object}
 
-\item{natmi_path}{path of NATMI code and dbs}
+\item{expr_file}{expression matrix file name}
 
-\item{em_path}{expression matrix path}
+\item{meta_file}{annotations (i.e. clusters) file name}
 
-\item{ann_path}{annotations (i.e. clusters) path}
+\item{output_dir}{NATMI output directory}
 
-\item{output_path}{NATMI output path}
+\item{assay}{Seurat assay to be used}
 
 \item{.format}{bool whether to format output}
 
 \item{.write_data}{bool whether Extract data from Seurat Object}
 
-\item{.subsampling_pipe}{bool whether ran as part of the robustness pipe:
-if true, we use Seurat object name to modify output and input, so that
-each subsampling is saved to a different dir}
+\item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
+
+\item{omnidbs_dir}{path of saved omnipath resources}
 
 \item{.default_run}{bool whether to run default DBs or not}
 }
@@ -48,14 +45,18 @@ each subsampling is saved to a different dir}
 DF with NATMI results
 }
 \description{
-Call NATMI Pipeline from R with OmniPath
+Call NATMI Pipeline from R with Resources Querried from OmniPath
 }
 \details{
-This function will take omnipath resources saved to csvs and copy
-    them to the NATMI dbs folder, then it will natively call the Python
-    modules of NATMI in the NATMI dir and save the output into a specified
-    directory. It will then load and format the output to a DF.
+This function will save NATMI dbs folder, then it will call the
+    NATMI Python from the NATMI dir and save the output into a specified
+    directory in NATMI's path.
+    It will then load the csvs and format the output to a list of lists.
 
+    By default, NATMI's path is set to that of LIANA, but any alternative
+    path can be passed
+
+==============================================================================
 NATMI Arguments:
   --interDB INTERDB
                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension
@@ -67,6 +68,7 @@ NATMI Arguments:
   --idType IDTYPE       symbol (default) | entrez(https://www.ncbi.nlm.nih.gov/gene) | ensembl(https://www.ensembl.org/) | uniprot(https://www.uniprot.org/) | hgnc(https://www.genenames.org/) | mgi(http://www.informatics.jax.org/mgihome/nomen/index.shtml) | custom(gene identifier used in the expression matrix)
   --coreNum CORENUM     the number of CPU cores used, default is one
   --out OUT             the path to save the analysis results
+(Taken From NATMI's GitHub Page)
 
 Stats:
 1) The mean-expression edge weights

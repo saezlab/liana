@@ -17,14 +17,14 @@
 #'
 #' @import Connectome
 #' @importFrom Seurat ScaleData
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
 #'
 #' @export
 call_connectome <- function(seurat_object,
                             op_resource,
                             .format = TRUE,
-                            .spatial = TRUE,
+                            .spatial = FALSE,
                             ...){
 
     if(.spatial){
@@ -34,12 +34,7 @@ call_connectome <- function(seurat_object,
 
     if(!is.null(op_resource)){
         # Format db to connectome
-        lr_db <- op_resource %>%
-            select("source_genesymbol", "target_genesymbol") %>%
-            mutate(mode = "UNCAT") %>% # mode refers to interaction categories
-            arrange(.$source_genesymbol) %>%
-            distinct() %>%
-            as.data.frame()
+        lr_db <- conn_formatDB(op_resource)
 
         # scale genes to ligands and receptors available in the resource
         connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)
@@ -53,19 +48,22 @@ call_connectome <- function(seurat_object,
                                  ...)
 
     } else{
-        connectome.genes <- union(Connectome::ncomms8866_human$Ligand.ApprovedSymbol,
-                                  Connectome::ncomms8866_human$Receptor.ApprovedSymbol)
+        lr_db <- Connectome::ncomms8866_human %>%
+            filter(Pair.Evidence == "literature supported")
+        connectome.genes <- union(lr_db$Ligand.ApprovedSymbol,
+                                  lr_db$Receptor.ApprovedSymbol)
         genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
 
         seurat_object <- ScaleData(object = seurat_object,
                                    features = genes)
         conn <- CreateConnectome(seurat_object,
-                                 species = 'human',
+                                 LR.database = 'custom',
+                                 custom.list = lr_db,
                                  ...)
     }
 
     if(.format){
-        conn <- conn %>% FormatConnectome
+        conn %<>% FormatConnectome
     }
 
     return(conn)
@@ -93,3 +91,15 @@ FormatConnectome <- function(conn,
                p_val_adj.rec)
 }
 
+
+#' Helper Function to convert Omni to Connectome resource Format
+#' @param op_resource OmniPath resource
+#' @export
+conn_formatDB <- function(op_resource){
+    op_resource %>%
+        select("source_genesymbol", "target_genesymbol") %>%
+        mutate(mode = "UNCAT") %>% # mode refers to interaction categories
+        arrange(.$source_genesymbol) %>%
+        distinct() %>%
+        as.data.frame()
+}
