@@ -1,9 +1,9 @@
 #' Helper function that returns the name of each intercell resource in OmniPath
 #'
 #' @return A list of strings for each intercell resource in OmniPath
+#'
 #' @export
 get_lr_resources <- function(){
-
     return(
         list(
             'CellChatDB',
@@ -22,7 +22,6 @@ get_lr_resources <- function(){
             'CellTalkDB'
         )
     )
-
 }
 
 # only the ones different from the current defaults:
@@ -47,16 +46,21 @@ op_ia_quality_param <- list(
 #' Function to get unfiltered intercell resources
 #' For each resource and OmniPath variant compiles tables of ligands,
 #' receptors and interactions
+#'
 #' @details calls on omnipath_intercell, intercell_connections, get_partners,
 #' and intercell_connections
+#'
 #' @param omni_variants bool whether to get different OmniPath variants (e.g.
 #' _full, based on ligrec resource quality quartile, or if only lig_rec)
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
+#'
 #' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
 #' @return A list of OmniPath resources formatted according to the method pipes
+#'
 #' @importFrom magrittr %>%
 #' @importFrom purrr pluck map
 #' @importFrom rlang !!! exec
+#'
 #' @export
 compile_ligrec <- function(lr_pipeline = TRUE){
 
@@ -120,11 +124,9 @@ reform_omni <- function(ligrec){
 #' @return A tibble with Intercell interactions from OmniPath
 #'
 #' @importFrom magrittr %>%
-# #'@importFrom OmnipathR import_intercell_network filter_intercell_network
-#' @import OmnipathR
 omnipath_intercell <- function(...){
-    import_intercell_network(entity_types = 'protein') %>%
-        filter_intercell_network(...)
+    OmnipathR::import_intercell_network(entity_types = 'protein') %>%
+        OmnipathR::filter_intercell_network(...)
 }
 
 
@@ -133,8 +135,7 @@ omnipath_intercell <- function(...){
 #' Retrieves the interactions from one ligand-receptor resource
 #' @inheritDotParams OmnipathR::import_post_translational_interactions
 #' @inheritParams get_partners
-#'
-#' @importFrom OmnipathR import_post_translational_interactions
+#' @import tibble
 intercell_connections <- function(resource, ...){
 
     if(resource == 'OmniPath'){
@@ -143,7 +144,7 @@ intercell_connections <- function(resource, ...){
 
     }
 
-    import_post_translational_interactions(
+    OmnipathR::import_post_translational_interactions(
         resource = resource,
         entity_type = 'protein',
         ...
@@ -179,15 +180,13 @@ get_receptors <- function(resource, ...){
 #' one ligand-receptor resource.
 #' @inheritParams omnipath_partners
 #' @param resource Name of current resource (taken from get_lr_resources)
-#' @inheritDotParams omnipath_intercell
+#' @param ... Inherit dot params from \link{OmnipathR::omnipath_intercell}
 #' @importFrom rlang sym !!!
 #' @importFrom magrittr %>%
 get_partners <- function(side, resource, ...){
 
     if(resource == 'OmniPath'){
-
         return(omnipath_partners(side = side, ...))
-
     }
 
     id_cols <- `if`(
@@ -229,7 +228,7 @@ omnipath_partners <- function(side, ...){
 
     causality <- list(ligand = 'trans', receptor = 'rec')
 
-    import_omnipath_intercell(
+    OmnipathR::import_omnipath_intercell(
         causality = causality[[side]],
         scope = 'generic',
         source = 'composite',
@@ -251,29 +250,25 @@ compile_ligrec_descr <- function(){
 }
 
 
-#' Shuffle OmniPath Intercell DB
-#' @param op_resource Intrcell DB to shuffle
+#' Shuffle OmniPath Intercell Resource
+#' @param op_resource Intercell Resource to shuffled
 #' @param .seed Value for set.seed
+#'
 #' @return A shuffled omnipath-formatted resource
-#' @import BiRewire tibble
-#' @export
+#'
+#' @import tibble
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 
-    ### These packages could go to "Suggests" in DESCRIPTION
-    ### because not all users want to install all the tools
-    ### to run one of them. Functions from these packages
-    ### should be referred by :: to avoid warnings
     # library(BiRewire)
     set.seed(.seed)
 
     # make a vector proportional to the number of consensus directions
-    stimul_num <- round(mean(op_resource$consensus_stimulation)/mean(op_resource$consensus_direction) * 100000)
+    stimul_num <- round(mean(op_resource$consensus_stimulation)/
+                            mean(op_resource$consensus_direction) * 100000)
     directed_vector <- append(rep(1, stimul_num), rep(-1,100000 - stimul_num))
 
     op_prep <- op_resource %>%
-        # filter(entity_type_intercell_source != "complex",
-        #        entity_type_intercell_target != "complex") %>%
         select(source_genesymbol, target_genesymbol,
                is_directed, is_stimulation, is_inhibition,
                consensus_direction, consensus_stimulation,
@@ -286,21 +281,28 @@ shuffle_omnipath <- function(op_resource,
         distinct()
 
     # Induced bipartite and SIF builder
-    op_dsg = birewire.induced.bipartite(op_prep,
-                                        delimitators = list(negative = '-1',
-                                                            positive = '1'))
-    op_sif = birewire.build.dsg(op_dsg,
-                                delimitators = list(negative = '-1',
-                                                    positive = '1'))
+    op_dsg = BiRewire::birewire.induced.bipartite(
+        op_prep,
+        delimitators = list(negative = '-1',
+                            positive = '1')
+        )
+    op_sif = BiRewire::birewire.build.dsg(
+        op_dsg,
+        delimitators = list(negative = '-1',
+                            positive = '1')
+        )
 
     # Rewire dsg
-    random_dsg = birewire.rewire.dsg(dsg = op_dsg)
-    random_sif = birewire.build.dsg(random_dsg,
-                                    delimitators = list(negative = '-1',
-                                                        positive = '1'))
+    random_dsg = BiRewire::birewire.rewire.dsg(dsg = op_dsg)
+    random_sif = BiRewire::birewire.build.dsg(
+        random_dsg,
+        delimitators = list(negative = '-1',
+                            positive = '1')
+        )
+
     # Jacard dsg
     message(str_glue("Jaccard index between random and original resource: ",
-                     {birewire.similarity.dsg(op_dsg, random_dsg)}))
+                     {BiRewire::birewire.similarity.dsg(op_dsg, random_dsg)}))
 
     # format to OmniPath
     op_random <- random_sif %>%
@@ -327,6 +329,4 @@ shuffle_omnipath <- function(op_resource,
             entity_type_intercell_target
         ) %>%
         as_tibble()
-
-
 }

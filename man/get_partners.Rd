@@ -13,11 +13,7 @@ long notation can be used)}
 
 \item{resource}{Name of current resource (taken from get_lr_resources)}
 
-\item{...}{
-  Arguments passed on to \code{\link[=omnipath_intercell]{omnipath_intercell}}
-  \describe{
-    \item{\code{}}{}
-  }}
+\item{...}{Inherit dot params from \link{OmnipathR::omnipath_intercell}}
 }
 \description{
 Retrieves intercellular communication partners (ligands or receptors) from

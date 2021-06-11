@@ -1,24 +1,27 @@
-#' Call NATMI Pipeline from R with OmniPath
-#' @param omni_resources List of OmniPath resources
-#' @param omnidbs_path path of saved omnipath resources
-#' @param natmi_path path of NATMI code and dbs
-#' @param em_path expression matrix path
-#' @param ann_path annotations (i.e. clusters) path
-#' @param output_path NATMI output path
+#' Call NATMI Pipeline from R with Resources Querried from OmniPath
+#' @param op_resource List of OmniPath resources
+#' @param seurat_object Seurat object
+#' @param omnidbs_dir path of saved omnipath resources
+#' @param expr_file expression matrix file name
+#' @param meta_file annotations (i.e. clusters) file name
+#' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
-#' @param .subsampling_pipe bool whether ran as part of the robustness pipe:
-#' if true, we use Seurat object name to modify output and input, so that
-#' each subsampling is saved to a different dir
+#' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
+#' @param assay Seurat assay to be used
 #' @return DF with NATMI results
 #'
 #' @details
-#'     This function will take omnipath resources saved to csvs and copy
-#'     them to the NATMI dbs folder, then it will natively call the Python
-#'     modules of NATMI in the NATMI dir and save the output into a specified
-#'     directory. It will then load and format the output to a DF.
+#'     This function will save NATMI dbs folder, then it will call the
+#'     NATMI Python from the NATMI dir and save the output into a specified
+#'     directory in NATMI's path.
+#'     It will then load the csvs and format the output to a list of lists.
 #'
+#'     By default, NATMI's path is set to that of LIANA, but any alternative
+#'     path can be passed
+#'
+#'==============================================================================
 #' NATMI Arguments:
 #'   --interDB INTERDB
 #'                         lrc2p (default) has literature supported ligand-receptor pairs | lrc2a has putative and literature supported ligand-receptor pairs | the user-supplied interaction database can also be used by calling the name of database file without extension
@@ -37,98 +40,85 @@
 #' 2) The specificity-based edge weights
 #' * a weight of 1 means both the ligand and receptor are only expressed
 #'  in one cell type
+#'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
+#' @import dplyr
 #'
 #' @export
 call_natmi <- function(
-    omni_resources,
-    seurat_object = NULL,
-    wd_path = ".",
-    omnidbs_path = "~/Repos/ligrec_decoupleR/input/omnipath_NATMI",
-    natmi_path = "~/Repos/NATMI",
-    em_path = "~/Repos/ligrec_decoupleR/input/test_em.csv",
-    ann_path = "~/Repos/ligrec_decoupleR/input/test_metadata.csv",
-    output_path = "~/Repos/ligrec_decoupleR/output/NATMI_test",
-    .assay = "SCT",
+    op_resource,
+    seurat_object,
+    expr_file = "em.csv",
+    meta_file = "metadata.csv",
+    output_dir = "NATMI_test",
+    assay = "RNA",
+    num_cor = 4,
     .format = TRUE,
-    .write_data = FALSE,
-    .subsampling_pipe = FALSE,
+    .write_data = TRUE,
     .seed = 1004,
-    .num_cor = 8){
+    .natmi_path = NULL){
 
     py_set_seed(.seed)
+    .natmi_path %<>% `%||%`(system.file('NATMI/', package = 'liana'))
+    .input_path = file.path(.natmi_path, 'data', 'input')
+    .output_path = file.path(.natmi_path, 'data', 'output', output_dir)
 
-    if(.subsampling_pipe){
-        em_path = str_split_helper(em_path, seurat_object@project.name)
-        ann_path = str_split_helper(ann_path, seurat_object@project.name)
-        output_path = str_glue("{output_path}/{seurat_object@project.name}")
+    if(!dir.exists(file.path(.input_path))){
+        log_success(str_glue("Input path created: {.input_path}"))
+        dir.create(file.path(.input_path), recursive = TRUE)
+    }
+
+    if(!dir.exists(file.path(.output_path))){
+        log_success(str_glue("Output path created: {.output_path}"))
+        dir.create(file.path(.output_path), recursive = TRUE)
+    }
+
+    # append default resources to OmniPath ones
+    if("DEFAULT" %in% toupper(names(op_resource))){
+        op_resource %<>% purrr::list_modify("Default" = NULL)
+        resource_names <- append(as.list(names(op_resource)), "lrc2p")
+    } else{
+        resource_names <- as.list(names(op_resource))
     }
 
     if(.write_data){
-        log_info("Writing EM to {em_path}")
+        log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
         write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
-                                                    assay = .assay,
+                                                    assay = assay,
                                                     slot = "data"))) - 1),
-                  file = em_path,
+                  file = file.path(.input_path, expr_file),
                   row.names = TRUE)
-        log_info("Writing Annotations to {ann_path}")
+        log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),
-                  file = ann_path,
+                  file = file.path(.input_path, meta_file),
                   row.names = FALSE)
 
-        log_info("Saving resources to {omnidbs_path}")
-        omni_to_NATMI(omni_resources, omnidbs_path)
+        # save OmniPath resources to NATMI dir
+        log_info(str_glue("Saving resources to {.natmi_path}/lrdbs"))
+        omni_to_NATMI(op_resource, file.path(.natmi_path, "lrdbs"))
+
     }
 
-    log_success("Output to be saved and read from {output_path}")
-    dir.create(file.path(output_path), recursive = TRUE)
 
-    # copy OmniPath resources to NATMI dir
-    file.copy(list.files(omnidbs_path, "*.csv$",
-                         full.names = TRUE),
-              to=str_glue("{natmi_path}/lrdbs/"),
-              overwrite = TRUE)
+    # submit native sys request
+    resource_names %>% map(function(resource){
 
-    # set current dir to NATMI
-    setwd(natmi_path)
-
-    # append default resources to OmniPath ones
-    if("DEFAULT" %in% toupper(names(omni_resources))){
-        omni_list <- append(as.list(names(omni_resources)),
-                            list(
-                                "lrc2p" #,
-                                 # "lrc2a" contains putative LRs
-                                 )
-                            )
-        omni_list <- omni_list %>% purrr::list_modify("Default" = NULL)
-    } else{
-        omni_list <- as.list(names(omni_resources))
-    }
-
-    # submit native sys requests
-    # Check issue with Default
-    omni_list %>% map(function(resource){
-
-        log_success("Now Running: {resource}")
-
-        system(str_glue("python3 ExtractEdges.py ",
-                        "--species human ",
-                        "--emFile {em_path} ",
-                        "--annFile {ann_path} ",
-                        "--interDB {resource} ",
-                        "--coreNum {.num_cor} ",
-                        "--out {output_path}/{resource}",
-                        sep = " "))
+        log_success(str_glue("Now Running: {resource}"))
+            system(str_glue("python3 {.natmi_path}/ExtractEdges.py ",
+                            "--species human ",
+                            "--emFile {.input_path}/{expr_file} ",
+                            "--annFile {.input_path}/{meta_file} ",
+                            "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
+                            "--coreNum {num_cor} ",
+                            "--out {.output_path}/{resource}",
+                            sep = " "))
     })
 
-    # set dir back to project
-    setwd(wd_path) # possibly hangs here
-
-    # load results
-    natmi_results <- FormatNatmi(output_path, .format)
+    # load and format results
+    natmi_results <- FormatNatmi(.output_path, resource_names, .format)
 
     return(natmi_results)
 }
@@ -136,17 +126,14 @@ call_natmi <- function(
 
 
 #' Reform OmniPath Resource to NATMI format and save to location
-#' @param omni_list list of omnipath resources
+#' @param resource_names list of omnipath resources
 #' @param omni_path directory in which to save OP resources
-omni_to_NATMI <- function(omni_resources,
+omni_to_NATMI <- function(op_resource,
                           omni_path = "input/omnipath_NATMI"){
 
-    op_resources <- omni_resources %>%
-        purrr::list_modify("Default" = NULL)
-
-    names(op_resources) %>%
+    names(op_resource) %>%
         map(function(x){
-            write.csv(op_resources[[x]]  %>%
+            write.csv(op_resource[[x]]  %>%
                           select("Ligand gene symbol" = source_genesymbol,
                                  "Receptor gene symbol" = target_genesymbol) %>%
                           distinct() %>%
@@ -160,6 +147,7 @@ omni_to_NATMI <- function(omni_resources,
 #' Load NATMI results from folder and format appropriately
 #'
 #' @param output_path NATMI output path
+#' @param resource_names results for which resources to load
 #' @param .format bool whether to format output
 #'
 #' @return A list of NATMI results per resource loaded from the output
@@ -168,41 +156,44 @@ omni_to_NATMI <- function(omni_resources,
 #' @importFrom tibble enframe deframe
 #' @importFrom magrittr %>%
 #' @importFrom purrr map
-#' @importFrom dplyr mutate select
+#' @importFrom dplyr mutate select if_else
 #' @importFrom readr read_csv
 #' @importFrom tidyr separate
-FormatNatmi <- function(output_path, .format = TRUE){
+FormatNatmi <- function(output_path,
+                        resource_names,
+                        .format = TRUE){
 
     list.files(output_path,
                all.files = TRUE,
                recursive = TRUE,
                pattern ="Edges_") %>%
         enframe() %>%
-        separate(value, into = c("resource", "file"), remove = FALSE) %>%
+        separate(value,
+                 into = c("resource", "file"),
+                 remove = FALSE,
+                 extra = "drop") %>%
+        filter(resource %in% resource_names) %>%
         mutate(value =  value %>% map(function(csv)
             read.csv(str_glue("{output_path}/{csv}")))) %>%
         select(resource, "result" = value) %>%
-        mutate(result = if_else(rep(.format, length(.data$result)), result %>% map(function(df){
-            df %>% select(source = Sending.cluster,
-                          target = Target.cluster,
-                          ligand = Ligand.symbol,
-                          receptor = Receptor.symbol,
-                          edge_avg_expr = Edge.average.expression.weight,
-                          edge_specificity = Edge.average.expression.derived.specificity)
-        }), result)) %>%
+        mutate(
+            result =
+                if_else(
+                    rep(.format, length(.data$result)),
+                    result %>% map(function(df){
+                        df %>%
+                            select(
+                                source = Sending.cluster,
+                                target = Target.cluster,
+                                ligand = Ligand.symbol,
+                                receptor = Receptor.symbol,
+                                edge_avg_expr = Edge.average.expression.weight,
+                                edge_specificity = Edge.average.expression.derived.specificity
+                            )
+                    }),
+                    result)) %>%
         deframe() %>%
-        purrr::list_modify("lrc2a" = NULL) %>% # remove putative res if present
-        plyr::rename(., c("lrc2p" = "Default")) # change this to default
-}
-
-
-#' Split and format strings for subsampling
-#'
-#' @param path path to CSV (em/annotations) to split and format to the
-#'     current subsampling taken from a seurat object project name
-#' @param project_name seurat object project name
-#' @return Path to save subsampling EM and Annotations
-str_split_helper <- function(path, project_name){
-    split_path <- str_split(path, pattern = "\\.", n = 2)[[1]][1]
-    str_glue("{split_path}_{project_name}.csv")
+        plyr::rename(., c("lrc2p" = "Default"), # change this to default
+                     warn_missing = FALSE)  %>%
+        .list2tib()
 }

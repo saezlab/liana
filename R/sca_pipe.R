@@ -7,7 +7,7 @@
 #' @return An unfiltered iTALK df sorted by relevance
 #' @importFrom Seurat GetAssayData Idents
 #' @import SCAomni
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr distinct select
 #'
 #' @details
@@ -24,16 +24,13 @@ call_sca <- function(op_resource,
                      ...) {
   # Format OmnipathR resource
   if(!is.null(op_resource)){
-    op_resource <- op_resource %>%
-      select(ligand = source_genesymbol,
-             receptor = target_genesymbol,
-             source = sources,
-             PMIDs = references) %>%
-      distinct()
+    op_resource %<>% sca_formatDB
   } else{
-    if(file.exists("input/LRdb.rda")){
-      load("input/LRdb.rda")
+    if(file.exists(system.file(package = "liana", "data/input/LRdb.rda"))){
+      load(system.file(package = "liana", "data/input/LRdb.rda"))
       op_resource <- LRdb
+    } else{
+      warning("Could not locate LRdb.rda")
     }
   }
 
@@ -52,20 +49,23 @@ call_sca <- function(op_resource,
                            LRdb = op_resource,
                            write = FALSE,
                            ...
-    )
+                           )
+
 
   # Compute intercellular gene networks
-  sca_res <- inter_network(data = input_data,
-                           signal = signal,
-                           genes = row.names(input_data),
-                           cluster = as.numeric(labels),
-                           c.names = levels(Idents(seurat_object)),
-                           write = FALSE
-    )
+  invisible(
+    sca_res <- inter_network(data = input_data,
+                             signal = signal,
+                             genes = row.names(input_data),
+                             cluster = as.numeric(labels),
+                             c.names = levels(Idents(seurat_object)),
+                             write = FALSE
+                             )
+  )
 
 
   if (.format) {
-    sca_res <- sca_res %>% FormatSCA(.data)
+    sca_res %<>% FormatSCA(.data)
   }
   return(sca_res)
 }
@@ -79,6 +79,7 @@ call_sca <- function(op_resource,
 #' @importFrom tidyr separate
 #' @importFrom magrittr %>%
 #' @importFrom dplyr select
+#' @importFrom tibble as_tibble
 #'
 #' @export
 FormatSCA <- function(sca_res, remove.na = TRUE) {
@@ -90,6 +91,20 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
     separate(receptor,
              into = c("target", "receptor"),
              sep = "[.]") %>%
-    select(source, ligand, target, receptor, LRscore)
+    select(source, ligand, target, receptor, LRscore) %>%
+    as_tibble()
   return(sca_res)
+}
+
+
+#' Helper Function to convert Omni to LRdb Format
+#' @param op_resource OmniPath resource
+#' @export
+sca_formatDB <- function(op_resource){
+  op_resource %>%
+  select(ligand = source_genesymbol,
+         receptor = target_genesymbol,
+         source = sources,
+         PMIDs = references) %>%
+    distinct()
 }

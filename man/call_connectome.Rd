@@ -8,7 +8,7 @@ call_connectome(
   seurat_object,
   op_resource,
   .format = TRUE,
-  .spatial = TRUE,
+  .spatial = FALSE,
   ...
 )
 }
@@ -38,7 +38,7 @@ call_connectome(
   }}
 }
 \value{
-An unfiltered connectome df
+An unfiltered connectome results df
 }
 \description{
 Function to call connectome with databases from OmniPath

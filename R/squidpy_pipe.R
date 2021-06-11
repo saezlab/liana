@@ -1,31 +1,35 @@
 #' Call Squidpy Pipeline via reticulate with OmniPath and format results
 #' @param seurat_object Seurat object as input
-#' @param omni_resources List of OmniPath resources
-#' @param python_path path to python version to use in reticulate
+#' @param op_resource List of OmniPath resources
 #' @param .seed used to python seed
-#' @returns A list of Squidpy results for each resource
-#' @details CellPhoneDB v2 algorithm implementation in Python
-#' Stats:
-#' Mean expr
-#' pval from shuffled cluster
+#' @param ... kwargs passed to Squidpy; For more information see:
+#'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
+#'
 #' @import reticulate tibble
+#' @importFrom tidyr pivot_longer
+#' @importFrom Seurat GetAssay GetAssayData
+#' @importFrom dplyr left_join
+#'
+#' @details CellPhoneDB v2 algorithm implementation in Python
+#'
+#' @returns A list of Squidpy results for each resource
+#'
 #' @export
 call_squidpyR <- function(seurat_object,
-                          omni_resources,
-                          python_path,
+                          op_resource,
                           .seed = 1004,
                           ...){
 
     kwargs <- list(...) # convert elipses to named list (i.e python dict)
 
-    reticulate::use_python(python_path)
     py$pd <- reticulate::import("pandas")
 
-    if("DEFAULT" %in% toupper(names(omni_resources))){
-        omni_resources$Default <- NULL
+    if("DEFAULT" %in% toupper(names(op_resource))){
+        op_resource$Default <- NULL
+
     }
 
-    op_resources <- map(omni_resources, function(x) x %>%
+    op_resources <- map(op_resource, function(x) x %>%
                               select(
                                   uniprot_source = source,
                                   unprot_target = target,
@@ -33,11 +37,12 @@ call_squidpyR <- function(seurat_object,
                                   target = target_genesymbol,
                                   category_intercell_source,
                                   category_intercell_target
-                                  )) %>%
-        unname() # unname list, so its passed as list to Python
+                                  )
+                        ) %>%
+        unname() # unname r list, so its passed as list to Python
 
     # Call Squidpy
-    reticulate::source_python("R/squidpy_pipe.py")
+    reticulate::source_python(system.file(package = 'liana', "squidpy_pipe.py"))
     py_set_seed(.seed)
 
     py$squidpy_results <- py$call_squidpy(op_resources,
@@ -47,23 +52,24 @@ call_squidpyR <- function(seurat_object,
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
 
-    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(omni_resources))
-    squidpy_means <- py$squidpy_results$means %>% setNames(names(omni_resources))
-    squidpy_metadata <- py$squidpy_results$meta %>% setNames(names(omni_resources))
+    squidpy_pvalues <- py$squidpy_results$pvalues %>% setNames(names(op_resource))
+    squidpy_means <- py$squidpy_results$means %>% setNames(names(op_resource))
+    squidpy_metadata <- py$squidpy_results$meta %>% setNames(names(op_resource))
 
 
-    squidpy_results <- map(names(omni_resources),
+    squidpy_results <- map(names(op_resource),
                            function(x)
                                squidpy_reformat(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means,
                                                 .meta_list = squidpy_metadata)) %>%
-        setNames(names(omni_resources)) %>%
+        setNames(names(op_resource)) %>%
         map(function(res) res %>%
                 select(1:3, means, pvalue, uniprot_source, unprot_target) %>%
                 rename(ligand = source,
                        receptor = target) %>%
-                separate(pair, sep = "_", into=c("source", "target")))
+                separate(pair, sep = "_", into=c("source", "target"))) %>%
+        .list2tib()
 
     return(squidpy_results)
 }
@@ -73,7 +79,10 @@ call_squidpyR <- function(seurat_object,
 #' @param .name omnipath resource name
 #' @param .pval_list p-value results from different dbs as a list from squidpy
 #' @param .mean_list mean list from squidpy
-#' @export
+#'
+#' @importFrom dplyr left_join
+#'
+#' @noRd
 squidpy_reformat <- function(.name,
                              .pval_list,
                              .mean_list,
