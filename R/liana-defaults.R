@@ -54,8 +54,6 @@ liana_defaults <- function(
 
         'natmi' = natmi.params %<>%
             `%||%`(list(
-                op_resource,
-                seurat_object,
                 expr_file = "em.csv",
                 meta_file = "metadata.csv",
                 output_dir = "NATMI_test",

@@ -25,7 +25,7 @@ liana_wrap <- function(seurat_object,
                        resource,
                        .simplify = TRUE,
                        ...){
-    resource %<>% .select_resource
+    resource %<>% select_resource
 
     .select_method(method) %>%
         map2(names(.),
@@ -33,19 +33,19 @@ liana_wrap <- function(seurat_object,
                  if(!(method_name %in% c('squidpy', 'natmi'))){
                      map(resource, function(reso){
                          args <- append(
-                             list(seurat_object = seurat_object,
-                                  op_resource = reso),
+                             list("seurat_object" = seurat_object,
+                                  "op_resource" = reso),
                              liana_defaults(...)[[method_name]]
                          )
                          exec(.method,  !!!args)
-                     }) %>% {`if`(.simplify, .list2tib(.)) }
+                     }) %>% {`if`(.simplify, .list2tib(.))}
                  } else{
                      args <- append(
-                         list(seurat_object = seurat_object,
-                              op_resource = resource),
+                         list("seurat_object" = seurat_object,
+                              "op_resource" = resource),
                          liana_defaults(...)[[method_name]]
                      )
-                     exec(.method,  !!!args) %>% {`if`(.simplify, .list2tib(.)) }
+                     exec(.method,  !!!args) %>% {`if`(.simplify, .list2tib(.))}
                  }
              }, quiet = FALSE)) %>%
         map(function(elem) .list2tib(compact(elem))) # format result/errors
@@ -53,7 +53,9 @@ liana_wrap <- function(seurat_object,
 
 #' Helper Function to Handle resource choices
 #' @param resource names of the resources
-.select_resource <- function(resource){
+#'
+#' @export
+select_resource <- function(resource){
     omni_resources <-
         readRDS(system.file(package = 'liana', "omni_resources.rds"))
 
@@ -71,6 +73,8 @@ liana_wrap <- function(seurat_object,
 #' @return A list of method function names (to be called by the LIANA wrapper)
 #'
 #' @details Adapted from (jvelezmagic); decoupleR\https://github.com/saezlab/decoupleR/
+#'
+#' @noRd
 .select_method <- function(method){
     available_method <-
         list(
@@ -93,6 +97,8 @@ liana_wrap <- function(seurat_object,
 #' @param res list of lists (e.g. Method-Resource Results from the LIANA pipe)
 #'
 #' @return The first element of the list
+#'
+#' @noRd
 .list2tib <- function(res){
     if(length(res)==1){res %>% pluck(1)} else{res}
 }

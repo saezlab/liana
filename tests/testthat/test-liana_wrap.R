@@ -13,3 +13,4 @@ test_that("Test liana wrapper", {
 
     expect_equal(exp1, res1)
 })
+
