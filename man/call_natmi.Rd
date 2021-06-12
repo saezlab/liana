@@ -12,6 +12,7 @@ call_natmi(
   output_dir = "NATMI_test",
   assay = "RNA",
   num_cor = 4,
+  conda_env = NULL,
   .format = TRUE,
   .write_data = TRUE,
   .seed = 1004,

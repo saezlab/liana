@@ -80,10 +80,12 @@ its 'Default' resource, the dataset used in its original publication.
   
   
   
-## Dependancies
-Please check the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/biorxiv/intercell.yml) file
-(Recommended to use it to set up a conda environment) and then also install the following in R:
-   
+## Install LIANA
+
+LIANA uses CCC methods from both R and Python, as such dependencies for both need to be installed.
+LIANA is predominantly written in R and makes use of `Seurat` objects as input.
+
+To install the LIANA framework run the following code in R:
    
 ```{r}
 library(devtools)  
@@ -98,16 +100,31 @@ devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "Singl
 devtools::install_github('saezlab/liana')
 ```
   
+Squidpy and NATMI are written in Python, as such a python environment with
+the prerequisites of these methods needs to be set up.
+
+Please use the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/biorxiv/liana_env.yml) file to set up a conda environment:
+
+```
+conda env create -f liana_env.yml
+```
   
-#### Clone modified NATMI into liana path, as it is run via the command line 
-##### NATMI was forked from its [github repo](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources:
+NATMI and Squidpy are set by default to look for this conda environment.
+
+  
+#### To use NATMI with LIANA, clone the lone modified NATMI repo into liana path by running the following in the terminal:
 ```{sh}
 cd *insert fullpath*/liana
 git clone https://github.com/saezlab/NATMI
 ```
+
+##### Note that, NATMI was forked from its [github repo](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources.
   
+
 ### Citing us:
-Please cite our recent [BioRxiv](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1) manuscript, if you use LIANA.
+Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and
+  Saez-Rodriguez, J., 2021.  Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data.
+  bioRxiv. [10.1101/2021.05.21.445160v1](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1)
 
 
 ## References
@@ -148,7 +165,7 @@ Wang, Y., Wang, R., Zhang, S., Song, S., Jiang, C., Han, G., Wang, M., Ajani, J.
 
 
   
-### R sessionInfo()
+### R session_info()
 ```r
 ─ Session info ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  setting  value                       

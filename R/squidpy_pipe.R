@@ -2,6 +2,7 @@
 #' @param seurat_object Seurat object as input
 #' @param op_resource List of OmniPath resources
 #' @param .seed used to python seed
+#' @param conda_env python conda environment to run Squidpy; set to liana_env by default
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
 #'
@@ -15,13 +16,17 @@
 #' @returns A list of Squidpy results for each resource
 #'
 #' @export
-call_squidpyR <- function(seurat_object,
+call_squidpy <- function(seurat_object,
                           op_resource,
                           .seed = 1004,
+                          conda_env = NULL,
                           ...){
 
-    kwargs <- list(...) # convert elipses to named list (i.e python dict)
+    kwargs <- list(...)
 
+    reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
+                             conda = "auto",
+                             required = TRUE)
     py$pd <- reticulate::import("pandas")
 
     if("DEFAULT" %in% toupper(names(op_resource))){

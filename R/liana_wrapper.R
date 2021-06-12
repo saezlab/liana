@@ -92,7 +92,7 @@ select_resource <- function(resource){
             italk = expr(call_italk),
             natmi = expr(call_natmi),
             sca = expr(call_sca),
-            squidpy = expr(call_squidpyR)
+            squidpy = expr(call_squidpy)
         )
 
     method %>%

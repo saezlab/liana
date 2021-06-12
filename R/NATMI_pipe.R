@@ -44,7 +44,7 @@
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
-#' @import dplyr
+#' @import dplyr reticulate
 #'
 #' @export
 call_natmi <- function(
@@ -55,12 +55,19 @@ call_natmi <- function(
     output_dir = "NATMI_test",
     assay = "RNA",
     num_cor = 4,
+    conda_env = NULL,
     .format = TRUE,
     .write_data = TRUE,
     .seed = 1004,
     .natmi_path = NULL){
 
-    py_set_seed(.seed)
+    reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
+                             conda = "auto",
+                             required = TRUE)
+    py$pd <- reticulate::import("pandas")
+    python_path <- reticulate::py_discover_config()[[1]]
+    reticulate::py_set_seed(.seed)
+
     .natmi_path %<>% `%||%`(system.file('NATMI/', package = 'liana'))
     .input_path = file.path(.natmi_path, 'data', 'input')
     .output_path = file.path(.natmi_path, 'data', 'output', output_dir)
@@ -102,12 +109,11 @@ call_natmi <- function(
 
     }
 
-
     # submit native sys request
     resource_names %>% map(function(resource){
 
         log_success(str_glue("Now Running: {resource}"))
-            system(str_glue("python3 {.natmi_path}/ExtractEdges.py ",
+            system(str_glue("{python_path} {.natmi_path}/ExtractEdges.py ",
                             "--species human ",
                             "--emFile {.input_path}/{expr_file} ",
                             "--annFile {.input_path}/{meta_file} ",

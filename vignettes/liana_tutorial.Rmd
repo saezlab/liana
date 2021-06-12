@@ -86,7 +86,7 @@ Alternatively, one can also overwrite the default settings by simply passing the
 ```{r liana_params, message = FALSE, print = FALSE}
 # Overwrite SCA default parameters by providing a list of parameters for the method
 # Information about the parameters passed to each method can be obtained via
-# `call_*` functions - e.g. ?call_sca or ?call_squidpyR 
+# `call_*` functions - e.g. ?call_sca or ?call_squidpy
 liana_test <- liana_wrap(testdata,
                          method = c('sca', 'squidpy'),
                          resource = c('OmniPath'),
