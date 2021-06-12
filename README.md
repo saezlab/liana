@@ -76,7 +76,7 @@ processing imperfections.
   
 Moreover, a Reshuffled resource can be generated via reshuffling any of the
 aforementioned using the `BiRewire` package, and each tool can be run with
-its 'Default' resource, the dataset used in its original publication.
+its 'Default' resource.
   
   
   
@@ -108,10 +108,10 @@ Please use the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/bi
 ```
 conda env create -f liana_env.yml
 ```
-  
-NATMI and Squidpy are set by default to look for this conda environment.
 
+Note! NATMI and Squidpy are set by default to look for this conda environment.
   
+
 #### To use NATMI with LIANA, clone the lone modified NATMI repo into liana path by running the following in the terminal:
 ```{sh}
 cd *insert fullpath*/liana
@@ -119,8 +119,15 @@ git clone https://github.com/saezlab/NATMI
 ```
 
 ##### Note that, NATMI was forked from its [github repo](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources.
-  
 
+
+#### If needed, use the following to locate the liana package
+```{r}
+library(liana)
+system.file(package = "liana")
+```
+  
+  
 ### Citing us:
 Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and
   Saez-Rodriguez, J., 2021.  Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data.
