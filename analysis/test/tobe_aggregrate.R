@@ -53,11 +53,12 @@ exp1 <- liana_wrap(seurat_object,
                    method = c('italk', 'sca'),
                    resource = c('OmniPath', "CellChatDB"))
 
-is_tibble(exp1[[1]])
-is_tibble(exp1)
-
 exp1 %>%
     liana_aggregate("OmniPath")
+
+
+
+
 
 # keep only interactions which are in the top 1000 results for each tool
 # (to simple function)

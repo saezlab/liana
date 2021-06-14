@@ -14,6 +14,7 @@
 #' @param cap A cap can for all methods can also be manually set, then the top X
 #'    interactions, based on the `specificity` scores for each method will be
 #'    returned and the ranking will be carried out solely on them
+#' @param get_ranks boolean, whether to return consensus ranks for methods
 #'
 #' @return Tibble with the interaction results and ranking for each method
 #'
@@ -24,7 +25,8 @@
 liana_aggregate <- function(liana_res,
                             resource = NULL,
                             set_cap = "max",
-                            cap = NULL){
+                            cap = NULL,
+                            get_ranks = TRUE){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
         stop("Please provide provide a name for the resource, ",
@@ -55,7 +57,9 @@ liana_aggregate <- function(liana_res,
                 as_tibble()
         }) %>%
         purrr::reduce(., full_join, by = c("source", "ligand", # Full join all results
-                                           "target", "receptor"))
+                                           "target", "receptor")) %>%
+        {`if`(get_ranks, .liana_consensus(. ,cap))}
+
 }
 
 #' Helper function to execute a function on the vector representing the number
@@ -69,4 +73,20 @@ liana_aggregate <- function(liana_res,
 
 
 
-
+#' Get Consensus rankings
+#' @param liana_agg Aggregated method results
+#' @param cap Value assigned to NA
+.liana_consensus <- function(liana_agg, cap){
+    liana_agg %>%
+        mutate_at(vars(ends_with(".rank")),
+              ~ replace(., is.na(.), cap)) %>% # assign .rank_cap to NA
+        mutate(min_rank = pmap_dbl(select(., ends_with(".rank")),
+                                   function(...) min(c(...))),
+               mean_rank = pmap_dbl(select(., ends_with(".rank")),
+                                    function(...) mean(c(...))),
+               median_rank = pmap_dbl(select(., ends_with(".rank")),
+                                      function(...) median(c(...))))  %>%
+        arrange(mean_rank) %>%
+        select(source, ligand, target, receptor,
+               ends_with("_rank"), everything())
+}
