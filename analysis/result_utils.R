@@ -37,11 +37,13 @@ get_top_hits <- function(spec_list, n_ints=c(100, 250, 500, 1000)){
 }
 
 
-#' Helper Function to handle specific cases for CellChat and Squidpy
+#' Helper Function to handle specific cases for the different Methods
+#'
 #' @inheritDotParams dplyr::top_n
 #' @importFrom dplyr top_n
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble
+#'
 #' @return Ordered tibble/df as from top_n
 top_enh <- function(...){
 
@@ -205,8 +207,6 @@ setClass("MethodSpecifics",
 get_cellnum <- function(seurat_path){
     crc_form <- readRDS(seurat_path)
     crc_meta <- crc_form@meta.data
-    rm(crc_form)
-    gc()
 
     # Cell Numbers
     crc_meta %>%

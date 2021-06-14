@@ -195,11 +195,12 @@ FormatNatmi <- function(output_path,
                                 receptor = Receptor.symbol,
                                 edge_avg_expr = Edge.average.expression.weight,
                                 edge_specificity = Edge.average.expression.derived.specificity
-                            )
+                            ) %>%
+                            as_tibble()
                     }),
                     result)) %>%
         deframe() %>%
         plyr::rename(., c("lrc2p" = "Default"), # change this to default
-                     warn_missing = FALSE)  %>%
+                     warn_missing = FALSE) %>%
         .list2tib()
 }

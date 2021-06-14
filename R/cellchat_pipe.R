@@ -16,7 +16,7 @@
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
-#' @importFrom tibble column_to_rownames enframe
+#' @importFrom tibble column_to_rownames enframe tibble
 #' @importFrom tidyr unite unnest separate
 #' @importFrom logger log_info
 #'
@@ -114,7 +114,8 @@ call_cellchat <- function(op_resource,
                    ligand,
                    receptor,
                    prob,
-                   pval)
+                   pval) %>%
+            as_tibble()
     }
 
     options(stringsAsFactors = stringsAsFactors)

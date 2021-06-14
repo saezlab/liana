@@ -73,11 +73,9 @@ call_connectome <- function(seurat_object,
 #' Helper function to filter and format connectome
 #'
 #' @param conn connectome object
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @importFrom Connectome FilterConnectome
+#' @importFrom Connectome FilterConnectome
+#' @import tibble
+#'
 #' @export
 FormatConnectome <- function(conn,
                              ...){
@@ -88,7 +86,9 @@ FormatConnectome <- function(conn,
                weight_norm,
                weight_sc,
                p_val_adj.lig,
-               p_val_adj.rec)
+               p_val_adj.rec) %>%
+        as_tibble()
+
 }
 
 
