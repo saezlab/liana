@@ -103,7 +103,7 @@ call_italk <- function(
 
 
 
-#' Filter and format iTalk results
+#' Helper Function to Filter and format iTalk results
 #'
 #' @param italk_res iTalk results object
 #' @param remove.na bool whether to filter NA

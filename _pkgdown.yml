@@ -1,0 +1,35 @@
+destination: docs
+
+development:
+  mode: auto
+
+navbar:
+  structure:
+    left: [home, intro, reference, articles, tutorials]
+    right: [github, twitter, homepage]
+  components:
+     twitter:
+       icon: "fab fa-twitter fa-lg"
+       href: https://twitter.com/saezlab
+     homepage:
+       icon: "fas fa-university"
+       href: http://www.saezlab.org
+
+reference:
+  - title: LIANA
+    desc: "`liana`-wrapper and related functions"
+    contents:
+      - starts_with("liana_")
+  - title: Method calling functions
+    desc: >
+    contents:
+      - starts_with("call_")
+  - title: Format Method Output
+    desc: >
+    contents:
+      - starts_with("Format")
+  - title: Get_ or Select_ Functions
+    desc: "Functions used to obtain resources, lists, etc"
+    contents:
+      - starts_with("get_")
+      - starts_with("select_")

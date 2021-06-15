@@ -2,7 +2,7 @@
 % Please edit documentation in R/iTALK_pipe.R
 \name{FormatiTALK}
 \alias{FormatiTALK}
-\title{Filter and format iTalk results}
+\title{Helper Function to Filter and format iTalk results}
 \usage{
 FormatiTALK(italk_res, remove.na = TRUE, .DE = FALSE)
 }
@@ -12,5 +12,5 @@ FormatiTALK(italk_res, remove.na = TRUE, .DE = FALSE)
 \item{remove.na}{bool whether to filter NA}
 }
 \description{
-Filter and format iTalk results
+Helper Function to Filter and format iTalk results
 }

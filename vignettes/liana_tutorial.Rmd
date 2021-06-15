@@ -5,7 +5,7 @@ author:
     affiliation:
         - Saezlab, Heidelberg University
     email: daniel.dimitrov@uni-heidelberg.de
-date: "6/11/2021"
+date: "15/06/2021"
 output: html_document
 ---
 
@@ -42,12 +42,12 @@ select_resource(c('OmniPath')) %>%
   
 ## CCC Methods
 Each of the resources, can then be run with any of the following methods:
-+ CellPhoneDB algorithm (via Squidpy)
-+ CellChat
-+ NATMI
-+ Connectome
-+ SingleCellSignalR (SCA)
-+ iTALK
+  * CellPhoneDB algorithm (via Squidpy)
+  * CellChat
+  * NATMI
+  * Connectome
+  * SingleCellSignalR (SCA)
+  * iTALK
 
 
 ## Calling the `liana` wrapper function

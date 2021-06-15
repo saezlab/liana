@@ -64,7 +64,7 @@ call_squidpy <- function(seurat_object,
 
     squidpy_results <- map(names(op_resource),
                            function(x)
-                               squidpy_reformat(.name=x,
+                               FormatSquidpy(.name=x,
                                                 .pval_list = squidpy_pvalues,
                                                 .mean_list = squidpy_means,
                                                 .meta_list = squidpy_metadata)) %>%
@@ -80,7 +80,7 @@ call_squidpy <- function(seurat_object,
 }
 
 
-#' Helper function to reformat squidpy function r
+#' Helper function to reformat Squidpy function r
 #' @param .name omnipath resource name
 #' @param .pval_list p-value results from different dbs as a list from squidpy
 #' @param .mean_list mean list from squidpy
@@ -88,7 +88,7 @@ call_squidpy <- function(seurat_object,
 #' @importFrom dplyr left_join
 #'
 #' @noRd
-squidpy_reformat <- function(.name,
+FormatSquidpy <- function(.name,
                              .pval_list,
                              .mean_list,
                              .meta_list){

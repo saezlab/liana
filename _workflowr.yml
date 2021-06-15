@@ -1,8 +1,0 @@
-# workflowr options
-# Version 1.6.2
-
-# The seed to use for random number generation. See ?set.seed for details.
-seed: 1004
-# The working directory to build the R Markdown files. The path is relative to
-# _workflowr.yml. See ?rmarkdown::render for details.
-knit_root_dir: "."
