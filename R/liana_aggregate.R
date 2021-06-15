@@ -15,6 +15,8 @@
 #'    interactions, based on the `specificity` scores for each method will be
 #'    returned and the ranking will be carried out solely on them
 #' @param get_ranks boolean, whether to return consensus ranks for methods
+#' @param get_agrank boolean, whether to return aggregate rank using the
+#'    `RobustRankAggreg` package.
 #'
 #' @return Tibble with the interaction results and ranking for each method
 #'
@@ -26,7 +28,9 @@ liana_aggregate <- function(liana_res,
                             resource = NULL,
                             set_cap = "max",
                             cap = NULL,
-                            get_ranks = TRUE){
+                            get_ranks = TRUE,
+                            get_agrank = TRUE,
+                            ...){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
         stop("Please provide provide a name for the resource ",
@@ -37,7 +41,7 @@ liana_aggregate <- function(liana_res,
 
     cap %<>% `%||%`(.select_cap(liana_res, set_cap))
 
-    liana_res %>%
+    liana_mlist <- liana_res %>%
         map2(names(.), function(res, method_name){
             method_score <- .rank_specs()[[method_name]]@method_score
             desc_order <- .rank_specs()[[method_name]]@descending_order
@@ -56,10 +60,23 @@ liana_aggregate <- function(liana_res,
                 select(source, ligand, target, receptor, !!.method, !!.rank_col) %>%
                 distinct() %>%
                 as_tibble()
-        }) %>%
+        })
+
+    liana_aggr <- liana_mlist %>%
         purrr::reduce(., full_join, by = c("source", "ligand", # Join all res
                                            "target", "receptor")) %>%
         {`if`(get_ranks, .liana_consensus(., cap))}
+
+    # Get Robust Ranks
+    if(get_agrank){
+        liana_aggr <- liana_mlist %>%
+            .aggregate_rank(., ...) %>%
+            right_join(., liana_aggr,
+                       by = c("source", "ligand",
+                              "target", "receptor"))
+    }
+
+    return(liana_aggr)
 }
 
 #' Helper function to execute a function on the vector representing the number
@@ -77,13 +94,13 @@ liana_aggregate <- function(liana_res,
 
 #' Get Consensus Rankings for the Methods
 #'
-#' @param liana_agg Aggregated method results
+#' @param liana_aggr Aggregated method results
 #' @param cap Value assigned to NA (by default, the max number of all possible
 #'    interactions, depending on the resource)
 #'
 #' @return aggregated liana tibble with consensus ranks
-.liana_consensus <- function(liana_agg, cap){
-    liana_agg %>%
+.liana_consensus <- function(liana_aggr, cap){
+    liana_aggr %>%
         mutate_at(vars(ends_with(".rank")),
               ~ replace(., is.na(.), cap)) %>% # assign .rank_cap to NA
         mutate(mean_rank = pmap_dbl(select(., ends_with(".rank")),
@@ -180,3 +197,24 @@ setClass("RankSpecifics",
     )
 }
 
+
+#' Robust Aggregate ranks using `RobustRankAggreg`
+#'
+#' @param liana_mlist liana list with method tibbles
+#' @param ... Parametres passed to `RobustRankAggreg::aggregateRanks`
+.aggregate_rank <- function(liana_mlist, ...){
+    liana_mlist %>%
+        map(function(res){
+            res %>%
+                unite(c("source", "ligand",
+                        "target", "receptor"), col = "interaction") %>%
+                pull("interaction")
+        }) %>%
+        RobustRankAggreg::aggregateRanks(rmat = rankMatrix(.),
+                                         ...) %>%
+        as_tibble() %>%
+        rename(aggregate_rank = Score,
+               interaction = Name) %>%
+        separate(col = "interaction", sep = "_",
+                 into = c("source", "ligand", "target", "receptor"))
+}

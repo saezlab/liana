@@ -1,4 +1,8 @@
 #
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
 exp1 <- liana_wrap(seurat_object,
                    method = c('italk', 'sca', 'cellchat',
                               'squidpy', 'natmi', 'connectome'),
@@ -14,8 +18,9 @@ exp1 <- liana_wrap(seurat_object,
                    ))
 
 temp <- exp1 %>%
-    liana_aggregate("OmniPath")
-
+    liana_aggregate("OmniPath",
+                    get_ranks = TRUE,
+                    get_agrank = TRUE)
 
 rank_enh(temp$italk.weight_comb, TRUE)
 
@@ -47,21 +52,29 @@ temp2 <- exp1 %>%
             rename( {{ .method }} := method_score) %>%
             select(source, ligand, target, receptor, !!.method, !!.rank_col) %>%
             distinct() %>%
-            as_tibble() %>%
-            arrange("weight_sc") %>%
+            as_tibble()
+    })
+
+temp2 %>%
+    map(function(res){
+        res %>%
             unite(c("source", "ligand",
                     "target", "receptor"), col = "interaction") %>%
             pull("interaction")
-    })  %>%
-    RobustRankAggreg::aggregateRanks(rmat = rankMatrix(glist),
-                                     method = 'stuart')
-
-temp2 <- temp2 %>%
+    }) %>%
+    RobustRankAggreg::aggregateRanks(rmat = rankMatrix(.)) %>%
     as_tibble() %>%
     rename(aggregate_rank = Score,
            interaction = Name) %>%
     separate(col = "interaction", sep = "_",
              into = c("source", "ligand", "target", "receptor"))
+
+
+exp1 %>% .aggregate_rank
+
+
+
+
 
 temp %>% left_join(temp2, by = c("source", "ligand", "target", "receptor"))
 

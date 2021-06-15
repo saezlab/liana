@@ -47,7 +47,6 @@ Depends:
 Imports:
     utils,
     reticulate,
-    yardstick,
     stringr,
     magrittr,
     purrr,
@@ -81,6 +80,7 @@ Suggests:
     Barnard,
     DescTools,
     graphics,
+    RobustRankAggreg,
     sessioninfo
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
