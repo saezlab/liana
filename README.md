@@ -127,6 +127,9 @@ library(liana)
 system.file(package = "liana")
 ```
   
+## Tutorial
+See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
+  
   
 ### Citing us:
 Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and
