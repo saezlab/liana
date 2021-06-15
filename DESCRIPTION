@@ -64,12 +64,13 @@ Suggests:
     iTALK,
     OmnipathR,
     BiRewire,
+    RobustRankAggreg,
     knitr,
     rmarkdown,
-    testthat,
+    workflowr,
+    testthat (>= 3.0.0),
     forcats,
     shadowtext,
-    testthat (>= 3.0.0),
     viridis,
     proxy,
     UpSetR,
@@ -80,7 +81,6 @@ Suggests:
     Barnard,
     DescTools,
     graphics,
-    RobustRankAggreg,
     sessioninfo
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
