@@ -29,8 +29,8 @@ liana_aggregate <- function(liana_res,
                             get_ranks = TRUE){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
-        stop("Please provide provide a name for the resource, ",
-                 "otherwise the first resource will be plucked!")
+        stop("Please provide provide a name for the resource ",
+                 "to be plucked and used to aggregate the method results!")
     } else if(!is_tibble(liana_res[[1]])){
         liana_res %<>% map(function(m_results) m_results %>% pluck(resource))
     }
@@ -59,7 +59,7 @@ liana_aggregate <- function(liana_res,
         }) %>%
         purrr::reduce(., full_join, by = c("source", "ligand", # Join all res
                                            "target", "receptor")) %>%
-        {`if`(get_ranks, .liana_consensus(. ,cap))}
+        {`if`(get_ranks, .liana_consensus(., cap))}
 }
 
 #' Helper function to execute a function on the vector representing the number
@@ -78,7 +78,8 @@ liana_aggregate <- function(liana_res,
 #' Get Consensus Rankings for the Methods
 #'
 #' @param liana_agg Aggregated method results
-#' @param cap Value assigned to NA
+#' @param cap Value assigned to NA (by default, the max number of all possible
+#'    interactions, depending on the resource)
 #'
 #' @return aggregated liana tibble with consensus ranks
 .liana_consensus <- function(liana_agg, cap){
