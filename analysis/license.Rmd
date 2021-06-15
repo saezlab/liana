@@ -1,0 +1,21 @@
+---
+title: "License"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+What license are you using for your code? See [choosealicense.com][choose] for
+help deciding. It's a convention to save a file `LICENSE` in the root of your
+Git repo that contains the license text.
+
+What license are you using for the written content on your site? It is
+traditional to choose a [Creative Commons][cc] license for this type of content.
+
+[choose]: http://choosealicense.com/
+[cc]: https://creativecommons.org/choose/
+
+How should others cite your work? It's a convention to save a file `CITATION`
+in the root of your Git repo that contains the citation information.
