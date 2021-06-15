@@ -5,21 +5,30 @@
 
 
 # aggregate results
-temp <- exp1 %>%
+exp1 %>%
     map2(names(.), function(res, method_name){
-        # pluck specific resource?
+
+        if(!is_tibble(res[[1]]) && is.null(resource)){
+            stop("Please provide provide a name for the resource, ",
+                 "otherwise the first resource will be plucked!")
+        } else if(!is_tibble(res[[1]])){
+            res %<>% map(function(m_results) m_results %>% pluck(resource))
+        }
+
         method_score <- .rank_specs[[method_name]]@method_score
-        parm_order <- .rank_specs[[method_name]]@descending_order
+        desc_order <- .rank_specs[[method_name]]@descending_order
         .method = sym(as.character(str_glue("{method_name}.{method_score}")))
         .rank_col = sym(as.character(str_glue("{method_name}.rank")))
 
+        cap %<>% `%||%`(.select_cap(liana_res, set_cap))
+
         res %>%
             .list2tib %>%
-            top_n(n=if_else(parm_order,
+            top_n(n=if_else(desc_order,
                             .rank_cap,
                             -.rank_cap),
                     wt=!!sym(method_score)) %>%
-            mutate({{ .rank_col }} := dense_rank(desc(!!sym(method_score)))) %>%
+            mutate({{ .rank_col }} := rank_enh(!!sym(method_score), desc_order)) %>%
             arrange(!!.rank_col) %>%
             rename( {{ .method }} := method_score) %>%
             select(source, ligand, target, receptor, !!.method, !!.rank_col) %>%
@@ -53,8 +62,11 @@ exp1 <- liana_wrap(seurat_object,
                    method = c('italk', 'sca'),
                    resource = c('OmniPath', "CellChatDB"))
 
-exp1 %>%
+temp <- exp1 %>%
     liana_aggregate("OmniPath")
+
+
+rank_enh(temp$italk.weight_comb, TRUE)
 
 
 
@@ -63,7 +75,7 @@ exp1 %>%
 # keep only interactions which are in the top 1000 results for each tool
 # (to simple function)
 temp %>%
-    filter_at(vars(ends_with(".rank")), all_vars(. < 1000))
+    filter_at(vars(ends_with(".rank")), all_vars(. < 200))
 
 
 
@@ -137,66 +149,6 @@ temp
 
 
 
-#' S4 Class used to generate aggregate/consesus scores for the methods.
-#'
-#' @name RankSpecifics-class
-#'
-#' @field method_name name of the method (e.g. cellchat)
-#' @field method_score The interaction score provided by the method (typically
-#' the score that reflects the specificity of interaction)
-#' @field descending_order whether the score should be interpreted in
-#'  descending order (i.e. highest score for an interaction is most likely)
-#'
-#' @exportClass RankSpecifics
-setClass("RankSpecifics",
-         slots=list(method_name="character",
-                    method_score="character",
-                    descending_order="logical"))
-
-# Rank Specifics Holder
-.rank_specs <- list(
-    "cellchat" =
-        methods::new(
-            "RankSpecifics",
-            method_name = "cellchat",
-            method_score = "pval",
-            descending_order = FALSE
-        ),
-    "connectome" =
-        methods::new(
-            "RankSpecifics",
-            method_name = "connectome",
-            method_score = "weight_sc",
-            descending_order = TRUE
-        ),
-    "italk" =
-        methods::new(
-            "RankSpecifics",
-            method_name = "italk",
-            method_score = "weight_comb",
-            descending_order = TRUE
-        ),
-    "natmi" =
-        methods::new(
-            "RankSpecifics",
-            method_name = "natmi",
-            method_score = "edge_specificity",
-            descending_order = TRUE
-        ),
-    "sca" = methods::new(
-        "RankSpecifics",
-        method_name = "sca",
-        method_score = "LRscore",
-        descending_order = TRUE
-    ),
-    "squidpy" =
-        methods::new(
-            "RankSpecifics",
-            method_name = "Squidpy",
-            method_score = "pvalue",
-            descending_order = FALSE
-        )
-)
 
 
 # Arrange Helper Function
@@ -206,7 +158,7 @@ arrange_enh <- function(.data, wt, descending_order){
     if(descending_order){
         arrange(.data, desc(!!wt))
     } else{
-        arrange(.data, desc(!!wt))
+        arrange(.data, !!wt)
     }
 }
 
