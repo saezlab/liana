@@ -13,7 +13,16 @@
 #      https://directory.fsf.org/wiki/License:Expat
 #
 #  Git repo: https://github.com/saezlab/ligrec_decoupler
-
+require(stringr)
+require(tidyverse)
+require(OmnipathR)
+require(magrittr)
+require(proxy)
+require(viridis)
+require(RCurl)
+require(UpSetR)
+source("analysis/result_utils.R")
+source("analysis/plot_utils.R")
 
 # colors from brewer.pal
 .palette1 <- c(
