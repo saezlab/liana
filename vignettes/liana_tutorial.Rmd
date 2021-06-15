@@ -64,20 +64,36 @@ testdata %>% glimpse()
 
 `liana_wrap` calls a number of methods and and each method is run with the provided resources.
 
-Here, we will call SingleCellSignalR (SCA) and Squidpy for the sake of computational speed,
-but any of c("natmi", "connectome", "italk", "cellchat") can also be run by simply adding their name to the `method` parameter
+Here, we will call SingleCellSignalR (SCA), Connectome, and Squidpy for the sake of computational speed,
+but any of c("natmi", "italk", "cellchat") can also be run by simply adding their name to the `method` parameter
 
 Similarly, here we use only the "OmniPath" CCC resource, but any of the 
 aforementioned ones (available via `get_resources()`) can be added to the `resource` parameter
 ```{r liana_run, message = FALSE, print = FALSE}
 # Run liana
 liana_test <- liana_wrap(testdata,
-                         method = c('sca', 'squidpy'),
+                         method = c('sca', 'squidpy', 'connectome'),
                          resource = c('OmniPath'))
 
 # liana returns a list of results for each method
 liana_test %>% glimpse
 ```
+
+## Obtain Consensus Ranks
+`liana` also provides consensus ranks for the results obtained using different
+methods. By default, liana will provide mean, median, and a aggregate* consensus
+ranks
+```{r liana_ranks, message = FALSE, print = FALSE}
+# Run liana
+liana_test %>%
+  liana_aggregate()
+```
+*The aggregate consnesus rank is obtained using the RobustRankAggreg package.
+The RobustRankAggreg package provides different functions to obtain aggregate
+ranks, by default the [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method is used.
+RRA provides rank scores which can be interpreted as p-values. Interactions which
+ranked consistently higher than random are assigned low scores/p-values.
+
 
 ## Call `liana` with overwritten default settings
 In the previous example `liana` was run with the default for each method which can be obtained via `liana_default()`

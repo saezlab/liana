@@ -24,6 +24,8 @@
 #'   on a vector representing the number of rows in the results for each method,
 #'   by default this is set to \link{base::max}, but any other function that
 #'   works with vectors could be passed - e.g. min, mean, etc.
+#'
+#' @export
 liana_aggregate <- function(liana_res,
                             resource = NULL,
                             set_cap = "max",
@@ -98,7 +100,11 @@ liana_aggregate <- function(liana_res,
 #' @param cap Value assigned to NA (by default, the max number of all possible
 #'    interactions, depending on the resource)
 #'
+#' @import purrr tibble
+#'
 #' @return aggregated liana tibble with consensus ranks
+#'
+#' @noRd
 .liana_consensus <- function(liana_aggr, cap){
     liana_aggr %>%
         mutate_at(vars(ends_with(".rank")),
@@ -210,7 +216,7 @@ setClass("RankSpecifics",
                         "target", "receptor"), col = "interaction") %>%
                 pull("interaction")
         }) %>%
-        RobustRankAggreg::aggregateRanks(rmat = rankMatrix(.),
+        RobustRankAggreg::aggregateRanks(rmat = RobustRankAggreg::rankMatrix(.),
                                          ...) %>%
         as_tibble() %>%
         rename(aggregate_rank = Score,
