@@ -4,7 +4,13 @@
 \alias{liana_wrap}
 \title{Run LIANA Wrapper}
 \usage{
-liana_wrap(seurat_object, method, resource, .simplify = TRUE, ...)
+liana_wrap(
+  seurat_object,
+  method = c("cellchat", "connectome", "italk", "natmi", "sca", "squidpy"),
+  resource = c("OmniPath"),
+  .simplify = TRUE,
+  ...
+)
 }
 \arguments{
 \item{seurat_object}{seurat object}
@@ -14,7 +20,7 @@ liana_wrap(seurat_object, method, resource, .simplify = TRUE, ...)
 \item{resource}{resource(s) to be used by the methods}
 
 \item{.simplify}{if methods are run with only 1 resource, return a list
-of tibbles for each method, rather than a list of lists with
+of tibbles for each method (default), rather than a list of lists with
 method-resource combinations}
 
 \item{...}{Pass custom method parameters to the methods via the liana wrapper
@@ -23,6 +29,8 @@ See \link{liana::liana_defaults} for more information}
 \value{
 A list of method-resource results - i.e. provided resources are run
 with each method
+If only one resource is selected, a single tibble (with results for that
+ resource) will be returned for each of the selected methods
 }
 \description{
 Run LIANA Wrapper
