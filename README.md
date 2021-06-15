@@ -1,4 +1,4 @@
-# LIANA: a LIgand-receptor ANalysis frAmework
+# LIANA
   
 ![landingpage](ligrec_pipe.png)
 

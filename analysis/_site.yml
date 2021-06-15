@@ -1,7 +1,7 @@
-name: "ligrec_decoupleR"
+name: LIANA
 output_dir: ../docs
 navbar:
-  title: "ligrec_decoupleR"
+  title: LIANA
   left:
   - text: Home
     href: index.html
