@@ -12,7 +12,7 @@ navbar:
   right:
   - icon: fa-github
     text: Source code
-    href: https://github.com/saezlab/Cell_Cell_Investigation
+    href: https://github.com/saezlab/liana
 output:
   workflowr::wflow_html:
     toc: yes
