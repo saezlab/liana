@@ -95,7 +95,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
-devtools::BiocManager::install("ComplexHeatmap")
+devtools::BiocManager::install("ComplexHeatmap") # required for Connectome
 install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
 
 # install tools
@@ -105,7 +105,7 @@ devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
 # A modified version of SingleCellSignalR (SCA) that enables external resources
 devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
 
-# Install this repos
+# Finally, install LIANA
 devtools::install_github('saezlab/liana')
 ```
   
@@ -118,7 +118,7 @@ Please use the [.yml](https://github.com/saezlab/Cell_Cell_Investigation/blob/bi
 conda env create -f liana_env.yml
 ```
 
-Note! NATMI and Squidpy are set by default to look for this conda environment.
+Note! NATMI and Squidpy are set by default to look for this conda environment ("liana_env").
   
 
 #### To use NATMI with LIANA, clone the lone modified NATMI repo into liana path by running the following in the terminal:
@@ -145,7 +145,7 @@ Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai
   Saez-Rodriguez, J., 2021.  Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data.
   bioRxiv. [10.1101/2021.05.21.445160v1](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1)
 
-#### Also, please include the following publication if you use the `OmniPath` CCC Resource:
+#### Also, if you use the `OmniPath` CCC Resource for your analysis, please cite:
 Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923.
 https://doi.org/10.15252/msb.20209923
   
