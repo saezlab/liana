@@ -239,17 +239,6 @@ omnipath_partners <- function(side, ...){
 }
 
 
-#' Ligand-receptor data for the descriptive part
-#'
-#' Ligands, receptors and connections from each resource in a nested list
-#' of tibbles.
-#'
-#' @seealso \code{\link{compile_ligrec}}
-compile_ligrec_descr <- function(){
-    compile_ligrec(lr_pipeline = FALSE)
-}
-
-
 #' Shuffle OmniPath Intercell Resource
 #' @param op_resource Intercell Resource to shuffled
 #' @param .seed Value for set.seed
