@@ -1,4 +1,4 @@
-# LIANA: a LIgand-receptor ANalysis frAmework <img src="inst/liana_logo.png" align="right" height="100">
+# LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
 
 
 ## Objectives
