@@ -1,6 +1,5 @@
-# LIANA: a LIgand-receptor ANalysis frAmework
-  
-![landingpage](ligrec_pipe.png)
+# LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
+
 
 ## Objectives
   
@@ -17,10 +16,9 @@ combined with any method.
 To this end we built a framework to decouple the tools from their corresponding resources.
 In turn, we used the pipeline for the systematic comparison of all combinations between 15 resources and 6 tools.
   
-LIANA is open access and available in this repository.
+![landingpage](ligrec_pipe.png)
   
   
-
 ## Tools
 
 The tools implemented in this repository are:

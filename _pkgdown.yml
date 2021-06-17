@@ -28,6 +28,10 @@ reference:
     desc: >
     contents:
       - starts_with("Format")
+  - title: Obtain Default Parametres
+    desc: "Default parametres passed to each method called by liana"
+    contents:
+      - liana_defaults
   - title: Get_ or Select_ Functions
     desc: "Functions used to obtain resources, lists, etc"
     contents:

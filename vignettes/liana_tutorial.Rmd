@@ -5,8 +5,14 @@ author:
     affiliation:
         - Saezlab, Heidelberg University
     email: daniel.dimitrov@uni-heidelberg.de
-date: "15/06/2021"
-output: html_document
+date: "17/06/2021"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
 ---
 
 ```{r chunk_setup, include = FALSE}
@@ -14,19 +20,28 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
 )
+```
+
+# `liana`: Intro
+
+The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked an
+immense interest in understanding intercellular crosstalk. Multiple tools and
+resources that aid the investigation of cell-cell communication (CCC) were 
+published recently. However, these methods and resources are usually in a fixed
+combination of a tool and its corresponding resource, but in principle any
+resource could be combined with any method.
+
+To this end, we built `liana` - a framework to decouple the tools from their
+corresponding resources.
+
+![](../ligrec_pipe.png)
+
+## Load required packages
+```{r load_pkgs, message=FALSE, warning=FALSE}
 require(liana)
 require(tibble)
 require(purrr)
 ```
-
-# `liana`: Intro and Tutorial
-
-The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked an immense interest in understanding intercellular crosstalk. Multiple tools and resources that aid the investigation of cell-cell communication (CCC) were published recently. However, these methods and resources are usually in a fixed combination of a tool and its corresponding resource, but in principle any resource could be combined with any method.
-
-To this end we built `liana` - a framework to decouple the tools from their corresponding resources.
-
-![](../ligrec_pipe.png)
-
 
 ## CCC Resources
 `liana` provides CCC resources obtained and formatted via [`OmnipathR`](https://github.com/saezlab/OmnipathR) which are then converted to the appropriate format to each method.
@@ -35,26 +50,27 @@ To this end we built `liana` - a framework to decouple the tools from their corr
 get_resources()
 
 # A list of resources can be obtained using the `select_resource()` function:
-select_resource(c('OmniPath')) %>%
-  glimpse()
+# See `?select_resource()` documentation for further information.
+# select_resource(c('OmniPath')) %>% glimpse() 
 ```
   
   
 ## CCC Methods
 Each of the resources, can then be run with any of the following methods:
-  * CellPhoneDB algorithm (via Squidpy)
-  * CellChat
-  * NATMI
-  * Connectome
-  * SingleCellSignalR (SCA)
-  * iTALK
-
+```
+- CellPhoneDB algorithm (via Squidpy)
+- CellChat
+- NATMI
+- Connectome
+- SingleCellSignalR (SCA)
+- iTALK
+```
 
 ## Calling the `liana` wrapper function
 
 To run `liana`, we will use a toy PBMCs scRNA-Seq data set
 `liana` takes `Seurat` objects as input, containing processed counts and clustered cells
-```{r load_data , echo=FALSE}
+```{r load_data}
 liana_path <- system.file(package = "liana")
 testdata <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
@@ -64,27 +80,30 @@ testdata %>% glimpse()
 
 `liana_wrap` calls a number of methods and and each method is run with the provided resources.
 
-Here, we will call SingleCellSignalR (SCA), Connectome, and Squidpy for the sake of computational speed,
-but any of c("natmi", "italk", "cellchat") can also be run by simply adding their name to the `method` parameter
+Here, we call Connectome and Squidpy for the sake of computational speed,
+but any of c("sca", "natmi", "italk", "cellchat") can also be run by simply
+adding their name to the `method` parameter.
 
 Similarly, here we use only the "OmniPath" CCC resource, but any of the 
 aforementioned ones (available via `get_resources()`) can be added to the `resource` parameter
-```{r liana_run, message = FALSE, print = FALSE}
+```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
 liana_test <- liana_wrap(testdata,
-                         method = c('sca', 'squidpy', 'connectome'),
+                         method = c('squidpy', 'connectome'),
                          resource = c('OmniPath'))
-
-# liana returns a list of results for each method
-liana_test %>% glimpse
 ```
+
+
 
 ## Obtain Consensus Ranks
 `liana` also provides consensus ranks for the results obtained using different
 methods. By default, liana will provide mean, median, and a aggregate* consensus
 ranks
 ```{r liana_ranks, message = FALSE, print = FALSE}
-# Run liana
+# Liana returns a list of results, each element of which corresponds to a method
+liana_test
+
+# We can aggregate these results into a dataframe with consensus ranks
 liana_test %>%
   liana_aggregate()
 ```
@@ -96,29 +115,35 @@ ranked consistently higher than random are assigned low scores/p-values.
 
 
 ## Call `liana` with overwritten default settings
-In the previous example `liana` was run with the default for each method which can be obtained via `liana_default()`
+By default `liana` is run with the default for each method which can be obtained via `liana_default()`
 
 Alternatively, one can also overwrite the default settings by simply passing them to the liana wrapper function
 ```{r liana_params, message = FALSE, print = FALSE}
-# Overwrite SCA default parameters by providing a list of parameters for the method
-# Information about the parameters passed to each method can be obtained via
-# `call_*` functions - e.g. ?call_sca or ?call_squidpy
+# Overwrite CellChat default parameters by providing a list of parameters
 liana_test <- liana_wrap(testdata,
-                         method = c('sca', 'squidpy'),
-                         resource = c('OmniPath'),
-                         sca.params = list(
-                           assay = "RNA",
-                           .format = FALSE, # don't format according to liana
-                           s.score = 0,
-                           logFC = log2(1.5)))
+                         method = c('cellchat', 'squidpy'),
+                         resource = 'Default', # Run with Default Resources
+                         cellchat.params = 
+                           list(
+                             nboot = 10,
+                             exclude_anns = NULL,
+                             thresh = 1,
+                             assay = "RNA",
+                             .normalize = TRUE,
+                             .do_parallel = FALSE,
+                             .raw_use = TRUE
+                             )
+                         )
 
 # This returns a list of results for each method
 liana_test %>% glimpse
 ```
+###### Information about the parameters passed to each method can be obtained via
+`call_*` functions - e.g. ?call_cellchat or ?call_squidpy
 
 
 
-## Call a single method
+## Call a method alone
 To call a any single method, you can use any of the `call_*` methods:
 ```{r liana_call}
 # RUN cellchat alone with OmniPath
@@ -129,19 +154,23 @@ cc_res <- call_cellchat(
   nboot = 10)
 
 # Show CellChat Results
-cc_res %>% glimpse
+cc_res
 ```
+
 
 ## Contact
 We appreciate any feedback, so please do not hesitate to open an issue to the [liana github page](https://github.com/saezlab/liana)!
+
 
 ## Citation
 ```{r liana citation, message = FALSE}
 citation("liana")
 ```
 
+
 ## Session information
-```{r session_info, echo=FALSE}
+```{r session_info, echo=TRUE}
+options(width = 120)
 sessioninfo::session_info()
 ```
 
