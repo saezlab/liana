@@ -69,18 +69,6 @@ Suggests:
     rmarkdown,
     workflowr,
     testthat (>= 3.0.0),
-    forcats,
-    shadowtext,
-    viridis,
-    proxy,
-    UpSetR,
-    RColorBrewer,
-    ggfortify,
-    ggplot2,
-    RCurl,
-    Barnard,
-    DescTools,
-    graphics,
     sessioninfo
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3

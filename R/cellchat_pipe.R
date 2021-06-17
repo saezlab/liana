@@ -18,7 +18,6 @@
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
 #' @importFrom tibble column_to_rownames enframe tibble
 #' @importFrom tidyr unite unnest separate
-#' @importFrom logger log_info
 #'
 #' @export
 #'
@@ -76,9 +75,6 @@ call_cellchat <- function(op_resource,
         ccDB$interaction <- ccDB$interaction %>%
             filter(!(annotation %in% exclude_anns))
     }
-
-    log_info("Number of interactions:
-                     {length(ccDB$interaction$interaction_name)}")
 
     ## set the used database in the object
     cellchat.omni@DB <- ccDB
@@ -178,8 +174,6 @@ cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
                                             co_A_receptor,
                                             co_I_receptor
         ){
-
-            log_trace(interaction_name)
 
             if(co_A_receptor=="" & co_I_receptor==""){
 

@@ -25,7 +25,7 @@
 logg <- function(level, ...){
 
     level %<>% (OmnipathR:::ensure_loglevel)
-    log_level(level, ..., namespace = 'OmnipathR')
+    log_level(level, ..., namespace = 'liana')
 
 }
 
