@@ -19,7 +19,8 @@
 #'  resource) will be returned for each of the selected methods
 #'
 #' @details LIANA wrapper method that can be used to call each method with
-#'  a given set of intercellular resources from the OmniPath universe
+#'  a given set of intercellular resources from the OmniPath universe.
+#' Use `all` to run all resources in one go.
 #'
 #' @export
 liana_wrap <- function(seurat_object,
@@ -33,7 +34,7 @@ liana_wrap <- function(seurat_object,
         stop(str_glue("{setdiff(method, .get_methods())} not part of LIANA "))
     }
 
-    if(length(setdiff(resource, get_resources())) > 0){
+    if(length(setdiff(resource, c(get_resources(), "all"))) > 0){
         stop(str_glue("{setdiff(resource, get_resources())} not part of LIANA "))
     }
 
