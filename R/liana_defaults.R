@@ -56,7 +56,7 @@ liana_defaults <- function(
             `%||%`(list(
                 expr_file = "em.csv",
                 meta_file = "metadata.csv",
-                output_dir = "NATMI_test",
+                output_dir = "NATMI_results",
                 assay = "RNA",
                 num_cor = 4,
                 .format = TRUE,

@@ -24,9 +24,9 @@
 call_italk <- function(
     op_resource,
     seurat_object,
-    assay = "SCT",
+    assay = "RNA",
     .format = TRUE,
-    .DE = FALSE,
+    .DE = TRUE,
     .deg = NULL,
     ...
 ){
@@ -61,8 +61,6 @@ call_italk <- function(
           x %>%
             rename(p.value = 'p_val',
                    logFC = 'avg_logFC',
-                   pct.1 = 'pct.1',
-                   pct.2 = 'pct.2',
                    q.value = 'p_val_adj',
                    cell_type = 'cluster',
                    gene = 'gene')) %>%

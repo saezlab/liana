@@ -3,15 +3,12 @@ liana_path <- system.file(package = "liana")
 seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
-omni_resources <- readRDS(file.path(liana_path , "omni_resources.rds"))
-op_resource <- omni_resources["OmniPath"]
-
 # Test
 test_that("Test Squidpy", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "squidpy_res.RDS"))
     res1 <- call_squidpy(seurat_object = seurat_object,
-                         op_resource = op_resource,
+                         op_resource = select_resource("OmniPath"),
                          cluster_key="seurat_annotations",
                          n_perms=100,
                          threshold=0.01,
