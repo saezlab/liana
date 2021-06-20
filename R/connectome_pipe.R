@@ -22,44 +22,36 @@
 #'
 #' @export
 call_connectome <- function(seurat_object,
-                            op_resource,
+                            op_resource = NULL,
                             .format = TRUE,
-                            .spatial = FALSE,
                             ...){
 
-    if(.spatial){
-        seurat_object@assays$RNA <- seurat_object@assays$Spatial
-        seurat_object@assays$Spatial <- NULL
-    }
-
     if(!is.null(op_resource)){
-        # Format db to connectome
+
         lr_db <- conn_formatDB(op_resource)
+        lr_symbols <- union(lr_db$source_genesymbol,
+                            lr_db$target_genesymbol)
 
-        # scale genes to ligands and receptors available in the resource
-        connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)
-        genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
-        seurat_object <- ScaleData(seurat_object, features = genes)
-
-        # create connectome
-        conn <- CreateConnectome(seurat_object,
-                                 LR.database = 'custom',
-                                 custom.list = lr_db,
-                                 ...)
+        conn <- .conn_create(seurat_object,
+                            lr_symbols = lr_symbols,
+                            lr_db,
+                            ...
+        )
 
     } else{
+
         lr_db <- Connectome::ncomms8866_human %>%
             filter(Pair.Evidence == "literature supported")
-        connectome.genes <- union(lr_db$Ligand.ApprovedSymbol,
-                                  lr_db$Receptor.ApprovedSymbol)
-        genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
 
-        seurat_object <- ScaleData(object = seurat_object,
-                                   features = genes)
-        conn <- CreateConnectome(seurat_object,
-                                 LR.database = 'custom',
-                                 custom.list = lr_db,
-                                 ...)
+        lr_symbols = union(lr_db$Ligand.ApprovedSymbol,
+                           lr_db$Receptor.ApprovedSymbol)
+
+
+        conn <- .conn_create(seurat_object,
+                            lr_symbols = lr_symbols,
+                            lr_db,
+                            ...
+                            )
     }
 
     if(.format){
@@ -102,4 +94,30 @@ conn_formatDB <- function(op_resource){
         arrange(.$source_genesymbol) %>%
         distinct() %>%
         as.data.frame()
+}
+
+
+
+#' Helper function to create a conn object
+#'
+#' @inheritParams call_connectome
+#' @inheritDotParams  Connectome::CreateConnectome
+#'
+#' @import Connectome
+#'
+#' @noRd
+.conn_create <- function(seurat_object,
+                        lr_symbols,
+                        lr_db,
+                        ...){
+    filt_genes <- lr_symbols[lr_symbols %in% rownames(seurat_object)]
+    seurat_object <- Seurat::ScaleData(object = seurat_object,
+                                       features = filt_genes)
+
+    conn <- CreateConnectome(seurat_object,
+                             LR.database = 'custom',
+                             custom.list = lr_db,
+                             ...
+                             )
+    return(conn)
 }
