@@ -84,6 +84,10 @@ compile_ligrec <- function(lr_pipeline = TRUE){
             )
         ))
 
+    # exclude complexes from OmniPath CCC
+    ligrec$OmniPath$interactions %<>%
+        filter(!(entity_type_intercell_source == "complex" |
+                     entity_type_intercell_target == "complex"))
     # Keep only nodes that are part of the interactions
     ligrec$OmniPath$receivers %<>%
         dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol) %>%
@@ -92,7 +96,8 @@ compile_ligrec <- function(lr_pipeline = TRUE){
         dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol) %>%
         distinct_at(.vars="genesymbol", .keep_all = TRUE)
 
-    ligrec %<>% {if(lr_pipeline) reform_omni(.) else .}
+
+    ligrec %<>% { if(lr_pipeline) reform_omni(.) else . }
 
     return(ligrec)
 }
@@ -125,7 +130,7 @@ reform_omni <- function(ligrec){
 #'
 #' @importFrom magrittr %>%
 omnipath_intercell <- function(...){
-    OmnipathR::import_intercell_network(entity_types = 'protein') %>%
+    OmnipathR::import_intercell_network() %>%
         OmnipathR::filter_intercell_network(...)
 }
 
@@ -146,7 +151,6 @@ intercell_connections <- function(resource, ...){
 
     OmnipathR::import_post_translational_interactions(
         resource = resource,
-        entity_type = 'protein',
         ...
     ) %>%
         as_tibble() %>%
@@ -232,7 +236,6 @@ omnipath_partners <- function(side, ...){
         causality = causality[[side]],
         scope = 'generic',
         source = 'composite',
-        entity_type = 'protein',
         ...
     )
 

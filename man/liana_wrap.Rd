@@ -37,5 +37,6 @@ Run LIANA Wrapper
 }
 \details{
 LIANA wrapper method that can be used to call each method with
- a given set of intercellular resources from the OmniPath universe
+ a given set of intercellular resources from the OmniPath universe.
+Use `all` to run all resources in one go.
 }

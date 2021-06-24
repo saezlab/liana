@@ -4,13 +4,7 @@
 \alias{call_connectome}
 \title{Function to call connectome with databases from OmniPath}
 \usage{
-call_connectome(
-  seurat_object,
-  op_resource,
-  .format = TRUE,
-  .spatial = FALSE,
-  ...
-)
+call_connectome(seurat_object, op_resource = NULL, .format = TRUE, ...)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}

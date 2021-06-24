@@ -101,6 +101,8 @@ conn_formatDB <- function(op_resource){
 #' Helper function to create a conn object
 #'
 #' @inheritParams call_connectome
+#' @param lr_symbols ligand-receptor gene symbols
+#' @param lr_db ligand-receptor resource
 #' @inheritDotParams  Connectome::CreateConnectome
 #'
 #' @import Connectome

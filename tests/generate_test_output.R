@@ -1,0 +1,61 @@
+# input
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
+# liana Wrapper Output
+liana_out <- liana_wrap(seurat_object,
+                        method = c('italk', 'sca','connectome'),
+                        resource = c('OmniPath'))
+saveRDS(liana_out, file.path(liana_path, "testdata",
+                             "output", "liana_res.RDS"))
+
+# liana aggregate output
+liana_aggr <- readRDS(file.path(liana_path, "testdata",
+                          "output", "liana_res.RDS")) %>%
+    liana_aggregate()
+saveRDS(liana_aggr, file.path(liana_path, "testdata",
+                              "output", "liana_aggr.RDS"))
+
+# Test Connectome
+conn_res <- call_connectome(
+    seurat_object = seurat_object,
+    op_resource = select_resource("OmniPath")[[1]], # Default = No sig hits
+    .spatial = FALSE,
+    min.cells.per.ident = 1,
+    p.values = TRUE,
+    calculate.DOR = FALSE,
+    assay = 'RNA',
+    .format = TRUE
+    )
+saveRDS(conn_res, file.path(liana_path, "testdata",
+                            "output", "conn_res.RDS"))
+
+
+# Test Squidpy
+squidpy_res <- call_squidpy(seurat_object = seurat_object,
+                            op_resource = select_resource("OmniPath"),
+                            cluster_key="seurat_annotations",
+                            n_perms=100,
+                            threshold=0.01,
+                            seed=as.integer(1004))
+saveRDS(squidpy_res, file.path(liana_path, "testdata",
+                            "output", "squidpy_res.RDS"))
+
+
+# Test NATMI
+natmi_res <- call_natmi(op_resource = select_resource("OmniPath"),
+                        seurat_object = seurat_object,
+                        expr_file = "test_em.csv",
+                        meta_file = "test_metadata.csv",
+                        output_dir = "NATMI_test",
+                        assay = "RNA",
+                        num_cor = 4,
+                        .format = TRUE,
+                        .write_data = TRUE,
+                        .seed = 1004,
+                        .natmi_path = NULL)
+saveRDS(natmi_res, file.path(liana_path, "testdata",
+                             "output", "natmi_res.RDS"))
+
+

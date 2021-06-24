@@ -12,3 +12,14 @@ select_resource(resource)
 \description{
 Helper Function to Handle resource choices
 }
+\details{
+This function simply reads omni_resources.rds and returns the resources.
+   Any of the resources can also be obtained via the same file.
+   or the `compile_ligrec` function, which querries and assmelbes the
+   resources via `OmniPathR`.
+
+   `Default` - The Default (inbuilt) resource for each of the methods;
+   if using the `call_*` functions, the default resource is used by
+   passing *NULL* to the resource parameter.
+   `Reshuffled` - a reshuffled (randomized control) version of ConnectomeDB
+}
