@@ -57,7 +57,7 @@ liana_defaults <- function(
                 expr_file = "em.csv",
                 meta_file = "metadata.csv",
                 output_dir = "NATMI_results",
-                assay = "RNA",
+                assay = assay,
                 num_cor = 4,
                 .format = TRUE,
                 .write_data = TRUE,
@@ -74,7 +74,7 @@ liana_defaults <- function(
 
         'squidpy' = squidpy.params %<>%
            `%||%`(list(
-               cluster_key="seurat_annotations",
+               cluster_key=NULL,
                n_perms=1000,
                threshold=0.01,
                seed=as.integer(1004)

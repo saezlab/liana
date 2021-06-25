@@ -13,6 +13,9 @@
 #'
 #' @details CellPhoneDB v2 algorithm implementation in Python
 #'
+#' Note that `cluster_key` is a parameter passed to the Squidpy function,
+#' by default this will be set to the default Ident of the Seurat object.
+#'
 #' @returns A list of Squidpy results for each resource
 #'
 #' @export
@@ -23,6 +26,7 @@ call_squidpy <- function(seurat_object,
                           ...){
 
     kwargs <- list(...)
+    kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
 
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
@@ -111,4 +115,27 @@ FormatSquidpy <- function(.name,
         left_join(x_meta, by = c("source", "target"))
 
     return(res_formatted)
+}
+
+
+#' Helper Function to get active Ident (cluster annotation column) from the
+#'   Seurat object metadata
+#'
+#' @param seurat_object seurat object with metadata information
+#'
+#' @noRd
+.get_ident <- function(seurat_object){
+    map(names(seurat_object@meta.data),
+        function(x){
+            p <- seurat_object@meta.data %>%
+                select(sym(x)) %>%
+                rownames_to_column("names") %>%
+                deframe()
+
+            if(identical(p, Seurat::Idents(seurat_object))){
+                return(x)
+            }
+
+            return()
+        }) %>% compact %>% as.character
 }

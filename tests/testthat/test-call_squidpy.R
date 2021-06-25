@@ -9,7 +9,7 @@ test_that("Test Squidpy", {
                               "output", "squidpy_res.RDS"))
     res1 <- call_squidpy(seurat_object = seurat_object,
                          op_resource = select_resource("OmniPath"),
-                         cluster_key="seurat_annotations",
+                         cluster_key=NULL,
                          n_perms=100,
                          threshold=0.01,
                          seed=as.integer(1004))
