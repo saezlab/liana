@@ -1,21 +1,9 @@
 # library(scRNAseq) # more datasets
-require(tidyverse)
 require(tidymodels)
 require(SingleCellExperiment)
 require(scuttle) # util funcs
 require(scran)
 # require(scater) # visualize
-
-sce <- ZeiselBrainData()
-colLabels(sce) <- sce@colData$level1class
-
-
-# Summarize by group
-xx <- summarizeAssayByGroup(sce, colLabels(sce))
-xx@colData
-xx@assays@data$mean # gene mean across cell types
-xx@assays@data$prop.detected # gene prop
-xx@assays@data$num.detected # num times detected
 
 # try on my data
 testdata <- readRDS("inst/testdata/input/testdata.rds")
@@ -25,13 +13,12 @@ test_sce <- Seurat::as.SingleCellExperiment(testdata)
 colLabels(test_sce) <- Seurat::Idents(testdata)
 
 
-test_summ <- summarizeAssayByGroup(test_sce, ids = colLabels(test_sce))
+test_summ <- scuttle::summarizeAssayByGroup(test_sce,
+                                            ids = colLabels(test_sce))
 test_summ@colData
 test_summ@assays@data$mean # gene mean across cell types
 test_summ@assays@data$prop.detected # gene prop
 # test_summ@assays@data$num.detected # num times detected
-
-
 
 # (global) Avg Expr by gene
 scuttle::calculateAverage(test_sce)
@@ -41,12 +28,8 @@ test_t <- scran::findMarkers(test_sce,
                              groups = colLabels(test_sce),
                              direction = "any",
                              full.stats = TRUE,
-                             test.type = "t")
+                             test.type = "wilcox")
 test_t@listData
-
-
-test_t <- scran::pairwiseTTests(test_sce,
-                                groups = colLabels(test_sce))
 
 
 

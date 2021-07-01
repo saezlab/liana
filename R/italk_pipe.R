@@ -6,7 +6,7 @@
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
 #' @param .deg if is NULL run FindAllMarkers
-#' @inheritDotParams iTALK::rawParse
+#' @inheritDotParams Seurat::FindAllMarkers
 #'
 #' @return An unfiltered iTALK df sorted by relevance
 #'
@@ -41,29 +41,22 @@ call_italk <- function(
     unname() %>%
     as.vector()
 
-  # Prepare data from seurat object
-  input_data <-
-    GetAssayData(seurat_object, assay = assay, slot = "data") %>%
-    as.matrix() %>%
-    t() %>%
-    as.data.frame() %>%
-    cbind(., cell_type) # bind cell types from meta
-
-
   if(.DE){
     if (is.null(.deg)) {
-      deg <- FindAllMarkers(seurat_object,
-                            assay = assay,
-                            ...) %>%
+      deg <- Seurat::FindAllMarkers(seurat_object,
+                                    assay = assay,
+                                    ...
+                                    ) %>%
         dplyr::group_by(cluster) %>%
         dplyr::group_split() %>%
-        map(function(x)
+        map(function(x){
           x %>%
             rename(p.value = 'p_val',
                    logFC = 'avg_logFC',
                    q.value = 'p_val_adj',
                    cell_type = 'cluster',
-                   gene = 'gene')) %>%
+                   gene = 'gene')
+        }) %>%
         setNames(levels(Idents(seurat_object)))
     }
 
@@ -79,16 +72,6 @@ call_italk <- function(
     }
     res <- bind_rows(res)
 
-  } else{
-    highly_exprs_genes <- rawParse(input_data,
-                                   ...)
-    res <- FindLR(
-      highly_exprs_genes,
-      datatype = 'mean count',
-      comm_type = 'other',
-      database = op_resource
-    ) %>%
-      arrange(desc(cell_from_mean_exprs * cell_to_mean_exprs))
   }
 
   if (.format) {
