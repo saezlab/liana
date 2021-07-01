@@ -23,6 +23,9 @@ test_summ@assays@data$prop.detected # gene prop
 # (global) Avg Expr by gene
 scuttle::calculateAverage(test_sce)
 
+# Pseudo-bulk
+pseudobulk <- scuttle::aggregateAcrossCells(test_sce, colLabels(test_sce))
+
 
 test_t <- scran::findMarkers(test_sce,
                              groups = colLabels(test_sce),
