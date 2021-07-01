@@ -5,7 +5,6 @@
 #' @param assay assay to use from Seurat object
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
-#' @param .deg if is NULL run FindAllMarkers
 #' @inheritDotParams Seurat::FindAllMarkers
 #'
 #' @return An unfiltered iTALK df sorted by relevance
@@ -14,10 +13,10 @@
 #' Stats:
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
-#' @importFrom iTALK rawParse FindLR
+#' @importFrom iTALK FindLR
 #' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>% %<>%
-#' @importFrom tidyr unite
+#' @importFrom tidyr unite expand_grid
 #' @importFrom dplyr select rename mutate group_by group_split
 #'
 #' @export
@@ -27,7 +26,6 @@ call_italk <- function(
     assay = "RNA",
     .format = TRUE,
     .DE = TRUE,
-    .deg = NULL,
     ...
 ){
 
@@ -58,17 +56,21 @@ call_italk <- function(
       }) %>%
     setNames(levels(Idents(seurat_object)))
 
-    # Iterate over cell type pairs and Find LR
-  comb <- combn(levels(Idents(seurat_object)), 2)
-  res = list()
-  for (i in  seq_len(dim(comb)[2])) {
-    res[[paste0(comb[, i][1], '_x_', comb[, i][2])]] <-
-      FindLR(deg[[comb[, i][1]]], deg[[comb[, i][2]]],
-             datatype = 'DEG',
-             comm_type = 'other',
-             database = op_resource)
-    }
-  res <- bind_rows(res)
+  # Iterate over cell type pairs and Find LR
+  idents <- as.character(unique(Idents(seurat_object)))
+  comb <- expand_grid(source = idents, target = idents)
+
+  res <- comb %>%
+    pmap(function(source, target){
+      iTALK::FindLR(
+        deg[[source]],
+        deg[[target]],
+        datatype = 'DEG',
+        comm_type = 'other',
+        database = op_resource
+        )
+      }) %>%
+    bind_rows()
 
   if (.format) {
     res <- res %>% FormatiTALK(remove.na = TRUE, .DE = .DE)
@@ -101,7 +103,7 @@ FormatiTALK <- function(italk_res,
       'qval_from' = italk_res$cell_from_q.value,
       'qval_to' = italk_res$cell_to_q.value
       ) %>%
-      mutate(weight_comb = abs(logFC_from * logFC_to))
+      mutate(weight_comb = (logFC_from * logFC_to))
 
   return(italk_res)
 }
