@@ -41,38 +41,34 @@ call_italk <- function(
     unname() %>%
     as.vector()
 
-  if(.DE){
-    if (is.null(.deg)) {
-      deg <- Seurat::FindAllMarkers(seurat_object,
-                                    assay = assay,
-                                    ...
-                                    ) %>%
-        dplyr::group_by(cluster) %>%
-        dplyr::group_split() %>%
-        map(function(x){
-          x %>%
-            rename(p.value = 'p_val',
-                   logFC = 'avg_logFC',
-                   q.value = 'p_val_adj',
-                   cell_type = 'cluster',
-                   gene = 'gene')
-        }) %>%
-        setNames(levels(Idents(seurat_object)))
-    }
+
+  deg <- Seurat::FindAllMarkers(seurat_object,
+                                assay = assay,
+                                ...
+                                ) %>%
+    dplyr::group_by(cluster) %>%
+    dplyr::group_split() %>%
+    map(function(x){
+      x %>%
+        rename(p.value = 'p_val',
+               logFC = 'avg_logFC',
+               q.value = 'p_val_adj',
+               cell_type = 'cluster',
+               gene = 'gene')
+      }) %>%
+    setNames(levels(Idents(seurat_object)))
 
     # Iterate over cell type pairs and Find LR
-    comb <- combn(levels(Idents(seurat_object)), 2)
-    res = list()
-    for (i in  seq_len(dim(comb)[2])) {
-      res[[paste0(comb[, i][1], '_x_', comb[, i][2])]] <-
-        FindLR(deg[[comb[, i][1]]], deg[[comb[, i][2]]],
-               datatype = 'DEG',
-               comm_type = 'other',
-               database = op_resource)
+  comb <- combn(levels(Idents(seurat_object)), 2)
+  res = list()
+  for (i in  seq_len(dim(comb)[2])) {
+    res[[paste0(comb[, i][1], '_x_', comb[, i][2])]] <-
+      FindLR(deg[[comb[, i][1]]], deg[[comb[, i][2]]],
+             datatype = 'DEG',
+             comm_type = 'other',
+             database = op_resource)
     }
-    res <- bind_rows(res)
-
-  }
+  res <- bind_rows(res)
 
   if (.format) {
     res <- res %>% FormatiTALK(remove.na = TRUE, .DE = .DE)

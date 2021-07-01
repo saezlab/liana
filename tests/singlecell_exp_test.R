@@ -33,10 +33,7 @@ test_t@listData
 
 
 
-# Get all possible combinations
-pairs <- combn(unique(as.character(colLabels(test_sce))), 2) %>%
-    t %>%
-    as_tibble()
+
 
 # t-test by cluster (all genes together)
 test_summ@assays@data$mean %>%
