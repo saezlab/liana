@@ -26,4 +26,7 @@ Call Squidpy Pipeline via reticulate with OmniPath and format results
 }
 \details{
 CellPhoneDB v2 algorithm implementation in Python
+
+Note that `cluster_key` is a parameter passed to the Squidpy function,
+by default this will be set to the default Ident of the Seurat object.
 }

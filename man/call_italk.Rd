@@ -10,7 +10,6 @@ call_italk(
   assay = "RNA",
   .format = TRUE,
   .DE = TRUE,
-  .deg = NULL,
   ...
 )
 }
@@ -25,16 +24,76 @@ call_italk(
 
 \item{.DE}{bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)}
 
-\item{.deg}{if is NULL run FindAllMarkers}
-
 \item{...}{
-  Arguments passed on to \code{\link[iTALK:rawParse]{iTALK::rawParse}}
+  Arguments passed on to \code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers}}
   \describe{
-    \item{\code{data}}{Input data, raw or normalized count with 'cell_type' column}
-    \item{\code{top_genes}}{(scale 1 to 100) Top percent highly expressed genes used
-to find ligand-receptor pairs, default is 50}
-    \item{\code{stats}}{Whether calculates the mean or the median of the data. Available
-options are 'mean' and 'median'.}
+    \item{\code{object}}{An object}
+    \item{\code{features}}{Genes to test. Default is to use all genes}
+    \item{\code{logfc.threshold}}{Limit testing to genes which show, on average, at least
+X-fold difference (log-scale) between the two groups of cells. Default is 0.25
+Increasing logfc.threshold speeds up the function, but can miss weaker signals.}
+    \item{\code{test.use}}{Denotes which test to use. Available options are:
+\itemize{
+ \item{"wilcox"} : Identifies differentially expressed genes between two
+ groups of cells using a Wilcoxon Rank Sum test (default)
+ \item{"bimod"} : Likelihood-ratio test for single cell gene expression,
+ (McDavid et al., Bioinformatics, 2013)
+ \item{"roc"} : Identifies 'markers' of gene expression using ROC analysis.
+ For each gene, evaluates (using AUC) a classifier built on that gene alone,
+ to classify between two groups of cells. An AUC value of 1 means that
+ expression values for this gene alone can perfectly classify the two
+ groupings (i.e. Each of the cells in cells.1 exhibit a higher level than
+ each of the cells in cells.2). An AUC value of 0 also means there is perfect
+ classification, but in the other direction. A value of 0.5 implies that
+ the gene has no predictive power to classify the two groups. Returns a
+ 'predictive power' (abs(AUC-0.5) * 2) ranked matrix of putative differentially
+ expressed genes.
+ \item{"t"} : Identify differentially expressed genes between two groups of
+ cells using the Student's t-test.
+ \item{"negbinom"} : Identifies differentially expressed genes between two
+  groups of cells using a negative binomial generalized linear model.
+  Use only for UMI-based datasets
+ \item{"poisson"} : Identifies differentially expressed genes between two
+  groups of cells using a poisson generalized linear model.
+  Use only for UMI-based datasets
+ \item{"LR"} : Uses a logistic regression framework to determine differentially
+ expressed genes. Constructs a logistic regression model predicting group
+ membership based on each feature individually and compares this to a null
+ model with a likelihood ratio test.
+ \item{"MAST"} : Identifies differentially expressed genes between two groups
+ of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST
+ package to run the DE testing.
+ \item{"DESeq2"} : Identifies differentially expressed genes between two groups
+ of cells based on a model using DESeq2 which uses a negative binomial
+ distribution (Love et al, Genome Biology, 2014).This test does not support
+ pre-filtering of genes based on average difference (or percent detection rate)
+ between cell groups. However, genes may be pre-filtered based on their
+ minimum detection rate (min.pct) across both cell groups. To use this method,
+ please install DESeq2, using the instructions at
+ https://bioconductor.org/packages/release/bioc/html/DESeq2.html
+}}
+    \item{\code{slot}}{Slot to pull data from; note that if \code{test.use} is "negbinom", "poisson", or "DESeq2",
+\code{slot} will be set to "counts"}
+    \item{\code{min.pct}}{only test genes that are detected in a minimum fraction of
+min.pct cells in either of the two populations. Meant to speed up the function
+by not testing genes that are very infrequently expressed. Default is 0.1}
+    \item{\code{min.diff.pct}}{only test genes that show a minimum difference in the
+fraction of detection between the two groups. Set to -Inf by default}
+    \item{\code{node}}{A node to find markers for and all its children; requires
+\code{\link[Seurat]{BuildClusterTree}} to have been run previously; replaces \code{FindAllMarkersNode}}
+    \item{\code{verbose}}{Print a progress bar once expression testing begins}
+    \item{\code{only.pos}}{Only return positive markers (FALSE by default)}
+    \item{\code{max.cells.per.ident}}{Down sample each identity class to a max number.
+Default is no downsampling. Not activated by default (set to Inf)}
+    \item{\code{random.seed}}{Random seed for downsampling}
+    \item{\code{latent.vars}}{Variables to test, used only when \code{test.use} is one of
+'LR', 'negbinom', 'poisson', or 'MAST'}
+    \item{\code{min.cells.feature}}{Minimum number of cells expressing the feature in at least one
+of the two groups, currently only used for poisson and negative binomial tests}
+    \item{\code{min.cells.group}}{Minimum number of cells in one of the groups}
+    \item{\code{pseudocount.use}}{Pseudocount to add to averaged expression values when
+calculating logFC. 1 by default.}
+    \item{\code{return.thresh}}{Only return markers that have a p-value < return.thresh, or a power > return.thresh (if the test is ROC)}
   }}
 }
 \value{

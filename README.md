@@ -106,6 +106,9 @@ devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "Singl
 # Finally, install LIANA
 devtools::install_github('saezlab/liana')
 ```
+Installation of all dependencies takes ~5-10 minutes.
+  
+  
   
 Squidpy and NATMI are written in Python, as such a python environment with
 the prerequisites of these methods needs to be set up.
@@ -136,6 +139,7 @@ system.file(package = "liana")
   
 ## Tutorial
 See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
+The tutorial with the test data takes minutes to complete!
   
   
 ### Citing `LIANA`:
