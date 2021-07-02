@@ -55,7 +55,7 @@ Imports:
     readr,
     rlang,
     dplyr,
-    Seurat (<= 3.2.3),
+    Seurat,
     logger
 Suggests:
     Connectome,

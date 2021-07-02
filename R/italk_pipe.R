@@ -45,11 +45,16 @@ call_italk <- function(
                                 ...
                                 ) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::group_split() %>%
+    dplyr::group_split()  %>%
     map(function(x){
+
+      logcol <- ifelse("avg_logFC" %in% colnames(x), # Seurat...
+                       "avg_logFC", # version 3.2.3
+                       "avg_log2FC") # version 4.0.3
+
       x %>%
         rename(p.value = 'p_val',
-               logFC = 'avg_logFC',
+               logFC = !!logcol,
                q.value = 'p_val_adj',
                cell_type = 'cluster',
                gene = 'gene')
