@@ -8,7 +8,7 @@ test_that("Test liana wrapper", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_res.RDS"))
     res1 <- liana_wrap(seurat_object,
-                       method = c('italk', 'sca','connectome'),
+                       method = c('sca','squidpy'),
                        resource = c('OmniPath'))
 
     expect_equal(exp1, res1)
