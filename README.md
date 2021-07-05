@@ -113,7 +113,7 @@ Installation of all dependencies takes ~5-10 minutes.
 Squidpy and NATMI are written in Python, as such a python environment with
 the prerequisites of these methods needs to be set up.
 
-Please use the [.yml](https://github.com/saezlab/liana/liana_env.yml) file to set up a conda environment:
+Please use the [.yml](https://github.com/saezlab/liana/blob/master/liana_env.yml) file to set up a conda environment:
 
 ```
 conda env create -f liana_env.yml
