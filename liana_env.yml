@@ -1,4 +1,4 @@
-name: liana_env4
+name: liana_env
 channels:
   - anaconda
   - r
