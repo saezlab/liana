@@ -28,6 +28,13 @@ call_squidpy <- function(seurat_object,
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
 
+    if(!is.factor(seurat_object@meta.data[[kwargs$cluster_key]])){
+        seurat_object@meta.data[[kwargs$cluster_key]] <-
+            seurat_object@meta.data %>% pull(kwargs$cluster_key) %>%
+            as.factor()
+        message(str_glue("Squidpy: {kwargs$cluster_key} was converted to factor"))
+    }
+
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
                              required = TRUE)
