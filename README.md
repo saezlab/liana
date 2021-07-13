@@ -88,13 +88,13 @@ LIANA is predominantly written in R and makes use of `Seurat` objects as input.
 To install the LIANA framework run the following code in R:
    
 ```{r}
-library(devtools)  
+require(devtools)  
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
 BiocManager::install("ComplexHeatmap") # required for Connectome
-install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
+devtools::install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
 
 # install tools
 devtools::install_github("sqjin/CellChat")  
