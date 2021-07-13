@@ -1,8 +1,12 @@
+# input
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
+
 require(SingleCellExperiment)
 require(scuttle)
 require(scran)
-
-testdata <- readRDS("inst/testdata/input/testdata.rds")
 
 op_resource <- select_resource("OmniPath")[[1]]
 transmitters <- op_resource$source_genesymbol %>%

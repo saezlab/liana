@@ -93,7 +93,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
-devtools::BiocManager::install("ComplexHeatmap") # required for Connectome
+BiocManager::install("ComplexHeatmap") # required for Connectome
 install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
 
 # install tools
