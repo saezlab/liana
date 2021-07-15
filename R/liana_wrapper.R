@@ -50,7 +50,7 @@ liana_wrap <- function(seurat_object,
                                   "op_resource" = reso),
                              liana_defaults(...)[[method_name]]
                          )
-                         exec(.method,  !!!args)
+                         rlang::invoke(.method,  args)
                      })
                  } else{
                      args <- append(
@@ -58,7 +58,7 @@ liana_wrap <- function(seurat_object,
                               "op_resource" = resource),
                          liana_defaults(...)[[method_name]]
                      )
-                     exec(.method,  !!!args)
+                     rlang::invoke(.method,  args)
                  }
              }, quiet = FALSE)) %>%
         # format errors
