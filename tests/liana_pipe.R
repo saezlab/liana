@@ -1,20 +1,21 @@
-#' Liana Pipe function that returns information required for LR calc
+#' Liana Pipe which runs DE analysis and merges needed information for LR inference
 #'
 #' @param seurat_object
 #' @param op_resource
 #' @param test.type `test.type` passed to \link(scran::findMarkers)
+#' @param pval.type `pval.type` passed to \link(scran::findMarkers)
+#' @param seed Set Random Seed
 #'
+#' @import scuttle scran SingleCellExperiment Seurat
+#'
+#' @return Returns a tibble with information required for LR calc
 liana_pipe <- function(seurat_object, # or sce object
                        op_resource,
-                       test.type = "t"){
+                       test.type = "t",
+                       pval.type = "all",
+                       seed=1234){
+    set.seed(seed)
 
-    # Convert to SCE
-    test_sce <- Seurat::as.SingleCellExperiment(seurat_object,
-                                                assay="RNA")
-    colLabels(test_sce) <- Seurat::Idents(seurat_object)
-    # test_sce <- scuttle::logNormCounts(test_sce)
-
-    # Format OmniPath
     transmitters <- op_resource$source_genesymbol %>%
         as_tibble() %>%
         select(gene = value)
@@ -22,12 +23,21 @@ liana_pipe <- function(seurat_object, # or sce object
         as_tibble() %>%
         select(gene = value)
 
+    # Filter to LigRec and Convert to SCE
+    # Need to solve RAM redundancy
+    seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
+    sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay="RNA")
+    colLabels(sce) <- Seurat::Idents(seurat_object)
+    sce@assays@data$logcounts <- seurat_object@assays$RNA@scale.data
+
     # Find Markers and Format
-    cluster_markers <- scran::findMarkers(test_sce,
-                                          groups = colLabels(test_sce),
+    cluster_markers <- scran::findMarkers(sce,
+                                          groups = colLabels(sce),
                                           direction = "any",
                                           full.stats = TRUE,
-                                          test.type = test.type) %>%
+                                          test.type = test.type,
+                                          pval.type = pval.type,
+                                          assay.type = "counts") %>%
         pluck("listData") %>%
         map(function(cluster)
             cluster %>%
@@ -36,17 +46,9 @@ liana_pipe <- function(seurat_object, # or sce object
                 as_tibble() %>%
                 select(gene, p.value, FDR, stat = summary.stats))
 
-
     # Get all Possible Cluster pair combinations
-    pairs <- expand_grid(source = unique(colLabels(test_sce)),
-                         target = unique(colLabels(test_sce)))
-
-    # Get Avg Per Cluster (data assay)
-    means <- scuttle::summarizeAssayByGroup(test_sce,
-                                            ids = colLabels(test_sce),
-                                            assay.type = "counts")
-    means <- means@assays@data$mean
-
+    pairs <- expand_grid(source = unique(colLabels(sce)),
+                         target = unique(colLabels(sce)))
 
     # Get DEGs to LR format
     lr_res <- pairs %>%
@@ -69,6 +71,13 @@ liana_pipe <- function(seurat_object, # or sce object
                        target = target)
         }) %>%
         bind_rows()
+
+
+    # Get Avg Per Cluster (data assay)
+    means <- scuttle::summarizeAssayByGroup(sce,
+                                            ids = colLabels(sce),
+                                            assay.type = "counts")
+    means <- means@assays@data$mean
 
     # Join Expression Means
     lr_res <- lr_res %>%
@@ -142,12 +151,14 @@ ligrec_degformat <- function(cluster_markers,
 #' @param source_target target or source cell
 #' @param entity ligand or receptor
 #'
+#' @import magrittr
+#'
 #' @return Returns the Average Expression Per Cluster
 join_means <- function(lr_res, means, source_target, entity){
 
-    entity.avg = sym(str_glue("{entity}.avg"))
+    entity.avg <- sym(str_glue("{entity}.avg"))
 
-    means_pivot <- means %>%
+    means %<>%
         as.data.frame() %>%
         rownames_to_column("gene") %>%
         pivot_longer(-gene, names_to = "cell", values_to = "avg") %>%
@@ -156,7 +167,7 @@ join_means <- function(lr_res, means, source_target, entity){
                       {{ entity.avg }} := avg)
 
     lr_res %>%
-        left_join(means_pivot, by=c(source_target, entity))
+        left_join(means, by=c(source_target, entity))
 }
 
 
@@ -180,7 +191,8 @@ join_sum_means <- function(lr_res, means, entity){
         select(gene, sum.means) %>%
         dplyr::rename({{ entity }} := gene,
                       {{ entity.expr }} := sum.means)  %>%
-        distinct()
+        distinct() %>%
+        ungroup()
 
     lr_res %>%
         left_join(sums, by=c(entity))

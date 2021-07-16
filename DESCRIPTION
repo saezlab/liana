@@ -56,15 +56,16 @@ Imports:
     rlang,
     dplyr,
     Seurat,
-    logger
+    logger,
+    SingleCellExperiment,
+    scran,
+    RobustRankAggreg
 Suggests:
     Connectome,
     CellChat,
     SCAomni,
-    iTALK,
     OmnipathR,
     BiRewire,
-    RobustRankAggreg,
     knitr,
     BiocStyle,
     rmarkdown,
