@@ -16,19 +16,31 @@ liana_pipe <- function(seurat_object, # or sce object
                        seed=1234){
     set.seed(seed)
 
+    # Resource Format
     transmitters <- op_resource$source_genesymbol %>%
         as_tibble() %>%
         select(gene = value)
     receivers <- op_resource$target_genesymbol %>%
         as_tibble() %>%
         select(gene = value)
+    entity_genes <- union(transmitters$gene, receivers$gene)
 
-    # Filter to LigRec and Convert to SCE
-    # Need to solve RAM redundancy
+
+    # Filter to LigRec and scale
     seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
+    seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
+
+    # convert to SCE
     sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay="RNA")
     colLabels(sce) <- Seurat::Idents(seurat_object)
     sce@assays@data$logcounts <- seurat_object@assays$RNA@scale.data
+
+    # scaled (z-transformed) means
+    scaled <- scuttle::summarizeAssayByGroup(sce,
+                                             ids = colLabels(sce),
+                                             assay.type = "logcounts")
+    scaled <- scaled@assays@data$mean
+
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -83,10 +95,20 @@ liana_pipe <- function(seurat_object, # or sce object
     lr_res <- lr_res %>%
         join_means(means = means,
                    source_target = "source",
-                   entity = "ligand") %>%
+                   entity = "ligand",
+                   type = "count") %>%
         join_means(means = means,
                    source_target = "target",
-                   entity = "receptor") %>%
+                   entity = "receptor",
+                   type = "count") %>%
+        join_means(means = scaled,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "scaled") %>%
+        join_means(means = scaled,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "scaled") %>%
         select(source, starts_with("ligand"),
                target, starts_with("receptor"),
                everything()) %>%
@@ -110,6 +132,8 @@ liana_pipe <- function(seurat_object, # or sce object
 #' @param source_target whether this is the source or target cluster
 #'
 #' @return A tibble with stats for receivers or transmitters per cluster
+#'
+#' @noRd
 ligrec_degformat <- function(cluster_markers,
                              entity,
                              source_target){
@@ -150,13 +174,20 @@ ligrec_degformat <- function(cluster_markers,
 #' @param means Gene avg expression per cluster
 #' @param source_target target or source cell
 #' @param entity ligand or receptor
+#' @param type type of mean to join (count or scaled)
 #'
 #' @import magrittr
 #'
 #' @return Returns the Average Expression Per Cluster
-join_means <- function(lr_res, means, source_target, entity){
+#'
+#' @noRd
+join_means <- function(lr_res,
+                       means,
+                       source_target,
+                       entity,
+                       type){
 
-    entity.avg <- sym(str_glue("{entity}.avg"))
+    entity.avg <- sym(str_glue("{entity}.{type}"))
 
     means %<>%
         as.data.frame() %>%
@@ -178,9 +209,10 @@ join_means <- function(lr_res, means, source_target, entity){
 #' @param entity ligand or receptor
 #'
 #' @return Returns the Summed Average Expression Per Cluster
+#'
+#' @noRd
 join_sum_means <- function(lr_res, means, entity){
 
-    # Sum of the mean expression across all cell types
     entity.expr = sym(str_glue("{entity}.sum"))
 
     sums <- means %>%
