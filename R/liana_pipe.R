@@ -35,6 +35,12 @@ liana_pipe <- function(seurat_object, # or sce object
     colLabels(sce) <- Seurat::Idents(seurat_object)
     sce@assays@data$logcounts <- seurat_object@assays$RNA@scale.data
 
+    # Get Avg Per Cluster (data assay)
+    means <- scuttle::summarizeAssayByGroup(sce,
+                                            ids = colLabels(sce),
+                                            assay.type = "counts")
+    means <- means@assays@data$mean
+
     # scaled (z-transformed) means
     scaled <- scuttle::summarizeAssayByGroup(sce,
                                              ids = colLabels(sce),
@@ -83,13 +89,6 @@ liana_pipe <- function(seurat_object, # or sce object
                        target = target)
         }) %>%
         bind_rows()
-
-
-    # Get Avg Per Cluster (data assay)
-    means <- scuttle::summarizeAssayByGroup(sce,
-                                            ids = colLabels(sce),
-                                            assay.type = "counts")
-    means <- means@assays@data$mean
 
     # Join Expression Means
     lr_res <- lr_res %>%
