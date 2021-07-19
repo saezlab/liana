@@ -49,10 +49,8 @@ liana_pipe <- function(seurat_object, # or sce object
                                              assay.type = "scaledata")
     scaled <- scaled@assays@data$mean
 
-
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
-
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -124,6 +122,7 @@ liana_pipe <- function(seurat_object, # or sce object
         join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
         rowwise() %>%
         mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
+        get_correlation(test_sce) %>%
         # natmi scores
         rowwise() %>%
         mutate(natmi_score = ((ligand.count*(ligand.sum^-1))) *

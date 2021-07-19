@@ -133,6 +133,13 @@ get_correlation <- function(lr_res,
 }
 
 
+xd <- get_correlation(lr_res,
+                      test_sce)
+
+
+
+
+
 corr_pairs <- scran::correlatePairs(test_sce) %>%
     as_tibble()
 
@@ -156,6 +163,8 @@ corr_score <- lr_res %>%
     filter(ligand.FDR <= 0.05,
            receptor.FDR <= 0.05) %>%
     arrange(desc(rho))
+
+
 
 
 # logFC product
@@ -183,12 +192,6 @@ means <- scuttle::summarizeAssayByGroup(test_sce,
                                         ids = colLabels(test_sce),
                                         assay.type = "counts")
 means <- means@assays@data$mean
-
-
-
-
-
-
 
 
 
