@@ -100,11 +100,11 @@ liana_pipe <- function(seurat_object, # or sce object
         join_means(means = means,
                    source_target = "source",
                    entity = "ligand",
-                   type = "count") %>%
+                   type = "expr") %>%
         join_means(means = means,
                    source_target = "target",
                    entity = "receptor",
-                   type = "count") %>%
+                   type = "expr") %>%
         join_means(means = scaled,
                    source_target = "source",
                    entity = "ligand",
@@ -120,18 +120,22 @@ liana_pipe <- function(seurat_object, # or sce object
         # logFC
         join_log2FC(logfc_df, source_target = "source", entity="ligand") %>%
         join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
-        rowwise() %>%
-        mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
-        get_correlation(test_sce) %>%
-        # natmi scores
-        rowwise() %>%
-        mutate(natmi_score = ((ligand.count*(ligand.sum^-1))) *
-                   ((receptor.count*(receptor.sum^-1)))) %>%
-        rowwise() %>%
-        mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
-        select(source, starts_with("ligand"),
-        target, starts_with("receptor"),
-        everything())
+        rowwise()
+
+    # calculate scores
+    # %>%
+    #     mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
+    #     get_correlation(sce) %>%
+    #     # natmi scores
+    #     rowwise() %>%
+    #     mutate(edge_specificity = ((ligand.expr*(ligand.sum^-1))) *
+    #                ((receptor.expr*(receptor.sum^-1)))) %>%
+    #     mutate(edge_specificity = tidyr::replace_na(edge_specificity, 0)) %>%
+    #     rowwise() %>%
+    #     mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
+    #     select(source, starts_with("ligand"),
+    #            target, starts_with("receptor"),
+    #            everything())
 
     return(lr_res)
 }
@@ -314,4 +318,35 @@ get_log2FC <- function(sce){
         }) %>% setNames(levels(colLabels(sce))) %>%
         enframe(name = "cell") %>%
         unnest(value)
+}
+
+
+
+#' Correlation Coefficient For Interactions
+#'
+#' @param sce SingleCellExperiment Object
+#' @param lr_res a tabble with LR results obtained in the process of liana_pipe
+#'
+#' @return
+get_correlation <- function(lr_res,
+                            sce){
+    corr_pairs <- scran::correlatePairs(sce) %>%
+        as_tibble()
+    corr_pairs <- corr_pairs %>%
+        select(gene1=gene2,
+               gene2=gene1,
+               everything()) %>%
+        bind_rows(corr_pairs) %>%
+        select(gene1,
+               gene2,
+               rho,
+               corr.FDR=FDR)
+
+    corr_score <- lr_res %>%
+        left_join(
+            corr_pairs,
+            by=c("ligand"="gene1",
+                 "receptor"="gene2")
+        ) %>%
+        distinct()
 }

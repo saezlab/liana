@@ -103,34 +103,7 @@ not_there <- natmi_exp %>%
 
 
 
-#' Correlation Coefficient For Interactions
-#'
-#' @param sce SingleCellExperiment Object
-#' @param lr_res a tabble with LR results obtained in the process of liana_pipe
-#'
-#' @return
-get_correlation <- function(lr_res,
-                            sce){
-    corr_pairs <- scran::correlatePairs(sce) %>%
-        as_tibble()
-    corr_pairs <- corr_pairs %>%
-        select(gene1=gene2,
-               gene2=gene1,
-               everything()) %>%
-        bind_rows(corr_pairs) %>%
-        select(gene1,
-               gene2,
-               rho,
-               corr.FDR=FDR)
 
-    corr_score <- lr_res %>%
-        left_join(
-            corr_pairs,
-            by=c("ligand"="gene1",
-                 "receptor"="gene2")
-        ) %>%
-        distinct()
-}
 
 
 xd <- get_correlation(lr_res,
