@@ -8,6 +8,8 @@
 #'
 #' @import scuttle scran SingleCellExperiment Seurat
 #'
+#' @export
+#'
 #' @return Returns a tibble with information required for LR calc
 liana_pipe <- function(seurat_object, # or sce object
                        op_resource,
@@ -33,7 +35,7 @@ liana_pipe <- function(seurat_object, # or sce object
     # convert to SCE
     sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay="RNA")
     colLabels(sce) <- Seurat::Idents(seurat_object)
-    sce@assays@data$logcounts <- seurat_object@assays$RNA@scale.data
+    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
 
     # Get Avg Per Cluster (data assay)
     means <- scuttle::summarizeAssayByGroup(sce,
@@ -44,7 +46,7 @@ liana_pipe <- function(seurat_object, # or sce object
     # scaled (z-transformed) means
     scaled <- scuttle::summarizeAssayByGroup(sce,
                                              ids = colLabels(sce),
-                                             assay.type = "logcounts")
+                                             assay.type = "scaledata")
     scaled <- scaled@assays@data$mean
 
 
