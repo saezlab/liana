@@ -27,36 +27,49 @@ seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
 seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
 test_sce <- Seurat::as.SingleCellExperiment(seurat_object,
                                             assay="RNA")
-# test_sce@assays@data$logcounts <- seurat_object@assays$RNA@scale.data
-# colLabels(test_sce) <- Seurat::Idents(seurat_object)
+test_sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
+colLabels(test_sce) <- Seurat::Idents(seurat_object)
+
+
+
+
+
+
 
 
 # Connectome ----
 conn_exp <- readRDS(file.path(liana_path, "testdata",
                               "output", "conn_res.RDS"))
 
-conn_res <- lr_res %>%
+lr_res %>%
     rowwise() %>%
-    mutate(conn_score = mean(c(ligand.scaled, receptor.scaled))) %>%
-    select(source, ligand, ligand.scaled,
-           target, receptor, receptor.scaled, conn_score)
-
-scaled <- scuttle::summarizeAssayByGroup(test_sce,
-                                         ids = colLabels(test_sce),
-                                         assay.type = "logcounts")
-scaled <- scaled@assays@data$mean  %>%
-    as.data.frame() %>%
-    rownames_to_column("gene") %>%
-    as_tibble()
-
-scaled_s <- Seurat::AverageExpression(seurat_object, slot = "scale.data") %>%
-    as.data.frame() %>%
-    rownames_to_column("gene") %>%
-    as_tibble()
+    # connectome
+    mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
+    # natmi
+    mutate(edge_specificity = product((ligand.count*(ligand.sum^-1)),
+               (receptor.count*(receptor.sum^-1)))) %>%
+    # logFC
+    mutate(logFC_comb = product(ligand.log2FC, receptor.log2FC))
 
 
 
-lr_res
+
+# scaled <- scuttle::summarizeAssayByGroup(test_sce,
+#                                          ids = colLabels(test_sce),
+#                                          assay.type = "logcounts")
+# scaled <- scaled@assays@data$mean  %>%
+#     as.data.frame() %>%
+#     rownames_to_column("gene") %>%
+#     as_tibble()
+#
+# scaled_s <- Seurat::AverageExpression(seurat_object, slot = "scale.data") %>%
+#     as.data.frame() %>%
+#     rownames_to_column("gene") %>%
+#     as_tibble()
+#
+#
+#
+# lr_res
 
 
 
@@ -90,11 +103,37 @@ not_there <- natmi_exp %>%
 
 
 
-# Correlation + p-value ----
-corr_pairs <- correlatePairs(test_sce,
-                             subset.row =
-                                 which(rownames(test_sce) %in% entity_genes)
-                             ) %>%
+#' Correlation Coefficient For Interactions
+#'
+#' @param sce SingleCellExperiment Object
+#' @param lr_res a tabble with LR results obtained in the process of liana_pipe
+#'
+#' @return
+get_correlation <- function(lr_res,
+                            sce){
+    corr_pairs <- scran::correlatePairs(sce) %>%
+        as_tibble()
+    corr_pairs <- corr_pairs %>%
+        select(gene1=gene2,
+               gene2=gene1,
+               everything()) %>%
+        bind_rows(corr_pairs) %>%
+        select(gene1,
+               gene2,
+               rho,
+               corr.FDR=FDR)
+
+    corr_score <- lr_res %>%
+        left_join(
+            corr_pairs,
+            by=c("ligand"="gene1",
+                 "receptor"="gene2")
+        ) %>%
+        distinct()
+}
+
+
+corr_pairs <- scran::correlatePairs(test_sce) %>%
     as_tibble()
 
 corr_pairs <- corr_pairs %>%
@@ -106,7 +145,6 @@ corr_pairs <- corr_pairs %>%
            gene2,
            rho,
            corr.FDR=FDR)
-
 
 corr_score <- lr_res %>%
     left_join(
@@ -123,32 +161,19 @@ corr_score <- lr_res %>%
 # logFC product
 markers <- FindAllMarkers(seurat_object)
 
-# Find Markers and Format
-cluster_markers <- scran::findMarkers(test_sce,
-                                      groups = colLabels(test_sce),
-                                      direction = "any",
-                                      full.stats = TRUE,
-                                      test.type = "t",
-                                      pval.type = "all",
-                                      assay.type = "counts") %>%
-    pluck("listData") %>%
-    map(function(cluster)
-        cluster %>%
-            as.data.frame() %>%
-            rownames_to_column("gene") %>%
-            as_tibble() %>%
-            select(gene, p.value, FDR, stat = summary.stats))
+
+
+# Reproduce Seurat
+Seurat::FoldChange(seurat_object, ident.1="B", ident.2="NK", slot="counts") %>%
+    head
+
+means %>%
+    as.data.frame() %>%
+    mutate(FC_BxNK = log((.data$B + 1), base=2) - log((.data$NK + 1), base=2)) %>%
+    head
 
 
 
-
-
-markers <- FindAllMarkers(seurat_object, slot = "counts")
-
-b_folds <- Seurat::FoldChange(seurat_object, ident.1="B", slot="counts") %>%
-    rownames_to_column("gene")
-
-b_folds
 
 
 
@@ -160,25 +185,47 @@ means <- scuttle::summarizeAssayByGroup(test_sce,
 means <- means@assays@data$mean
 
 
-Seurat::FoldChange(seurat_object, ident.1="B", ident.2="NK", slot="counts") %>%
-    head
-
-means %>%
-    as.data.frame() %>%
-    mutate(FC_BxNK = log((.data$B + 1), base=2) - log((.data$NK + 1), base=2)) %>%
-    head
 
 
-# scaled
-scaled <- scuttle::summarizeAssayByGroup(test_sce,
-                                         ids = colLabels(test_sce),
-                                         assay.type = "scaledata")
-scaled <- scaled@assays@data$mean
 
-scaled %>%
-    as.data.frame() %>%
-    mutate(FC_BxNK = log((expm1(.data$B) + 1), base=2) - log((expm1(.data$NK) + 1), base=2)) %>%
-    head
 
-Seurat::FoldChange(seurat_object, ident.1="B", ident.2="NK", slot="data") %>%
-    head
+
+
+
+
+
+get_log2FC(test_sce,
+           subject="B")
+
+
+# Different from log2FC? #SeuratVodoo
+Seurat::FoldChange(seurat_object,
+                   ident.1="CD8 T",
+                   base=2,
+                   slot="counts") %>%
+    as_tibble(rownames="gene")
+
+
+# Find Markers and Format (need to join 1 vs rest logFC here)
+cluster_markers <- scran::findMarkers(test_sce,
+                                      groups = colLabels(test_sce),
+                                      direction = "any",
+                                      full.stats = TRUE,
+                                      test.type = "t",
+                                      pval.type = "all",
+                                      assay.type = "counts") %>%
+    pluck("listData") %>%
+    map2(., names(.), function(cluster, cluster_name){
+        clust_de <- cluster %>%
+            as.data.frame() %>%
+            rownames_to_column("gene") %>%
+            as_tibble() %>%
+            select(gene, p.value, FDR, stat = summary.stats)
+
+        clust_de %>% left_join(get_log2FC(test_sce,
+                                          subject=cluster_name),
+                               by = "gene")
+    })
+
+
+

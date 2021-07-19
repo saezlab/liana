@@ -50,6 +50,10 @@ liana_pipe <- function(seurat_object, # or sce object
     scaled <- scaled@assays@data$mean
 
 
+    # Get Log2FC
+    logfc_df <- get_log2FC(sce)
+
+
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
                                           groups = colLabels(sce),
@@ -59,12 +63,13 @@ liana_pipe <- function(seurat_object, # or sce object
                                           pval.type = pval.type,
                                           assay.type = "counts") %>%
         pluck("listData") %>%
-        map(function(cluster)
+        map2(., names(.), function(cluster, cluster_name){
             cluster %>%
                 as.data.frame() %>%
                 rownames_to_column("gene") %>%
                 as_tibble() %>%
-                select(gene, p.value, FDR, stat = summary.stats))
+                select(gene, p.value, FDR, stat = summary.stats)
+        })
 
     # Get all Possible Cluster pair combinations
     pairs <- expand_grid(source = unique(colLabels(sce)),
@@ -110,16 +115,24 @@ liana_pipe <- function(seurat_object, # or sce object
                    source_target = "target",
                    entity = "receptor",
                    type = "scaled") %>%
-        select(source, starts_with("ligand"),
-               target, starts_with("receptor"),
-               everything()) %>%
         join_sum_means(means = means,
                        entity = "ligand") %>%
         join_sum_means(means = means,
                        entity = "receptor") %>%
+        # logFC
+        join_log2FC(logfc_df, source_target = "source", entity="ligand") %>%
+        join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
+        rowwise() %>%
+        mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
+        # natmi scores
+        rowwise() %>%
+        mutate(natmi_score = ((ligand.count*(ligand.sum^-1))) *
+                   ((receptor.count*(receptor.sum^-1)))) %>%
+        rowwise() %>%
+        mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
         select(source, starts_with("ligand"),
-               target, starts_with("receptor"),
-               everything())
+        target, starts_with("receptor"),
+        everything())
 
     return(lr_res)
 }
@@ -232,3 +245,74 @@ join_sum_means <- function(lr_res, means, entity){
 }
 
 
+#' Helper Function to join log2FC dataframe to LR_res
+#'
+#' @param lr_res LR formatted DE results from \link{ligrec_degformat}
+#' @param logfc_df obtained via \link{get_log2FC}
+#' @param entity ligand or receptor
+join_log2FC <- function(lr_res,
+                        logfc_df,
+                        source_target,
+                        entity){
+
+    entity.fc = sym(str_glue("{entity}.log2FC"))
+
+    logfc <- logfc_df %>%
+        dplyr::rename(
+            {{ source_target }} := cell,
+            {{ entity }} := gene,
+            {{ entity.fc }} := avg_log2FC)  %>%
+        distinct()
+
+    lr_res %>%
+        left_join(logfc, by=c(entity, source_target))
+
+}
+
+
+
+
+#' Get Log2FC of Subject vs LOSO (i.e. 1 cell type vs all other cells FC)
+#'
+#' @param sce SingleCellExperiment object
+#' @param subject leave-one-out subject, i.e. the cluster whose log2FC we wish
+#'    to calculate when compared to all other cells
+#'
+#' @return A log2FC dataframe for a given cell identity
+#'
+#' @details log2FC is calculated using the raw count average + a pseudocount of 1
+#'
+#' @noRd
+get_log2FC <- function(sce){
+
+    # iterate over each possible cluster leaving one out
+    levels(colLabels(sce)) %>%
+        map(function(subject){
+            # Subject (i.e. target) Cluster avg
+            subject_avg <-
+                scater::calculateAverage(subset(sce,
+                                                select = colLabels(sce)==subject),
+                                         assay.type = "counts"
+                                         ) %>%
+                as_tibble(rownames = "gene") %>%
+                dplyr::rename(subject_avg = value)
+
+            # All other cells average
+            loso_avg <-
+                scater::calculateAverage(subset(sce,
+                                                select = colLabels(sce)!=subject),
+                                         assay.type = "counts"
+                                         ) %>%
+                as_tibble(rownames = "gene") %>%
+                dplyr::rename(loso_avg = value)
+
+            # Join avg and calculate FC
+            left_join(subject_avg, loso_avg, by="gene") %>%
+                mutate(avg_log2FC =
+                           log2((subject_avg + 1)) - log2((loso_avg + 1))) %>%
+                select(gene, avg_log2FC)
+
+        }) %>% setNames(levels(colLabels(sce))) %>%
+        enframe(name = "cell") %>%
+        unnest(value)
+}
