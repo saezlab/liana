@@ -350,3 +350,36 @@ get_correlation <- function(lr_res,
         ) %>%
         distinct()
 }
+
+
+
+#' Helper Function to 'decomplexify' ligands and receptors into
+#'
+#' @param resource a ligrec resource
+#' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot)
+#'
+#' @return returns a longer tibble with complex subunits on seperate rows
+decomplexify <- function(resource, columns){
+    columns %>%
+        map(function(col){
+            sep_cols <- c(str_glue("col{rep(1:5)}"))
+            col.complex <- str_glue("{col}_complex")
+
+            resource <<- resource %>%
+                mutate({{ col.complex }} :=
+                           resource[[str_glue("{col}")]]) %>%
+                separate(col,
+                         into = sep_cols,
+                         sep = "_",
+                         extra = "drop",
+                         fill = "right") %>%
+                pivot_longer(cols = all_of(sep_cols),
+                             values_to = col,
+                             names_to = NULL) %>%
+                tidyr::drop_na(col) %>%
+                distinct() %>%
+                mutate_at(.vars = c(col),
+                          ~str_replace(., "COMPLEX:", ""))
+        })
+    return(resource)
+}

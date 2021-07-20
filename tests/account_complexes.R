@@ -41,55 +41,100 @@ lr_cmplx <- lr_cdbd %>%
 xd <- lr_cmplx %>%
     # filter(str_detect(receptor_complex, "_")) %>%
     select(source, target, ligand, receptor, ligand_complex, receptor_complex,
-           ligand.expr, receptor.expr) %>%
+           ligand.expr, receptor.expr, ligand.scaled, receptor.scaled) %>%
     # receptor
     group_by(ligand, receptor_complex) %>%
-    mutate(receptor.expr.cmplx = min(receptor.expr)) %>%
-    top_n(1, receptor.expr.cmplx) %>%
-    ungroup() %>%
-    # select(-c(ligand, receptor)) %>%
-    # rename(ligand = ligand_complex,
-    #        receptor = receptor_complex) %>%
-    distinct_at(.vars=c("ligand_complex", "receptor_complex", "source", "target"), .keep_all=TRUE)
-    # ligand
-    # group_by(ligand_complex, receptor) %>%
-    # mutate(ligand.expr.cmplx = min(ligand.expr)) %>%
-    # mutate(ligand.rank = rank(ligand.expr.cmplx)) %>%
-    # ungroup()
+    mutate(receptor.expr.cmplx = min(receptor.expr))# %>%
+    top_n(1, receptor.expr.cmplx)
+    # ungroup() %>%
+    # distinct_at(.vars=c("ligand_complex", "receptor_complex",
+                #         "source", "target"),
+                # .keep_all=TRUE)
 
 
-# For each subunit in a complex set the abs minimum/mean of scaled, logFC, expr
+xx2 <- recomplexify_check(lr_cmplx,
+                          entity = "receptor",
+                          columns = c("receptor.expr",
+                                      "receptor.scaled",
+                                      "receptor.log2FC",
+                                      "ligand.expr",
+                                      "ligand.scaled",
+                                      "ligand.log2FC"))
 
 
+# recomplexify should be applied on a per-score basis
+# i.e. for NATMI min/mean expr
+# min/mean z-score for Conn
+# min/mean logFC
+
+score_list <- list(
+
+)
 
 
+# score + columns that it takes into account
+# seperate tibble for each score (produced from lr_res)
+#
 
-#' Helper Function to 'decomplexify' ligands and receptors into
-#' @param resource a ligrec resource
-#' @param column column to separate and pivot long (e.g. genesymbol or uniprot)
-#'
-#' @return returns a longer tibble with complex subunits on seperate rows
-decomplexify <- function(resource, column){
-    column %>%
+
+recomplexify <- function(lr_cmplx,
+                         entity,
+                         columns,
+                         funx){
+
+    # fun = abs+min or mean
+    # return the subunit /w min z (by default)
+
+    columns %>%
         map(function(col){
-            sep_cols <- c(str_glue("col{rep(1:5)}"))
-            col.complex <- str_glue("{col}_complex")
+            entity.col = sym(str_glue("{col}"))
+            entity.col2 = sym(str_glue("{col}.cmplx")) # to delete
 
-            resource <<- resource %>%
-                mutate({{ col.complex }} :=
-                           resource[[str_glue("{col}")]]) %>%
-                separate(col,
-                         into = sep_cols,
-                         sep = "_",
-                         extra = "drop",
-                         fill = "right") %>%
-                pivot_longer(cols = sep_cols,
-                             values_to = col,
-                             names_to = NULL) %>%
-                tidyr::drop_na(col) %>%
-                distinct() %>%
-                mutate_at(.vars = c(col),
-                          ~str_replace(., "COMPLEX:", ""))
+            entity.complex = sym(str_glue("{entity}_complex"))
+
+            alt_entity <- sym(if_else(str_detect(entity, "ligand"),
+                                      "receptor", "ligand"))
+
+            lr_cmplx <<- lr_cmplx %>%
+                group_by(source, target, !!alt_entity, !!entity.complex) %>%
+                # group_by(source, target, ligand, receptor_complex) %>%
+                mutate( {{ entity.col2 }} := min(!!entity.col))
+
         })
-    return(resource)
+
+    return(lr_cmplx)
 }
+
+
+recomplexify_check <- function(lr_cmplx,
+                               entity,
+                               columns,
+                               funx){
+
+    # fun = abs+min or mean
+    # return the subunit /w min z (by default)
+
+    columns %>%
+        map(function(col){
+            entity.col = sym(str_glue("{col}"))
+            entity.col2 = sym(str_glue("{col}.cmplx")) # to delete
+
+            entity.complex = sym(str_glue("{entity}_complex"))
+
+            alt_entity <- sym(if_else(str_detect(entity, "ligand"),
+                                      "receptor", "ligand"))
+
+        lr_cmplx <<- lr_cmplx %>%
+            group_by(source, target, !!alt_entity, !!entity.complex) %>%
+            # group_by(source, target, ligand, receptor_complex) %>%
+            mutate( {{ entity.col2 }} := min(!!entity.col))
+
+        })
+
+    return(lr_cmplx)
+}
+
+
+
+
+
