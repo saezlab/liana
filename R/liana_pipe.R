@@ -122,21 +122,6 @@ liana_pipe <- function(seurat_object, # or sce object
         join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
         rowwise()
 
-    # calculate scores
-    # %>%
-    #     mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
-    #     get_correlation(sce) %>%
-    #     # natmi scores
-    #     rowwise() %>%
-    #     mutate(edge_specificity = ((ligand.expr*(ligand.sum^-1))) *
-    #                ((receptor.expr*(receptor.sum^-1)))) %>%
-    #     mutate(edge_specificity = tidyr::replace_na(edge_specificity, 0)) %>%
-    #     rowwise() %>%
-    #     mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
-    #     select(source, starts_with("ligand"),
-    #            target, starts_with("receptor"),
-    #            everything())
-
     return(lr_res)
 }
 

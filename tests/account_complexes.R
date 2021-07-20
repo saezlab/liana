@@ -12,6 +12,24 @@ lr_res <- liana_pipe(seurat_object,
 lr_res
 
 
+# calculate scores
+# lr_res %>%
+#     mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
+#     get_correlation(sce) %>%
+#     # natmi scores
+#     rowwise() %>%
+#     mutate(edge_specificity = ((ligand.expr*(ligand.sum^-1))) *
+#                ((receptor.expr*(receptor.sum^-1)))) %>%
+#     mutate(edge_specificity = tidyr::replace_na(edge_specificity, 0)) %>%
+#     rowwise() %>%
+#     mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
+#     select(source, starts_with("ligand"),
+#            target, starts_with("receptor"),
+#            everything())
+
+
+
+
 # Run /w CellPhoneDB
 cpdb <- select_resource("CellPhoneDB")[[1]]
 cpdb_decomplex <- cpdb %>%
@@ -20,7 +38,7 @@ cpdb_decomplex <- cpdb %>%
 
 # Run /w decomplexified cpdb
 lr_cdbd <- liana_pipe(seurat_object, cpdb_decomplex)
-lr_cdbd %>% distinct_at(vars(ligand,receptor,source,target))
+lr_cdbd %>% distinct_at(vars(ligand, receptor, source,target))
 
 
 
@@ -68,19 +86,84 @@ xx2 <- recomplexify_check(lr_cmplx,
 # min/mean logFC
 
 score_list <- list(
+    edge_specificity = c("receptor.expr", "ligand.expr"),
+    weight_sc = c("receptor.scaled", "ligand.scaled"),
+    logfc_comb = c("ligand.log2FC", "receptor.log2FC")
+)
 
+setClass("ScoreSpecifics",
+         slots=list(method_name="character",
+                    method_score="character",
+                    descending_order="logical",
+                    default_fun="function",
+                    columns = "character"))
+
+
+
+list(
+    "connectome" =
+        methods::new(
+            "ScoreSpecifics",
+            method_name = "connectome",
+            method_score = "weight_sc",
+            descending_order = TRUE,
+            default_fun = "",
+            columns = c("receptor.scaled", "ligand.scaled"),
+        ),
+    "logfc_comb" =
+        methods::new(
+            "ScoreSpecifics",
+            method_name = "italk",
+            method_score = "logfc_comb",
+            descending_order = TRUE,
+            default_fun = "",
+            columns = c("ligand.log2FC", "receptor.log2FC")
+        ),
+    "natmi" =
+        methods::new(
+            "ScoreSpecifics",
+            method_name = "natmi",
+            method_score = "edge_specificity",
+            descending_order = TRUE,
+            default_fun = "",
+            columns = c("receptor.expr", "ligand.expr"),
+        ),
 )
 
 
-# score + columns that it takes into account
-# seperate tibble for each score (produced from lr_res)
-#
 
 
+
+
+
+connectome_score <- function(lr_res){
+    lr_res %>%
+        rowwise() %>%
+        mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
+        select(source, starts_with("ligand"),
+               target, starts_with("receptor"),
+               everything())
+
+}
+
+
+#' score + columns that it takes into account
+#' seperate tibble for each score (produced from lr_res)
+
+
+
+#' Helper function used to account for complexes
+#'
+#' @param lr_cmplx decomplexified lr_res
+#' @param entity ligand or receptor
+#' @param columns columns to account for complexes for
+#'
+#' @returns complex-accounted lr_res
+#'
+#' @details to be passed before the relevant score_calc function
 recomplexify <- function(lr_cmplx,
                          entity,
-                         columns,
-                         funx){
+                         columns){
 
     # fun = abs+min or mean
     # return the subunit /w min z (by default)
@@ -97,44 +180,10 @@ recomplexify <- function(lr_cmplx,
 
             lr_cmplx <<- lr_cmplx %>%
                 group_by(source, target, !!alt_entity, !!entity.complex) %>%
-                # group_by(source, target, ligand, receptor_complex) %>%
                 mutate( {{ entity.col2 }} := min(!!entity.col))
-
         })
 
     return(lr_cmplx)
 }
-
-
-recomplexify_check <- function(lr_cmplx,
-                               entity,
-                               columns,
-                               funx){
-
-    # fun = abs+min or mean
-    # return the subunit /w min z (by default)
-
-    columns %>%
-        map(function(col){
-            entity.col = sym(str_glue("{col}"))
-            entity.col2 = sym(str_glue("{col}.cmplx")) # to delete
-
-            entity.complex = sym(str_glue("{entity}_complex"))
-
-            alt_entity <- sym(if_else(str_detect(entity, "ligand"),
-                                      "receptor", "ligand"))
-
-        lr_cmplx <<- lr_cmplx %>%
-            group_by(source, target, !!alt_entity, !!entity.complex) %>%
-            # group_by(source, target, ligand, receptor_complex) %>%
-            mutate( {{ entity.col2 }} := min(!!entity.col))
-
-        })
-
-    return(lr_cmplx)
-}
-
-
-
 
 
