@@ -20,7 +20,7 @@
 call_sca <- function(op_resource,
                      seurat_object,
                      .format = TRUE,
-                     assay = "SCT",
+                     assay = "RNA",
                      ...) {
   # Format OmnipathR resource
   if(!is.null(op_resource)){
