@@ -13,23 +13,7 @@ call_connectome(seurat_object, op_resource = NULL, .format = TRUE, ...)
 
 \item{.format}{bool whether to format output}
 
-\item{...}{
-  Arguments passed on to \code{\link[Connectome:CreateConnectome]{Connectome::CreateConnectome}}
-  \describe{
-    \item{\code{object}}{A Seurat object}
-    \item{\code{LR.database}}{Accepts either 'fantom5' or 'custom'. If custom, a dataframe must be provided to argument custom.list with the first column equal to ligands, second column equal to associated receptors, and third column equal to desired modal categorizations.}
-    \item{\code{species}}{The species of the object that is being processed.  Only required if LR.database = 'fantom5', and allows 'human','mouse','rat', or 'pig'}
-    \item{\code{include.putative}}{Default TRUE. Includes ligand-receptor pairs deemed putative in FANTOM5 database.}
-    \item{\code{include.rejected}}{Default FALSE. If TRUE, includes gene pairs labeled "EXCLUDED" in FANTOM5 database.  See ncomms8866 .rda file for qualifications for exclusion.}
-    \item{\code{p.values}}{Default TRUE. Runs a Wilcoxon Rank test to calculate adjusted p-value for ligand and receptor expression within the input object. Change to FALSE for decreased run-time.}
-    \item{\code{max.cells.per.ident}}{Default NULL. If a value is input, input object will be downsampled to requested number of cells per identity. This can greatly improve run-time.}
-    \item{\code{min.cells.per.ident}}{Default NULL. If a value is input, only cell populations meeting this threshold will be included in network analysis. Can limit high-variation effects from small clusters.}
-    \item{\code{weight.definition.norm}}{Method of edgeweight definition from normalized data slot. Either 'sum','mean',or 'product'. Defaults to 'product'. 'Sum' adds values from sending and receiving clusters, 'mean' averages them, and 'product' multiplies them.}
-    \item{\code{weight.definition.scale}}{Method of edgeweight definition from scaled data slot. Either 'sum','mean',or 'product'. Defaults to 'mean'. 'Sum' adds values from sending and receiving clusters, 'mean' averages them, and 'product' multiplies them.}
-    \item{\code{custom.list}}{Optional. A dataframe for custom mapping, with the first column equal to ligands, second column equal to associated receptors, and third column equal to desired modal categorizations. If modal categorizations are unknown, fill with 'UNCAT' or similar placeholder.}
-    \item{\code{calculate.DOR}}{Whether to include log normalized Diagnostic Odds Ratio in the output.  Default FALSE.}
-    \item{\code{assay}}{Which assay to employ to create connectomic mapping. Default = 'RNA', also accepts 'SCT' and others}
-  }}
+\item{...}{dot params passed to connectome}
 }
 \value{
 An unfiltered connectome results df

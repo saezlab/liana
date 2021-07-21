@@ -1,4 +1,5 @@
 #' CellChat x Omni Pipe function
+#'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param exclude_anns Annotation criteria to be excluded
@@ -11,7 +12,6 @@
 #'
 #' @return A DF of intercellular communication network
 #'
-#' @import CellChat
 #' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>% %<>%
@@ -41,22 +41,23 @@ call_cellchat <- function(op_resource,
 
 
     # create a dataframe of the cell labels
-    labels <- Idents(seurat_object)
+    labels <- Seurat::Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))
 
-    cellchat.omni <- createCellChat(object =  `if`(!.normalize,
-                                                   GetAssayData(seurat_object,
-                                                                assay = assay,
-                                                                slot = "data"),
-                                                   CellChat::normalizeData(
-                                                       GetAssayData(seurat_object,
-                                                                    assay = assay,
-                                                                    slot = "data"))
-                                                   ),
-                               meta = meta,
-                               group.by = "group")
-    cellchat.omni <- addMeta(cellchat.omni, meta = meta)
-    cellchat.omni <- setIdent(cellchat.omni, ident.use = "group")
+    cellchat.omni <- CellChat::createCellChat(
+        object = `if`(!.normalize,
+                      GetAssayData(seurat_object,
+                                   assay = assay,
+                                   slot = "data"),
+                      CellChat::normalizeData(
+                          GetAssayData(seurat_object,
+                                       assay = assay,
+                                       slot = "data"))
+                      ),
+        meta = meta,
+        group.by = "group")
+    cellchat.omni <- CellChat::addMeta(cellchat.omni, meta = meta)
+    cellchat.omni <- CellChat::setIdent(cellchat.omni, ident.use = "group")
 
 
     if(.do_parallel){
@@ -80,28 +81,29 @@ call_cellchat <- function(op_resource,
     cellchat.omni@DB <- ccDB
 
     ## subset the expression data of signaling genes
-    cellchat.omni <- subsetData(cellchat.omni)
+    cellchat.omni <- CellChat::subsetData(cellchat.omni)
 
     # Infer the cell state-specific communications
-    cellchat.omni <- identifyOverExpressedGenes(cellchat.omni)
-    cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
+    cellchat.omni <- CellChat::identifyOverExpressedGenes(cellchat.omni)
+    cellchat.omni <- CellChat::identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
     if(!.raw_use){
-        cellchat.omni <- projectData(cellchat.omni, CellChat::PPI.human)
+        cellchat.omni <- CellChat::projectData(cellchat.omni,
+                                               CellChat::PPI.human)
     }
 
-    cellchat.omni <- computeCommunProb(cellchat.omni,
+    cellchat.omni <- CellChat::computeCommunProb(cellchat.omni,
                                        raw.use = .raw_use,
                                        seed.use = .seed,
                                        do.fast = TRUE,
                                        nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
-    cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 1)
+    cellchat.omni <- CellChat::filterCommunication(cellchat.omni, min.cells = 1)
 
     # Extract the inferred cellular communication network
-    df.omni <- subsetCommunication(cellchat.omni, ...)
+    df.omni <- CellChat::subsetCommunication(cellchat.omni, ...)
 
     if(.format){
         df.omni <- df.omni %>%

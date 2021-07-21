@@ -1,6 +1,6 @@
 #' Function to obtain connectome-like weights
 #'
-#' @inheritDotParams liana::.liana_call
+#' @inheritDotParams .liana_call
 #'
 #' @export
 #'
@@ -21,7 +21,7 @@ get_connectome <- function(seurat_object,
 
 #' Function to obtain connectome-like weights
 #'
-#' @inheritDotParams liana::.liana_call
+#' @inheritDotParams .liana_call
 #'
 #' @export
 #'
@@ -42,7 +42,7 @@ get_natmi <- function(seurat_object,
 
 #' Function to obtain connectome-like weights
 #'
-#' @inheritDotParams liana::.liana_call
+#' @inheritDotParams .liana_call
 #'
 #' @export
 #'
@@ -64,7 +64,7 @@ get_logfc <- function(seurat_object,
 #' Function to obtain scores via liana
 #'
 #' @inheritParams liana_pipe
-#' @inheritDotParams liana::liana_pipe
+#' @inheritDotParams liana_pipe
 #' @inheritParams liana_scores
 #'
 #' @return lr_res modified to be method-specific
@@ -89,41 +89,6 @@ get_logfc <- function(seurat_object,
                  protein = protein,
                  complex_policy = complex_policy
                  )
-}
-
-
-
-#' Function to obtain different scoring schemes
-#'
-#' @param score_object score_object specific to the test obtained from score_specs
-#' @param lr_res ligand-receptor DE results and other stats between clusters
-#' @param decomplexify whether to decomplexify or not
-#' @inheritParams liana::recomplexify
-#'
-#'
-#' @return lr_res modified to be method-specific
-liana_scores <- function(score_object,
-                         lr_res,
-                         decomplexify = TRUE,
-                         ...){
-
-    if(decomplexify){
-        lr_res %<>%
-            select(ligand, receptor,
-                   ends_with("complex"),
-                   source, target,
-                   !!score_object@columns) %>%
-            recomplexify(columns = score_object@columns,
-                         ...)
-    }
-
-    args <- list(
-        lr_res = lr_res,
-        score_col = score_object@method_score
-    )
-
-    exec(score_object@score_fun, !!!args) %>%
-        ungroup()
 }
 
 
@@ -159,6 +124,43 @@ recomplexify <- function(lr_res,
         group_by(across(all_of(grps))) %>%
         summarise_at(.vars=columns, .funs = complex_policy)
 }
+
+
+
+#' Function to obtain different scoring schemes
+#'
+#' @param score_object score_object specific to the test obtained from score_specs
+#' @param lr_res ligand-receptor DE results and other stats between clusters
+#' @param decomplexify whether to decomplexify or not
+#' @inheritParams recomplexify
+#'
+#'
+#' @return lr_res modified to be method-specific
+liana_scores <- function(score_object,
+                         lr_res,
+                         decomplexify = TRUE,
+                         ...){
+
+    if(decomplexify){
+        lr_res %<>%
+            select(ligand, receptor,
+                   ends_with("complex"),
+                   source, target,
+                   !!score_object@columns) %>%
+            recomplexify(columns = score_object@columns,
+                         ...)
+    }
+
+    args <- list(
+        lr_res = lr_res,
+        score_col = score_object@method_score
+    )
+
+    exec(score_object@score_fun, !!!args) %>%
+        ungroup()
+}
+
+
 
 
 #' Helper Function which returns the value closest to 0

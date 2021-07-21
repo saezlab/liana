@@ -3,10 +3,8 @@
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
 #' @param assay Seurat assay data to use
-#'
-#' @return An unfiltered iTALK df sorted by relevance
+
 #' @importFrom Seurat GetAssayData Idents
-#' @import SCAomni
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr distinct select
 #'
@@ -17,11 +15,13 @@
 #' LRScore = 1 is the highest (~ most likely hit), 0 is the lowest.
 #'
 #' @export
+#'
+#' @return An unfiltered SCA tibble
 call_sca <- function(op_resource,
                      seurat_object,
                      .format = TRUE,
                      assay = "RNA",
-                     ...) {
+                     ...){
   # Format OmnipathR resource
   if(!is.null(op_resource)){
     op_resource %<>% sca_formatDB
@@ -36,31 +36,33 @@ call_sca <- function(op_resource,
 
   # Prepare data from Seurat object
   input_data <-
-    GetAssayData(seurat_object, assay = assay, slot = "data") %>%
+    Seurat::GetAssayData(seurat_object,
+                         assay = assay,
+                         slot = "data") %>%
     as.matrix()
-  labels <- Idents(seurat_object)
+  labels <- Seurat::Idents(seurat_object)
 
   # Compute interactions between cell clusters
-  signal <- cell_signaling(data = input_data,
-                           genes = row.names(input_data),
-                           cluster = as.numeric(labels),
-                           c.names = levels(Idents(seurat_object)),
-                           species = 'homo sapiens',
-                           LRdb = op_resource,
-                           write = FALSE,
-                           ...
-                           )
+  signal <- SCAomni::cell_signaling(data = input_data,
+                                    genes = row.names(input_data),
+                                    cluster = as.numeric(labels),
+                                    c.names = levels(Idents(seurat_object)),
+                                    species = 'homo sapiens',
+                                    LRdb = op_resource,
+                                    write = FALSE,
+                                    ...
+                                    )
 
 
   # Compute intercellular gene networks
   invisible(
-    sca_res <- inter_network(data = input_data,
-                             signal = signal,
-                             genes = row.names(input_data),
-                             cluster = as.numeric(labels),
-                             c.names = levels(Idents(seurat_object)),
-                             write = FALSE
-                             )
+    sca_res <- SCAomni::inter_network(data = input_data,
+                                      signal = signal,
+                                      genes = row.names(input_data),
+                                      cluster = as.numeric(labels),
+                                      c.names = levels(Idents(seurat_object)),
+                                      write = FALSE
+                                      )
   )
 
 
@@ -98,7 +100,9 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
 
 
 #' Helper Function to convert Omni to LRdb Format
+#'
 #' @param op_resource OmniPath resource
+#'
 #' @export
 sca_formatDB <- function(op_resource){
   op_resource %>%

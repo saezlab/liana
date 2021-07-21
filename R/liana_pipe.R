@@ -1,9 +1,9 @@
 #' Liana Pipe which runs DE analysis and merges needed information for LR inference
 #'
-#' @param seurat_object
-#' @param op_resource
-#' @param test.type `test.type` passed to \link(scran::findMarkers)
-#' @param pval.type `pval.type` passed to \link(scran::findMarkers)
+#' @param seurat_object Seurat object
+#' @param op_resource resource tibble obtained via \link{liana::select_resource}
+#' @param test.type `test.type` passed to \link{scran::findMarkers}
+#' @param pval.type `pval.type` passed to \link{scran::findMarkers}
 #' @param seed Set Random Seed
 #'
 #' @import scuttle scran SingleCellExperiment Seurat

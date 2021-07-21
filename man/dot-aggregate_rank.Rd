@@ -9,7 +9,7 @@
 \arguments{
 \item{liana_mlist}{liana list with method tibbles}
 
-\item{...}{Parametres passed to `RobustRankAggreg::aggregateRanks`}
+\item{...}{Parametres passed to `aggregateRanks` from `RobustRankAggreg`}
 }
 \description{
 Robust Aggregate ranks using `RobustRankAggreg`

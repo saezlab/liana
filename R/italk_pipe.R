@@ -13,7 +13,6 @@
 #' Stats:
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
-#' @importFrom iTALK FindLR
 #' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>% %<>%
 #' @importFrom tidyr unite expand_grid

@@ -3,7 +3,7 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
-#' @inheritDotParams Connectome::CreateConnectome
+#' @param ... dot params passed to connectome
 #'
 #' @return An unfiltered connectome results df
 #'
@@ -16,7 +16,6 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-#' @import Connectome
 #' @importFrom Seurat ScaleData
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
@@ -66,14 +65,13 @@ call_connectome <- function(seurat_object,
 #' Helper function to filter and format connectome
 #'
 #' @param conn connectome object
-#' @importFrom Connectome FilterConnectome
 #' @import tibble
 #'
 #' @export
 FormatConnectome <- function(conn,
                              ...){
     conn <- conn %>%
-        FilterConnectome(remove.na=TRUE) %>%
+        Connectome::FilterConnectome(remove.na=TRUE) %>%
         select(source, target,
                ligand, receptor,
                weight_norm,
@@ -105,23 +103,22 @@ conn_formatDB <- function(op_resource){
 #' @inheritParams call_connectome
 #' @param lr_symbols ligand-receptor gene symbols
 #' @param lr_db ligand-receptor resource
-#' @inheritDotParams  Connectome::CreateConnectome
-#'
-#' @import Connectome
+#' @param ... arguments passed `CreateConnectome` from `Connectome`
 #'
 #' @noRd
 .conn_create <- function(seurat_object,
                         lr_symbols,
                         lr_db,
                         ...){
+
     filt_genes <- lr_symbols[lr_symbols %in% rownames(seurat_object)]
     seurat_object <- Seurat::ScaleData(object = seurat_object,
                                        features = filt_genes)
 
-    conn <- CreateConnectome(seurat_object,
-                             LR.database = 'custom',
-                             custom.list = lr_db,
-                             ...
-                             )
+    conn <- Connectome::CreateConnectome(seurat_object,
+                                         LR.database = 'custom',
+                                         custom.list = lr_db,
+                                         ...
+                                         )
     return(conn)
 }

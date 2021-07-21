@@ -207,7 +207,7 @@ setClass("RankSpecifics",
 #' Robust Aggregate ranks using `RobustRankAggreg`
 #'
 #' @param liana_mlist liana list with method tibbles
-#' @param ... Parametres passed to `RobustRankAggreg::aggregateRanks`
+#' @param ... Parametres passed to `aggregateRanks` from `RobustRankAggreg`
 .aggregate_rank <- function(liana_mlist, ...){
     liana_mlist %>%
         map(function(res){
