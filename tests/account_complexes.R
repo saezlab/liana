@@ -59,37 +59,6 @@ lr_cmplx <- lr_cdbd %>%
 lr_cmplx
 
 
-scores <- .score_specs() %>%
-    map(function(score_object){
-
-        args <- list(lr_res = lr_cmplx,
-                     score_col = score_object@method_score
-                     )
-
-        exec(score_object@score_fun, !!!args) %>%
-            select(ligand, receptor,
-                   ends_with("complex"),
-                   source, target,
-                   !!score_object@columns) %>%
-            recomplexify(columns = score_object@columns)
-
-    })
-
-
-
-scores$connectome
-
-
-
-xd <- recomplexify(lr_cmplx,
-                   columns = c("receptor.expr",
-                               "receptor.scaled",
-                               "receptor.log2FC",
-                               "ligand.expr",
-                               "ligand.scaled",
-                               "ligand.log2FC"))
-
-
 
 #' Helper function to account for complexes in the resources
 #'
@@ -97,7 +66,7 @@ xd <- recomplexify(lr_cmplx,
 #' @param columns columns to account for complexes for
 #' @param complex_policy policy how to account for the presence of complexes.
 #'   Following the example of \url{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy}, valid options are:
-#'   'min' select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+#'   'min0' select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
 #'   'all' returns all subunits seperately
 #'
 #' @returns complex-accounted lr_res
@@ -114,8 +83,8 @@ recomplexify <- function(lr_cmplx,
         map(function(col){
 
             entity <- as.character(str_split({col}, "\\.")[[1]][[1]])
-            entity.col = sym(str_glue("{col}"))
-            entity.col2 = sym(str_glue("{col}.cmplx")) # to delete
+            col = sym(str_glue("{col}"))
+            # col2 = sym(str_glue("{col}.cmplx")) # to delete
 
             entity.complex = sym(str_glue("{entity}.complex"))
 
@@ -124,11 +93,99 @@ recomplexify <- function(lr_cmplx,
 
             lr_cmplx <<- lr_cmplx %>%
                 group_by(source, target, !!alt_entity, !!entity.complex) %>%
-                mutate( {{ entity.col2 }} := min(!!entity.col))
+                mutate( {{ col }} := min0(!!col))
         })
 
-    return(lr_cmplx)
+
+    grps <- c("source", "target",
+              "ligand.complex", "receptor.complex")
+
+    lr_cmplx %>%
+        group_by(across(all_of(grps))) %>%
+        summarise_at(.vars=columns, .funs = min0)
 }
+
+scores <- .score_specs() %>%
+    map(function(score_object){
+
+        lr_cmplx %<>%
+            select(ligand, receptor,
+                   ends_with("complex"),
+                   source, target,
+                   !!score_object@columns) %>%
+            recomplexify(columns = score_object@columns) # all or min
+
+        args <- list(
+            lr_res = lr_cmplx, # decomplexify or not
+            score_col = score_object@method_score
+        )
+
+        exec(score_object@score_fun, !!!args)
+})
+
+
+
+
+lr_cmplx %>%
+    select(-ends_with("pval")) %>%
+    select(-ends_with("FDR")) %>%
+    select(-ends_with("stat")) %>%
+    select(-ends_with("complex")) %>%
+    filter((receptor == "ACVR1" | receptor == "TGFBR2") &
+               ligand == "TGFB1") %>%
+    filter(source == "B" & target == "B") %>%
+    distinct()
+
+
+# natmi
+scores$natmi %>%
+    filter(receptor.complex == "ACVR1_TGFBR2" &&
+               ligand.complex == "TGFB1") %>%
+    filter(source == "B" && target == "B")
+
+# Conn
+scores$connectome %>%
+    filter(receptor.complex == "ACVR1_TGFBR2" &&
+               ligand.complex == "TGFB1") %>%
+    filter(source == "B" & target == "B")
+
+lr_cmplx %>%
+    group_by(across(all_of(grps))) %>%
+    summarise_at(.vars=columns, .funs = clostest_to_0)  %>%
+    filter(receptor.complex == "ACVR1_TGFBR2" &
+               ligand.complex == "TGFB1") %>%
+    filter(source == "B" & target == "B")
+
+# logfc
+scores$logfc_comb %>%
+    filter(receptor.complex == "ACVR1_TGFBR2" &
+               ligand.complex == "TGFB1") %>%
+    filter(source == "B" && target == "B")
+
+
+
+
+
+x2
+
+# scale fun - instead of Seurat?
+scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+
+
+
+
+
+xd <- recomplexify(lr_cmplx,
+                   columns = c("receptor.expr",
+                               "receptor.scaled",
+                               "receptor.log2FC",
+                               "ligand.expr",
+                               "ligand.scaled",
+                               "ligand.log2FC"))
+
+
+
+
 
 
 # lr_acc_cmpx <- lr_cmplx %>%
