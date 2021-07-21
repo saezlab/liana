@@ -13,10 +13,16 @@
 #' @return Returns a tibble with information required for LR calc
 liana_pipe <- function(seurat_object, # or sce object
                        op_resource,
+                       decomplexify = TRUE,
                        test.type = "t",
                        pval.type = "all",
                        seed=1234){
     set.seed(seed)
+
+    # Resource Decomplexified
+    if(decomplexify){
+        op_resource %<>% decomplexify()
+    }
 
     # Resource Format
     transmitters <- op_resource$source_genesymbol %>%
@@ -96,7 +102,7 @@ liana_pipe <- function(seurat_object, # or sce object
         bind_rows()
 
     # Join Expression Means
-    lr_res <- lr_res %>%
+    lr_res %<>%
         join_means(means = means,
                    source_target = "source",
                    entity = "ligand",
@@ -119,10 +125,23 @@ liana_pipe <- function(seurat_object, # or sce object
                        entity = "receptor") %>%
         # logFC
         join_log2FC(logfc_df, source_target = "source", entity="ligand") %>%
-        join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
-        rowwise()
+        join_log2FC(logfc_df, source_target = "target", entity="receptor")
 
-    return(lr_res)
+    if(decomplexify){
+        # Join complexes (recomplexify) to lr_res
+        cmplx <- op_resource %>%
+            select(
+                ligand = source_genesymbol,
+                ligand.complex = source_genesymbol_complex,
+                receptor = target_genesymbol,
+                receptor.complex = target_genesymbol_complex
+                )
+
+        lr_res %<>%
+            left_join(., cmplx,
+                      by=c("ligand", "receptor")) %>%
+            distinct()
+    }
 }
 
 
@@ -303,4 +322,39 @@ get_log2FC <- function(sce){
         }) %>% setNames(levels(colLabels(sce))) %>%
         enframe(name = "cell") %>%
         unnest(value)
+}
+
+
+
+#' Helper Function to 'decomplexify' ligands and receptors into
+#'
+#' @param resource a ligrec resource
+#' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot)
+#'
+#' @return returns a longer tibble with complex subunits on seperate rows
+decomplexify <- function(resource,
+                         columns = c("source_genesymbol",
+                                     "target_genesymbol")){
+    columns %>%
+        map(function(col){
+            sep_cols <- c(str_glue("col{rep(1:5)}"))
+            col.complex <- str_glue("{col}_complex")
+
+            resource <<- resource %>%
+                mutate({{ col.complex }} :=
+                           resource[[str_glue("{col}")]]) %>%
+                separate(col,
+                         into = sep_cols,
+                         sep = "_",
+                         extra = "drop",
+                         fill = "right") %>%
+                pivot_longer(cols = all_of(sep_cols),
+                             values_to = col,
+                             names_to = NULL) %>%
+                tidyr::drop_na(col) %>%
+                distinct() %>%
+                mutate_at(.vars = c(col),
+                          ~str_replace(., "COMPLEX:", ""))
+        })
+    return(resource)
 }

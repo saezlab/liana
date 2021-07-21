@@ -1,0 +1,343 @@
+#' Function to obtain connectome-like weights
+#'
+#' @inheritDotParams liana::.liana_call
+#'
+#' @export
+#'
+#' @return lr_res modified to be method-specific
+get_connectome <- function(seurat_object,
+                           op_resource,
+                           ...){
+
+    .liana_call(
+        method = "connectome",
+        seurat_object = seurat_object,
+        op_resource = op_resource,
+        ...
+        )
+}
+
+
+
+#' Function to obtain connectome-like weights
+#'
+#' @inheritDotParams liana::.liana_call
+#'
+#' @export
+#'
+#' @return lr_res modified to be method-specific
+get_natmi <- function(seurat_object,
+                      op_resource,
+                      ...){
+
+    .liana_call(
+        method = "natmi",
+        seurat_object = seurat_object,
+        op_resource = op_resource,
+        ...
+    )
+}
+
+
+
+#' Function to obtain connectome-like weights
+#'
+#' @inheritDotParams liana::.liana_call
+#'
+#' @export
+#'
+#' @return lr_res modified to be method-specific
+get_logfc <- function(seurat_object,
+                      op_resource,
+                      ...){
+
+    .liana_call(
+        method = "logfc",
+        seurat_object = seurat_object,
+        op_resource = op_resource,
+        ...
+    )
+}
+
+
+
+#' Function to obtain scores via liana
+#'
+#' @inheritParams liana_pipe
+#' @inheritDotParams liana::liana_pipe
+#' @inheritParams liana_scores
+#'
+#' @return lr_res modified to be method-specific
+.liana_call <- function(method,
+                        seurat_object,
+                        op_resource,
+                        decomplexify = TRUE,
+                        lr_res = NULL,
+                        protein = 'complex',
+                        complex_policy = 'min0',
+                        ...){
+
+    lr_res %<>% `%||%`(
+        liana_pipe(seurat_object = seurat_object,
+                   op_resource = op_resource,
+                   decomplexify = decomplexify,
+                   ...)
+        )
+
+    liana_scores(.score_specs()[[method]],
+                 lr_res = lr_res,
+                 protein = protein,
+                 complex_policy = complex_policy
+                 )
+}
+
+
+
+#' Function to obtain different scoring schemes
+#'
+#' @param score_object score_object specific to the test obtained from score_specs
+#' @param lr_res ligand-receptor DE results and other stats between clusters
+#' @param decomplexify whether to decomplexify or not
+#' @inheritParams liana::recomplexify
+#'
+#'
+#' @return lr_res modified to be method-specific
+liana_scores <- function(score_object,
+                         lr_res,
+                         decomplexify = TRUE,
+                         ...){
+
+    if(decomplexify){
+        lr_res %<>%
+            select(ligand, receptor,
+                   ends_with("complex"),
+                   source, target,
+                   !!score_object@columns) %>%
+            recomplexify(columns = score_object@columns,
+                         ...)
+    }
+
+    args <- list(
+        lr_res = lr_res,
+        score_col = score_object@method_score
+    )
+
+    exec(score_object@score_fun, !!!args) %>%
+        ungroup()
+}
+
+
+#' Helper function to account for complexes in the resources
+#'
+#' @param lr_cmplx decomplexified lr_res
+#' @param columns columns to account for complexes for
+#' @param complex_policy policy how to account for the presence of complexes.
+#'   Following the example of \url{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
+#'   'min0' select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+#'   'all' returns all subunits separately
+#'
+#' @returns complex-accounted lr_res
+#'
+#'
+#' @details to be passed before the relevant score_calc function
+#'
+#' @importFrom stringr str_split
+recomplexify <- function(lr_res,
+                         columns,
+                         protein = 'complex',
+                         complex_policy = 'min0'){
+
+    if(protein=='complex'){
+        grps <- c("source", "target",
+                  "ligand.complex", "receptor.complex")
+    } else if(protein=='subunit'){
+        grps <- c("source", "target",
+                  "ligand", "receptor")
+    }
+
+    lr_cmplx <- lr_res %>%
+        group_by(across(all_of(grps))) %>%
+        summarise_at(.vars=columns, .funs = complex_policy)
+}
+
+
+#' Helper Function which returns the value closest to 0
+#' @param vec numeric vector
+#'
+#' @return value closest to 0
+min0 <- function(vec){
+    vec[which.min(abs(vec))]
+}
+
+
+#' Function Used to Calculate the Connectome-like `weight_sc` weights
+#'
+#' @param lr_res \link(liana::liana_pipe) results
+#'
+#' @noRd
+#'
+#' @return lr_res with an added `weight_sc` column
+connectome_score <- function(lr_res,
+                             score_col){
+    lr_res %>%
+        rowwise() %>%
+        mutate( {{ score_col }} := mean(c(ligand.scaled, receptor.scaled)))
+}
+
+
+#' Function Used to Calculate the NATMI-like `edge_specificity` weights
+#'
+#' @param lr_res \link(liana::liana_pipe) results
+#'
+#' @return lr_res with an added `edge_specificity` column
+#'
+#' @noRd
+#'
+#' @details In the original NATMI implementation NAs are filtered out, but
+#' here replace NAs with 0s, as they are needed to account for complexes
+natmi_score <- function(lr_res,
+                        score_col){
+    lr_res %>%
+        rowwise() %>%
+        mutate( {{ score_col }} := ((ligand.expr*(ligand.sum^-1))) *
+                   ((receptor.expr*(receptor.sum^-1)))) %>%
+        mutate( {{ score_col }} := tidyr::replace_na(.data[[score_col]], 0))
+}
+
+
+#' Function Used to Calculate the logFC products (by default)
+#'
+#' @param lr_res \link(liana::liana_pipe) results
+#'
+#' @noRd
+#'
+#' @return lr_res with an added `logfc_comb` column
+logfc_score <- function(lr_res,
+                        score_col){
+    lr_res %>%
+        rowwise() %>%
+        mutate( {{ score_col }} := `*`(ligand.log2FC, receptor.log2FC))
+}
+
+
+#' Correlation Coefficient For Interactions
+#'
+#' @param sce SingleCellExperiment Object
+#' @param lr_res a tabble with LR results obtained in the process of liana_pipe
+#'
+#' @noRd
+#'
+#' @return
+corr_score <- function(lr_res,
+                       sce){
+
+    # should filter to cell type A and B first? - this way it's not specific
+
+    corr_pairs <- scran::correlatePairs(sce) %>%
+        as_tibble()
+    corr_pairs <- corr_pairs %>%
+        select(gene1=gene2,
+               gene2=gene1,
+               everything()) %>%
+        bind_rows(corr_pairs) %>%
+        select(gene1,
+               gene2,
+               rho,
+               corr.FDR=FDR)
+
+    corr_score <- lr_res %>%
+        left_join(
+            corr_pairs,
+            by=c("ligand"="gene1",
+                 "receptor"="gene2")
+        ) %>%
+        distinct()
+}
+
+
+
+#' S4 Class used to generate aggregate/consesus scores for the methods.
+#'
+#' @name ScoreSpecifics-class
+#'
+#' @field method_name name of the method (e.g. cellchat)
+#' @field method_score The interaction score provided by the method (typically
+#' the score that reflects the specificity of interaction)
+#' @field descending_order whether the score should be interpreted in
+#'  descending order (i.e. highest score for an interaction is most likely)
+#'
+#' @field score_fun name of the function to call to generate the results
+#'
+#' @field columns columns required to generate the score
+#'
+#' @exportClass ScoreSpecifics
+setClass("ScoreSpecifics",
+         slots=list(method_name = "character",
+                    method_score = "character",
+                    descending_order= "logical",
+                    score_fun = "function",
+                    columns = "character")
+)
+
+
+
+#' Score Specs Holder
+#'
+#' @return list of RankSpecifics objects for each method
+#'
+#' @noRd
+#'
+#' @details to be explained better and to replace .rank_specs in liana_aggregate
+.score_specs <- function(){
+    list(
+        "connectome" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "connectome",
+                method_score = "weight_sc",
+                descending_order = TRUE,
+                score_fun = connectome_score,
+                columns = c("ligand.scaled", "receptor.scaled")
+            ),
+        "logfc" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "logfc", # ~italk
+                method_score = "logfc_comb",
+                descending_order = TRUE,
+                score_fun = logfc_score,
+                columns = c("ligand.log2FC", "receptor.log2FC")
+            ),
+        "natmi" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "natmi",
+                method_score = "edge_specificity",
+                descending_order = TRUE,
+                score_fun = natmi_score,
+                columns = c("ligand.expr", "receptor.expr",
+                            "ligand.sum", "receptor.sum")
+            )
+    )
+}
+
+
+
+
+
+
+
+# calculate scores
+# lr_res %>%
+#     mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
+#     corr_score(sce) %>% # need to change it to be cell-specific
+#     # natmi scores
+#     rowwise() %>%
+#     mutate(edge_specificity = ((ligand.expr*(ligand.sum^-1))) *
+#                ((receptor.expr*(receptor.sum^-1)))) %>%
+#     mutate(edge_specificity = tidyr::replace_na(edge_specificity, 0)) %>%
+#     rowwise() %>%
+#     mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
+#     select(source, starts_with("ligand"),
+#            target, starts_with("receptor"),
+#            everything())
