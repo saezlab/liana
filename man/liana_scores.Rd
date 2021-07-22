@@ -11,7 +11,8 @@ liana_scores(score_object, lr_res, decomplexify = TRUE, ...)
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
 
-\item{decomplexify}{whether to decomplexify or not}
+\item{decomplexify}{whether to dissociate complexes into subunits and hence
+and hence take complexes into account (decomplexify) or not}
 }
 \value{
 lr_res modified to be method-specific

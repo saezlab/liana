@@ -9,10 +9,13 @@ recomplexify(lr_res, columns, protein = "complex", complex_policy = "min0")
 \arguments{
 \item{columns}{columns to account for complexes for}
 
+\item{protein}{whether to return complexes ('complex') or protein subunits
+('protein')}
+
 \item{complex_policy}{policy how to account for the presence of complexes.
-Following the example of \url{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
-'min0' select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
-'all' returns all subunits separately}
+Following the example of \link[https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html]{Squidpy} valid options are:
+`'min0'`: select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+`'all'`: returns all subunits separately; or any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)}
 
 \item{lr_cmplx}{decomplexified lr_res}
 }

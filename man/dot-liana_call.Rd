@@ -20,9 +20,18 @@
 
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
-\item{decomplexify}{whether to decomplexify or not}
+\item{decomplexify}{whether to dissociate complexes into subunits and hence
+and hence take complexes into account (decomplexify) or not}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
+
+\item{protein}{whether to return complexes ('complex') or protein subunits
+('protein')}
+
+\item{complex_policy}{policy how to account for the presence of complexes.
+Following the example of \link[https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html]{Squidpy} valid options are:
+`'min0'`: select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+`'all'`: returns all subunits separately; or any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}

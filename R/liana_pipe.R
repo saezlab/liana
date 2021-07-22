@@ -142,6 +142,8 @@ liana_pipe <- function(seurat_object, # or sce object
                       by=c("ligand", "receptor")) %>%
             distinct()
     }
+
+    return(lr_res)
 }
 
 

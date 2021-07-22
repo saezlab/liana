@@ -4,7 +4,8 @@
 #'
 #' @export
 #'
-#' @return lr_res modified to be method-specific
+#' @return Returns a tibble with specificity weights (`weight_sc`) as calculated
+#'    by connectome
 get_connectome <- function(seurat_object,
                            op_resource,
                            ...){
@@ -19,13 +20,14 @@ get_connectome <- function(seurat_object,
 
 
 
-#' Function to obtain connectome-like weights
+#' Function to obtain NATMI-like weights
 #'
 #' @inheritDotParams .liana_call
 #'
 #' @export
 #'
-#' @return lr_res modified to be method-specific
+#' @return Returns a tibble with specificity weights (`edge_specificity`)
+#'    as calculated by natmi
 get_natmi <- function(seurat_object,
                       op_resource,
                       ...){
@@ -40,13 +42,15 @@ get_natmi <- function(seurat_object,
 
 
 
-#' Function to obtain connectome-like weights
+#' Function to obtain logFC weights
 #'
 #' @inheritDotParams .liana_call
 #'
 #' @export
 #'
-#' @return lr_res modified to be method-specific
+#' @return Returns a tibble with a logFC metric (`logfc_comb`). `logfc_comb` is
+#'    calculated as the product of the (1 vs the rest) log2FC for each ligand
+#'    and receptor gene
 get_logfc <- function(seurat_object,
                       op_resource,
                       ...){
@@ -66,6 +70,7 @@ get_logfc <- function(seurat_object,
 #' @inheritParams liana_pipe
 #' @inheritDotParams liana_pipe
 #' @inheritParams liana_scores
+#' @inheritParams recomplexify
 #'
 #' @return lr_res modified to be method-specific
 .liana_call <- function(method,
@@ -97,9 +102,11 @@ get_logfc <- function(seurat_object,
 #' @param lr_cmplx decomplexified lr_res
 #' @param columns columns to account for complexes for
 #' @param complex_policy policy how to account for the presence of complexes.
-#'   Following the example of \url{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
-#'   'min0' select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
-#'   'all' returns all subunits separately
+#'   Following the example of \link[https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html]{Squidpy} valid options are:
+#'   `'min0'`: select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+#'   `'all'`: returns all subunits separately; or any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
+#' @param protein whether to return complexes ('complex') or protein subunits
+#'    ('protein')
 #'
 #' @returns complex-accounted lr_res
 #'
@@ -131,7 +138,8 @@ recomplexify <- function(lr_res,
 #'
 #' @param score_object score_object specific to the test obtained from score_specs
 #' @param lr_res ligand-receptor DE results and other stats between clusters
-#' @param decomplexify whether to decomplexify or not
+#' @param decomplexify whether to dissociate complexes into subunits and hence
+#'    and hence take complexes into account (decomplexify) or not
 #' @inheritParams recomplexify
 #'
 #'

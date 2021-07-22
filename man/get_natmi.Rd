@@ -2,7 +2,7 @@
 % Please edit documentation in R/liana_call.R
 \name{get_natmi}
 \alias{get_natmi}
-\title{Function to obtain connectome-like weights}
+\title{Function to obtain NATMI-like weights}
 \usage{
 get_natmi(seurat_object, op_resource, ...)
 }
@@ -12,13 +12,21 @@ get_natmi(seurat_object, op_resource, ...)
   \describe{
     \item{\code{seurat_object}}{Seurat object}
     \item{\code{op_resource}}{resource tibble obtained via \link{liana::select_resource}}
-    \item{\code{decomplexify}}{whether to decomplexify or not}
+    \item{\code{decomplexify}}{whether to dissociate complexes into subunits and hence
+and hence take complexes into account (decomplexify) or not}
     \item{\code{lr_res}}{ligand-receptor DE results and other stats between clusters}
+    \item{\code{protein}}{whether to return complexes ('complex') or protein subunits
+('protein')}
+    \item{\code{complex_policy}}{policy how to account for the presence of complexes.
+Following the example of \link[https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html]{Squidpy} valid options are:
+`'min0'`: select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
+`'all'`: returns all subunits separately; or any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)}
   }}
 }
 \value{
-lr_res modified to be method-specific
+Returns a tibble with specificity weights (`edge_specificity`)
+   as calculated by natmi
 }
 \description{
-Function to obtain connectome-like weights
+Function to obtain NATMI-like weights
 }
