@@ -2,14 +2,15 @@
 #'
 #' @param seurat_object seurat object
 #' @param method method(s) to be run via liana
-#' @param resource resource(s) to be used by the methods
+#' @param resource resource(s) to be used by the methods (Use `all` to run all resources in one go)
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
 #'   method-resource combinations
 #' @param ... Pass custom method parameters to the methods via the liana wrapper
 #'    See \link{liana::liana_defaults} for more information
 #'
-#' @import tibble rlang
+#' @import tibble
+#' @importFrom rlang invoke
 #' @importFrom magrittr %<>% %>%
 #' @importFrom purrr map map2 safely compact
 #'
@@ -20,7 +21,6 @@
 #'
 #' @details LIANA wrapper method that can be used to call each method with
 #'  a given set of intercellular resources from the OmniPath universe.
-#' Use `all` to run all resources in one go.
 #'
 #' @export
 liana_wrap <- function(seurat_object,
@@ -31,36 +31,52 @@ liana_wrap <- function(seurat_object,
                        ...){
 
     if(length(setdiff(tolower(method), show_methods())) > 0){
-        stop(str_glue("{setdiff(method, show_methods())} not part of LIANA "))
+        stop(str_glue("{setdiff(tolower(method), show_methods())} not part of LIANA "))
     }
 
     if(length(setdiff(resource, c(show_resources(), "all"))) > 0){
         stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
     }
 
+
     resource %<>% select_resource
+
+    if(any(method %in% c("natmi", "connectome", "logfc"))){
+        lr_results <- resource %>%
+            map(function(reso){
+                args <- append(
+                    list("seurat_object" = seurat_object,
+                         "op_resource" = reso),
+                    liana_defaults(...)[["liana_pipe"]]
+                    )
+
+                rlang::invoke(liana_pipe, args)
+            }) %>%
+            setNames(names(resource))
+    }
 
     .select_method(method) %>%
         map2(names(.),
              safely(function(.method, method_name){
-                 if(!(method_name %in% c('squidpy'))){
-                     map(resource, function(reso){
+                 map2(resource, names(resource), function(reso, reso_name){
+
+                     if(!(method_name %in% c("natmi", "connectome", "logfc"))){
                          args <- append(
                              list("seurat_object" = seurat_object,
                                   "op_resource" = reso),
                              liana_defaults(...)[[method_name]]
+                             )
+                         rlang::invoke(.method,  args)
+                     } else {
+                         args <- append(
+                             list("seurat_object" = seurat_object,
+                                  lr_res = lr_results[[reso_name]]),
+                             liana_defaults(...)[["liana_call"]]
                          )
                          rlang::invoke(.method,  args)
+                     }
                      })
-                 } else{
-                     args <- append(
-                         list("seurat_object" = seurat_object,
-                              "op_resource" = resource),
-                         liana_defaults(...)[[method_name]]
-                     )
-                     rlang::invoke(.method,  args)
-                 }
-             }, quiet = FALSE)) %>%
+                 }, quiet = FALSE)) %>%
         # format errors
         {`if`(.simplify, map(., function(elem)
             .list2tib(.list2tib(compact(elem)))))}

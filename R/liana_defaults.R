@@ -14,40 +14,45 @@
 #'  manually passing a list of parameters for the appropraite method
 #'   \code{\link{liana_wrap}}
 #'
+#' Further, each `get_*` method will by default obtain the default params passed
+#'    via \code{\link{liana_pipe.params}} and \code{\link{.liana_call.params}}. This is done so that most steps
+#'    required for the calculation of these methods are undertaken only once.
+#'
 #' @return A list of the default parameters for each method
 #'
 #' @export
 liana_defaults <- function(
     assay = "RNA",
     cellchat.params = NULL,
-    connectome.params = NULL,
-    natmi.params = NULL,
-    logfc.params = NULL,
-    sca.params = NULL,
     squidpy.params = NULL,
+    sca.params = NULL,
+    liana_pipe.params = NULL,
+    liana_call.params = NULL,
     call_natmi.params = NULL,
     call_connectome.params = NULL,
     call_italk.params = NULL){
 
     default_args <- list(
-        # liana_scores
-        "connectome" = connectome.params %<>%
-            `%||%`(list(
+        # liana_scores (passed to get_* functions)
+        "liana_pipe" = liana_pipe.params %<>%
+            `%||%`(
+                list(
+                    decomplexify = TRUE,
+                    test.type = "t",
+                    pval.type = "all",
+                    seed = 1234
+                    )
+                ),
 
-            )),
+        "liana_call" = liana_call.params %<>%
+            `%||%`(
+                list(
+                    protein = "complex",
+                    complex_policy = "min0"
+                    )
+            ),
 
-        "natmi" = natmi.params %<>%
-            `%||%`(list(
-
-            )),
-
-        "logfc" = logfc.params %<>%
-            `%||%`(list(
-
-            )),
-
-
-        # pipes
+        # call_* functions/pipes
         "cellchat" = cellchat.params %<>%
             `%||%`(list(
                 nboot = 100,
@@ -107,5 +112,15 @@ liana_defaults <- function(
     )
 }
 
-
-
+#' Placeholder Function to pass Default Arguments to liana_pipa and any
+#'    derivative `get_*` method
+#'
+#' @return A list with default arguments passed to \code{\link{liana_pipe}}
+liana_pipe.params <- function(){
+    list(
+        decomplexify = TRUE,
+        test.type = "t",
+        pval.type = "all",
+        seed = 1234
+    )
+}

@@ -9,7 +9,8 @@ call_squidpy(seurat_object, op_resource, .seed = 1004, conda_env = NULL, ...)
 \arguments{
 \item{seurat_object}{Seurat object as input}
 
-\item{op_resource}{List of OmniPath resources}
+\item{op_resource}{Tibble or list of OmniPath resources, typically obtained via
+\code{\link{select_resource}}}
 
 \item{.seed}{used to python seed}
 

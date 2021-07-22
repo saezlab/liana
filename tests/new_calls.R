@@ -28,9 +28,15 @@ get_connectome(seurat_object,
 
 
 get_natmi(seurat_object,
-          select_resource("OmniPath")[[1]],
           lr_res = lr_res)
 
 get_logfc(seurat_object,
-          select_resource("OmniPath")[[1]],
-          lr_res = lr_res)
+          select_resource("OmniPath")[[1]])
+
+
+
+shoot <- liana_wrap(seurat_object = seurat_object,
+                    resource = "OmniPath",
+                    cellchat.params=list(.normalize = TRUE))
+
+

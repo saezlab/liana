@@ -1,6 +1,7 @@
 #' Call Squidpy Pipeline via reticulate with OmniPath and format results
 #' @param seurat_object Seurat object as input
-#' @param op_resource List of OmniPath resources
+#' @param op_resource Tibble or list of OmniPath resources, typically obtained via
+#'    \code{\link{select_resource}}
 #' @param .seed used to python seed
 #' @param conda_env python conda environment to run Squidpy; set to liana_env by default
 #' @param ... kwargs passed to Squidpy; For more information see:
@@ -20,10 +21,14 @@
 #'
 #' @export
 call_squidpy <- function(seurat_object,
-                          op_resource,
-                          .seed = 1004,
-                          conda_env = NULL,
-                          ...){
+                         op_resource,
+                         .seed = 1004,
+                         conda_env = NULL,
+                         ...){
+
+    if(is_tibble(op_resource)){
+        op_resource <- list("placeholder" = op_resource)
+    }
 
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
@@ -42,18 +47,17 @@ call_squidpy <- function(seurat_object,
 
     if("DEFAULT" %in% toupper(names(op_resource))){
         op_resource$Default <- NULL
-
     }
 
     op_resources <- map(op_resource, function(x) x %>%
-                              select(
-                                  uniprot_source = source,
-                                  unprot_target = target,
-                                  source = source_genesymbol,
-                                  target = target_genesymbol,
-                                  category_intercell_source,
-                                  category_intercell_target
-                                  )
+                            select(
+                                uniprot_source = source,
+                                unprot_target = target,
+                                source = source_genesymbol,
+                                target = target_genesymbol,
+                                category_intercell_source,
+                                category_intercell_target
+                                )
                         ) %>%
         unname() # unname r list, so its passed as list to Python
 

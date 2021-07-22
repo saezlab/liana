@@ -65,12 +65,14 @@ get_logfc <- function(seurat_object,
 
 
 
-#' Function to obtain scores via liana
+#' Wrapper Function to obtain scores via liana_pipe
 #'
 #' @inheritParams liana_pipe
 #' @inheritDotParams liana_pipe
 #' @inheritParams liana_scores
 #' @inheritParams recomplexify
+#'
+#' @noRd
 #'
 #' @return lr_res modified to be method-specific
 .liana_call <- function(method,

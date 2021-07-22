@@ -17,7 +17,7 @@ liana_wrap(
 
 \item{method}{method(s) to be run via liana}
 
-\item{resource}{resource(s) to be used by the methods}
+\item{resource}{resource(s) to be used by the methods (Use `all` to run all resources in one go)}
 
 \item{.simplify}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with
@@ -38,5 +38,4 @@ Run LIANA Wrapper
 \details{
 LIANA wrapper method that can be used to call each method with
  a given set of intercellular resources from the OmniPath universe.
-Use `all` to run all resources in one go.
 }
