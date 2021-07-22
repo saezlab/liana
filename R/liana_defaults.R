@@ -23,6 +23,7 @@
 #' @export
 liana_defaults <- function(
     assay = "RNA",
+    decomplexify = FALSE,
     cellchat.params = NULL,
     squidpy.params = NULL,
     sca.params = NULL,
@@ -37,7 +38,7 @@ liana_defaults <- function(
         "liana_pipe" = liana_pipe.params %<>%
             `%||%`(
                 list(
-                    decomplexify = TRUE,
+                    decomplexify = decomplexify,
                     test.type = "t",
                     pval.type = "all",
                     seed = 1234
@@ -47,8 +48,9 @@ liana_defaults <- function(
         "liana_call" = liana_call.params %<>%
             `%||%`(
                 list(
-                    protein = "complex",
-                    complex_policy = "min0"
+                    protein = "subunit",
+                    complex_policy = "min0",
+                    decomplexify = decomplexify
                     )
             ),
 

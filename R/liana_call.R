@@ -78,9 +78,9 @@ get_logfc <- function(seurat_object,
 .liana_call <- function(method,
                         seurat_object,
                         op_resource,
-                        decomplexify = TRUE,
+                        decomplexify = FALSE,
                         lr_res = NULL,
-                        protein = 'complex',
+                        protein = 'subunit',
                         complex_policy = 'min0',
                         ...){
 
@@ -94,7 +94,8 @@ get_logfc <- function(seurat_object,
     liana_scores(.score_specs()[[method]],
                  lr_res = lr_res,
                  protein = protein,
-                 complex_policy = complex_policy
+                 complex_policy = complex_policy,
+                 decomplexify = decomplexify
                  )
 }
 
@@ -107,34 +108,58 @@ get_logfc <- function(seurat_object,
 #'   Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
 #'   `'min0'` (default): select the subunit with the change/expression closest to 0
 #'    (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
-#'   `'all'`: returns all subunits separately;
+#'   `'all'`: returns all possible subunits separately;
 #'   Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
-#' @param protein whether to return complexes ('complex') or protein subunits ('protein' - default)
+#' @param protein whether to return complexes ('complex') or protein subunits ('subunit' - default)
 #'
 #' @returns complex-accounted lr_res
-#'
 #'
 #' @details to be passed before the relevant score_calc function
 #'
 #' @importFrom stringr str_split
 recomplexify <- function(lr_res,
                          columns,
-                         protein = 'complex',
-                         complex_policy = 'min0'){
+                         protein,
+                         complex_policy){
 
     if(complex_policy=='all'){ return(lr_res) }
 
+    grps <- c("source", "target",
+              "ligand.complex", "receptor.complex")
+
     if(protein=='complex'){
-        grps <- c("source", "target",
-                  "ligand.complex", "receptor.complex")
+
+        lr_cmplx <- lr_res %>%
+            group_by(across(all_of(grps))) %>%
+            summarise_at(.vars=columns, .funs = complex_policy) %>%
+            rename(ligand = ligand.complex,
+                   receptor = receptor.complex)
+
     } else if(protein=='subunit'){
-        grps <- c("source", "target",
-                  "ligand", "receptor")
+
+        columns %>%
+            map(function(col){
+
+                col.min <- sym(str_glue("{col}.min"))
+                col.flag <- sym(str_glue("{col}.flag"))
+
+                lr_res <<- lr_res %>%
+                    group_by(across(all_of(grps))) %>%
+                    mutate( {{ col.min }} := min0(.data[[col]])) %>%
+                    mutate( {{ col.flag }} :=
+                                ifelse(.data[[col]]==.data[[col.min]],
+                                       TRUE,
+                                       FALSE))
+            })
+
+        lr_cmplx <- lr_res %>%
+            filter(if_all(ends_with("flag"))) %>%
+            group_by(across(all_of(c("source", "target",
+                                     "ligand", "receptor")))) %>%
+            summarise_at(.vars=columns, .funs = complex_policy)
     }
 
-    lr_cmplx <- lr_res %>%
-        group_by(across(all_of(grps))) %>%
-        summarise_at(.vars=columns, .funs = complex_policy)
+    return(lr_cmplx)
 }
 
 
@@ -151,7 +176,7 @@ recomplexify <- function(lr_res,
 #' @return lr_res modified to be method-specific
 liana_scores <- function(score_object,
                          lr_res,
-                         decomplexify = TRUE,
+                         decomplexify,
                          ...){
 
     if(decomplexify){
@@ -271,70 +296,7 @@ corr_score <- function(lr_res,
 
 
 
-#' S4 Class used to generate aggregate/consesus scores for the methods.
-#'
-#' @name ScoreSpecifics-class
-#'
-#' @field method_name name of the method (e.g. cellchat)
-#' @field method_score The interaction score provided by the method (typically
-#' the score that reflects the specificity of interaction)
-#' @field descending_order whether the score should be interpreted in
-#'  descending order (i.e. highest score for an interaction is most likely)
-#'
-#' @field score_fun name of the function to call to generate the results
-#'
-#' @field columns columns required to generate the score
-#'
-#' @exportClass ScoreSpecifics
-setClass("ScoreSpecifics",
-         slots=list(method_name = "character",
-                    method_score = "character",
-                    descending_order= "logical",
-                    score_fun = "function",
-                    columns = "character")
-)
 
-
-
-#' Score Specs Holder
-#'
-#' @return list of RankSpecifics objects for each method
-#'
-#' @noRd
-#'
-#' @details to be explained better and to replace .rank_specs in liana_aggregate
-.score_specs <- function(){
-    list(
-        "connectome" =
-            methods::new(
-                "ScoreSpecifics",
-                method_name = "connectome",
-                method_score = "weight_sc",
-                descending_order = TRUE,
-                score_fun = connectome_score,
-                columns = c("ligand.scaled", "receptor.scaled")
-            ),
-        "logfc" =
-            methods::new(
-                "ScoreSpecifics",
-                method_name = "logfc", # ~italk
-                method_score = "logfc_comb",
-                descending_order = TRUE,
-                score_fun = logfc_score,
-                columns = c("ligand.log2FC", "receptor.log2FC")
-            ),
-        "natmi" =
-            methods::new(
-                "ScoreSpecifics",
-                method_name = "natmi",
-                method_score = "edge_specificity",
-                descending_order = TRUE,
-                score_fun = natmi_score,
-                columns = c("ligand.expr", "receptor.expr",
-                            "ligand.sum", "receptor.sum")
-            )
-    )
-}
 
 
 

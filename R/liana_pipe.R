@@ -2,6 +2,7 @@
 #'
 #' @param seurat_object Seurat object
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
+#' @inheritParams liana_scores
 #' @param test.type `test.type` passed to \link{scran::findMarkers}
 #' @param pval.type `pval.type` passed to \link{scran::findMarkers}
 #' @param seed Set Random Seed
@@ -13,7 +14,7 @@
 #' @return Returns a tibble with information required for LR calc
 liana_pipe <- function(seurat_object, # or sce object
                        op_resource,
-                       decomplexify = TRUE,
+                       decomplexify = FALSE,
                        test.type = "t",
                        pval.type = "all",
                        seed=1234){

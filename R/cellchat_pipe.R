@@ -39,7 +39,6 @@ call_cellchat <- function(op_resource,
     stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
 
-
     # create a dataframe of the cell labels
     labels <- Seurat::Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))

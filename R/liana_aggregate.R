@@ -45,8 +45,8 @@ liana_aggregate <- function(liana_res,
 
     liana_mlist <- liana_res %>%
         map2(names(.), function(res, method_name){
-            method_score <- .rank_specs()[[method_name]]@method_score
-            desc_order <- .rank_specs()[[method_name]]@descending_order
+            method_score <- .score_specs()[[method_name]]@method_score
+            desc_order <- .score_specs()[[method_name]]@descending_order
 
             .method = sym(as.character(str_glue("{method_name}.{method_score}")))
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))
@@ -134,80 +134,10 @@ liana_aggregate <- function(liana_res,
     }
 }
 
-
-
-#' S4 Class used to generate aggregate/consesus scores for the methods.
-#'
-#' @name RankSpecifics-class
-#'
-#' @field method_name name of the method (e.g. cellchat)
-#' @field method_score The interaction score provided by the method (typically
-#' the score that reflects the specificity of interaction)
-#' @field descending_order whether the score should be interpreted in
-#'  descending order (i.e. highest score for an interaction is most likely)
-#'
-#' @exportClass RankSpecifics
-setClass("RankSpecifics",
-         slots=list(method_name="character",
-                    method_score="character",
-                    descending_order="logical"))
-
-#' Rank Specs Holder
-#'
-#' @return list of RankSpecifics objects for each method
-#'
-#' @noRd
-.rank_specs <- function(){
-    list(
-        "cellchat" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "cellchat",
-                method_score = "pval",
-                descending_order = FALSE
-            ),
-        "connectome" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "connectome",
-                method_score = "weight_sc",
-                descending_order = TRUE
-            ),
-        "italk" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "italk",
-                method_score = "weight_comb",
-                descending_order = TRUE
-            ),
-        "natmi" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "natmi",
-                method_score = "edge_specificity",
-                descending_order = TRUE
-            ),
-        "sca" = methods::new(
-            "RankSpecifics",
-            method_name = "sca",
-            method_score = "LRscore",
-            descending_order = TRUE
-        ),
-        "squidpy" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "Squidpy",
-                method_score = "pvalue",
-                descending_order = FALSE
-            )
-    )
-}
-
-
 #' Robust Aggregate ranks using `RobustRankAggreg`
 #'
 #' @param liana_mlist liana list with method tibbles
-#' @param ... Parametres passed to `aggregateRanks` from `RobustRankAggreg`
+#' @inheritDotParams RobustRankAggreg::aggregateRanks
 .aggregate_rank <- function(liana_mlist, ...){
     liana_mlist %>%
         map(function(res){
