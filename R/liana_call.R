@@ -102,11 +102,12 @@ get_logfc <- function(seurat_object,
 #' @param lr_cmplx decomplexified lr_res
 #' @param columns columns to account for complexes for
 #' @param complex_policy policy how to account for the presence of complexes.
-#'   Following the example of \link[https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html]{Squidpy} valid options are:
-#'   `'min0'`: select the subunit with the change/expression closest to 0 (as in CellPhoneDB)
-#'   `'all'`: returns all subunits separately; or any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
-#' @param protein whether to return complexes ('complex') or protein subunits
-#'    ('protein')
+#'   Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
+#'   `'min0'` (default): select the subunit with the change/expression closest to 0
+#'    (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
+#'   `'all'`: returns all subunits separately;
+#'   Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
+#' @param protein whether to return complexes ('complex') or protein subunits ('protein' - default)
 #'
 #' @returns complex-accounted lr_res
 #'
@@ -118,6 +119,8 @@ recomplexify <- function(lr_res,
                          columns,
                          protein = 'complex',
                          complex_policy = 'min0'){
+
+    if(complex_policy=='all'){ return(lr_res) }
 
     if(protein=='complex'){
         grps <- c("source", "target",

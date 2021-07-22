@@ -24,18 +24,18 @@
 #'
 #' @export
 liana_wrap <- function(seurat_object,
-                       method = c('cellchat', 'connectome', 'italk',
-                                  'natmi', 'sca', 'squidpy'),
+                       method = c('natmi', 'connectome', 'logfc',
+                                  'cellchat', 'sca', 'squidpy'),
                        resource = c('OmniPath'),
                        .simplify = TRUE,
                        ...){
 
-    if(length(setdiff(tolower(method), .get_methods())) > 0){
-        stop(str_glue("{setdiff(method, .get_methods())} not part of LIANA "))
+    if(length(setdiff(tolower(method), show_methods())) > 0){
+        stop(str_glue("{setdiff(method, show_methods())} not part of LIANA "))
     }
 
-    if(length(setdiff(resource, c(get_resources(), "all"))) > 0){
-        stop(str_glue("{setdiff(resource, get_resources())} not part of LIANA "))
+    if(length(setdiff(resource, c(show_resources(), "all"))) > 0){
+        stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
     }
 
     resource %<>% select_resource
@@ -43,7 +43,7 @@ liana_wrap <- function(seurat_object,
     .select_method(method) %>%
         map2(names(.),
              safely(function(.method, method_name){
-                 if(!(method_name %in% c('squidpy', 'natmi'))){
+                 if(!(method_name %in% c('squidpy'))){
                      map(resource, function(reso){
                          args <- append(
                              list("seurat_object" = seurat_object,
@@ -86,7 +86,7 @@ select_resource <- function(resource){
         readRDS(system.file(package = 'liana', "omni_resources.rds"))
 
     if(tolower(resource)=="all"){
-        omni_resources[get_resources()]
+        omni_resources[show_resources()]
     } else{
         omni_resources[resource]
     }
@@ -98,18 +98,24 @@ select_resource <- function(resource){
 #'
 #' @return A list of method function names (to be called by the LIANA wrapper)
 #'
-#' @details Adapted from (jvelezmagic); decoupleR\https://github.com/saezlab/decoupleR/
+#' @details Adapted from (jvelezmagic); [decoupleR](https://github.com/saezlab/decoupleR/)
 #'
 #' @noRd
 .select_method <- function(method){
     available_method <-
         list(
-            cellchat = expr(call_cellchat),
-            connectome = expr(call_connectome),
-            italk = expr(call_italk),
-            natmi = expr(call_natmi),
+            # liana_scores
+            connectome = expr(get_connectome),
+            logfc = expr(get_logfc),
+            natmi = expr(get_natmi),
+            # pipes
             sca = expr(call_sca),
-            squidpy = expr(call_squidpy)
+            squidpy = expr(call_squidpy),
+            cellchat = expr(call_cellchat),
+            # deprecated
+            call_connectome = expr(call_connectome),
+            call_natmi = expr(call_natmi),
+            call_italk = expr(call_italk)
         )
 
     method %>%
@@ -122,15 +128,28 @@ select_resource <- function(resource){
 
 
 #' Helper Function to return the methods in LIANA
-#' @noRd
-.get_methods <- function(){
-    c("italk", "squidpy", "natmi", "cellchat", "connectome", "sca")
+#'
+#' @details methods starting with `call_*` were re-implemented in liana and
+#'    albeit their original pipelines (and packages are still supported),
+#'    we recommend using the liana re-implementations for efficiency
+#'
+#' @export
+show_methods <- function(){
+    c("logfc",
+      "natmi",
+      "connectome",
+      "squidpy",
+      "cellchat",
+      "sca",
+      'call_natmi',
+      'call_italk',
+      'call_connectome')
 }
 
 #' Helper Function to return the Resources in LIANA
 #'
 #' @export
-get_resources <- function(){
+show_resources <- function(){
     as.character(names(
         readRDS(system.file(package = 'liana', "omni_resources.rds"))
         ))

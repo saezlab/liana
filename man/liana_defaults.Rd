@@ -8,24 +8,33 @@ liana_defaults(
   assay = "RNA",
   cellchat.params = NULL,
   connectome.params = NULL,
-  italk.params = NULL,
   natmi.params = NULL,
+  logfc.params = NULL,
   sca.params = NULL,
-  squidpy.params = NULL
+  squidpy.params = NULL,
+  call_natmi.params = NULL,
+  call_connectome.params = NULL,
+  call_italk.params = NULL
 )
 }
 \arguments{
-\item{cellchat.params}{CellChat Parameters \link{liana::call_cellchat}}
+\item{cellchat.params}{CellChat Parameters \code{\link{call_cellchat}}}
 
-\item{connectome.params}{Connectome Parameters \link{liana::call_connectome}}
+\item{connectome.params}{\code{\link{get_connectome}}}
 
-\item{italk.params}{iTALK Parameters \link{liana::call_italk}}
+\item{natmi.params}{\code{\link{get_natmi}}}
 
-\item{natmi.params}{NATMI Parameters \link{liana::call_natmi}}
+\item{logfc.params}{\code{\link{get_logfc}}}
 
-\item{sca.params}{SingleCellSignalR Parameters \link{liana::call_sca}}
+\item{sca.params}{SingleCellSignalR Parameters \code{\link{call_sca}}}
 
-\item{squidpy.params}{Squidpy Parameters \link{liana::call_squidpy}}
+\item{squidpy.params}{Squidpy Parameters \code{\link{call_squidpy}}}
+
+\item{call_natmi.params}{NATMI Parameters \code{\link{call_natmi}}}
+
+\item{call_connectome.params}{Connectome Parameters \code{\link{call_connectome}}}
+
+\item{call_italk.params}{iTALK Parameters \code{\link{call_italk}}}
 }
 \value{
 A list of the default parameters for each method
@@ -36,5 +45,5 @@ Function to pass Default Arguments for each method
 \details{
 The default parameters for each method can also be overwritten by
  manually passing a list of parameters for the appropraite method
-  \link{liana::liana_wrap}
+  \code{\link{liana_wrap}}
 }
