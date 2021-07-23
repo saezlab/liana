@@ -24,6 +24,10 @@ liana_defaults(
 
 \item{sca.params}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
 
+\item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
+
+\item{liana_call.params}{list of Parameters passed to NATMI \code{\link{.liana_call}}}
+
 \item{call_natmi.params}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
 
 \item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
@@ -43,11 +47,5 @@ A list of the default parameters for each method
 Function to pass Default Arguments for each method
 }
 \details{
-The default parameters for each method can also be overwritten by
- manually passing a list of parameters for the appropraite method
-  \code{\link{liana_wrap}}
 
-Further, each `get_*` method will by default obtain the default params passed
-   via \code{\link{liana_pipe.params}} and \code{\link{.liana_call.params}}. This is done so that most steps
-   required for the calculation of these methods are undertaken only once.
 }

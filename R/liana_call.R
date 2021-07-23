@@ -1,6 +1,6 @@
 #' Function to obtain connectome-like weights
 #'
-#' @inheritDotParams .liana_call
+#' @inheritDotParams liana_call
 #'
 #' @export
 #'
