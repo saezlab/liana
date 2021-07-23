@@ -18,23 +18,23 @@ liana_defaults(
 )
 }
 \arguments{
-\item{cellchat.params}{CellChat Parameters \code{\link{call_cellchat}}}
+\item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 
-\item{squidpy.params}{Squidpy Parameters \code{\link{call_squidpy}}}
+\item{squidpy.params}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
 
-\item{sca.params}{SingleCellSignalR Parameters \code{\link{call_sca}}}
+\item{sca.params}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
 
-\item{call_natmi.params}{NATMI Parameters \code{\link{call_natmi}}}
+\item{call_natmi.params}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
 
-\item{call_connectome.params}{Connectome Parameters \code{\link{call_connectome}}}
+\item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
 
-\item{call_italk.params}{iTALK Parameters \code{\link{call_italk}}}
+\item{call_italk.params}{list of Parameters passed to iTALK \code{\link{call_italk}}}
 
-\item{natmi.params}{\code{\link{get_natmi}}}
+\item{natmi.params}{list of Parameters passed to \code{\link{get_natmi}}}
 
-\item{connectome.params}{\code{\link{get_connectome}}}
+\item{connectome.params}{list of Parameters passed to \code{\link{get_connectome}}}
 
-\item{logfc.params}{\code{\link{get_logfc}}}
+\item{logfc.params}{list of Parameters passed to \code{\link{get_logfc}}}
 }
 \value{
 A list of the default parameters for each method

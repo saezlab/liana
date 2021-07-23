@@ -1,14 +1,14 @@
 #' Function to pass Default Arguments for each method
 #'
-#' @param natmi.params \code{\link{get_natmi}}
-#' @param connectome.params \code{\link{get_connectome}}
-#' @param logfc.params \code{\link{get_logfc}}
-#' @param cellchat.params CellChat Parameters \code{\link{call_cellchat}}
-#' @param sca.params SingleCellSignalR Parameters \code{\link{call_sca}}
-#' @param squidpy.params Squidpy Parameters \code{\link{call_squidpy}}
-#' @param call_connectome.params Connectome Parameters \code{\link{call_connectome}}
-#' @param call_italk.params iTALK Parameters \code{\link{call_italk}}
-#' @param call_natmi.params NATMI Parameters \code{\link{call_natmi}}
+#' @param natmi.params list of Parameters passed to \code{\link{get_natmi}}
+#' @param connectome.params list of Parameters passed to \code{\link{get_connectome}}
+#' @param logfc.params list of Parameters passed to \code{\link{get_logfc}}
+#' @param cellchat.params list of Parameters passed to CellChat \code{\link{call_cellchat}}
+#' @param sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
+#' @param squidpy.params list of Parameters passed to Squidpy \code{\link{call_squidpy}}
+#' @param call_connectome.params list of Parameters passed to Connectome \code{\link{call_connectome}}
+#' @param call_italk.params list of Parameters passed to iTALK \code{\link{call_italk}}
+#' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method

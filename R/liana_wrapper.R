@@ -6,8 +6,7 @@
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
 #'   method-resource combinations
-#' @param ... Pass custom method parameters to the methods via the liana wrapper
-#'    See \link{liana::liana_defaults} for more information
+#' @inheritDotParams liana_defaults
 #'
 #' @import tibble
 #' @importFrom rlang invoke
@@ -68,12 +67,12 @@ liana_wrap <- function(seurat_object,
                              )
                          rlang::invoke(.method,  args)
                      } else {
-                         args <- append(
-                             list("seurat_object" = seurat_object,
-                                  lr_res = lr_results[[reso_name]]),
-                             liana_defaults(...)[["liana_call"]]
+                       args <- append(
+                         list("seurat_object" = seurat_object,
+                              lr_res = lr_results[[reso_name]]),
+                         liana_defaults(...)[["liana_call"]]
                          )
-                         rlang::invoke(.method,  args)
+                       rlang::invoke(.method,  args)
                      }
                      })
                  }, quiet = FALSE)) %>%

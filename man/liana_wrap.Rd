@@ -23,8 +23,16 @@ liana_wrap(
 of tibbles for each method (default), rather than a list of lists with
 method-resource combinations}
 
-\item{...}{Pass custom method parameters to the methods via the liana wrapper
-See \link{liana::liana_defaults} for more information}
+\item{...}{
+  Arguments passed on to \code{\link[=liana_defaults]{liana_defaults}}
+  \describe{
+    \item{\code{cellchat.params}}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
+    \item{\code{sca.params}}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
+    \item{\code{squidpy.params}}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
+    \item{\code{call_connectome.params}}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
+    \item{\code{call_italk.params}}{list of Parameters passed to iTALK \code{\link{call_italk}}}
+    \item{\code{call_natmi.params}}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
+  }}
 }
 \value{
 A list of method-resource results - i.e. provided resources are run
