@@ -7,7 +7,7 @@
 liana_pipe(
   seurat_object,
   op_resource,
-  decomplexify = TRUE,
+  decomplexify = FALSE,
   test.type = "t",
   pval.type = "all",
   seed = 1234
@@ -17,6 +17,9 @@ liana_pipe(
 \item{seurat_object}{Seurat object}
 
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
+
+\item{decomplexify}{whether to dissociate complexes into subunits and hence
+and hence take complexes into account (decomplexify) or not}
 
 \item{test.type}{`test.type` passed to \link{scran::findMarkers}}
 

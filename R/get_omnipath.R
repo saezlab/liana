@@ -224,7 +224,7 @@ get_partners <- function(side, resource, ...){
 #'
 #' @param side 'ligand' (trans), 'receptor' (rec) or 'both' (both short or
 #'     long notation can be used)
-#' @param ... Passed to \code{OmnipathR::import_omnipath_intercell}.
+#' @inheritDotParams OmnipathR::import_omnipath_intercell
 #'
 #' @importFrom OmnipathR import_omnipath_intercell
 #' @importFrom magrittr %>%

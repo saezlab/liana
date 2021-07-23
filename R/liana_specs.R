@@ -25,7 +25,7 @@ setClass("ScoreSpecifics",
 
 #' Score Specs Holder
 #'
-#' @return list of RankSpecifics objects for each method
+#' @return list of ScoreSpecifics objects for each method
 #'
 #' @noRd
 #'
@@ -59,9 +59,65 @@ setClass("ScoreSpecifics",
                 score_fun = natmi_score,
                 columns = c("ligand.expr", "receptor.expr",
                             "ligand.sum", "receptor.sum")
+            ),
+        "sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
+        "squidpy" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "Squidpy",
+                method_score = "pvalue",
+                descending_order = FALSE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "cellchat" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cellchat",
+                method_score = "pval",
+                descending_order = FALSE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        # deprecated
+        "call_connectome" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "connectome",
+                method_score = "weight_sc",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_italk" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "italk",
+                method_score = "weight_comb",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_natmi" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "natmi",
+                method_score = "edge_specificity",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
             )
     )
 }
+
+
 
 
 #' S4 Class used to generate aggregate/consesus scores for the methods.
@@ -78,55 +134,5 @@ setClass("ScoreSpecifics",
 setClass("RankSpecifics",
          slots=list(method_name="character",
                     method_score="character",
-                    descending_order="logical"))
-
-#' Rank Specs Holder
-#'
-#' @return list of RankSpecifics objects for each method
-#'
-#' @noRd
-.rank_specs <- function(){
-    list(
-        "cellchat" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "cellchat",
-                method_score = "pval",
-                descending_order = FALSE
-            ),
-        "connectome" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "connectome",
-                method_score = "weight_sc",
-                descending_order = TRUE
-            ),
-        "italk" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "italk",
-                method_score = "weight_comb",
-                descending_order = TRUE
-            ),
-        "natmi" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "natmi",
-                method_score = "edge_specificity",
-                descending_order = TRUE
-            ),
-        "sca" = methods::new(
-            "RankSpecifics",
-            method_name = "sca",
-            method_score = "LRscore",
-            descending_order = TRUE
-        ),
-        "squidpy" =
-            methods::new(
-                "RankSpecifics",
-                method_name = "Squidpy",
-                method_score = "pvalue",
-                descending_order = FALSE
-            )
-    )
-}
+                    descending_order="logical")
+)

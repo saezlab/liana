@@ -154,3 +154,4 @@ liana_aggregate <- function(liana_res,
         separate(col = "interaction", sep = "_",
                  into = c("source", "ligand", "target", "receptor"))
 }
+
