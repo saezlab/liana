@@ -9,13 +9,15 @@
 #' @param call_connectome.params list of Parameters passed to Connectome \code{\link{call_connectome}}
 #' @param call_italk.params list of Parameters passed to iTALK \code{\link{call_italk}}
 #' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
+#' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
+#' @param liana_call.params list of Parameters passed to NATMI \code{\link{.liana_call}}
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method
 #'   \code{\link{liana_wrap}}
 #'
 #' Further, each `get_*` method will by default obtain the default params passed
-#'    via \code{\link{liana_pipe.params}} and \code{\link{.liana_call.params}}. This is done so that most steps
+#'    via \code{\link{liana_pipe} and \code{\link{.liana_call}}. This is done so that most steps
 #'    required for the calculation of these methods are undertaken only once.
 #'
 #' @return A list of the default parameters for each method
@@ -111,18 +113,5 @@ liana_defaults <- function(
                 .format = TRUE,
                 .DE = TRUE
             ))
-    )
-}
-
-#' Placeholder Function to pass Default Arguments to liana_pipa and any
-#'    derivative `get_*` method
-#'
-#' @return A list with default arguments passed to \code{\link{liana_pipe}}
-liana_pipe.params <- function(){
-    list(
-        decomplexify = TRUE,
-        test.type = "t",
-        pval.type = "all",
-        seed = 1234
     )
 }

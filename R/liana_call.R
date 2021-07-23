@@ -10,7 +10,7 @@ get_connectome <- function(seurat_object,
                            op_resource,
                            ...){
 
-    .liana_call(
+    liana_call(
         method = "connectome",
         seurat_object = seurat_object,
         op_resource = op_resource,
@@ -22,7 +22,7 @@ get_connectome <- function(seurat_object,
 
 #' Function to obtain NATMI-like weights
 #'
-#' @inheritDotParams .liana_call
+#' @inheritDotParams liana_call
 #'
 #' @export
 #'
@@ -32,7 +32,7 @@ get_natmi <- function(seurat_object,
                       op_resource,
                       ...){
 
-    .liana_call(
+    liana_call(
         method = "natmi",
         seurat_object = seurat_object,
         op_resource = op_resource,
@@ -44,7 +44,7 @@ get_natmi <- function(seurat_object,
 
 #' Function to obtain logFC weights
 #'
-#' @inheritDotParams .liana_call
+#' @inheritDotParams liana_call
 #'
 #' @export
 #'
@@ -55,7 +55,7 @@ get_logfc <- function(seurat_object,
                       op_resource,
                       ...){
 
-    .liana_call(
+    liana_call(
         method = "logfc",
         seurat_object = seurat_object,
         op_resource = op_resource,
@@ -72,17 +72,17 @@ get_logfc <- function(seurat_object,
 #' @inheritParams liana_scores
 #' @inheritParams recomplexify
 #'
-#' @noRd
+#' @export
 #'
 #' @return lr_res modified to be method-specific
-.liana_call <- function(method,
-                        seurat_object,
-                        op_resource,
-                        decomplexify = FALSE,
-                        lr_res = NULL,
-                        protein = 'subunit',
-                        complex_policy = 'min0',
-                        ...){
+liana_call <- function(method,
+                       seurat_object,
+                       op_resource,
+                       decomplexify = FALSE,
+                       lr_res = NULL,
+                       protein = 'subunit',
+                       complex_policy = 'min0',
+                       ...){
 
     lr_res %<>% `%||%`(
         liana_pipe(seurat_object = seurat_object,
