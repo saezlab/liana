@@ -1,3 +1,25 @@
+#' Function to obtain SingleCellSignalR-like scores
+#'
+#' @inheritDotParams liana_call
+#'
+#' @export
+#'
+#' @return Returns a tibble with specificity weights (`LRscore`) as calculated
+#'    by SingleCellSignalR
+get_sca <- function(seurat_object,
+                    op_resource,
+                    ...){
+
+    liana_call(
+        method = "sca",
+        seurat_object = seurat_object,
+        op_resource = op_resource,
+        ...
+    )
+}
+
+
+
 #' Function to obtain connectome-like weights
 #'
 #' @inheritDotParams liana_call
@@ -178,13 +200,14 @@ liana_scores <- function(score_object,
                          lr_res,
                          decomplexify,
                          ...){
+    lr_res %<>%
+        select(ligand, receptor,
+               ends_with("complex"),
+               source, target,
+               !!score_object@columns)
 
     if(decomplexify){
         lr_res %<>%
-            select(ligand, receptor,
-                   ends_with("complex"),
-                   source, target,
-                   !!score_object@columns) %>%
             recomplexify(columns = score_object@columns,
                          ...)
     }
@@ -258,6 +281,27 @@ logfc_score <- function(lr_res,
         rowwise() %>%
         mutate( {{ score_col }} := `*`(ligand.log2FC, receptor.log2FC))
 }
+
+
+
+#' Function Used to Calculate the SigneCellSignalR `LRscore` weights
+#'
+#' @param lr_res \link(liana::liana_pipe) results
+#'
+#' @noRd
+#'
+#' @return lr_res with an added `LRscore` column
+sca_score <- function(lr_res,
+                      score_col){
+    lr_res %>%
+        rowwise() %>%
+        mutate( {{ score_col }} :=
+                    (ligand.expr^(1/2) * receptor.expr^(1/2))/
+                    (global_mean + ligand.expr^(1/2) * receptor.expr^(1/2))
+        )
+}
+
+
 
 
 #' Correlation Coefficient For Interactions

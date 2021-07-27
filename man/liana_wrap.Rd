@@ -33,7 +33,7 @@ method-resource combinations}
     \item{\code{call_italk.params}}{list of Parameters passed to iTALK \code{\link{call_italk}}}
     \item{\code{call_natmi.params}}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
     \item{\code{liana_pipe.params}}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
-    \item{\code{liana_call.params}}{list of Parameters passed to NATMI \code{\link{.liana_call}}}
+    \item{\code{liana_call.params}}{list of Parameters passed to NATMI \code{\link{liana_call}}}
   }}
 }
 \value{

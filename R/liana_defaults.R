@@ -10,14 +10,14 @@
 #' @param call_italk.params list of Parameters passed to iTALK \code{\link{call_italk}}
 #' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
 #' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
-#' @param liana_call.params list of Parameters passed to NATMI \code{\link{.liana_call}}
+#' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method
 #'   \code{\link{liana_wrap}}
 #'
 #' Further, each `get_*` method will by default obtain the default params passed
-#'    via \code{\link{liana_pipe} and \code{\link{.liana_call}}. This is done so that most steps
+#'    via \code{\link{liana_pipe} and \code{\link{liana_call}}. This is done so that most steps
 #'    required for the calculation of these methods are undertaken only once.
 #'
 #' @return A list of the default parameters for each method
@@ -68,13 +68,6 @@ liana_defaults <- function(
                 .raw_use = TRUE
                 )),
 
-        'sca' = sca.params %<>%
-            `%||%`(list(
-                assay = assay,
-                .format = TRUE,
-                s.score = 0,
-                logFC = log2(1.5))),
-
         'squidpy' = squidpy.params %<>%
            `%||%`(list(
                cluster_key=NULL,
@@ -84,6 +77,14 @@ liana_defaults <- function(
            )),
 
         # deprecated call_* functions
+        'call_sca' = sca.params %<>%
+            `%||%`(list(
+                assay = assay,
+                .format = TRUE,
+                s.score = 0,
+                logFC = log2(1.5))),
+
+
         'call_connectome' = call_connectome.params %<>%
             `%||%`(list(
                 min.cells.per.ident = 1,

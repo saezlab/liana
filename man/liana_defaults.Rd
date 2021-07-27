@@ -26,7 +26,7 @@ liana_defaults(
 
 \item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
 
-\item{liana_call.params}{list of Parameters passed to NATMI \code{\link{.liana_call}}}
+\item{liana_call.params}{list of Parameters passed to NATMI \code{\link{liana_call}}}
 
 \item{call_natmi.params}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
 

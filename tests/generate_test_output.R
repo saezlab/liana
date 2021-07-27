@@ -5,7 +5,7 @@ seurat_object <-
 
 # liana Wrapper Output
 liana_out <- liana_wrap(seurat_object,
-                        method = c('italk', 'sca','connectome'),
+                        method = c('sca','squidpy'),
                         resource = c('OmniPath'))
 saveRDS(liana_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))

@@ -60,14 +60,15 @@ setClass("ScoreSpecifics",
                 columns = c("ligand.expr", "receptor.expr",
                             "ligand.sum", "receptor.sum")
             ),
-        "sca" = methods::new(
-            "ScoreSpecifics",
-            method_name = "sca",
-            method_score = "LRscore",
-            descending_order = TRUE,
-            score_fun = function(){},
-            columns = ""
-        ),
+        "sca" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "sca",
+                method_score = "LRscore",
+                descending_order = TRUE,
+                score_fun = sca_score,
+                columns = c("ligand.expr", "receptor.expr", "global_mean")
+            ),
         "squidpy" =
             methods::new(
                 "ScoreSpecifics",
@@ -86,6 +87,7 @@ setClass("ScoreSpecifics",
                 score_fun = function(){},
                 columns = ""
             ),
+
         # deprecated
         "call_connectome" =
             methods::new(
@@ -96,6 +98,14 @@ setClass("ScoreSpecifics",
                 score_fun = function(){},
                 columns = ""
             ),
+        "call_sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
         "call_italk" =
             methods::new(
                 "ScoreSpecifics",

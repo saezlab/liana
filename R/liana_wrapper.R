@@ -40,7 +40,8 @@ liana_wrap <- function(seurat_object,
 
     resource %<>% select_resource
 
-    if(any(method %in% c("natmi", "connectome", "logfc"))){
+    if(any(method %in% c("natmi", "connectome", # this needs to change - its bad
+                         "logfc", "sca"))){
         lr_results <- resource %>%
             map(function(reso){
                 args <- append(
@@ -59,7 +60,8 @@ liana_wrap <- function(seurat_object,
              safely(function(.method, method_name){
                  map2(resource, names(resource), function(reso, reso_name){
 
-                     if(!(method_name %in% c("natmi", "connectome", "logfc"))){
+                     if(!(method_name %in% c("natmi", "connectome",
+                                             "logfc", "sca"))){
                          args <- append(
                              list("seurat_object" = seurat_object,
                                   "op_resource" = reso),
@@ -123,11 +125,12 @@ select_resource <- function(resource){
             connectome = expr(get_connectome),
             logfc = expr(get_logfc),
             natmi = expr(get_natmi),
+            sca = expr(get_sca),
             # pipes
-            sca = expr(call_sca),
             squidpy = expr(call_squidpy),
             cellchat = expr(call_cellchat),
             # deprecated
+            call_sca = expr(call_sca),
             call_connectome = expr(call_connectome),
             call_natmi = expr(call_natmi),
             call_italk = expr(call_italk)
@@ -153,9 +156,10 @@ show_methods <- function(){
     c("logfc",
       "natmi",
       "connectome",
+      "sca",
       "squidpy",
       "cellchat",
-      "sca",
+      "call_sca",
       'call_natmi',
       'call_italk',
       'call_connectome')

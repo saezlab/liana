@@ -7,7 +7,7 @@
 #' @param pval.type `pval.type` passed to \link{scran::findMarkers}
 #' @param seed Set Random Seed
 #'
-#' @import scuttle scran SingleCellExperiment Seurat
+#' @import scuttle scran SingleCellExperiment SeuratObject
 #'
 #' @export
 #'
@@ -41,7 +41,7 @@ liana_pipe <- function(seurat_object, # or sce object
 
     # convert to SCE
     sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay="RNA")
-    colLabels(sce) <- Seurat::Idents(seurat_object)
+    colLabels(sce) <- SeuratObject::Idents(seurat_object)
     sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
 
     # Get Avg Per Cluster (data assay)
@@ -58,6 +58,13 @@ liana_pipe <- function(seurat_object, # or sce object
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
+
+
+    # Get Global Mean
+    global_mean <- sce@assays@data$logcounts %>%
+        .[Matrix::rowSums(.)>0,]
+    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -126,7 +133,10 @@ liana_pipe <- function(seurat_object, # or sce object
                        entity = "receptor") %>%
         # logFC
         join_log2FC(logfc_df, source_target = "source", entity="ligand") %>%
-        join_log2FC(logfc_df, source_target = "target", entity="receptor")
+        join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
+        # Global Mean
+        mutate(global_mean = global_mean)
+
 
     if(decomplexify){
         # Join complexes (recomplexify) to lr_res
