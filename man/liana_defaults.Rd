@@ -18,6 +18,12 @@ liana_defaults(
 )
 }
 \arguments{
+\item{assay}{Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
+and `call_connectome`}
+
+\item{decomplexify}{specify whether complexes in the resource should be
+dissociated and taken into account}
+
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 
 \item{squidpy.params}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
@@ -33,12 +39,6 @@ liana_defaults(
 \item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
 
 \item{call_italk.params}{list of Parameters passed to iTALK \code{\link{call_italk}}}
-
-\item{natmi.params}{list of Parameters passed to \code{\link{get_natmi}}}
-
-\item{connectome.params}{list of Parameters passed to \code{\link{get_connectome}}}
-
-\item{logfc.params}{list of Parameters passed to \code{\link{get_logfc}}}
 }
 \value{
 A list of the default parameters for each method

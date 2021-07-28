@@ -340,6 +340,107 @@ corr_score <- function(lr_res,
 
 
 
+#' Function to calculate pvalues as in CPDB
+#'
+#' @param lr_res
+#' @param sce_mat single cell expression matrix (transposed)
+#'
+#' @return lr_res with pvalues
+cpdb_score <- function(lr_res,
+                       sce_mat,
+                       nperms = 100,
+                       seed = 1234,
+                       trim = 0.1,
+                       parallelize = TRUE,
+                       workers = 4){
+
+    # shuffle columns
+    set.seed(seed)
+    shuffled_clusts <- map(1:nperms, function(perm){
+        colLabels(test_sce) %>%
+            as_tibble(rownames = "cell") %>%
+            slice_sample(prop=1, replace = FALSE) %>%
+            deframe()
+    })
+
+    # keep only LR_mean
+    lr_og <- lr_res %>%
+        select(ligand, receptor, source, target, og_mean = lr_mean)
+
+    # generate mean permutations
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        perm <- furrr::future_map(.x = shuffled_clusts,
+                                  .f = cpdb_permute,
+                                  sce_mat = sce_mat,
+                                  trim = trim,
+                                  lr_og = lr_og,
+                                  .progress=TRUE
+                                  )
+    } else{
+        perm <- map(.x = shuffled_clusts,
+                    .f = cpdb_permute,
+                    sce_mat = sce_mat,
+                    trim = trim,
+                    lr_og = lr_og
+                    )
+    }
+
+    pvals_df <- perm %>%
+        bind_rows() %>%
+        group_by(ligand, receptor, source, target) %>%
+        mutate(lr_mean = na_if(lr_mean, 0)) %>%
+        summarise(pval = 1 - (sum(og_mean >= lr_mean)/nperms))
+
+
+    lr_res %>%
+        select(ligand, receptor, source, target, lr_mean) %>%
+        left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
+}
+
+
+
+
+#' Function to calculate mean LR expression from shuffled cluster label matrices
+#'  as done in CellPhoneDB
+#'
+#' @param sce_matrix single cell expression matrix (transposed)
+#' @param col_labels cluster labels
+#' @param trim truncate ends of mean
+#' @param lr_og LR res with only relevant
+#'
+#' @return Returns a list of means per gene calculated with reshuffled
+#'    cluster/cell identity labels
+cpdb_permute <- function(col_labels,
+                         sce_mat,
+                         trim=0,
+                         lr_og){
+
+    perm_means <- stats::aggregate(sce_mat,
+                                   list(col_labels),
+                                   FUN=mean,
+                                   trim=trim) %>%
+        tibble::as_tibble() %>%
+        dplyr::rename(celltype = Group.1) %>%
+        tidyr::pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from=celltype,
+                           id_cols=gene,
+                           values_from=value) %>%
+        tibble::column_to_rownames("gene")
+
+    lr_og %>%
+        liana:::join_means(means = perm_means,
+                           source_target = "source",
+                           entity = "ligand",
+                           type = "trunc") %>%
+        liana:::join_means(means = perm_means,
+                           source_target = "target",
+                           entity = "receptor",
+                           type = "trunc") %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+}
+
 
 
 

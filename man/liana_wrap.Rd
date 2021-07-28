@@ -34,6 +34,10 @@ method-resource combinations}
     \item{\code{call_natmi.params}}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
     \item{\code{liana_pipe.params}}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
     \item{\code{liana_call.params}}{list of Parameters passed to NATMI \code{\link{liana_call}}}
+    \item{\code{assay}}{Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
+and `call_connectome`}
+    \item{\code{decomplexify}}{specify whether complexes in the resource should be
+dissociated and taken into account}
   }}
 }
 \value{

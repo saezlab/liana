@@ -50,6 +50,7 @@ Imports:
     stringr,
     magrittr,
     purrr,
+    furrr,
     tidyr,
     tibble,
     readr,

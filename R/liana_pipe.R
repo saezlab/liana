@@ -84,7 +84,7 @@ liana_pipe <- function(seurat_object, # or sce object
                 rownames_to_column("gene") %>%
                 as_tibble() %>%
                 select(gene, p.value, FDR, stat = summary.stats)
-        })
+            })
 
     # Get all Possible Cluster pair combinations
     pairs <- expand_grid(source = unique(colLabels(sce)),
