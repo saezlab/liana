@@ -363,9 +363,6 @@ cpdb_score <- function(lr_res,
             deframe()
     })
 
-    # keep only LR_mean
-    lr_og <- lr_res %>%
-        select(ligand, receptor, source, target, og_mean = lr_mean)
 
     # generate mean permutations
     if(parallelize){
@@ -374,17 +371,35 @@ cpdb_score <- function(lr_res,
                                   .f = cpdb_permute,
                                   sce_mat = sce_mat,
                                   trim = trim,
-                                  lr_og = lr_og,
                                   .progress=TRUE
                                   )
     } else{
         perm <- map(.x = shuffled_clusts,
                     .f = cpdb_permute,
                     sce_mat = sce_mat,
-                    trim = trim,
-                    lr_og = lr_og
+                    trim = trim
                     )
     }
+
+    # keep only LR_mean
+    lr_og <- lr_res %>%
+        select(ligand, receptor, source, target, og_mean = lr_mean)
+
+    perm %<>%
+        map(function(perm_means){
+            lr_og %>%
+                liana:::join_means(means = perm_means,
+                                   source_target = "source",
+                                   entity = "ligand",
+                                   type = "trunc") %>%
+                liana:::join_means(means = perm_means,
+                                   source_target = "target",
+                                   entity = "receptor",
+                                   type = "trunc") %>%
+                dplyr::rowwise() %>%
+                dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+        })
+
 
     pvals_df <- perm %>%
         bind_rows() %>%
@@ -413,13 +428,12 @@ cpdb_score <- function(lr_res,
 #'    cluster/cell identity labels
 cpdb_permute <- function(col_labels,
                          sce_mat,
-                         trim=0,
-                         lr_og){
+                         trim=0){
 
-    perm_means <- stats::aggregate(sce_mat,
-                                   list(col_labels),
-                                   FUN=mean,
-                                   trim=trim) %>%
+    stats::aggregate(sce_mat,
+                     list(col_labels),
+                     FUN=mean,
+                     trim=trim) %>%
         tibble::as_tibble() %>%
         dplyr::rename(celltype = Group.1) %>%
         tidyr::pivot_longer(-celltype, names_to = "gene") %>%
@@ -428,17 +442,6 @@ cpdb_permute <- function(col_labels,
                            values_from=value) %>%
         tibble::column_to_rownames("gene")
 
-    lr_og %>%
-        liana:::join_means(means = perm_means,
-                           source_target = "source",
-                           entity = "ligand",
-                           type = "trunc") %>%
-        liana:::join_means(means = perm_means,
-                           source_target = "target",
-                           entity = "receptor",
-                           type = "trunc") %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
 }
 
 

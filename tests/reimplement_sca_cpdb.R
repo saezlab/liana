@@ -107,11 +107,11 @@ lr_cpdb <- lr_res %>%
 st <- Sys.time()
 cpdb_res <- cpdb_score(lr_res = lr_cpdb,
                        sce_mat = t(as.matrix(test_sce@assays@data$counts)),
-                       nperms = 10000,
+                       nperms = 1000,
                        seed = 1234,
                        trim = 0.05,
                        parallelize=TRUE,
-                       workers = 4)
+                       workers = 8)
 Sys.time() - st
 
 st <- Sys.time()
