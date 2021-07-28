@@ -229,9 +229,3 @@ res1 <- call_squidpy(seurat_object = seurat_object,
                      seed=as.integer(1004))
 
 
-
-
-
-
-
-
