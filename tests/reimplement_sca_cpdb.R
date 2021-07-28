@@ -75,7 +75,7 @@ res1
 
 # CPDB ----
 lr_cpdb <- lr_res %>%
-    filter(receptor.prop >= 0.01 & ligand.prop >= 0.1) %>%
+    filter(receptor.prop >= 0.1 & ligand.prop >= 0.1) %>%
     select(-ends_with(c(".pval", "scaled", ".FDR", "stat"))) %>%
     rowwise() %>%
     mutate(lr.mean = mean(ligand.expr, receptor.expr, trim=0))
@@ -94,10 +94,17 @@ thresholdedMean <- function(x, trim = 0.1, na.rm = TRUE) {
 # columns
 group <- colLabels(test_sce)
 
-trunc_mean <- aggregate(t(as.matrix(test_sce@assays@data$counts)), list(group), FUN=thresholdedMean, trim=0.05)
-trunc_mean <- t(trunc_mean[,-1])
-colnames(trunc_mean) <- levels(group)
-head(trunc_mean)
+trunc_mean <- aggregate(t(as.matrix(test_sce@assays@data$counts)),
+                        list(group),
+                        FUN=thresholdedMean, trim=0.05) %>%
+    as_tibble() %>%
+    rename(celltype = Group.1) %>%
+    pivot_longer(-celltype, names_to = "gene") %>%
+    tidyr::pivot_wider(names_from=celltype, id_cols=gene,values_from=value) %>%
+    column_to_rownames("gene")
+
+
+
 
 require(forcats)
 fct_shuffle(group)
@@ -119,6 +126,11 @@ shuffled_clusts <-
             deframe()
     })
 
+
+lrs <- lr_cpdb %>%
+    select(ligand,receptor,source,target)
+
+# parallelize
 require(furrr)
 st <- Sys.time()
 plan(multisession, workers = 8)
@@ -126,16 +138,61 @@ ff <- furrr::future_map(shuffled_clusts, function(clust){
     aggregate(t(as.matrix(test_sce@assays@data$counts)),
               list(clust),
               FUN=thresholdedMean,
-              trim=0.05)
+              trim=0.05) %>%
+        as_tibble() %>%
+        rename(celltype = Group.1) %>%
+        pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from=celltype,
+                           id_cols=gene,
+                           values_from=value) %>%
+        column_to_rownames("gene")
     })
 Sys.time() - st
 
 
+
+
 st <- Sys.time()
 pp <- map(shuffled_clusts, function(clust){
-    aggregate(t(as.matrix(test_sce@assays@data$counts)), list(clust), FUN=thresholdedMean, trim=0.05)
+    aggregate(t(as.matrix(test_sce@assays@data$counts)),
+              list(clust), FUN=thresholdedMean, trim=0.05) %>%
+        as_tibble() %>%
+        rename(celltype = Group.1) %>%
+        pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from=celltype, id_cols=gene,values_from=value) %>%
+        column_to_rownames("gene")
     })
 st - Sys.time()
+
+
+
+
+rand_cpdb <-
+    ff %>% map(function(perm_means){
+        lrs %>%
+            join_means(means = perm_means,
+                       source_target = "source",
+                       entity = "ligand",
+                       type = "trunc") %>%
+            join_means(means = perm_means,
+                       source_target = "target",
+                       entity = "receptor",
+                       type = "trunc") %>%
+            mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+    })
+
+to_check <- lr_cpdb %>%
+    select(ligand, receptor, source, target, non_random=lr.mean)
+
+bind_perms <- rand_cpdb %>%
+    bind_rows() %>%
+    left_join(to_check, by = c("ligand", "receptor", "source", "target"))
+
+
+pvals_df <- bind_perms %>%
+    group_by(ligand, receptor, source, target) %>%
+    summarise(pval = 1 - sum(non_random >= lr_mean)/1000)
+
 
 
 
@@ -150,7 +207,32 @@ lr_cpdb2 <- lr_cpdb %>%
                source_target = "target",
                entity = "receptor",
                type = "trunc") %>%
-    mutate(lr_mean = mean(ligand.trunc, receptor.trunc))
+    mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+
+
+
+lr_cp <- lr_cpdb2 %>%
+    select(ligand, receptor, source, target, lr.mean) %>%
+    left_join(pvals_df)
+
+
+
+
+
+
+
+res1 <- call_squidpy(seurat_object = seurat_object,
+                     op_resource = select_resource("OmniPath"),
+                     cluster_key=NULL,
+                     n_perms=1000,
+                     threshold=0.01,
+                     seed=as.integer(1004))
+
+
+
+
+
+
 
 
 permutation <- replicate(100, sample.int(90, size = 90))
