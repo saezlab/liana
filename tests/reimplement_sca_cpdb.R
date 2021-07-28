@@ -73,30 +73,21 @@ res1
 
 
 
+
+
 # CPDB ----
 lr_cpdb <- lr_res %>%
-    filter(receptor.prop >= 0.1 & ligand.prop >= 0.1) %>%
+    filter(receptor.prop >= 0.1 & ligand.prop >= 0.1) %>% # to be moved
     select(-ends_with(c(".pval", "scaled", ".FDR", "stat"))) %>%
     rowwise() %>%
-    mutate(lr.mean = mean(ligand.expr, receptor.expr, trim=0))
-
-
-# taken from CellChat
-thresholdedMean <- function(x, trim = 0.1, na.rm = TRUE) {
-    percent <- Matrix::nnzero(x)/length(x) # not sure how useful?
-    if (percent < trim) {
-        return(0)
-    } else {
-        return(mean(x, na.rm = na.rm, trim=trim))
-    }
-}
+    mutate(lr.mean = mean(c(ligand.expr, receptor.expr), trim=0))
 
 # columns
 group <- colLabels(test_sce)
 
 trunc_mean <- aggregate(t(as.matrix(test_sce@assays@data$counts)),
                         list(group),
-                        FUN=thresholdedMean, trim=0.05) %>%
+                        FUN=mean, trim=0.00) %>%
     as_tibble() %>%
     rename(celltype = Group.1) %>%
     pivot_longer(-celltype, names_to = "gene") %>%
@@ -105,19 +96,9 @@ trunc_mean <- aggregate(t(as.matrix(test_sce@assays@data$counts)),
 
 
 
-
-require(forcats)
-fct_shuffle(group)
-
-
-
-
 # shuffle columns
 clusts <- colLabels(test_sce) %>%
     as_tibble(rownames = "cell")
-
-
-
 
 shuffled_clusts <-
     map(1:1000, function(perm){
@@ -133,12 +114,12 @@ lrs <- lr_cpdb %>%
 # parallelize
 require(furrr)
 st <- Sys.time()
-plan(multisession, workers = 8)
+plan(multisession, workers = 4)
 ff <- furrr::future_map(shuffled_clusts, function(clust){
     aggregate(t(as.matrix(test_sce@assays@data$counts)),
               list(clust),
               FUN=thresholdedMean,
-              trim=0.05) %>%
+              trim=0.00) %>%
         as_tibble() %>%
         rename(celltype = Group.1) %>%
         pivot_longer(-celltype, names_to = "gene") %>%
@@ -213,10 +194,7 @@ lr_cpdb2 <- lr_cpdb %>%
 
 lr_cp <- lr_cpdb2 %>%
     select(ligand, receptor, source, target, lr.mean) %>%
-    left_join(pvals_df)
-
-
-
+    left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
 
 
 
