@@ -44,11 +44,12 @@ liana_pipe <- function(seurat_object, # or sce object
     colLabels(sce) <- SeuratObject::Idents(seurat_object)
     sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
 
-    # Get Avg Per Cluster (data assay)
-    means <- scuttle::summarizeAssayByGroup(sce,
-                                            ids = colLabels(sce),
-                                            assay.type = "counts")
-    means <- means@assays@data$mean
+    # Get Avg and  Prop. Expr Per Cluster
+    mean_prop <- scuttle::summarizeAssayByGroup(sce,
+                                                ids = colLabels(sce),
+                                                assay.type = "counts")
+    means <- mean_prop@assays@data$mean
+    props <- mean_prop@assays@data$prop.detected
 
     # scaled (z-transformed) means
     scaled <- scuttle::summarizeAssayByGroup(sce,
@@ -56,9 +57,11 @@ liana_pipe <- function(seurat_object, # or sce object
                                              assay.type = "scaledata")
     scaled <- scaled@assays@data$mean
 
+    # calculate truncated mean
+    # xx
+
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
-
 
     # Get Global Mean
     global_mean <- sce@assays@data$logcounts %>%
@@ -123,6 +126,14 @@ liana_pipe <- function(seurat_object, # or sce object
                    source_target = "source",
                    entity = "ligand",
                    type = "scaled") %>%
+        join_means(means = props,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "prop") %>%
+        join_means(means = props,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "prop") %>%
         join_means(means = scaled,
                    source_target = "target",
                    entity = "receptor",

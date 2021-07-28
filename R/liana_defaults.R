@@ -1,8 +1,5 @@
 #' Function to pass Default Arguments for each method
 #'
-#' @param natmi.params list of Parameters passed to \code{\link{get_natmi}}
-#' @param connectome.params list of Parameters passed to \code{\link{get_connectome}}
-#' @param logfc.params list of Parameters passed to \code{\link{get_logfc}}
 #' @param cellchat.params list of Parameters passed to CellChat \code{\link{call_cellchat}}
 #' @param sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
 #' @param squidpy.params list of Parameters passed to Squidpy \code{\link{call_squidpy}}
@@ -11,6 +8,12 @@
 #' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
 #' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
 #' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
+#'
+#' @param assay Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
+#'    and `call_connectome`
+#'
+#' @param decomplexify specify whether complexes in the resource should be
+#'   dissociated and taken into account
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method
