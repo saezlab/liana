@@ -3,8 +3,8 @@
 #' @param seurat_object Seurat object
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
-#' @param test.type `test.type` passed to \link{scran::findMarkers}
-#' @param pval.type `pval.type` passed to \link{scran::findMarkers}
+#' @inhertiParams scran::findMarkers
+#' @inhertiParams scran::findMarkers
 #' @param seed Set Random Seed
 #'
 #' @import scuttle scran SingleCellExperiment SeuratObject
@@ -14,11 +14,10 @@
 #' @return Returns a tibble with information required for LR calc
 liana_pipe <- function(seurat_object, # or sce object
                        op_resource,
-                       decomplexify = FALSE,
+                       decomplexify = TRUE,
                        test.type = "t",
                        pval.type = "all",
-                       seed=1234){
-    set.seed(seed)
+                       trim=0.1){
 
     # Resource Decomplexified
     if(decomplexify){
@@ -58,7 +57,14 @@ liana_pipe <- function(seurat_object, # or sce object
     scaled <- scaled@assays@data$mean
 
     # calculate truncated mean
-    # xx
+    trunc_mean <- aggregate(t(as.matrix(sce@assays@data$counts)),
+                            list(colLabels(sce)),
+                            FUN=mean, trim=trim) %>%
+        as_tibble() %>%
+        rename(celltype = Group.1) %>%
+        pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from=celltype, id_cols=gene,values_from=value) %>%
+        column_to_rownames("gene")
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
@@ -141,10 +147,22 @@ liana_pipe <- function(seurat_object, # or sce object
         join_sum_means(means = means,
                        entity = "ligand") %>%
         join_sum_means(means = means,
-                       entity = "receptor") %>%
+                       entity = "receptor")  %>%
+        join_means(means = trunc_mean,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "trunc") %>%
+        join_means(means = trunc_mean,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "trunc") %>%
         # logFC
-        join_log2FC(logfc_df, source_target = "source", entity="ligand") %>%
-        join_log2FC(logfc_df, source_target = "target", entity="receptor") %>%
+        join_log2FC(logfc_df,
+                    source_target = "source",
+                    entity="ligand") %>%
+        join_log2FC(logfc_df,
+                    source_target = "target",
+                    entity="receptor") %>%
         # Global Mean
         mutate(global_mean = global_mean)
 

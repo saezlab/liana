@@ -91,14 +91,6 @@ trunc_mean <- aggregate(t(as.matrix(test_sce@assays@data$counts)),
 lr_cpdb <- lr_res %>%
     filter(receptor.prop >= 0.01 & ligand.prop >= 0.01) %>% # to be moved
     select(-ends_with(c(".pval", "scaled", ".FDR", "stat"))) %>%
-    join_means(means = trunc_mean,
-               source_target = "source",
-               entity = "ligand",
-               type = "trunc") %>%
-    join_means(means = trunc_mean,
-               source_target = "target",
-               entity = "receptor",
-               type = "trunc") %>%
     rowwise() %>%
     mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
 
@@ -151,6 +143,17 @@ lr_og <- lr_cpdb %>%
 
 
 
+
+
+
+get_cpdb(seurat_object = seurat_object,
+         op_resource = select_resource("OmniPath")[[1]],
+         sce_mat = sce@assays@data$counts)
+
+
+
+
+
 # future_map
 require(future)
 require(furrr)
@@ -183,9 +186,6 @@ res1 <- call_squidpy(seurat_object = seurat_object,
                      n_perms=1000,
                      threshold=0.01,
                      seed=as.integer(1004))
-
-
-
 
 
 
@@ -301,3 +301,17 @@ res1 <- call_squidpy(seurat_object = seurat_object,
                      seed=as.integer(1004))
 
 
+
+
+
+
+####
+cpdb_score(lr_res,
+           score_col="pvalue",
+           sce=sce,
+           trim = 0.1
+           )
+
+
+length(colLabels(sce))
+length(colLabels(test_sce))

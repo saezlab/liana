@@ -69,6 +69,15 @@ setClass("ScoreSpecifics",
                 score_fun = sca_score,
                 columns = c("ligand.expr", "receptor.expr", "global_mean")
             ),
+        "cpdb" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cellphonedb",
+                method_score = "pvalue",
+                descending_order = FALSE,
+                score_fun = cpdb_score,
+                columns = c("ligand.trunc", "receptor.trunc")
+            ),
         "squidpy" =
             methods::new(
                 "ScoreSpecifics",

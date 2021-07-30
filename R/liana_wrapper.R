@@ -60,7 +60,7 @@ liana_wrap <- function(seurat_object,
              safely(function(.method, method_name){
                  map2(resource, names(resource), function(reso, reso_name){
 
-                     if(!(method_name %in% c("natmi", "connectome",
+                     if(!(method_name %in% c("natmi", "connectome",  # this needs to change - its bad
                                              "logfc", "sca"))){
                          args <- append(
                              list("seurat_object" = seurat_object,
@@ -81,8 +81,8 @@ liana_wrap <- function(seurat_object,
         # format errors
         {`if`(.simplify, map(., function(elem)
             .list2tib(.list2tib(compact(elem)))))}
-
 }
+
 
 #' Helper Function to Handle resource choices
 #' @param resource names of the resources

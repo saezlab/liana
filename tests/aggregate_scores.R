@@ -19,3 +19,9 @@ liana_agg <- liana_res %>%
 
 liana_agg
 
+
+
+lr_res <- liana_pipe(seurat_object = seurat_object,
+                     op_resource = select_resource("OmniPath")[[1]])
+
+get_connectome(lr_res=lr_res)

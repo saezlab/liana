@@ -6,14 +6,12 @@
 #'
 #' @return Returns a tibble with specificity weights (`LRscore`) as calculated
 #'    by SingleCellSignalR
-get_sca <- function(seurat_object,
-                    op_resource,
+get_sca <- function(lr_res,
                     ...){
 
     liana_call(
+        lr_res = lr_res,
         method = "sca",
-        seurat_object = seurat_object,
-        op_resource = op_resource,
         ...
     )
 }
@@ -28,14 +26,12 @@ get_sca <- function(seurat_object,
 #'
 #' @return Returns a tibble with specificity weights (`weight_sc`) as calculated
 #'    by connectome
-get_connectome <- function(seurat_object,
-                           op_resource,
+get_connectome <- function(lr_res,
                            ...){
 
     liana_call(
+        lr_res = lr_res,
         method = "connectome",
-        seurat_object = seurat_object,
-        op_resource = op_resource,
         ...
         )
 }
@@ -50,14 +46,12 @@ get_connectome <- function(seurat_object,
 #'
 #' @return Returns a tibble with specificity weights (`edge_specificity`)
 #'    as calculated by natmi
-get_natmi <- function(seurat_object,
-                      op_resource,
+get_natmi <- function(lr_res,
                       ...){
 
     liana_call(
+        lr_res = lr_res,
         method = "natmi",
-        seurat_object = seurat_object,
-        op_resource = op_resource,
         ...
     )
 }
@@ -73,18 +67,15 @@ get_natmi <- function(seurat_object,
 #' @return Returns a tibble with a logFC metric (`logfc_comb`). `logfc_comb` is
 #'    calculated as the product of the (1 vs the rest) log2FC for each ligand
 #'    and receptor gene
-get_logfc <- function(seurat_object,
-                      op_resource,
+get_logfc <- function(lr_res,
                       ...){
 
     liana_call(
+        lr_res = lr_res,
         method = "logfc",
-        seurat_object = seurat_object,
-        op_resource = op_resource,
         ...
     )
 }
-
 
 
 #' Wrapper Function to obtain scores via liana_pipe
@@ -100,25 +91,18 @@ get_logfc <- function(seurat_object,
 liana_call <- function(method,
                        seurat_object,
                        op_resource,
-                       decomplexify = FALSE,
-                       lr_res = NULL,
+                       decomplexify = TRUE,
+                       lr_res,
                        protein = 'subunit',
                        complex_policy = 'min0',
                        ...){
-
-    lr_res %<>% `%||%`(
-        liana_pipe(seurat_object = seurat_object,
-                   op_resource = op_resource,
-                   decomplexify = decomplexify,
-                   ...)
-        )
 
     liana_scores(.score_specs()[[method]],
                  lr_res = lr_res,
                  protein = protein,
                  complex_policy = complex_policy,
-                 decomplexify = decomplexify
-                 )
+                 decomplexify = decomplexify,
+                 ...)
 }
 
 
@@ -192,30 +176,39 @@ recomplexify <- function(lr_res,
 #' @param lr_res ligand-receptor DE results and other stats between clusters
 #' @param decomplexify whether to dissociate complexes into subunits and hence
 #'    and hence take complexes into account (decomplexify) or not
-#' @inheritParams recomplexify
 #'
 #'
 #' @return lr_res modified to be method-specific
 liana_scores <- function(score_object,
                          lr_res,
                          decomplexify,
+                         complex_policy,
+                         protein,
                          ...){
+
     lr_res %<>%
         select(ligand, receptor,
                ends_with("complex"),
                source, target,
                !!score_object@columns)
 
+
     if(decomplexify){
         lr_res %<>%
-            recomplexify(columns = score_object@columns,
-                         ...)
+            recomplexify(
+                lr_res = .,
+                columns = score_object@columns,
+                complex_policy = complex_policy,
+                protein = protein)
     }
 
-    args <- list(
-        lr_res = lr_res,
-        score_col = score_object@method_score
-    )
+    args <-
+        append(
+            list(...),
+            list(lr_res = lr_res,
+            score_col = score_object@method_score)
+        )
+
 
     exec(score_object@score_fun, !!!args) %>%
         ungroup()
@@ -302,6 +295,143 @@ sca_score <- function(lr_res,
 }
 
 
+### To be finished ----
+#' Function to obtain CellPhoneDB-like scores
+#'
+#' @inheritDotParams liana_call
+#'
+#' @noRd
+#'
+#' @return Returns a tibble with specificity weights (`pvalue`) as calculated
+#'    by CellPhoneDB
+#'
+#' @details unfinished
+get_cpdb <- function(seurat_object,
+                     op_resource,
+                     ...){
+
+    liana_call(
+        method = "cpdb",
+        seurat_object = seurat_object,
+        op_resource = op_resource,
+        ...
+    )
+}
+
+
+
+#' Function to calculate pvalues as in CPDB
+#'
+#' @param lr_res
+#' @param sce single cell object
+#'
+#' @noRd
+#'
+#' @return lr_res with pvalues
+cpdb_score <- function(lr_res,
+                       score_col,
+                       sce,
+                       nperms = 100,
+                       seed = 1234,
+                       trim = 0.1,
+                       parallelize = FALSE,
+                       workers = 4){
+
+    # shuffle columns
+    set.seed(seed)
+    shuffled_clusts <- map(1:nperms, function(perm){
+        colLabels(sce) %>%
+            as_tibble(rownames = "cell") %>%
+            slice_sample(prop=1, replace = FALSE) %>%
+            deframe()
+    })
+
+    print(123)
+
+    # generate mean permutations
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        perm <- furrr::future_map(.x = shuffled_clusts,
+                                  .f = cpdb_permute,
+                                  sce_mat = sce_mat,
+                                  trim = trim,
+                                  .progress=TRUE
+                                  )
+    } else{
+        perm <- map(.x = shuffled_clusts,
+                    .f = cpdb_permute,
+                    sce_mat = sce_mat,
+                    trim = trim
+                    )
+    }
+
+    # keep only LR_mean
+    lr_og <- lr_res %>%
+        rowwise() %>%
+        mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+        select(ligand, receptor, source, target, og_mean = lr_mean)
+
+    perm %<>%
+        map(function(perm_means){
+            lr_og %>%
+                liana:::join_means(means = perm_means,
+                                   source_target = "source",
+                                   entity = "ligand",
+                                   type = "trunc") %>%
+                liana:::join_means(means = perm_means,
+                                   source_target = "target",
+                                   entity = "receptor",
+                                   type = "trunc") %>%
+                dplyr::rowwise() %>%
+                dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+        })
+
+
+    pvals_df <- perm %>%
+        bind_rows() %>%
+        group_by(ligand, receptor, source, target) %>%
+        mutate(lr_mean = na_if(lr_mean, 0)) %>%
+        summarise({{ score_col }} := 1 - (sum(og_mean >= lr_mean)/nperms))
+
+
+    lr_res %>%
+        select(ligand, receptor, source, target, lr_mean) %>%
+        left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
+}
+
+
+
+
+#' Function to calculate mean LR expression from shuffled cluster label matrices
+#'  as done in CellPhoneDB
+#'
+#' @param sce_matrix single cell expression matrix (transposed)
+#' @param col_labels cluster labels
+#' @param trim truncate ends of mean
+#' @param lr_og LR res with only relevant
+#'
+#' @return Returns a list of means per gene calculated with reshuffled
+#'    cluster/cell identity labels
+cpdb_permute <- function(col_labels,
+                         sce_mat,
+                         trim){
+
+    stats::aggregate(sce_mat,
+                     list(col_labels),
+                     FUN=mean,
+                     trim=trim) %>%
+        tibble::as_tibble() %>%
+        dplyr::rename(celltype = Group.1) %>%
+        tidyr::pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from=celltype,
+                           id_cols=gene,
+                           values_from=value) %>%
+        tibble::column_to_rownames("gene")
+
+}
+
+
+
 
 
 #' Correlation Coefficient For Interactions
@@ -338,131 +468,3 @@ corr_score <- function(lr_res,
         distinct()
 }
 
-
-
-#' Function to calculate pvalues as in CPDB
-#'
-#' @param lr_res
-#' @param sce_mat single cell expression matrix (transposed)
-#'
-#' @return lr_res with pvalues
-cpdb_score <- function(lr_res,
-                       sce_mat,
-                       nperms = 100,
-                       seed = 1234,
-                       trim = 0.1,
-                       parallelize = TRUE,
-                       workers = 4){
-
-    # shuffle columns
-    set.seed(seed)
-    shuffled_clusts <- map(1:nperms, function(perm){
-        colLabels(test_sce) %>%
-            as_tibble(rownames = "cell") %>%
-            slice_sample(prop=1, replace = FALSE) %>%
-            deframe()
-    })
-
-
-    # generate mean permutations
-    if(parallelize){
-        future::plan(future::multisession, workers = workers)
-        perm <- furrr::future_map(.x = shuffled_clusts,
-                                  .f = cpdb_permute,
-                                  sce_mat = sce_mat,
-                                  trim = trim,
-                                  .progress=TRUE
-                                  )
-    } else{
-        perm <- map(.x = shuffled_clusts,
-                    .f = cpdb_permute,
-                    sce_mat = sce_mat,
-                    trim = trim
-                    )
-    }
-
-    # keep only LR_mean
-    lr_og <- lr_res %>%
-        select(ligand, receptor, source, target, og_mean = lr_mean)
-
-    perm %<>%
-        map(function(perm_means){
-            lr_og %>%
-                liana:::join_means(means = perm_means,
-                                   source_target = "source",
-                                   entity = "ligand",
-                                   type = "trunc") %>%
-                liana:::join_means(means = perm_means,
-                                   source_target = "target",
-                                   entity = "receptor",
-                                   type = "trunc") %>%
-                dplyr::rowwise() %>%
-                dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
-        })
-
-
-    pvals_df <- perm %>%
-        bind_rows() %>%
-        group_by(ligand, receptor, source, target) %>%
-        mutate(lr_mean = na_if(lr_mean, 0)) %>%
-        summarise(pval = 1 - (sum(og_mean >= lr_mean)/nperms))
-
-
-    lr_res %>%
-        select(ligand, receptor, source, target, lr_mean) %>%
-        left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
-}
-
-
-
-
-#' Function to calculate mean LR expression from shuffled cluster label matrices
-#'  as done in CellPhoneDB
-#'
-#' @param sce_matrix single cell expression matrix (transposed)
-#' @param col_labels cluster labels
-#' @param trim truncate ends of mean
-#' @param lr_og LR res with only relevant
-#'
-#' @return Returns a list of means per gene calculated with reshuffled
-#'    cluster/cell identity labels
-cpdb_permute <- function(col_labels,
-                         sce_mat,
-                         trim=0){
-
-    stats::aggregate(sce_mat,
-                     list(col_labels),
-                     FUN=mean,
-                     trim=trim) %>%
-        tibble::as_tibble() %>%
-        dplyr::rename(celltype = Group.1) %>%
-        tidyr::pivot_longer(-celltype, names_to = "gene") %>%
-        tidyr::pivot_wider(names_from=celltype,
-                           id_cols=gene,
-                           values_from=value) %>%
-        tibble::column_to_rownames("gene")
-
-}
-
-
-
-
-
-
-
-
-
-# calculate scores
-# lr_res %>%
-#     mutate(logfc_comb = product(ligand.log2FC, receptor.log2FC)) %>%
-#     corr_score(sce) %>% # need to change it to be cell-specific
-#     # natmi scores
-#     rowwise() %>%
-#     mutate(edge_specificity = ((ligand.expr*(ligand.sum^-1))) *
-#                ((receptor.expr*(receptor.sum^-1)))) %>%
-#     mutate(edge_specificity = tidyr::replace_na(edge_specificity, 0)) %>%
-#     rowwise() %>%
-#     mutate(weight_sc = mean(c(ligand.scaled, receptor.scaled))) %>%
-#     select(source, starts_with("ligand"),
-#            target, starts_with("receptor"),
-#            everything())

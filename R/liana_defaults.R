@@ -28,7 +28,7 @@
 #' @export
 liana_defaults <- function(
     assay = "RNA",
-    decomplexify = FALSE,
+    decomplexify = TRUE,
     cellchat.params = NULL,
     squidpy.params = NULL,
     sca.params = NULL,
@@ -46,7 +46,7 @@ liana_defaults <- function(
                     decomplexify = decomplexify,
                     test.type = "t",
                     pval.type = "all",
-                    seed = 1234
+                    trim=0.05
                     )
                 ),
 
