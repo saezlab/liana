@@ -25,6 +25,10 @@ call_squidpy <- function(seurat_object,
                           conda_env = NULL,
                           ...){
 
+    if(is_tibble(op_resource)){
+        op_resource <- list("placeholder" = op_resource)
+    }
+
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
 

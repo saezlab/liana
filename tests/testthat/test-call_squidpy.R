@@ -8,7 +8,7 @@ test_that("Test Squidpy", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "squidpy_res.RDS"))
     res1 <- call_squidpy(seurat_object = seurat_object,
-                         op_resource = select_resource("OmniPath"),
+                         op_resource = select_resource("OmniPath")[[1]],
                          cluster_key=NULL,
                          n_perms=100,
                          threshold=0.01,
