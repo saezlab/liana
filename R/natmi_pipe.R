@@ -7,6 +7,7 @@
 #' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
+#' @param .use_raw bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page
 #' @param .default_run bool whether to run default DBs or not
 #' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
 #' @param assay Seurat assay to be used
@@ -58,6 +59,7 @@ call_natmi <- function(
     conda_env = NULL,
     .format = TRUE,
     .write_data = TRUE,
+    .use_raw = FALSE,
     .seed = 1004,
     .natmi_path = NULL){
 
@@ -96,11 +98,21 @@ call_natmi <- function(
 
     if(.write_data){
         log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
-        write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
-                                                    assay = assay,
-                                                    slot = "data"))) - 1),
-                  file = file.path(.input_path, expr_file),
-                  row.names = TRUE)
+        # write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
+        #                                             assay = assay,
+        #                                             slot = "data"))) - 1),
+        #           file = file.path(.input_path, expr_file),
+        #           row.names = TRUE)
+
+        write.csv(
+            GetAssayData(object = seurat_object,
+                         assay = "RNA",
+                         slot = "counts"),
+            file = file.path(.input_path, expr_file),
+            row.names = TRUE
+            )
+
+
         log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
         write.csv(Idents(seurat_object)  %>%
                       enframe(name="barcode", value="annotation"),

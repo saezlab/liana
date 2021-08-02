@@ -72,7 +72,8 @@ connectome_test %>%
 # Run liana /w re-implemented and original NATMI
 natmi_test <- liana_wrap(testdata,
                          method = c('call_natmi', 'natmi'),
-                         resource = c('OmniPath'))
+                         resource = c('OmniPath'),
+                         call_natmi.params = list(.use_raw = TRUE))
 
 # compare results
 natmi_test %<>% 
@@ -81,10 +82,12 @@ natmi_test %<>%
             select(source, target, ligand, receptor, edge_specificity) %>%
             arrange_at(vars(everything()))
             ) %>%
-    liana_aggregate()
+    liana_aggregate() %>%
+    na.omit() # remove NAs (as these are treated differently, filtered in NATMI, assigned 0s in LIANA)
 
 natmi_test %>%
-    na.omit() %>% # remove NAs (as these are treated differently, filtered in NATMI, assigned 0s in LIANA)
+    mutate_at(.vars = c("call_natmi.edge_specificity", "natmi.edge_specificity"),
+              round, digits = 5) %>%
     filter(call_natmi.edge_specificity!=natmi.edge_specificity) # keep only different
 
 ```

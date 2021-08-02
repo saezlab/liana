@@ -205,3 +205,32 @@ cluster_markers <- scran::findMarkers(test_sce,
 
 
 
+
+
+
+#
+natmi_exp <- call_natmi(seurat_object = seurat_object,
+                        op_resource = select_resource("OmniPath"),
+                        expr_file = "test_em.csv",
+                        meta_file = "test_metadata.csv",
+                        output_dir = "NATMI_test",
+                        assay = "RNA",
+                        num_cor = 4,
+                        .format = TRUE,
+                        .write_data = TRUE,
+                        .use_raw = TRUE,
+                        .seed = 1004,
+                        .natmi_path = NULL) %>%
+    arrange_at(vars(everything()))
+
+
+lr_res <- liana_pipe(seurat_object = seurat_object,
+                     op_resource = select_resource("OmniPath")[[1]])
+
+
+natmi_res <- get_natmi(lr_res)%>%
+    arrange_at(vars(everything()))
+
+
+
+
