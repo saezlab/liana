@@ -116,7 +116,7 @@ liana_call <- function(method,
 #'    (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
 #'   `'all'`: returns all possible subunits separately;
 #'   Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
-#' @param protein whether to return complexes ('complex') or protein subunits ('subunit' - default)
+#' @param protein whether to return complexes alone ('complex') or complexes + their protein subunits ('subunit' - default)
 #'
 #' @returns complex-accounted lr_res
 #'
@@ -162,7 +162,10 @@ recomplexify <- function(lr_res,
             filter(if_all(ends_with("flag"))) %>%
             group_by(across(all_of(c("source", "target",
                                      "ligand", "receptor")))) %>%
-            summarise_at(.vars=columns, .funs = complex_policy)
+            select(source, target,
+                   ligand.complex, ligand,
+                   receptor.complex, receptor,
+                   !!columns)
     }
 
     return(lr_cmplx)

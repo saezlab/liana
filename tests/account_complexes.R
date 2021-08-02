@@ -166,7 +166,8 @@ columns %>%
             filter(target == "B") %>%
             filter(ligand == "TGFB1") %>%
             group_by(across(all_of(c("source", "target",
-                                     "ligand.complex", "receptor.complex")))) %>%
+                                     "ligand.complex",
+                                     "receptor.complex")))) %>%
             mutate( {{ col.min }} := min0(.data[[col]])) %>%
             mutate( {{ col.flag }} := ifelse(.data[[col]]==.data[[col.min]],
                                              1,
@@ -215,3 +216,38 @@ length(xx2[duplicated(xx2)])
 #                 #         "source", "target"),
 #                 # .keep_all=TRUE)
 
+
+
+
+
+
+# input
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+op_resource <- select_resource("OmniPath")[[1]]
+
+require(SingleCellExperiment)
+
+# Run /w OmniPath
+lr_res <- liana_pipe(seurat_object,
+                     op_resource)
+lr_res
+
+
+
+# Run /w CellPhoneDB
+lr_cdbd <- liana_pipe(seurat_object,
+                      select_resource("CellPhoneDB")[[1]])
+
+lr_cdbd
+
+
+subunit <- get_connectome(lr_cdbd,
+                          protein='subunit')
+
+complex <- get_connectome(lr_cdbd,
+                          protein='complex')
+
+complex2 <- get_connectome(lr_cdbd,
+                           protein='complex')

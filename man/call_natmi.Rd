@@ -80,4 +80,8 @@ Stats:
 2) The specificity-based edge weights
 * a weight of 1 means both the ligand and receptor are only expressed
  in one cell type
+
+Note that `call_natmi` will write the expression matrix to CSV each time
+its called, unless .write_data is set to FALSE!
+This can be an extremely time consuming step when working with large datasets
 }

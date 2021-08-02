@@ -25,7 +25,7 @@ and hence take complexes into account (decomplexify) or not}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
 
-\item{protein}{whether to return complexes ('complex') or protein subunits ('subunit' - default)}
+\item{protein}{whether to return complexes alone ('complex') or complexes + their protein subunits ('subunit' - default)}
 
 \item{complex_policy}{policy how to account for the presence of complexes.
 Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
