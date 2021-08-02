@@ -4,7 +4,7 @@
 \alias{get_logfc}
 \title{Function to obtain logFC weights}
 \usage{
-get_logfc(seurat_object, op_resource, ...)
+get_logfc(lr_res, ...)
 }
 \arguments{
 \item{...}{

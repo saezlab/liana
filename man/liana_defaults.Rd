@@ -6,7 +6,7 @@
 \usage{
 liana_defaults(
   assay = "RNA",
-  decomplexify = FALSE,
+  decomplexify = TRUE,
   cellchat.params = NULL,
   squidpy.params = NULL,
   sca.params = NULL,

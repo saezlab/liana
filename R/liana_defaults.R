@@ -100,7 +100,7 @@ liana_defaults <- function(
 
         'call_natmi' = call_natmi.params %<>%
             `%||%`(list(
-                expr_file = "em.csv",
+                expr_file = "test_em.csv",
                 meta_file = "metadata.csv",
                 output_dir = "NATMI_results",
                 assay = assay,

@@ -5,7 +5,7 @@ author:
     affiliation:
         - Saezlab, Heidelberg University
     email: daniel.dimitrov@uni-heidelberg.de
-date: "17/06/2021"
+date: "03/08/2021"
 output: 
   BiocStyle::html_document:
       self_contained: true
@@ -47,7 +47,7 @@ require(purrr)
 `liana` provides CCC resources obtained and formatted via [`OmnipathR`](https://github.com/saezlab/OmnipathR) which are then converted to the appropriate format to each method.
 ```{r liana_resource, warning = FALSE}
 # Resource currently included in OmniPathR (and hence `liana`) include:
-get_resources()
+show_resources()
 
 # A list of resources can be obtained using the `select_resource()` function:
 # See `?select_resource()` documentation for further information.
@@ -57,14 +57,15 @@ get_resources()
   
 ## CCC Methods
 Each of the resources, can then be run with any of the following methods:
+```{r liana_method, warning = FALSE}
+# Resource currently included in OmniPathR (and hence `liana`) include:
+show_methods()
 ```
-- CellPhoneDB algorithm (via Squidpy)
-- CellChat
-- NATMI
-- Connectome
-- SingleCellSignalR (SCA)
-- iTALK
-```
+Note that the different algorithms (or scoring measures) used in `sca`-, `natmi`-, `italk`-, and `connectome were re-implemented in LIANA.
+Yet we kept the pipelines that call the original packages and these can be called via the `call_*` functions.
+
+The original methods did not take complexes into account, while their re-implementations in liana *do*. 
+Please see the [validation of the re-implementations here](https://saezlab.github.io/liana/articles/liana_remethod.html)
 
 ## Calling the `liana` wrapper function
 
@@ -90,6 +91,16 @@ aforementioned ones (available via `get_resources()`) can be added to the `resou
 # Run liana
 liana_test <- liana_wrap(testdata,
                          method = c('squidpy', 'connectome'),
+                         resource = c('OmniPath'))
+```
+Further, by default `connectome` is obtained via its `liana` re-implementation.
+
+
+This can be changed by simply changing the name of the function used to call connectome:
+```{r liana_run, message = FALSE, print = FALSE, results='hide'}
+# Run liana
+liana_test <- liana_wrap(testdata,
+                         method = c('squidpy', 'call_connectome'),
                          resource = c('OmniPath'))
 ```
 

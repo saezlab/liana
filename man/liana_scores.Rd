@@ -4,7 +4,7 @@
 \alias{liana_scores}
 \title{Function to obtain different scoring schemes}
 \usage{
-liana_scores(score_object, lr_res, decomplexify, ...)
+liana_scores(score_object, lr_res, decomplexify, complex_policy, protein, ...)
 }
 \arguments{
 \item{score_object}{score_object specific to the test obtained from score_specs}

@@ -4,7 +4,7 @@
 \alias{get_sca}
 \title{Function to obtain SingleCellSignalR-like scores}
 \usage{
-get_sca(seurat_object, op_resource, ...)
+get_sca(lr_res, ...)
 }
 \arguments{
 \item{...}{

@@ -4,7 +4,7 @@
 \alias{get_connectome}
 \title{Function to obtain connectome-like weights}
 \usage{
-get_connectome(seurat_object, op_resource, ...)
+get_connectome(lr_res, ...)
 }
 \arguments{
 \item{...}{

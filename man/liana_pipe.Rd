@@ -7,10 +7,10 @@
 liana_pipe(
   seurat_object,
   op_resource,
-  decomplexify = FALSE,
+  decomplexify = TRUE,
   test.type = "t",
   pval.type = "all",
-  seed = 1234
+  trim = 0.1
 )
 }
 \arguments{
@@ -20,10 +20,6 @@ liana_pipe(
 
 \item{decomplexify}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}
-
-\item{test.type}{`test.type` passed to \link{scran::findMarkers}}
-
-\item{pval.type}{`pval.type` passed to \link{scran::findMarkers}}
 
 \item{seed}{Set Random Seed}
 }

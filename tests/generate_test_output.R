@@ -58,4 +58,23 @@ natmi_res <- call_natmi(op_resource = select_resource("OmniPath"),
 saveRDS(natmi_res, file.path(liana_path, "testdata",
                              "output", "natmi_res.RDS"))
 
+# Test iTALK
+italk_res <- call_italk(op_resource = NULL,
+                        seurat_object = seurat_object,
+                        assay = 'RNA',
+                        .format = TRUE,
+                        .DE = TRUE)
+saveRDS(italk_res, file.path(liana_path, "testdata",
+                             "output", "italk_res.RDS"))
+
+
+# Test SCA
+sca_res <- call_sca(op_resource = NULL,
+                    seurat_object = seurat_object,
+                    assay = 'RNA',
+                    .format = TRUE,
+                    s.score = 0,
+                    logFC = log2(1.5))
+saveRDS(sca_res, file.path(liana_path, "testdata",
+                           "output", "sca_res.RDS"))
 

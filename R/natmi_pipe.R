@@ -61,6 +61,10 @@ call_natmi <- function(
     .seed = 1004,
     .natmi_path = NULL){
 
+    if(is_tibble(op_resource)){
+        op_resource <- list("placeholder" = op_resource)
+    }
+
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
                              required = TRUE)

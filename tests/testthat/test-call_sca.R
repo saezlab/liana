@@ -17,3 +17,4 @@ test_that("Test SingleCellSignalR", {
 
     expect_equal(exp1, res1)
 })
+

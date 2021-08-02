@@ -8,8 +8,8 @@ liana_call(
   method,
   seurat_object,
   op_resource,
-  decomplexify = FALSE,
-  lr_res = NULL,
+  decomplexify = TRUE,
+  lr_res,
   protein = "subunit",
   complex_policy = "min0",
   ...
@@ -37,9 +37,7 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
-    \item{\code{test.type}}{`test.type` passed to \link{scran::findMarkers}}
-    \item{\code{pval.type}}{`pval.type` passed to \link{scran::findMarkers}}
-    \item{\code{seed}}{Set Random Seed}
+    \item{\code{}}{}
   }}
 }
 \value{

@@ -34,6 +34,13 @@ liana_pipe <- function(seurat_object, # or sce object
     entity_genes <- union(transmitters$gene, receivers$gene)
 
 
+    # Get Global Mean (sca)
+    # global_mean <- sce@assays@data$logcounts %>%
+    #     .[Matrix::rowSums(.)>0,]
+    global_mean <- seurat_object@assays$RNA@data %>%
+        .[Matrix::rowSums(.)>0,]
+    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+
     # Filter to LigRec and scale
     seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
     seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
@@ -68,12 +75,6 @@ liana_pipe <- function(seurat_object, # or sce object
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
-
-    # Get Global Mean
-    global_mean <- sce@assays@data$logcounts %>%
-        .[Matrix::rowSums(.)>0,]
-    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
-
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,

@@ -5,16 +5,16 @@
 \title{Function to calculate mean LR expression from shuffled cluster label matrices
  as done in CellPhoneDB}
 \usage{
-cpdb_permute(col_labels, sce_mat, trim = 0, lr_og)
+cpdb_permute(col_labels, sce_mat, trim)
 }
 \arguments{
 \item{col_labels}{cluster labels}
 
 \item{trim}{truncate ends of mean}
 
-\item{lr_og}{LR res with only relevant}
-
 \item{sce_matrix}{single cell expression matrix (transposed)}
+
+\item{lr_og}{LR res with only relevant}
 }
 \value{
 Returns a list of means per gene calculated with reshuffled

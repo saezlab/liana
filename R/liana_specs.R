@@ -119,7 +119,7 @@ setClass("ScoreSpecifics",
             methods::new(
                 "ScoreSpecifics",
                 method_name = "italk",
-                method_score = "weight_comb",
+                method_score = "logfc_comb",
                 descending_order = TRUE,
                 score_fun = function(){},
                 columns = ""

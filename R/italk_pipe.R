@@ -107,7 +107,7 @@ FormatiTALK <- function(italk_res,
       'qval_from' = italk_res$cell_from_q.value,
       'qval_to' = italk_res$cell_to_q.value
       ) %>%
-      mutate(weight_comb = (logFC_from * logFC_to))
+      mutate(logfc_comb = (logFC_from * logFC_to))
 
   return(italk_res)
 }

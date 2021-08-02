@@ -9,8 +9,7 @@ test_that("Test liana wrapper", {
                               "output", "liana_res.RDS"))
     res1 <- liana_wrap(seurat_object,
                        method = c('sca','squidpy'),
-                       resource = c('OmniPath'),
-                       decomplexify=FALSE)
+                       resource = c('OmniPath'))
 
     expect_equal(exp1, res1)
 })

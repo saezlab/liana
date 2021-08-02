@@ -4,7 +4,7 @@
 \alias{get_natmi}
 \title{Function to obtain NATMI-like weights}
 \usage{
-get_natmi(seurat_object, op_resource, ...)
+get_natmi(lr_res, ...)
 }
 \arguments{
 \item{...}{
