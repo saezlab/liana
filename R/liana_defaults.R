@@ -20,7 +20,7 @@
 #'   \code{\link{liana_wrap}}
 #'
 #' Further, each `get_*` method will by default obtain the default params passed
-#'    via \code{\link{liana_pipe} and \code{\link{liana_call}}. This is done so that most steps
+#'    via \code{\link{liana_pipe}} and \code{\link{liana_call}}. This is done so that most steps
 #'    required for the calculation of these methods are undertaken only once.
 #'
 #' @return A list of the default parameters for each method

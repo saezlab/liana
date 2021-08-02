@@ -1,4 +1,5 @@
 #' Call NATMI Pipeline from R with Resources Querried from OmniPath
+#'
 #' @param op_resource List of OmniPath resources
 #' @param seurat_object Seurat object
 #' @param omnidbs_dir path of saved omnipath resources
@@ -42,6 +43,11 @@
 #' * a weight of 1 means both the ligand and receptor are only expressed
 #'  in one cell type
 #'
+#' Note that `call_natmi` will write the expression matrix to CSV each time
+#' its called, unless .write_data is set to FALSE!
+#' This can be an extremely time consuming step when working with large datasets
+#'
+#'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
 #' @importFrom Seurat GetAssayData Idents
@@ -49,11 +55,12 @@
 #'
 #' @export
 call_natmi <- function(
-    op_resource,
     seurat_object,
+    op_resource,
     expr_file = "em.csv",
     meta_file = "metadata.csv",
     output_dir = "NATMI_test",
+    reso_name = "placeholder",
     assay = "RNA",
     num_cor = 4,
     conda_env = NULL,
@@ -62,10 +69,6 @@ call_natmi <- function(
     .use_raw = FALSE,
     .seed = 1004,
     .natmi_path = NULL){
-
-    if(is_tibble(op_resource)){
-        op_resource <- list("placeholder" = op_resource)
-    }
 
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
@@ -86,61 +89,59 @@ call_natmi <- function(
     if(!dir.exists(file.path(.output_path))){
         log_success(str_glue("Output path created: {.output_path}"))
         dir.create(file.path(.output_path), recursive = TRUE)
-    }
 
-    # append default resources to OmniPath ones
-    if("DEFAULT" %in% toupper(names(op_resource))){
-        op_resource %<>% purrr::list_modify("Default" = NULL)
-        resource_names <- append(as.list(names(op_resource)), "lrc2p")
-    } else{
-        resource_names <- as.list(names(op_resource))
-    }
 
-    if(.write_data){
-        log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
-        # write.csv(100 * (exp(as.matrix(GetAssayData(object = seurat_object,
-        #                                             assay = assay,
-        #                                             slot = "data"))) - 1),
-        #           file = file.path(.input_path, expr_file),
-        #           row.names = TRUE)
-
-        write.csv(
-            GetAssayData(object = seurat_object,
-                         assay = "RNA",
-                         slot = "counts"),
-            file = file.path(.input_path, expr_file),
-            row.names = TRUE
-            )
-
+        if(.write_data){
+            log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
+            if(.use_raw){
+                write.csv(
+                    GetAssayData(object = seurat_object,
+                                 assay = "RNA",
+                                 slot = "counts"),
+                    file = file.path(.input_path, expr_file),
+                    row.names = TRUE
+                    )
+                } else{
+                    write.csv(100 * (exp(as.matrix(
+                        GetAssayData(object = seurat_object,
+                                     assay = assay,
+                                     slot = "data"))) - 1),
+                        file = file.path(.input_path, expr_file),
+                        row.names = TRUE)
+                }
+        }
 
         log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
-        write.csv(Idents(seurat_object)  %>%
+        write.csv(Idents(seurat_object) %>%
                       enframe(name="barcode", value="annotation"),
                   file = file.path(.input_path, meta_file),
                   row.names = FALSE)
 
-        # save OmniPath resources to NATMI dir
-        log_info(str_glue("Saving resources to {.natmi_path}/lrdbs"))
-        omni_to_NATMI(op_resource, file.path(.natmi_path, "lrdbs"))
+        log_info(str_glue("Saving resource to {.natmi_path}/lrdbs"))
+        # Deal with Default (i.e. NULL)
+        if(is.null(op_resource)){
+            reso_name <- "lrc2p"
 
+        } else{
+            # save resource to NATMI dir
+            omni_to_NATMI(op_resource,
+                          reso_name,
+                          file.path(.natmi_path, "lrdbs"))
+        }
     }
 
     # submit native sys request
-    resource_names %>% map(function(resource){
-
-        log_success(str_glue("Now Running: {resource}"))
-            system(str_glue("{python_path} {.natmi_path}/ExtractEdges.py ",
-                            "--species human ",
-                            "--emFile {.input_path}/{expr_file} ",
-                            "--annFile {.input_path}/{meta_file} ",
-                            "--interDB {.natmi_path}/lrdbs/{resource}.csv ",
-                            "--coreNum {num_cor} ",
-                            "--out {.output_path}/{resource}",
-                            sep = " "))
-    })
+    system(str_glue("{python_path} {.natmi_path}/ExtractEdges.py ",
+                    "--species human ",
+                    "--emFile {.input_path}/{expr_file} ",
+                    "--annFile {.input_path}/{meta_file} ",
+                    "--interDB {.natmi_path}/lrdbs/{reso_name}.csv ",
+                    "--coreNum {num_cor} ",
+                    "--out {.output_path}/{reso_name}",
+                    sep = " "))
 
     # load and format results
-    natmi_results <- FormatNatmi(.output_path, resource_names, .format)
+    natmi_results <- FormatNatmi(.output_path, reso_name, .format)
 
     return(natmi_results)
 }
@@ -148,21 +149,21 @@ call_natmi <- function(
 
 
 #' Reform OmniPath Resource to NATMI format and save to location
-#' @param resource_names list of omnipath resources
-#' @param omni_path directory in which to save OP resources
+#'
+#' @param op_resource Resource formatted as OmniPath
+#' @param reso_name name of the resource
+#' @param natmi_db_path directory in which to save the resource
 omni_to_NATMI <- function(op_resource,
-                          omni_path = "input/omnipath_NATMI"){
+                          reso_name = "placeholder",
+                          natmi_db_path = "input/omnipath_NATMI"){
 
-    names(op_resource) %>%
-        map(function(x){
-            write.csv(op_resource[[x]]  %>%
-                          select("Ligand gene symbol" = source_genesymbol,
-                                 "Receptor gene symbol" = target_genesymbol) %>%
-                          distinct() %>%
-                          as.data.frame(),
-                      file = str_glue("{omni_path}/{x}.csv"),
-                      row.names = FALSE)
-        })
+    write.csv(op_resource %>%
+                  select("Ligand gene symbol" = source_genesymbol,
+                         "Receptor gene symbol" = target_genesymbol) %>%
+                  distinct() %>%
+                  as.data.frame(),
+              file = str_glue("{natmi_db_path}/{reso_name}.csv"),
+              row.names = FALSE)
 }
 
 

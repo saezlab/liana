@@ -47,5 +47,11 @@ A list of the default parameters for each method
 Function to pass Default Arguments for each method
 }
 \details{
+The default parameters for each method can also be overwritten by
+ manually passing a list of parameters for the appropraite method
+  \code{\link{liana_wrap}}
 
+Further, each `get_*` method will by default obtain the default params passed
+   via \code{\link{liana_pipe}} and \code{\link{liana_call}}. This is done so that most steps
+   required for the calculation of these methods are undertaken only once.
 }

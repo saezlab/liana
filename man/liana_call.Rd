@@ -37,7 +37,10 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
-    \item{\code{}}{}
+    \item{\code{test.type}}{String specifying the type of pairwise test to perform -
+a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
+or a binomial test with \code{"binom"}.}
+    \item{\code{pval.type}}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
   }}
 }
 \value{

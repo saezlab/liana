@@ -44,7 +44,7 @@ testdata <-
 ```
 
 ## Connectome weights
-```{r conectome_run, message = FALSE, print = FALSE, results='hide'}
+```{r conectome_run, message = FALSE, print = FALSE}
 # Run liana /w re-implemented and original Connectome
 connectome_test <- liana_wrap(testdata,
                               method = c('call_connectome', 'connectome'),
@@ -68,7 +68,7 @@ connectome_test %>%
 
 
 ## NATMI edges
-```{r natmi_run, message = FALSE, print = FALSE, results='hide'}
+```{r natmi_run, message = FALSE, print = FALSE}
 # Run liana /w re-implemented and original NATMI
 natmi_test <- liana_wrap(testdata,
                          method = c('call_natmi', 'natmi'),
@@ -94,7 +94,7 @@ natmi_test %>%
 
 
 ## SingleCellSignalR LRscore
-```{r natmi_run, message = FALSE, print = FALSE, results='hide'}
+```{r sca_run, message = FALSE, print = FALSE}
 # Run liana /w re-implemented and original SCA
 sca_test <- liana_wrap(testdata,
                        method = c('call_sca', 'sca'),
@@ -116,5 +116,16 @@ sca_test %<>%
     
 sca_test %>%
     dplyr::filter(call_sca.LRscore!=sca.LRscore) # show only different
-
 ```
+
+
+## SingleCellSignalR, NATMI, and Connectome Scores /w Complexes (CellPhoneDB)
+```{r sca_run, message = FALSE, print = FALSE}
+# Run liana /w re-implemented and original SCA
+complex_test <- liana_wrap(testdata,
+                           method = c('natmi', 'sca', 'logfc', 'connectome'),
+                           resource = c('CellPhoneDB'))
+
+complex_test
+```
+

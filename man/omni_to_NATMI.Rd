@@ -4,12 +4,18 @@
 \alias{omni_to_NATMI}
 \title{Reform OmniPath Resource to NATMI format and save to location}
 \usage{
-omni_to_NATMI(op_resource, omni_path = "input/omnipath_NATMI")
+omni_to_NATMI(
+  op_resource,
+  reso_name = "placeholder",
+  natmi_db_path = "input/omnipath_NATMI"
+)
 }
 \arguments{
-\item{omni_path}{directory in which to save OP resources}
+\item{op_resource}{Resource formatted as OmniPath}
 
-\item{resource_names}{list of omnipath resources}
+\item{reso_name}{name of the resource}
+
+\item{natmi_db_path}{directory in which to save the resource}
 }
 \description{
 Reform OmniPath Resource to NATMI format and save to location

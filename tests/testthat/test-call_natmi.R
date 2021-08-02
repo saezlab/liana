@@ -7,7 +7,7 @@ seurat_object <-
 test_that("Test NATMI", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "natmi_res.RDS"))
-    res1 <- call_natmi(op_resource = select_resource("OmniPath"),
+    res1 <- call_natmi(op_resource = select_resource("OmniPath")[[1]],
                        seurat_object = seurat_object,
                        expr_file = "test_em.csv",
                        meta_file = "test_metadata.csv",
@@ -15,7 +15,6 @@ test_that("Test NATMI", {
                        assay = "RNA",
                        num_cor = 4,
                        .format = TRUE,
-                       .write_data = TRUE,
                        .seed = 1004,
                        .natmi_path = NULL)
 

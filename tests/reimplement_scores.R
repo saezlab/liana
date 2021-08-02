@@ -210,7 +210,7 @@ cluster_markers <- scran::findMarkers(test_sce,
 
 #
 natmi_exp <- call_natmi(seurat_object = seurat_object,
-                        op_resource = select_resource("OmniPath"),
+                        op_resource = select_resource("OmniPath")[[1]],
                         expr_file = "test_em.csv",
                         meta_file = "test_metadata.csv",
                         output_dir = "NATMI_test",
@@ -232,5 +232,8 @@ natmi_res <- get_natmi(lr_res)%>%
     arrange_at(vars(everything()))
 
 
-
+xd <- liana_wrap(
+    seurat_object = seurat_object,
+    method = c("call_natmi"),
+    resource = c("Default"))
 

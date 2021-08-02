@@ -21,6 +21,12 @@ liana_pipe(
 \item{decomplexify}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}
 
+\item{test.type}{String specifying the type of pairwise test to perform -
+a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
+or a binomial test with \code{"binom"}.}
+
+\item{pval.type}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
+
 \item{seed}{Set Random Seed}
 }
 \value{

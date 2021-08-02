@@ -322,7 +322,7 @@ get_cpdb <- function(seurat_object,
 
 #' Function to calculate pvalues as in CPDB
 #'
-#' @param lr_res
+#' @param lr_res LR_res as returned from `liana_pipe`
 #' @param sce single cell object
 #'
 #' @noRd

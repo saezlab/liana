@@ -3,8 +3,8 @@
 #' @param seurat_object Seurat object
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
-#' @inhertiParams scran::findMarkers
-#' @inhertiParams scran::findMarkers
+#' @inheritParams scran::findMarkers
+#' @inheritParams scran::findMarkers
 #' @param seed Set Random Seed
 #'
 #' @import scuttle scran SingleCellExperiment SeuratObject

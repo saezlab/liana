@@ -28,59 +28,64 @@ liana_wrap <- function(seurat_object,
                        resource = c('OmniPath'),
                        .simplify = TRUE,
                        ...){
-
-    if(length(setdiff(tolower(method), show_methods())) > 0){
-        stop(str_glue("{setdiff(tolower(method), show_methods())} not part of LIANA "))
+  if(length(setdiff(tolower(method), show_methods())) > 0){
+    stop(str_glue("{setdiff(tolower(method), show_methods())} not part of LIANA "))
     }
 
     if(length(setdiff(resource, c(show_resources(), "all"))) > 0){
-        stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
-    }
+      stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
+      }
 
+  resource %<>% select_resource
 
-    resource %<>% select_resource
+  if(any(method %in% c("natmi", "connectome", # change this
+                       "logfc", "sca"))){
 
-    if(any(method %in% c("natmi", "connectome", # this needs to change - its bad
-                         "logfc", "sca"))){
-        lr_results <- resource %>%
-            map(function(reso){
-                args <- append(
-                    list("seurat_object" = seurat_object,
-                         "op_resource" = reso),
-                    liana_defaults(...)[["liana_pipe"]]
-                    )
+    lr_results <- resource %>%
+      map(function(reso){
 
-                rlang::invoke(liana_pipe, args)
-            }) %>%
-            setNames(names(resource))
-    }
+        if(is.null(reso)){
+          stop("Resource is NULL and LIANA PIPE methods have no default")
+        }
 
-    .select_method(method) %>%
-        map2(names(.),
-             safely(function(.method, method_name){
-                 map2(resource, names(resource), function(reso, reso_name){
+        args <- append(
+          list("seurat_object" = seurat_object,
+               "op_resource" = reso),
+          liana_defaults(...)[["liana_pipe"]]
+          )
 
-                     if(!(method_name %in% c("natmi", "connectome",  # this needs to change - its bad
-                                             "logfc", "sca"))){
-                         args <- append(
-                             list("seurat_object" = seurat_object,
-                                  "op_resource" = reso),
-                             liana_defaults(...)[[method_name]]
-                             )
-                         rlang::invoke(.method,  args)
-                     } else {
-                       args <- append(
-                         list("seurat_object" = seurat_object,
-                              lr_res = lr_results[[reso_name]]),
-                         liana_defaults(...)[["liana_call"]]
-                         )
-                       rlang::invoke(.method,  args)
-                     }
-                     })
-                 }, quiet = FALSE)) %>%
-        # format errors
-        {`if`(.simplify, map(., function(elem)
-            .list2tib(.list2tib(compact(elem)))))}
+        rlang::invoke(liana_pipe, args)
+        }) %>%
+      setNames(names(resource))
+  }
+
+  .select_method(method) %>%
+    map2(names(.),
+         safely(function(.method, method_name){
+
+           map2(resource, names(resource), function(reso, reso_name){
+
+             if(!(method_name %in% c("natmi", "connectome", # change this
+                                     "logfc", "sca"))){
+               args <- append(
+                 list("seurat_object" = seurat_object,
+                      "op_resource" = reso),
+                 liana_defaults(...)[[method_name]]
+                 )
+               rlang::invoke(.method,  args)
+               } else {
+                 args <- append(
+                   list("seurat_object" = seurat_object,
+                        lr_res = lr_results[[reso_name]]),
+                   liana_defaults(...)[["liana_call"]]
+                   )
+                 rlang::invoke(.method,  args)
+                 }
+             })
+           }, quiet = FALSE)) %>%
+    # format errors
+    {`if`(.simplify, map(., function(elem)
+      .list2tib(.list2tib(compact(elem)))))}
 }
 
 

@@ -5,24 +5,26 @@
 \title{Call NATMI Pipeline from R with Resources Querried from OmniPath}
 \usage{
 call_natmi(
-  op_resource,
   seurat_object,
+  op_resource,
   expr_file = "em.csv",
   meta_file = "metadata.csv",
   output_dir = "NATMI_test",
+  reso_name = "placeholder",
   assay = "RNA",
   num_cor = 4,
   conda_env = NULL,
   .format = TRUE,
   .write_data = TRUE,
+  .use_raw = FALSE,
   .seed = 1004,
   .natmi_path = NULL
 )
 }
 \arguments{
-\item{op_resource}{List of OmniPath resources}
-
 \item{seurat_object}{Seurat object}
+
+\item{op_resource}{List of OmniPath resources}
 
 \item{expr_file}{expression matrix file name}
 
@@ -35,6 +37,8 @@ call_natmi(
 \item{.format}{bool whether to format output}
 
 \item{.write_data}{bool whether Extract data from Seurat Object}
+
+\item{.use_raw}{bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page}
 
 \item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
