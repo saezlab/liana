@@ -6,8 +6,9 @@ tools and resources that aid the investigation of cell-cell communication (CCC)
 were published recently.
 However, these methods and resources are usually in a fixed combination of a
 tool and its corresponding resource, but in principle any resource could be
-combined with any method.
+combined with any method.  
 
+  
 
 ## LIANA Framework
   
@@ -59,15 +60,18 @@ The following CCC resources are accessible via this pipeline:
 All the resources above are retrieved from [OmniPath](https://omnipathdb.org/),
 and more specifically [OmnipathR](https://github.com/saezlab/OmnipathR).
 However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing imperfections.
-
+  
 `OmniPath` itself serves as a composite CCC resource combining all the ones listed
 above + [more](https://doi.org/10.15252/msb.20209923). `OmniPath` also collects
-further information about the roles of proteins in intercellular communication
-and provides flexible filtering options (see [liana](https://saezlab.github.io/liana/articles/liana_custom_res.html)).  
-  
+further information about the roles and localisation of proteins in intercellular communication.
+We made use of this information regarding the and by default the `OmniPath`CCC
+resource in LIANA is filtered according to the consensus localisation and curation of
+ligand-receptor interactions. To obtain more information how we filtered the default CCC `OmniPath`,
+as well as to explore custom filter options see [customizing OmniPath resources](https://saezlab.github.io/liana/articles/liana_op_res.html).  
   
   
 ## Install LIANA  
+
 Installation of all dependencies takes ~5-10 minutes.
   
   
@@ -76,12 +80,17 @@ Installation of all dependencies takes ~5-10 minutes.
 See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
 The tutorial with the test data takes minutes to complete!
   
+  
+  
 ## LIANA++
-
+If you are interested in making use of the LIANA architecture for your own method, [this vignette](https://saezlab.github.io/liana/articles/liana_devel.html) provides instructions how to obtain a comprehensive table of LR statistics, which can then be used by custom scoring functions.
+In the [same vignette](https://saezlab.github.io/liana/articles/liana_devel.html) are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their unbiased benchmark.
+  
   
   
 ## Contact
 We appreciate any feedback, so please do not hesitate to open an issue on the [liana github page](https://github.com/saezlab/liana)!  
+  
   
   
 ### Citing `LIANA`:

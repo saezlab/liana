@@ -2,7 +2,9 @@
 #'
 #' @param seurat_object seurat object
 #' @param method method(s) to be run via liana
-#' @param resource resource(s) to be used by the methods (Use `all` to run all resources in one go)
+#' @param resource resource(s) to be used by the methods (Use `all` to run all resources in one go),
+#'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
+#' @param external_resource external resource in OmniPath tibble format
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
 #'   method-resource combinations
@@ -26,17 +28,24 @@ liana_wrap <- function(seurat_object,
                        method = c('natmi', 'connectome', 'logfc',
                                   'cellchat', 'sca', 'squidpy'),
                        resource = c('OmniPath'),
+                       external_resource,
                        .simplify = TRUE,
                        ...){
   if(length(setdiff(tolower(method), show_methods())) > 0){
     stop(str_glue("{setdiff(tolower(method), show_methods())} not part of LIANA "))
     }
 
-    if(length(setdiff(resource, c(show_resources(), "all"))) > 0){
+    if(resource!='custom' & length(setdiff(resource, c(show_resources(), "all"))) > 0){
       stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
       }
 
-  resource %<>% select_resource
+  if(resource!='custom'){
+    resource %<>% select_resource
+  } else{
+    print(resource)
+    resource = list('custom_resource'=external_resource)
+  }
+  print(resource)
 
   if(any(method %in% c("natmi", "connectome", # change this
                        "logfc", "sca"))){

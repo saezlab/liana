@@ -322,3 +322,45 @@ shuffle_omnipath <- function(op_resource,
         ) %>%
         as_tibble()
 }
+
+
+#' Function to Generate OmniPath versions
+#'
+#' @param remove_complexes whether to remove complexes
+#' @param simplify whether to simplify according to the mandatory columns needed by different methods in `liana`
+#' @inheritDotParams OmnipathR::filter_intercell_network
+#'
+#' @export
+#'
+#' @return An OmniPath resource
+generate_omni <- function(remove_complexes=TRUE,
+                          simplify = TRUE,
+                          ...){
+    OmnipathR::import_intercell_network() %>%
+        {
+            if(remove_complexes)
+                filter(., !(entity_type_intercell_source == "complex" |
+                                entity_type_intercell_target == "complex"))
+            else .
+
+        } %>%
+        OmnipathR::filter_intercell_network(
+            simplify = FALSE,
+            ...
+        )  %>%
+        distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
+                              "target_genesymbol"),
+                    .keep_all = TRUE) %>%
+        {
+            if(simplify)
+                select(.,
+                       "source", "target", "source_genesymbol", "target_genesymbol",
+                       "is_directed", "is_stimulation", "is_inhibition",
+                       "consensus_direction","consensus_stimulation", "consensus_inhibition",
+                       "dip_url",    "sources","references", "curation_effort",
+                       "n_references", "n_resources",
+                       "category_intercell_source", "category_intercell_target")
+            else .
+        }
+
+}
