@@ -24,9 +24,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # `liana`: Method re-implementation
 
-Cell-cell communication often relies on multi-subunit protein complexes and several datasets were incorporate such information (such as [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), [ICELLNET](https://www.nature.com/articles/s41467-021-21244-x), [Baccin2019](https://www.nature.com/articles/s41556-019-0439-6), and [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9)). To leverage this information in a similar way to [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9)) and the [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), we have developed the architecture in liana to account for complex subunits.
+Cell-cell communication often relies on multi-subunit protein complexes and several datasets were incorporate such information (such as [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), [ICELLNET](https://www.nature.com/articles/s41467-021-21244-x), [Baccin2019](https://www.nature.com/articles/s41556-019-0439-6), and [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9)). To leverage this information in a similar way to [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9) and the [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), we have developed the architecture in liana to account for complex subunits.
 
-This is particularly relevant for the measures introduced by [`SingleCellSignalR (sca)`], [`NATMI`], and [`Connectome`], as the original implementations of these methods were not developed to take complexes into account.
+This is particularly relevant for the measures introduced by `SingleCellSignalR (sca)`, `NATMI`, and `Connectome`, as the original implementations of these methods were not developed to take complexes into account.
 
 As such, in this vignette we will compare the liana re-implementation of these methods with toy data.
 
@@ -44,7 +44,7 @@ testdata <-
 ```
 
 ## Connectome weights
-```{r conectome_run, message = FALSE, print = FALSE}
+```{r conectome_run, message = FALSE, print = FALSE, warning=FALSE}
 # Run liana /w re-implemented and original Connectome
 connectome_test <- liana_wrap(testdata,
                               method = c('call_connectome', 'connectome'),
@@ -111,21 +111,13 @@ sca_test %<>%
 
 sca_test %<>%
     mutate_at(.vars = c("call_sca.LRscore", "sca.LRscore"),
-              round, digits = 5)  %>% # account for different rounding
-    na.omit() # exclude auto-regulation and filtered interactions
+              round, digits = 5) %>% # account for different rounding
+    na.omit() # omit NAs*
+# *NAs result from internal filtering (not applied here) and because
+# SCAomni (SingleCellSignalR) returns paracrine (in this case) OR
+# autocrine interactions, not both
     
 sca_test %>%
     dplyr::filter(call_sca.LRscore!=sca.LRscore) # show only different
-```
-
-
-## SingleCellSignalR, NATMI, and Connectome Scores /w Complexes (CellPhoneDB)
-```{r sca_run, message = FALSE, print = FALSE}
-# Run liana with the CellPhoneDB resource
-complex_test <- liana_wrap(testdata,
-                           method = c('natmi', 'sca', 'logfc', 'connectome'),
-                           resource = c('CellPhoneDB'))
-
-complex_test
 ```
 

@@ -13,6 +13,10 @@
 #' Stats:
 #' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
 #' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
+#'
+#' In this case, we use the product of the logFC rather than thresholding, as in
+#' the original implementation.
+#'
 #' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>% %<>%
 #' @importFrom tidyr unite expand_grid

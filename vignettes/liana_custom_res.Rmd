@@ -1,0 +1,21 @@
+---
+title: "LIANA Custom Resources and More"
+author:
+  - name: Daniel Dimitrov
+    affiliation:
+        - Saezlab, Heidelberg University
+    email: daniel.dimitrov@uni-heidelberg.de
+date: "04/08/2021"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

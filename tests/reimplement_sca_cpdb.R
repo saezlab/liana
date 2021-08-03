@@ -9,7 +9,6 @@ lr_res <- liana_pipe(seurat_object,
 lr_res
 
 
-
 # OP format
 transmitters <- op_resource$source_genesymbol %>%
     as_tibble() %>%
