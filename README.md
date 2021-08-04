@@ -11,12 +11,15 @@ combined with any method.
   
 ## LIANA Framework
   
-To this end we built a framework to decouple the methods from their corresponding resources.
+To this end, we built a framework to decouple the methods from their corresponding resources.
    
-LIANA also goes a step further as it provides a rank aggregate from results of the different methods,
-options to customize the resource according to own preference,and a robust architecture that takes
-complexes into account and aims to accelarate further method development and benchmarks.
+LIANA also goes a step further as it provides:
 
+* A robust and extendable architecture that aims to accelerate method development and benchmarks
+
+* A rank aggregate from the results of different methods
+
+* A customizable plethora of resources
   
 ![landingpage](ligrec_pipe.png)
   
@@ -25,15 +28,15 @@ complexes into account and aims to accelarate further method development and ben
 
 The tools implemented in this repository are:
 
-- CellPhoneDB algorithm (via [Squidpy](https://squidpy.readthedocs.io/en/latest/))
-- CellChat
-- NATMI*
-- Connectome*
-- SingleCellSignalR* (SCA)
-- iTALK (logfc)*
+- [CellPhoneDB](https://github.com/Teichlab/cellphonedb) method (via [Squidpy](https://squidpy.readthedocs.io/en/latest/))
+- [CellChat](https://github.com/sqjin/CellChat)
+- [NATMI](https://github.com/forrest-lab/NATMI)*
+- [Connectome](https://github.com/msraredon/Connectome)*
+- [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR)* (SCA)
+- [iTALK](https://github.com/Coolgenome/iTALK) (logfc)*
   
   
-*These scoring systems from these methods were re-implemented in LIANA in order to enable them to work with multimeric complexes, simplify their calls, and reduce the incosistencies and reduncancies when calling the original pipelines. If you wish to run the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
+*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
   
 ## Resources
@@ -75,8 +78,25 @@ as well as to explore custom filter options see [customizing OmniPath resources]
   
   
 ## Install LIANA  
+```{r}
+require(devtools)  
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+devtools::install_github('saezlab/liana')
+```
 
-Installation of all dependencies takes ~5-10 minutes.
+If you also wish to run the efficient CellPhoneDB re-implementation from Squidpy, please set up
+a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+environment by running the following lines in the terminal:
+```{bash}
+conda create -n liana_env
+conda activate liana_env
+conda install -c anaconda python=3.8.5
+pip install squidpy
+```
+
+Installation of all dependencies should take approx. 5-10 minutes.
   
   
   

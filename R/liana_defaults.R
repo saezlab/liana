@@ -46,7 +46,7 @@ liana_defaults <- function(
                     decomplexify = decomplexify,
                     test.type = "t",
                     pval.type = "all",
-                    trim=0.05
+                    trim=0.1
                     )
                 ),
 

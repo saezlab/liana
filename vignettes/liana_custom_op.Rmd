@@ -57,7 +57,7 @@ cust_omni <- generate_omni(loc_consensus_percentile = 30,
 liana_omni <- select_resource("OmniPath")[[1]]
 
 # Check if the same
-all_equal(op_omni, liana_omni)
+all_equal(cust_omni, liana_omni)
 ```
 
 
@@ -105,4 +105,13 @@ liana_test <- liana_wrap(seurat_object = testdata,
   liana_aggregate()
 
 liana_test %>% glimpse
+```
+
+
+
+
+## Session information
+```{r session_info, echo=TRUE}
+options(width = 120)
+sessioninfo::session_info()
 ```

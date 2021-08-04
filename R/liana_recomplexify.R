@@ -16,6 +16,8 @@
 #'  treated as seperate entities and re-assembled into complexes (or 'recomplexified')
 #'  by this function
 #'
+#' @export
+#'
 #' @importFrom stringr str_split
 recomplexify <- function(lr_res,
                          columns,

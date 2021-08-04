@@ -121,3 +121,8 @@ sca_test %>%
     dplyr::filter(call_sca.LRscore!=sca.LRscore) # show only different
 ```
 
+## Session information
+```{r session_info, echo=TRUE}
+options(width = 120)
+sessioninfo::session_info()
+```

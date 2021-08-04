@@ -1,7 +1,7 @@
 ---
 title: "LIANA++ for Benchmarks and Developers"
 author: "Daniel Dimitrov"
-date: "8/3/2021"
+date: "04/08/2021"
 output: html_document
 ---
 
@@ -133,8 +133,8 @@ Similarly one could call all `call_*` functions via `liana_wrap`
 liana_calls <- liana_wrap(testdata,
                           method = c('call_natmi', 'call_connectome',
                                      'call_sca', 'call_italk'),
-                          resource = "OmniPath")
-liana_calls %>% liana_aggregate()
+                          resource = "Default") # Run with Default Resources
+liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
 ```
 
 

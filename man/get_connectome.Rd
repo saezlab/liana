@@ -15,7 +15,6 @@ get_connectome(lr_res, ...)
     \item{\code{decomplexify}}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}
     \item{\code{lr_res}}{ligand-receptor DE results and other stats between clusters}
-    \item{\code{protein}}{whether to return complexes alone ('complex') or complexes + their protein subunits ('subunit' - default)}
     \item{\code{complex_policy}}{policy how to account for the presence of complexes.
 Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
 `'min0'` (default): select the subunit with the change/expression closest to 0
