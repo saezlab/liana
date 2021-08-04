@@ -30,9 +30,11 @@ saveRDS(sca_score, file.path(liana_path, "testdata",
 
 
 # Recomplexify Output ----
-recomplex <- recomplexify(pipe_out,
+lr_cmplx <- liana_pipe(seurat_object,
+                       op_resource = select_resource("CellPhoneDB")[[1]])
+
+recomplex <- recomplexify(lr_cmplx,
                           .score_specs()[["sca"]]@columns,
-                          protein = 'subunit',
                           complex_policy ='min0')
 saveRDS(recomplex, file.path(liana_path, "testdata",
                              "output", "recomplex.RDS"))

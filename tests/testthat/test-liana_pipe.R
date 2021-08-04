@@ -17,18 +17,17 @@ test_that("Test liana pipe", {
 
 # Test De-/Re- Complexify
 test_that("Test liana pipe", {
-    recomplex <- recomplexify(pipe_out,
+    lr_cmplx <- liana_pipe(seurat_object,
+                           op_resource = select_resource("CellPhoneDB")[[1]])
+
+    recomplex <- recomplexify(lr_cmplx,
                               .score_specs()[["sca"]]@columns,
-                              protein = 'subunit',
                               complex_policy ='min0')
     recomplex_exp <- readRDS(file.path(liana_path, "testdata",
                                        "output", "recomplex.RDS"))
 
     expect_equal(recomplex, recomplex_exp)
 })
-
-
-
 
 
 

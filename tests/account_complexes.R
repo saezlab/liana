@@ -2,14 +2,227 @@
 liana_path <- system.file(package = "liana")
 seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
-op_resource <- select_resource("OmniPath")[[1]]
+op_resource <- select_resource("CellPhoneDB")[[1]]
 
 require(SingleCellExperiment)
 
-# Run /w OmniPath
+
 lr_res <- liana_pipe(seurat_object,
                      op_resource)
-lr_res
+
+xd <- lr_res %>% recomplexify(
+    columns = .score_specs()[["logfc"]]@columns,
+    complex_policy = "min0")
+
+xd2 <- lr_res %>% recomplexify(
+    columns = .score_specs()[["logfc"]]@columns,
+    complex_policy = "min")
+
+all_equal(xd, xd2)
+
+xd %>%
+    anti_join(xd2, by = c("source", "target",
+                          "ligand.complex", "ligand",
+                          "receptor.complex", "receptor"))
+
+
+# if any subunit is missing then assign 0
+
+# take complexes only
+# check if a subunit of a complex is missing (rowwise)
+# add and assign 0s or pval of 1 to @columns
+# then recomplexify
+
+
+lr_cmplx <- lr_res %>%
+    select(ends_with("complex")) %>%
+    filter(if_any(.cols = ends_with("complex"),
+                  .fns = ~ str_detect(.x, "_")))
+
+complex <- "CNTFR_IL6ST_LIFR"
+example <- lr_cmplx %>%
+    filter(receptor.complex==complex)
+
+complex_split <- str_split(complex, "_") %>% pluck(1)
+
+absent_subunits <- setdiff(complex_split,
+                           lr_res$receptor %>% unique())
+
+# if there are absent subunits assign 0s and pvalues of 1
+if(length(absent_subunits)>0){
+    lr_res %>%
+        # any numeric value to 0
+        mutate(across(where(is.numeric) & starts_with("receptor"),
+                      ~ ifelse(receptor.complex==complex, 0, .))) %>%
+        # FDR and pval to 1
+        mutate(across(starts_with("receptor") &
+                          (ends_with("FDR") | ends_with("pval")),
+                      ~ ifelse(receptor.complex==complex, 1, .)))
+}
+
+
+
+# Loop over each complex and in lr_res and do the above
+lr_cmplx <- lr_res %>%
+    select(ends_with("complex")) %>%
+    filter(if_any(.cols = ends_with("complex"),
+                  .fns = ~ str_detect(.x, "_")))
+
+
+entity <- "receptor"
+entity.complex <- str_glue("{entity}.complex")
+
+complex_entities <- lr_cmplx %>%
+    filter(str_detect(.data[[entity.complex]], "_")) %>%
+    pluck(entity.complex) %>%
+    unique()
+
+
+# Check if function works
+complex <- "CNTFR_IL6ST_LIFR"
+example <- lr_res %>%
+    filter(receptor.complex==complex)
+
+example_corrected <- example %>%
+    missing_subunits_to0(complex = complex,
+                         entity = "receptor")
+all_equal(example, example_corrected)
+
+
+# check if it would correct if all units are present
+complex <- "ACVR1_TGFBR2"
+example <- lr_res %>%
+    filter(receptor.complex==complex)
+
+example_corrected <- example %>%
+    missing_subunits_to0(complex = complex,
+                         entity = "receptor")
+
+all_equal(example, example_corrected)
+
+#
+lr_res <- lr_res %>%
+    filter(ligand!="ITGAX")
+
+
+
+
+
+#
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+op_resource <- select_resource("CellPhoneDB")[[1]]
+
+lr_res <- liana_pipe(seurat_object,
+                     op_resource)
+lr_res2 <- lr_res
+
+
+
+recomplexify_env = new.env()
+lr_res %<>% account_missing(recomplexify_env)
+
+all_equal(lr_res, lr_res2)
+
+
+
+
+recomplexify()
+
+
+# Turn into function
+account_missing <- function(lr_res, env){
+
+    env$lr_res <- lr_res
+
+    ligand_complexes <- lr_res %>%
+        filter(str_detect(.data[["ligand.complex"]], "_")) %>%
+        pluck("ligand.complex") %>%
+        unique()
+
+    receptor_complexes <- lr_res %>%
+        filter(str_detect(.data$receptor.complex, "_")) %>%
+        pluck("receptor.complex") %>%
+        unique()
+
+    map(receptor_complexes,
+        ~missing_subunits_to0(lr_res = lr_res,
+                              complex = .x,
+                              entity = "receptor",
+                              env = env))
+
+    map(receptor_complexes,
+        ~missing_subunits_to0(lr_res = lr_res,
+                              complex = .x,
+                              entity = "ligand",
+                              env = env))
+
+    return(env$lr_res)
+}
+
+
+
+
+
+
+#' Helper Function that assigns 0s to any complexes with missing subunits
+#'
+#' @param lr_cmplx LR results as obtained by `lr_pipe`
+#' @param complex complex of interest
+#' @param entity is the complex a 'ligand' or 'receptor'
+#'
+#' @return A `lr_res` tibble with
+missing_subunits_to0 <- function(lr_res, complex, entity, env){
+
+    entity.complex <- str_glue("{entity}.complex")
+
+    complex_split <- # split complex into subunits
+        str_split(complex, "_") %>%
+        pluck(1)
+
+    # check if subunits are present
+    absent_subunits <- setdiff(complex_split,
+                               lr_res[[entity]] %>% unique())
+
+    # if there are absent subunits assign 0s and pvalues of 1
+    if(length(absent_subunits)>0){
+        env$lr_res <- env$lr_res %>%
+            # any numeric value to 0
+            mutate(across(where(is.numeric) & starts_with(!!entity),
+                          ~ ifelse(.data[[entity.complex]]==complex, 0, .))) %>%
+            # FDR and pval to 1
+            mutate(across(starts_with(!!entity) &
+                              (ends_with("FDR") | ends_with("pval")),
+                          ~ ifelse(.data[[entity.complex]]==complex, 1, .)))
+    }
+
+    return()
+}
+
+
+
+
+
+
+
+
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
 
 
 
@@ -251,3 +464,48 @@ complex <- get_connectome(lr_cdbd,
 
 complex2 <- get_connectome(lr_cdbd,
                            protein='complex')
+
+
+
+
+
+
+# Account for missing subunits
+cpdb <- select_resource("CellPhoneDB")[[1]]
+
+cpdb_decomplex <- decomplexify(cpdb)
+
+
+test <- liana_pipe(seurat_object = testdata,
+                   op_resource = cpdb_decomplex)
+
+
+# xx
+cmplx <- op_resource %>%
+    select(
+        ligand = source_genesymbol,
+        ligand.complex = source_genesymbol_complex,
+        receptor = target_genesymbol,
+        receptor.complex = target_genesymbol_complex
+    ) %>%
+    filter(if_any(.cols = ends_with("complex"),
+                  .fns = ~ str_detect(.x, "_")))
+
+cmplx_og <- op_resource %>%
+    select(
+        ligand = source_genesymbol,
+        ligand.complex = source_genesymbol_complex,
+        receptor = target_genesymbol,
+        receptor.complex = target_genesymbol_complex
+    )
+
+xx <- lr_res %>%
+    left_join(., cmplx,
+              by=c("ligand", "receptor")) %>%
+    distinct()
+
+
+xx_og <- lr_res %>%
+    left_join(., cmplx_og,
+              by=c("ligand", "receptor")) %>%
+    distinct()

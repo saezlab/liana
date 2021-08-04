@@ -42,10 +42,8 @@ liana_wrap <- function(seurat_object,
   if(resource!='custom'){
     resource %<>% select_resource
   } else{
-    print(resource)
     resource = list('custom_resource'=external_resource)
   }
-  print(resource)
 
   if(any(method %in% c("natmi", "connectome", # change this
                        "logfc", "sca"))){

@@ -62,6 +62,7 @@ get_sca(lr_res) %>% glimpse
 `get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info.
 
 
+
 ## Install LIANA++
 Install a LIANA++ environment with all original software as a way to minimize bias for benchmark studies.
   

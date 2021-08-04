@@ -9,10 +9,14 @@ tool and its corresponding resource, but in principle any resource could be
 combined with any method.  
 
   
-
 ## LIANA Framework
   
 To this end we built a framework to decouple the methods from their corresponding resources.
+   
+LIANA also goes a step further as it provides a rank aggregate from results of the different methods,
+options to customize the resource according to own preference,and a robust architecture that takes
+complexes into account and aims to accelarate further method development and benchmarks.
+
   
 ![landingpage](ligrec_pipe.png)
   
@@ -26,10 +30,10 @@ The tools implemented in this repository are:
 - NATMI*
 - Connectome*
 - SingleCellSignalR* (SCA)
-- iTALK*
+- iTALK (logfc)*
   
   
-*These methods were re-implemented in LIANA in order to enable them to work with multimeric complexes and to simplify their calls. If you wish to run the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
+*These scoring systems from these methods were re-implemented in LIANA in order to enable them to work with multimeric complexes, simplify their calls, and reduce the incosistencies and reduncancies when calling the original pipelines. If you wish to run the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
   
 ## Resources

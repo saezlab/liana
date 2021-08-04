@@ -93,83 +93,16 @@ liana_call <- function(method,
                        op_resource,
                        decomplexify = TRUE,
                        lr_res,
-                       protein = 'subunit',
                        complex_policy = 'min0',
                        ...){
 
     liana_scores(.score_specs()[[method]],
                  lr_res = lr_res,
-                 protein = protein,
                  complex_policy = complex_policy,
                  decomplexify = decomplexify,
                  ...)
 }
 
-
-#' Helper function to account for complexes in the resources
-#'
-#' @param lr_cmplx decomplexified lr_res
-#' @param columns columns to account for complexes for
-#' @param complex_policy policy how to account for the presence of complexes.
-#'   Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
-#'   `'min0'` (default): select the subunit with the change/expression closest to 0
-#'    (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
-#'   `'all'`: returns all possible subunits separately;
-#'   Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)
-#' @param protein whether to return complexes alone ('complex') or complexes + their protein subunits ('subunit' - default)
-#'
-#' @returns complex-accounted lr_res
-#'
-#' @details to be passed before the relevant score_calc function
-#'
-#' @importFrom stringr str_split
-recomplexify <- function(lr_res,
-                         columns,
-                         protein,
-                         complex_policy){
-
-    if(complex_policy=='all'){ return(lr_res) }
-
-    grps <- c("source", "target",
-              "ligand.complex", "receptor.complex")
-
-    if(protein=='complex'){
-
-        lr_cmplx <- lr_res %>%
-            group_by(across(all_of(grps))) %>%
-            summarise_at(.vars=columns, .funs = complex_policy) %>%
-            rename(ligand = ligand.complex,
-                   receptor = receptor.complex)
-
-    } else if(protein=='subunit'){
-
-        columns %>%
-            map(function(col){
-
-                col.min <- sym(str_glue("{col}.min"))
-                col.flag <- sym(str_glue("{col}.flag"))
-
-                lr_res <<- lr_res %>%
-                    group_by(across(all_of(grps))) %>%
-                    mutate( {{ col.min }} := min0(.data[[col]])) %>%
-                    mutate( {{ col.flag }} :=
-                                ifelse(.data[[col]]==.data[[col.min]],
-                                       TRUE,
-                                       FALSE))
-            })
-
-        lr_cmplx <- lr_res %>%
-            filter(if_all(ends_with("flag"))) %>%
-            group_by(across(all_of(c("source", "target",
-                                     "ligand", "receptor")))) %>%
-            select(source, target,
-                   ligand.complex, ligand,
-                   receptor.complex, receptor,
-                   !!columns)
-    }
-
-    return(lr_cmplx)
-}
 
 
 
@@ -186,7 +119,6 @@ liana_scores <- function(score_object,
                          lr_res,
                          decomplexify,
                          complex_policy,
-                         protein,
                          ...){
 
     lr_res %<>%
@@ -201,8 +133,7 @@ liana_scores <- function(score_object,
             recomplexify(
                 lr_res = .,
                 columns = score_object@columns,
-                complex_policy = complex_policy,
-                protein = protein)
+                complex_policy = complex_policy)
     }
 
     args <-
@@ -220,13 +151,6 @@ liana_scores <- function(score_object,
 
 
 
-#' Helper Function which returns the value closest to 0
-#' @param vec numeric vector
-#'
-#' @return value closest to 0
-min0 <- function(vec){
-    vec[which.min(abs(vec))]
-}
 
 
 #' Function Used to Calculate the Connectome-like `weight_sc` weights
@@ -348,8 +272,6 @@ cpdb_score <- function(lr_res,
             slice_sample(prop=1, replace = FALSE) %>%
             deframe()
     })
-
-    print(123)
 
     # generate mean permutations
     if(parallelize){

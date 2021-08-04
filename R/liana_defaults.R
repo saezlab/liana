@@ -53,7 +53,6 @@ liana_defaults <- function(
         "liana_call" = liana_call.params %<>%
             `%||%`(
                 list(
-                    protein = "subunit",
                     complex_policy = "min0",
                     decomplexify = decomplexify
                     )
