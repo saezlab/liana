@@ -80,7 +80,6 @@ liana_pipe <- function(seurat_object, # or sce object
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
-    message("LIANA: Cluster Stats calculated!")
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -124,8 +123,6 @@ liana_pipe <- function(seurat_object, # or sce object
                        target = target)
         }) %>%
         bind_rows()
-
-
     message("LIANA: Cluster Stats calculated!")
 
     # Join Expression Means
