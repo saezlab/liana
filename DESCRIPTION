@@ -42,7 +42,8 @@ Remotes: Coolgenome/iTALK,
     msraredon/Connectome,
     sqjin/CellChat,
     bioc::3.12/BiRewire,
-    bioc::3.12/SingleCellExperiment
+    bioc::3.12/SingleCellExperiment,
+    bioc::3.12/scran
 Depends:
     R(>= 4.0)
 Imports:
@@ -59,6 +60,7 @@ Imports:
     dplyr,
     Seurat,
     SingleCellExperiment,
+    scran,
     logger,
     RobustRankAggreg
 Suggests:
