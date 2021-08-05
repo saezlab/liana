@@ -34,6 +34,9 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
+    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0 by default),
+yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.}
     \item{\code{test.type}}{String specifying the type of pairwise test to perform -
 a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
 or a binomial test with \code{"binom"}.}

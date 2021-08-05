@@ -4,7 +4,14 @@
 \alias{call_sca}
 \title{Function to call SingleCellSignalR with databases from OmniPath}
 \usage{
-call_sca(op_resource, seurat_object, .format = TRUE, assay = "RNA", ...)
+call_sca(
+  op_resource,
+  seurat_object,
+  .format = TRUE,
+  assay = "RNA",
+  slot = "counts",
+  ...
+)
 }
 \arguments{
 \item{op_resource}{OmniPath Intercell Resource DN}

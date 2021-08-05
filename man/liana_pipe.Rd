@@ -10,6 +10,7 @@ liana_pipe(
   decomplexify = TRUE,
   test.type = "t",
   pval.type = "all",
+  expr_prop = 0,
   trim = 0.1
 )
 }
@@ -26,6 +27,10 @@ a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"},
 or a binomial test with \code{"binom"}.}
 
 \item{pval.type}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
+
+\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
+yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.}
 
 \item{seed}{Set Random Seed}
 }

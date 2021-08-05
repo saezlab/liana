@@ -7,6 +7,7 @@
 liana_defaults(
   assay = "RNA",
   decomplexify = TRUE,
+  expr_prop = 0,
   cellchat.params = NULL,
   squidpy.params = NULL,
   sca.params = NULL,
@@ -23,6 +24,10 @@ and `call_connectome`}
 
 \item{decomplexify}{specify whether complexes in the resource should be
 dissociated and taken into account}
+
+\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
+yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.}
 
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 

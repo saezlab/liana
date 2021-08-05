@@ -254,7 +254,7 @@ ligrec_degformat <- function(cluster_markers,
 #' @param entity ligand or receptor
 #' @param type type of mean to join (count or scaled)
 #'
-#' @import magrittr
+#' @importFrom magrittr %>% %<>%
 #'
 #' @return Returns the Average Expression Per Cluster
 #'

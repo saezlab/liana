@@ -4,7 +4,14 @@
 \alias{call_squidpy}
 \title{Call Squidpy Pipeline via reticulate with OmniPath and format results}
 \usage{
-call_squidpy(seurat_object, op_resource, .seed = 1004, conda_env = NULL, ...)
+call_squidpy(
+  seurat_object,
+  op_resource,
+  .seed = 1004,
+  conda_env = NULL,
+  slot = "counts",
+  ...
+)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}
@@ -18,6 +25,10 @@ call_squidpy(seurat_object, op_resource, .seed = 1004, conda_env = NULL, ...)
 
 \item{...}{kwargs passed to Squidpy; For more information see:
 \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}
+
+\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
+yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.}
 }
 \value{
 A list of Squidpy results for each resource

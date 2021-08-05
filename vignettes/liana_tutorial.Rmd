@@ -87,8 +87,8 @@ aforementioned ones (available via `show_resources()`) can be added to the `reso
 ```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
 liana_test <- liana_wrap(testdata,
-                         method = c("sca", "natmi", "logfc",
-                                    "cellchat", "squidpy", "connectome"),
+                         method = c("sca", "natmi", "logfc", "connectome",
+                                    "cellchat", "squidpy"),
                          resource = c('OmniPath'),
                           # CellChat requires normalized data
                          cellchat.params = list(.normalize=TRUE))

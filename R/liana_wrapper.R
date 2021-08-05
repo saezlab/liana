@@ -11,7 +11,6 @@
 #' @inheritDotParams liana_defaults
 #'
 #' @import tibble
-#' @importFrom rlang invoke
 #' @importFrom magrittr %<>% %>%
 #' @importFrom purrr map map2 safely compact
 #'
