@@ -8,7 +8,7 @@
 #'    by SingleCellSignalR
 get_sca <- function(lr_res,
                     ...){
-
+    message("SCA Scores being calculated!")
     liana_call(
         lr_res = lr_res,
         method = "sca",
@@ -28,7 +28,7 @@ get_sca <- function(lr_res,
 #'    by connectome
 get_connectome <- function(lr_res,
                            ...){
-
+    message("Connectome Scores being calculated!")
     liana_call(
         lr_res = lr_res,
         method = "connectome",
@@ -48,7 +48,7 @@ get_connectome <- function(lr_res,
 #'    as calculated by natmi
 get_natmi <- function(lr_res,
                       ...){
-
+    message("NATMI Scores being calculated!")
     liana_call(
         lr_res = lr_res,
         method = "natmi",
@@ -69,7 +69,7 @@ get_natmi <- function(lr_res,
 #'    and receptor gene
 get_logfc <- function(lr_res,
                       ...){
-
+    message("logFC Scores being calculated!")
     liana_call(
         lr_res = lr_res,
         method = "logfc",

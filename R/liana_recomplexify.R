@@ -57,6 +57,7 @@ recomplexify <- function(lr_res,
                receptor.complex, receptor,
                !!columns)
 
+    message("LIANA: Interactions Recomplexified!")
     return(lr_cmplx)
 }
 

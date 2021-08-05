@@ -180,7 +180,7 @@ liana_pipe <- function(seurat_object, # or sce object
         lr_res %<>%
             filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
     }
-
+    message("LIANA: LR summary stats calculated!")
 
     if(decomplexify){
         # Join complexes (recomplexify) to lr_res
