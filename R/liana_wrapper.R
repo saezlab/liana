@@ -68,6 +68,7 @@ liana_wrap <- function(seurat_object,
   .select_method(method) %>%
     map2(names(.),
          safely(function(.method, method_name){
+           message(str_glue("Now Running: {stringr::str_to_title(method_name)}"))
 
            map2(resource, names(resource), function(reso, reso_name){
 

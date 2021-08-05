@@ -99,9 +99,6 @@ conda activate liana_env
 conda install -c anaconda python=3.8.5
 pip install squidpy
 ```
-
-Installation of all dependencies should take approx. 5-10 minutes.
-  
   
   
 ## Tutorial

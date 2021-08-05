@@ -39,8 +39,6 @@ call_cellchat <- function(op_resource,
                           expr_prop = 0,
                           ...
                           ){
-    message("CellChat Running!")
-
     stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
 

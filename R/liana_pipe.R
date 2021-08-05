@@ -123,7 +123,6 @@ liana_pipe <- function(seurat_object, # or sce object
                        target = target)
         }) %>%
         bind_rows()
-    message("LIANA: Cluster Stats calculated!")
 
     # Join Expression Means
     lr_res %<>%
