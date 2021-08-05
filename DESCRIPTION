@@ -50,7 +50,7 @@ Imports:
     stringr,
     magrittr,
     purrr,
-    furrr,
+    furrr (>= 0.2.0),
     tidyr,
     tibble,
     readr,
@@ -58,8 +58,6 @@ Imports:
     dplyr,
     Seurat,
     logger,
-    SingleCellExperiment,
-    scran,
     RobustRankAggreg
 Suggests:
     OmnipathR,
@@ -69,6 +67,8 @@ Suggests:
     rmarkdown,
     workflowr,
     testthat (>= 3.0.0),
+    SingleCellExperiment,
+    scran,
     sessioninfo
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
