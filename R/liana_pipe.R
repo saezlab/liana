@@ -10,7 +10,9 @@
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #'
-#' @import scuttle scran SingleCellExperiment SeuratObject progress
+#' @import SingleCellExperiment SeuratObject
+#' @importFrom scran findMarkers
+#' @importFrom scuttle summarizeAssayByGroup
 #'
 #' @export
 #'
