@@ -54,7 +54,6 @@ Imports:
     dplyr,
     Seurat,
     SingleCellExperiment,
-    scran,
     logger,
     OmnipathR,
     RobustRankAggreg
@@ -70,7 +69,6 @@ Suggests:
 Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
-    bioc::3.12/scran,
     saezlab/OmnipathR
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
