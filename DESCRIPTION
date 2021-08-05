@@ -38,11 +38,6 @@ URL: https://omnipathdb.org/
 BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-Remotes: sqjin/CellChat,
-    bioc::3.12/BiRewire,
-    bioc::3.12/SingleCellExperiment,
-    bioc::3.12/scran,
-    saezlab/OmnipathR
 Depends:
     R(>= 4.0)
 Imports:
@@ -61,9 +56,9 @@ Imports:
     SingleCellExperiment,
     scran,
     logger,
+    OmnipathR,
     RobustRankAggreg
 Suggests:
-    OmnipathR,
     BiRewire,
     CellChat,
     knitr,
@@ -72,5 +67,10 @@ Suggests:
     workflowr,
     testthat (>= 3.0.0),
     sessioninfo
+Remotes: sqjin/CellChat,
+    bioc::3.12/BiRewire,
+    bioc::3.12/SingleCellExperiment,
+    bioc::3.12/scran,
+    saezlab/OmnipathR
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
