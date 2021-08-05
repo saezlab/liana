@@ -107,8 +107,46 @@ liana_test <- liana_wrap(seurat_object = testdata,
 liana_test %>% glimpse
 ```
 
+## Under the hood
+In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
+and simplifies their filtering according to liana-appropriate format.
+
+```{r omnipathr}
+# reproduce cust_op as from above with OmniPathR alone
+
+# import the OmniPathR intercell network component
+ligrec <- OmnipathR::import_intercell_network()
+
+# filter out the complexes
+ligrec %<>%
+  filter(!(entity_type_intercell_source == "complex" |
+             entity_type_intercell_target == "complex"))
 
 
+# apply filtering according to curation and localisation
+ligrec %<>% 
+  OmnipathR::filter_intercell_network(loc_consensus_percentile = 30,
+                                      consensus_percentile = NULL,
+                                      transmitter_topology = c('secreted',
+                                                               'plasma_membrane_transmembrane',
+                                                               'plasma_membrane_peripheral'),
+                                      receiver_topology = c('plasma_membrane_transmembrane',
+                                                            'plasma_membrane_peripheral'),
+                                      min_curation_effort = 1,
+                                      ligrecextra = FALSE)
+
+# remove duplicate LRs
+ligrec %<>% 
+  distinct_at(.vars = c("source_genesymbol", 
+                              "target_genesymbol"),
+                    .keep_all = TRUE)
+
+all_equal(ligrec, cust_omni)
+
+```
+To make use of the full potential of [OmniPathR](https://github.com/saezlab/OmnipathR) we kindly refer the user to it.
+
+It is worth noting that at this point, this tutorial only covers the intercellular component of OmniPathR, but future versions will aim to bridge this with its [intracellular part](https://omnipathdb.org/#about).
 
 ## Session information
 ```{r session_info, echo=TRUE}

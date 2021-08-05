@@ -6,8 +6,11 @@
 #' @inheritParams scran::findMarkers
 #' @inheritParams scran::findMarkers
 #' @param seed Set Random Seed
+#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
+#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #'
-#' @import scuttle scran SingleCellExperiment SeuratObject
+#' @import scuttle scran SingleCellExperiment SeuratObject progress
 #'
 #' @export
 #'
@@ -17,10 +20,12 @@ liana_pipe <- function(seurat_object, # or sce object
                        decomplexify = TRUE,
                        test.type = "t",
                        pval.type = "all",
+                       expr_prop = 0,
                        trim=0.1){
 
     # Resource Decomplexified
     if(decomplexify){
+        message("LIANA: Resource was decomplexified!")
         op_resource %<>% decomplexify()
     }
 
@@ -75,6 +80,7 @@ liana_pipe <- function(seurat_object, # or sce object
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce)
+    message("LIANA: Cluster Stats calculated!")
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -118,6 +124,9 @@ liana_pipe <- function(seurat_object, # or sce object
                        target = target)
         }) %>%
         bind_rows()
+
+
+    message("LIANA: Cluster Stats calculated!")
 
     # Join Expression Means
     lr_res %<>%
@@ -166,6 +175,11 @@ liana_pipe <- function(seurat_object, # or sce object
                     entity="receptor") %>%
         # Global Mean
         mutate(global_mean = global_mean)
+
+    if(expr_prop > 0){
+        lr_res %<>%
+            filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+    }
 
 
     if(decomplexify){

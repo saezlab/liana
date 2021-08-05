@@ -21,6 +21,7 @@ call_sca <- function(op_resource,
                      seurat_object,
                      .format = TRUE,
                      assay = "RNA",
+                     slot = "counts",
                      ...){
   # Format OmnipathR resource
   if(!is.null(op_resource)){
@@ -38,7 +39,7 @@ call_sca <- function(op_resource,
   input_data <-
     Seurat::GetAssayData(seurat_object,
                          assay = assay,
-                         slot = "data") %>%
+                         slot = slot) %>%
     as.matrix()
   labels <- Seurat::Idents(seurat_object)
 

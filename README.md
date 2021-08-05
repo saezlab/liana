@@ -86,7 +86,12 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 devtools::install_github('saezlab/liana')
 ```
 
-If you also wish to run the efficient CellPhoneDB re-implementation from Squidpy, please set up
+If you wish to make use of the CellChat algorithm:
+```{r}
+devtools::install_github("sqjin/CellChat")
+```
+
+If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up
 a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
 environment by running the following lines in the terminal:
 ```{bash}

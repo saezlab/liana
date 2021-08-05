@@ -264,6 +264,8 @@ cpdb_score <- function(lr_res,
                        parallelize = FALSE,
                        workers = 4){
 
+    # !!!! Filter for genes only in lr_res (to account for prop if filtered)
+
     # shuffle columns
     set.seed(seed)
     shuffled_clusts <- map(1:nperms, function(perm){

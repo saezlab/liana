@@ -8,6 +8,9 @@
 #' @param .normalize # bool whether to normalize non-normalized data with
 #' @param .raw_use whether use the raw data or gene expression data pojectected
 #'    to a ppi
+#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
+#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
@@ -33,6 +36,7 @@ call_cellchat <- function(op_resource,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
                           .raw_use = TRUE,
+                          expr_prop = 0,
                           ...
                           ){
 
@@ -47,7 +51,7 @@ call_cellchat <- function(op_resource,
         object = `if`(!.normalize,
                       GetAssayData(seurat_object,
                                    assay = assay,
-                                   slot = "data"),
+                                   slot = "data"), # works with lognorm data
                       CellChat::normalizeData(
                           GetAssayData(seurat_object,
                                        assay = assay,
@@ -83,7 +87,9 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- CellChat::subsetData(cellchat.omni)
 
     # Infer the cell state-specific communications
-    cellchat.omni <- CellChat::identifyOverExpressedGenes(cellchat.omni)
+    cellchat.omni <-
+        CellChat::identifyOverExpressedGenes(cellchat.omni,
+                                             thresh.pc = expr_prop)
     cellchat.omni <- CellChat::identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network

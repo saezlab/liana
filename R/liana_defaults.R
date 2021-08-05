@@ -8,12 +8,14 @@
 #' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
 #' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
 #' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
-#'
 #' @param assay Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 #'    and `call_connectome`
-#'
 #' @param decomplexify specify whether complexes in the resource should be
 #'   dissociated and taken into account
+#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
+#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#'
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method
@@ -29,6 +31,7 @@
 liana_defaults <- function(
     assay = "RNA",
     decomplexify = TRUE,
+    expr_prop = 0,
     cellchat.params = NULL,
     squidpy.params = NULL,
     sca.params = NULL,
@@ -46,7 +49,8 @@ liana_defaults <- function(
                     decomplexify = decomplexify,
                     test.type = "t",
                     pval.type = "all",
-                    trim=0.1
+                    trim=0.1,
+                    expr_prop=expr_prop
                     )
                 ),
 
@@ -62,6 +66,7 @@ liana_defaults <- function(
         "cellchat" = cellchat.params %<>%
             `%||%`(list(
                 nboot = 100,
+                expr_prop = expr_prop,
                 exclude_anns = NULL,
                 thresh = 1,
                 assay = assay,
@@ -74,7 +79,7 @@ liana_defaults <- function(
            `%||%`(list(
                cluster_key=NULL,
                n_perms=1000,
-               threshold=0.01,
+               threshold=expr_prop,
                seed=as.integer(1004)
            )),
 

@@ -73,27 +73,29 @@ To run `liana`, we will use a toy PBMCs scRNA-Seq data set, obtained from [Seura
 ```{r load_data}
 liana_path <- system.file(package = "liana")
 testdata <-
-    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+  readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 testdata %>% glimpse()
 ```
 
 `liana_wrap` calls a number of methods and and each method is run with the provided resource(s).
 
-Here, we call Connectome, SCA, and Squidpy for the sake of computational speed,
-but any of c("sca", "natmi", "logfc", "cellchat", "squidpy", "connectome") can be run by simply
-adding their name to the `method` parameter.
+We will now call all methods that are currently available in liana.
 
-Similarly, here we use only the "OmniPath" CCC resource, but any of the 
+Here we use only the "OmniPath" CCC resource, but any of the 
 aforementioned ones (available via `show_resources()`) can be added to the `resource` parameter
 ```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
 liana_test <- liana_wrap(testdata,
-                         method = c('squidpy', 'connectome', "sca"),
-                         resource = c('OmniPath'))
+                         method = c("sca", "natmi", "logfc",
+                                    "cellchat", "squidpy", "connectome"),
+                         resource = c('OmniPath'),
+                          # CellChat requires normalized data
+                         cellchat.params = list(.normalize=TRUE))
 ```
-Further, by default `sca` and `connectome` scores are obtained via their `liana` re-implementations, while Squidpy is called externally.
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
+
+By default `sca`-, `natmi`, and `logfc`-, and `connectome`-like scores are obtained via their `liana` re-implementations, while `Squidpy` and `CellChat` pipelines are called externally.
 
 For more information and validation with the original methods see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) and [validate scores](https://saezlab.github.io/liana/articles/liana_remethod.html), respectively.
 
@@ -121,7 +123,7 @@ The re-implementation of the aforementioned methods in LIANA enables us to make 
 multimeric complex information as provided by the e.g. CellPhoneDB, CellChatDB, and ICELLNET resources
 
 ```{r complex_test, message = FALSE, print = FALSE}
-# Run liana with the CellPhoneDB resource
+# Run liana re-implementations with the CellPhoneDB resource
 complex_test <- liana_wrap(testdata,
                            method = c('natmi', 'sca', 'logfc', 'connectome'),
                            resource = c('CellPhoneDB'))
