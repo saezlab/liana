@@ -62,9 +62,6 @@ Imports:
     scran,
     RobustRankAggreg
 Suggests:
-    Connectome,
-    CellChat,
-    SCAomni,
     OmnipathR,
     BiRewire,
     knitr,
