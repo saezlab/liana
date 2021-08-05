@@ -38,13 +38,11 @@ URL: https://omnipathdb.org/
 BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-Remotes: Coolgenome/iTALK,
-    msraredon/Connectome,
-    sqjin/CellChat,
+Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
     bioc::3.12/scran,
-    bioc::3.13/OmniPathR,
+    saezlab/OmnipathR,
     bioc::3.12/RobustRankAggreg
 Depends:
     R(>= 4.0)
@@ -68,6 +66,7 @@ Imports:
 Suggests:
     OmnipathR,
     BiRewire,
+    CellChat,
     knitr,
     BiocStyle,
     rmarkdown,
