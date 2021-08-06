@@ -135,9 +135,12 @@ sca_res
 Similarly one could call all `call_*` functions via `liana_wrap`
 ```{r liana_calls, message=FALSE, warning=FALSE, print=FALSE}
 liana_calls <- liana_wrap(testdata,
-                          method = c('call_natmi', 'call_connectome',
-                                     'call_sca', 'call_italk'),
-                          resource = c("Default", "OmniPath")) # Run with Default Resources
+                          method = c('call_connectome',
+                                     'call_sca',
+                                     'call_italk',
+                                     'call_natmi'
+                                     ),
+                          resource = c("Default")) # Run with Default Resources
 liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
 ```
 

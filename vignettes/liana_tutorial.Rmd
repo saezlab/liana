@@ -47,7 +47,7 @@ require(purrr)
 `liana` provides CCC resources obtained and formatted via [`OmnipathR`](https://github.com/saezlab/OmnipathR) which are then converted to the appropriate format to each method.
 ```{r liana_resource, warning = FALSE}
 # Resource currently included in OmniPathR (and hence `liana`) include:
-liana::show_resources()
+show_resources()
 
 # A list of resources can be obtained using the `select_resource()` function:
 # See `?select_resource()` documentation for further information.

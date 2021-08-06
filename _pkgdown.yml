@@ -20,10 +20,14 @@ reference:
     desc: "`liana`-wrapper and related functions"
     contents:
       - starts_with("liana_")
-  - title: Method calling functions
+  - title: (External) Method calling functions
     desc: >
     contents:
       - starts_with("call_")
+  - title: (Internal) Method calling functions
+    desc: >
+    contents:
+      - starts_with("get_")
   - title: Format Method Output
     desc: >
     contents:
@@ -32,8 +36,8 @@ reference:
     desc: "Default parametres passed to each method called by liana"
     contents:
       - liana_defaults
-  - title: Get_ or Select_ Functions
-    desc: "Functions used to obtain resources, lists, etc"
+  - title: Show_ or Select_ Functions
+    desc: "Functions used to obtain available methods and resources, lists, etc"
     contents:
-      - starts_with("get_")
+      - starts_with("show_")
       - starts_with("select_")

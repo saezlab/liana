@@ -26,6 +26,7 @@ require(liana)
 require(tibble)
 require(purrr)
 require(magrittr)
+require(dplyr)
 
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -39,7 +40,7 @@ We will first filter OmniPath as described in the LIANA paper:
 * we kept interactions only where the receiver protein was plasma membrane transmembrane
 or peripheral according to at least 30% of the localisation annotations
 * we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).
-```{r liana_omni}
+```{r liana_omni, message = FALSE, print = FALSE}
 # generate_omni returns a tibble with CCC OmniPath
 cust_omni <- generate_omni(loc_consensus_percentile = 30,
                            consensus_percentile = NULL,
@@ -57,12 +58,12 @@ cust_omni <- generate_omni(loc_consensus_percentile = 30,
 liana_omni <- select_resource("OmniPath")[[1]]
 
 # Check if the same
-all_equal(cust_omni, liana_omni)
+dplyr::all_equal(cust_omni, liana_omni)
 ```
 
 
 ## Surface/Membrane-bound Interactions only
-```{r pm_omni}
+```{r pm_omni, message = FALSE, print = FALSE}
 pm_omni <- 
   generate_omni(loc_consensus_percentile = 51, # increase localisation consensus threshold
                 consensus_percentile = NULL,
@@ -95,7 +96,7 @@ pm_omni %>% glimpse()
 ## Run LIANA with custom CCC resource
 
 #### RUN liana
-```{r liana_wrap}
+```{r liana_wrap, message = FALSE, print = FALSE}
 # Run liana with the custom resource
 # liana Wrap
 liana_test <- liana_wrap(seurat_object = testdata,
@@ -111,7 +112,7 @@ liana_test %>% glimpse
 In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
 and simplifies their filtering according to liana-appropriate format.
 
-```{r omnipathr}
+```{r omnipathr, message = FALSE, print = FALSE}
 # reproduce cust_op as from above with OmniPathR alone
 
 # import the OmniPathR intercell network component
