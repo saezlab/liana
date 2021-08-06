@@ -1,0 +1,10 @@
+pandoc: 2.11.4
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  liana_custom_op: liana_custom_op.html
+  liana_devel: liana_devel.html
+  liana_remethod: liana_remethod.html
+  liana_tutorial: liana_tutorial.html
+last_built: 2021-08-06T14:12Z
+
