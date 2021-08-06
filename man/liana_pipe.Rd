@@ -29,10 +29,11 @@ or a binomial test with \code{"binom"}.}
 \item{pval.type}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
-yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+yet one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
 
-\item{seed}{Set Random Seed}
+\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each end
+of x before the `truncated mean` is computed (0.1 by default)}
 }
 \value{
 Returns a tibble with information required for LR calc

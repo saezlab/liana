@@ -140,8 +140,6 @@ missing_subunits_to0 <- function(lr_res, complex, entity, env){
 }
 
 
-
-
 #' Helper Function which returns the value closest to 0
 #' @param vec numeric vector
 #'

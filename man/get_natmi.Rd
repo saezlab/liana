@@ -7,6 +7,8 @@
 get_natmi(lr_res, ...)
 }
 \arguments{
+\item{lr_res}{ligand-receptor DE results and other stats between clusters}
+
 \item{...}{
   Arguments passed on to \code{\link[=liana_call]{liana_call}}
   \describe{
@@ -14,7 +16,6 @@ get_natmi(lr_res, ...)
     \item{\code{op_resource}}{resource tibble obtained via \link{liana::select_resource}}
     \item{\code{decomplexify}}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}
-    \item{\code{lr_res}}{ligand-receptor DE results and other stats between clusters}
     \item{\code{complex_policy}}{policy how to account for the presence of complexes.
 Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
 `'min0'` (default): select the subunit with the change/expression closest to 0
@@ -25,7 +26,7 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 }
 \value{
 Returns a tibble with specificity weights (`edge_specificity`)
-   as calculated by natmi
+   as calculated by NATMI
 }
 \description{
 Function to obtain NATMI-like weights

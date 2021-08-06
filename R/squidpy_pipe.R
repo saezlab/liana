@@ -29,6 +29,7 @@ call_squidpy <- function(seurat_object,
                          conda_env = NULL,
                          slot = "counts",
                          ...){
+
     if(is_tibble(op_resource)){
         op_resource <- list("placeholder" = op_resource)
     }

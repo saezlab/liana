@@ -74,6 +74,9 @@ require(devtools)
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
 BiocManager::install("ComplexHeatmap") # required for Connectome
 devtools::install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
@@ -106,7 +109,7 @@ cd *insert fullpath*/liana
 git clone https://github.com/saezlab/NATMI
 ```
 
-##### Note that, NATMI was forked from its [github repo](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources.
+##### Note that, NATMI was forked from [asrhou/NATMI](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources.
 
 
 #### If needed, use the following to locate the liana package
@@ -122,7 +125,8 @@ Use the *call_* functions to run the pipelines of the original methods, rather t
 # RUN cellchat alone with OmniPath
 sca_res <- call_sca(
   seurat_object = testdata,
-  op_resource = select_resource('OmniPath')[[1]])
+  op_resource = select_resource('OmniPath')[[1]]
+  )
 
 # Show CellChat Results
 sca_res
@@ -133,7 +137,7 @@ Similarly one could call all `call_*` functions via `liana_wrap`
 liana_calls <- liana_wrap(testdata,
                           method = c('call_natmi', 'call_connectome',
                                      'call_sca', 'call_italk'),
-                          resource = "Default") # Run with Default Resources
+                          resource = c("Default", "OmniPath")) # Run with Default Resources
 liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
 ```
 

@@ -47,7 +47,7 @@ require(purrr)
 `liana` provides CCC resources obtained and formatted via [`OmnipathR`](https://github.com/saezlab/OmnipathR) which are then converted to the appropriate format to each method.
 ```{r liana_resource, warning = FALSE}
 # Resource currently included in OmniPathR (and hence `liana`) include:
-show_resources()
+liana::show_resources()
 
 # A list of resources can be obtained using the `select_resource()` function:
 # See `?select_resource()` documentation for further information.
@@ -56,14 +56,13 @@ show_resources()
   
   
 ## CCC Methods
-Each of the resources, can then be run with any of the following methods:
+Each of the resources can then be run with any of the following methods:
 ```{r liana_method, warning = FALSE}
 # Resource currently included in OmniPathR (and hence `liana`) include:
 show_methods()
 ```
-Note that the different algorithms (or scoring measures) used in `sca`-, `natmi`-, `italk`-, and `connectome`- were re-implemented in LIANA.
-Yet, we kept the original method pipelines can be called via the `call_*` functions.
-
+Note that the different algorithms (or scoring measures) used in `sca`, `natmi`, `italk`, and `connectome` were re-implemented in LIANA.
+Yet, the original method pipelines can be called via the `call_*` functions.
 The original methods did not take complexes into account, while their re-implementations in liana *do* (see below). 
 
 ## `liana` wrapper function
@@ -183,6 +182,7 @@ cc_res <- call_cellchat(
 # Show CellChat Results
 cc_res
 ```
+It is however important to note that the methods available via `call_*` will not installed in LIANA by default, and further installation steps might need to be taken (See [liana landing page](https://saezlab.github.io/liana/index.html) for CellChat and Squidpy, and [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) for the rest).
 
 
 ## Citation

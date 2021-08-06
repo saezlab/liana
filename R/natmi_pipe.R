@@ -86,49 +86,47 @@ call_natmi <- function(
         dir.create(file.path(.input_path), recursive = TRUE)
     }
 
-    if(!dir.exists(file.path(.output_path))){
         log_success(str_glue("Output path created: {.output_path}"))
         dir.create(file.path(.output_path), recursive = TRUE)
 
-
-        if(.write_data){
-            log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
-            if(.use_raw){
-                write.csv(
-                    GetAssayData(object = seurat_object,
-                                 assay = "RNA",
-                                 slot = "counts"),
-                    file = file.path(.input_path, expr_file),
-                    row.names = TRUE
-                    )
-                } else{
-                    write.csv(100 * (exp(as.matrix( # this should not be 100...
-                        GetAssayData(object = seurat_object,
-                                     assay = assay,
-                                     slot = "data"))) - 1),
-                        file = file.path(.input_path, expr_file),
-                        row.names = TRUE)
-                }
-        }
-
-        log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
-        write.csv(Idents(seurat_object) %>%
-                      enframe(name="barcode", value="annotation"),
-                  file = file.path(.input_path, meta_file),
-                  row.names = FALSE)
-
-        log_info(str_glue("Saving resource to {.natmi_path}/lrdbs"))
-        # Deal with Default (i.e. NULL)
-        if(is.null(op_resource)){
-            reso_name <- "lrc2p"
-
+    if(.write_data){
+        log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
+        if(.use_raw){
+            write.csv(
+                GetAssayData(object = seurat_object,
+                             assay = "RNA",
+                             slot = "counts"),
+                file = file.path(.input_path, expr_file),
+                row.names = TRUE
+            )
         } else{
-            # save resource to NATMI dir
-            omni_to_NATMI(op_resource,
-                          reso_name,
-                          file.path(.natmi_path, "lrdbs"))
+            write.csv(100 * (exp(as.matrix( # this should not be 100...
+                GetAssayData(object = seurat_object,
+                             assay = assay,
+                             slot = "data"))) - 1),
+                file = file.path(.input_path, expr_file),
+                row.names = TRUE)
         }
     }
+
+    log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
+    write.csv(Idents(seurat_object) %>%
+                  enframe(name="barcode", value="annotation"),
+              file = file.path(.input_path, meta_file),
+              row.names = FALSE)
+
+    log_info(str_glue("Saving resource to {.natmi_path}/lrdbs"))
+    # Deal with Default (i.e. NULL)
+    if(is.null(op_resource)){
+        reso_name <- "lrc2p"
+
+    } else{
+        # save resource to NATMI dir
+        omni_to_NATMI(op_resource,
+                      reso_name,
+                      file.path(.natmi_path, "lrdbs"))
+    }
+
 
     # submit native sys request
     system(str_glue("{python_path} {.natmi_path}/ExtractEdges.py ",

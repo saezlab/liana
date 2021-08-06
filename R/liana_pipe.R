@@ -4,11 +4,11 @@
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
 #' @inheritParams scran::findMarkers
-#' @inheritParams scran::findMarkers
-#' @param seed Set Random Seed
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
-#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+#'  yet one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each end
+#'  of x before the `truncated mean` is computed (0.1 by default)
 #'
 #' @import SingleCellExperiment SeuratObject
 #' @importFrom scran findMarkers
@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @return Returns a tibble with information required for LR calc
-liana_pipe <- function(seurat_object, # or sce object
+liana_pipe <- function(seurat_object,
                        op_resource,
                        decomplexify = TRUE,
                        test.type = "t",
@@ -311,7 +311,10 @@ join_sum_means <- function(lr_res, means, entity){
 #'
 #' @param lr_res LR formatted DE results from \link{ligrec_degformat}
 #' @param logfc_df obtained via \link{get_log2FC}
+#' @param source_target target or source cell
 #' @param entity ligand or receptor
+#'
+#' @noRd
 join_log2FC <- function(lr_res,
                         logfc_df,
                         source_target,
@@ -387,6 +390,8 @@ get_log2FC <- function(sce){
 #' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot)
 #'
 #' @return returns a longer tibble with complex subunits on seperate rows
+#'
+#' @noRd
 decomplexify <- function(resource,
                          columns = c("source_genesymbol",
                                      "target_genesymbol")){

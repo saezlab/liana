@@ -40,3 +40,19 @@ shoot <- liana_wrap(seurat_object = seurat_object,
                     cellchat.params=list(.normalize = TRUE))
 
 
+
+
+##
+seurat_object@assays$RNA@scale.data
+
+
+
+seurat_object@assays$RNA@counts
+
+scale2()
+
+
+
+scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+
+

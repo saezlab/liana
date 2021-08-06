@@ -1,5 +1,6 @@
 #' Function to obtain SingleCellSignalR-like scores
 #'
+#' @inheritParams liana_scores
 #' @inheritDotParams liana_call
 #'
 #' @export
@@ -19,12 +20,13 @@ get_sca <- function(lr_res,
 
 #' Function to obtain connectome-like weights
 #'
+#' @inheritParams liana_scores
 #' @inheritDotParams liana_call
 #'
 #' @export
 #'
 #' @return Returns a tibble with specificity weights (`weight_sc`) as calculated
-#'    by connectome
+#'    by Connectome
 get_connectome <- function(lr_res,
                            ...){
     liana_call(
@@ -38,12 +40,13 @@ get_connectome <- function(lr_res,
 
 #' Function to obtain NATMI-like weights
 #'
+#' @inheritParams liana_scores
 #' @inheritDotParams liana_call
 #'
 #' @export
 #'
 #' @return Returns a tibble with specificity weights (`edge_specificity`)
-#'    as calculated by natmi
+#'    as calculated by NATMI
 get_natmi <- function(lr_res,
                       ...){
     liana_call(
@@ -57,6 +60,7 @@ get_natmi <- function(lr_res,
 
 #' Function to obtain logFC weights
 #'
+#' @inheritParams liana_scores
 #' @inheritDotParams liana_call
 #'
 #' @export
@@ -108,7 +112,8 @@ liana_call <- function(method,
 #' @param lr_res ligand-receptor DE results and other stats between clusters
 #' @param decomplexify whether to dissociate complexes into subunits and hence
 #'    and hence take complexes into account (decomplexify) or not
-#'
+#' @inheritParams recomplexify
+#' @param ... dot params passed to `*_score` functions
 #'
 #' @return lr_res modified to be method-specific
 liana_scores <- function(score_object,
@@ -147,8 +152,6 @@ liana_scores <- function(score_object,
 
 
 
-
-
 #' Function Used to Calculate the Connectome-like `weight_sc` weights
 #'
 #' @param lr_res \link(liana::liana_pipe) results
@@ -167,6 +170,7 @@ connectome_score <- function(lr_res,
 #' Function Used to Calculate the NATMI-like `edge_specificity` weights
 #'
 #' @param lr_res \link(liana::liana_pipe) results
+#' @param score_col name of the score column
 #'
 #' @return lr_res with an added `edge_specificity` column
 #'
@@ -187,6 +191,7 @@ natmi_score <- function(lr_res,
 #' Function Used to Calculate the logFC products (by default)
 #'
 #' @param lr_res \link(liana::liana_pipe) results
+#' @param score_col name of the score column
 #'
 #' @noRd
 #'
@@ -195,7 +200,7 @@ logfc_score <- function(lr_res,
                         score_col){
     lr_res %>%
         rowwise() %>%
-        mutate( {{ score_col }} := `*`(ligand.log2FC, receptor.log2FC))
+        mutate( {{ score_col }} := mean(ligand.log2FC, receptor.log2FC))
 }
 
 
@@ -203,6 +208,7 @@ logfc_score <- function(lr_res,
 #' Function Used to Calculate the SigneCellSignalR `LRscore` weights
 #'
 #' @param lr_res \link(liana::liana_pipe) results
+#' @param score_col name of the score column
 #'
 #' @noRd
 #'
@@ -220,7 +226,7 @@ sca_score <- function(lr_res,
 
 ### To be finished ----
 #' Function to obtain CellPhoneDB-like scores
-#'
+#' @inheritParams liana_pipe
 #' @inheritDotParams liana_call
 #'
 #' @noRd
