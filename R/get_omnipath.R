@@ -163,6 +163,8 @@ intercell_connections <- function(resource, ...){
 #' Retrieves ligands from one ligand receptor resource
 #' @inheritDotParams intercell_connections
 #' @inheritParams get_partners
+#'
+#' @noRd
 get_ligands <- function(resource, ...){
 
     get_partners(side = 'ligand', resource = resource, ...)
@@ -171,7 +173,10 @@ get_ligands <- function(resource, ...){
 
 
 #' Retrieves receptors from one ligand-receptor resource
+#'
 #' @inheritDotParams intercell_connections
+#'
+#' @noRd
 get_receptors <- function(resource, ...){
 
     get_partners(side = 'receptor', resource = resource, ...)
