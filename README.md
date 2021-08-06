@@ -74,7 +74,7 @@ further information about the roles and localisation of proteins in intercellula
 We made use of this information regarding the and by default the `OmniPath`CCC
 resource in LIANA is filtered according to the consensus localisation and curation of
 ligand-receptor interactions. To obtain more information how we filtered the default CCC `OmniPath`,
-as well as to explore custom filter options see [customizing OmniPath resources](https://saezlab.github.io/liana/articles/liana_op_res.html).  
+as well as to explore custom filter options see [customizing OmniPath resources](https://saezlab.github.io/liana/articles/liana_custom_op.html).  
   
   
 ## Install LIANA  
