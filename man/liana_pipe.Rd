@@ -8,10 +8,12 @@ liana_pipe(
   seurat_object,
   op_resource,
   decomplexify = TRUE,
-  test.type = "t",
+  test.type = "wilcox",
   pval.type = "all",
-  expr_prop = 0,
-  trim = 0.1
+  expr_prop = 0.2,
+  trim = 0.1,
+  assay = "RNA",
+  assay.type = "counts"
 )
 }
 \arguments{
@@ -28,12 +30,17 @@ or a binomial test with \code{"binom"}.}
 
 \item{pval.type}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
 
-\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
+\item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default),
 yet one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
 
 \item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each end
 of x before the `truncated mean` is computed (0.1 by default)}
+
+\item{assay}{assay to be used ("RNA" by default)}
+
+\item{assay.type}{- the type of data to be used to calculate the means
+(counts by default), available options are: "counts" and "logcounts"}
 }
 \value{
 Returns a tibble with information required for LR calc

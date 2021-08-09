@@ -41,8 +41,8 @@ saveRDS(recomplex, file.path(liana_path, "testdata",
 
 # liana Wrapper Output ----
 wrap_out <- liana_wrap(seurat_object,
-                        method = c('sca','squidpy'),
-                        resource = c('OmniPath'))
+                       method = c('sca','squidpy'),
+                       resource = c('OmniPath'))
 saveRDS(wrap_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))
 
@@ -114,3 +114,12 @@ sca_res <- call_sca(op_resource = NULL,
 saveRDS(sca_res, file.path(liana_path, "testdata",
                            "output", "sca_res.RDS"))
 
+# Test CellChat
+sca_res <- call_sca(op_resource = NULL,
+                    seurat_object = seurat_object,
+                    assay = 'RNA',
+                    .format = TRUE,
+                    s.score = 0,
+                    logFC = log2(1.5))
+saveRDS(sca_res, file.path(liana_path, "testdata",
+                           "output", "sca_res.RDS"))

@@ -15,7 +15,7 @@ call_cellchat(
   .normalize = FALSE,
   .do_parallel = FALSE,
   .raw_use = TRUE,
-  expr_prop = 0,
+  expr_prop = 0.2,
   ...
 )
 }

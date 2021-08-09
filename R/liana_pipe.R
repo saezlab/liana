@@ -4,11 +4,14 @@
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
 #' @inheritParams scran::findMarkers
-#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
+#' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default),
 #'  yet one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param trim the fraction (0 to 0.5) of observations to be trimmed from each end
 #'  of x before the `truncated mean` is computed (0.1 by default)
+#' @param assay assay to be used ("RNA" by default)
+#' @param assay.type - the type of data to be used to calculate the means
+#'  (counts by default), available options are: "counts" and "logcounts"
 #'
 #' @import SingleCellExperiment SeuratObject
 #' @importFrom scran findMarkers
@@ -20,10 +23,12 @@
 liana_pipe <- function(seurat_object,
                        op_resource,
                        decomplexify = TRUE,
-                       test.type = "t",
+                       test.type = "wilcox",
                        pval.type = "all",
-                       expr_prop = 0,
-                       trim=0.1){
+                       expr_prop = 0.2,
+                       trim = 0.1,
+                       assay = "RNA",
+                       assay.type = "counts"){
 
     # Resource Decomplexified
     if(decomplexify){
@@ -38,41 +43,37 @@ liana_pipe <- function(seurat_object,
     receivers <- op_resource$target_genesymbol %>%
         as_tibble() %>%
         select(gene = value)
-    entity_genes <- union(transmitters$gene, receivers$gene)
+    entity_genes = union(transmitters$gene,
+                         receivers$gene)
 
-
-    # Get Global Mean (sca)
+    # Get Global Mean (sca) - before subsetting
     # global_mean <- sce@assays@data$logcounts %>%
     #     .[Matrix::rowSums(.)>0,]
     global_mean <- seurat_object@assays$RNA@data %>%
         .[Matrix::rowSums(.)>0,]
     global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
 
-    # Filter to LigRec and scale
-    seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
-    seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
+    # convert to SCE (seurat_object might be misleading here)
+    seurat_object %<>% seurat_to_sce(entity_genes = entity_genes,
+                             assay = assay)
 
-    # convert to SCE
-    sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay="RNA")
-    colLabels(sce) <- SeuratObject::Idents(seurat_object)
-    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
 
     # Get Avg and  Prop. Expr Per Cluster
-    mean_prop <- scuttle::summarizeAssayByGroup(sce,
-                                                ids = colLabels(sce),
-                                                assay.type = "counts")
+    mean_prop <- scuttle::summarizeAssayByGroup(seurat_object,
+                                                ids = colLabels(seurat_object),
+                                                assay.type = assay.type)
     means <- mean_prop@assays@data$mean
     props <- mean_prop@assays@data$prop.detected
 
     # scaled (z-transformed) means
-    scaled <- scuttle::summarizeAssayByGroup(sce,
-                                             ids = colLabels(sce),
+    scaled <- scuttle::summarizeAssayByGroup(seurat_object,
+                                             ids = colLabels(seurat_object),
                                              assay.type = "scaledata")
     scaled <- scaled@assays@data$mean
 
     # calculate truncated mean
-    trunc_mean <- aggregate(t(as.matrix(sce@assays@data$counts)),
-                            list(colLabels(sce)),
+    trunc_mean <- aggregate(t(as.matrix(seurat_object@assays@data$counts)),
+                            list(colLabels(seurat_object)),
                             FUN=mean, trim=trim) %>%
         as_tibble() %>%
         rename(celltype = Group.1) %>%
@@ -81,11 +82,11 @@ liana_pipe <- function(seurat_object,
         column_to_rownames("gene")
 
     # Get Log2FC
-    logfc_df <- get_log2FC(sce)
+    logfc_df <- get_log2FC(seurat_object)
 
     # Find Markers and Format
-    cluster_markers <- scran::findMarkers(sce,
-                                          groups = colLabels(sce),
+    cluster_markers <- scran::findMarkers(seurat_object,
+                                          groups = colLabels(seurat_object),
                                           direction = "any",
                                           full.stats = TRUE,
                                           test.type = test.type,
@@ -101,8 +102,8 @@ liana_pipe <- function(seurat_object,
             })
 
     # Get all Possible Cluster pair combinations
-    pairs <- expand_grid(source = unique(colLabels(sce)),
-                         target = unique(colLabels(sce)))
+    pairs <- expand_grid(source = unique(colLabels(seurat_object)),
+                         target = unique(colLabels(seurat_object)))
 
     # Get DEGs to LR format
     lr_res <- pairs %>%
@@ -417,4 +418,30 @@ decomplexify <- function(resource,
                           ~str_replace(., "COMPLEX:", ""))
         })
     return(resource)
+}
+
+
+#' Helper function to convert from Seurat to SCE.
+#'
+#' @param seurat_object seurat_obect
+#' @param entity_genes ligand and receptor genes (i.e. genes that are in the
+#' CCC resource)
+#' @param assay assay
+#'
+#' @details LIANA uses the SingleCellExperiment/Bioconductor architecture to
+#' generate the LR summary
+seurat_to_sce <- function(seurat_object,
+                          entity_genes,
+                          assay){
+
+    # Filter to LigRec and scale
+    seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
+    seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
+
+    sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay = assay)
+    colLabels(sce) <- SeuratObject::Idents(seurat_object)
+    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
+
+    return(sce)
+
 }

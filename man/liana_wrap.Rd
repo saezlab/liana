@@ -42,9 +42,9 @@ method-resource combinations}
 and `call_connectome`}
     \item{\code{decomplexify}}{specify whether complexes in the resource should be
 dissociated and taken into account}
-    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0 by default),
-yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.}
+    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.2 by default).
+One should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these methods is that communication is coordinated at the cluster level.}
   }}
 }
 \value{

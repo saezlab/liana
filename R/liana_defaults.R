@@ -12,9 +12,9 @@
 #'    and `call_connectome`
 #' @param decomplexify specify whether complexes in the resource should be
 #'   dissociated and taken into account
-#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
-#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-#'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default).
+#'  One should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these methods is that communication is coordinated at the cluster level.
 #'
 #'
 #' @details The default parameters for each method can also be overwritten by
@@ -31,7 +31,7 @@
 liana_defaults <- function(
     assay = "RNA",
     decomplexify = TRUE,
-    expr_prop = 0,
+    expr_prop = 0.2,
     cellchat.params = NULL,
     squidpy.params = NULL,
     sca.params = NULL,
@@ -47,10 +47,12 @@ liana_defaults <- function(
             `%||%`(
                 list(
                     decomplexify = decomplexify,
-                    test.type = "t",
+                    test.type = "wilcox",
                     pval.type = "all",
-                    trim=0.1,
-                    expr_prop=expr_prop
+                    expr_prop = expr_prop,
+                    trim = 0.1,
+                    assay = "RNA",
+                    assay.type = "counts"
                     )
                 ),
 

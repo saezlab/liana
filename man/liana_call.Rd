@@ -34,11 +34,14 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
-    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0 by default),
+    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.2 by default),
 yet one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
     \item{\code{trim}}{the fraction (0 to 0.5) of observations to be trimmed from each end
 of x before the `truncated mean` is computed (0.1 by default)}
+    \item{\code{assay}}{assay to be used ("RNA" by default)}
+    \item{\code{assay.type}}{- the type of data to be used to calculate the means
+(counts by default), available options are: "counts" and "logcounts"}
     \item{\code{test.type}}{String specifying the type of pairwise test to perform -
 a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
 or a binomial test with \code{"binom"}.}

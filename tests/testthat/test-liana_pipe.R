@@ -7,12 +7,10 @@ pipe_out <- readRDS(file.path(liana_path, "testdata",
 
 # Test Liana Pipe
 test_that("Test liana pipe", {
-    exp1 <- readRDS(file.path(liana_path, "testdata",
-                              "output", "liana_pipe.RDS"))
-    res1 <- liana_pipe(seurat_object,
+    res1 <- liana_pipe(seurat_object = seurat_object,
                        op_resource = select_resource("OmniPath")[[1]])
 
-    expect_equal(exp1, res1)
+    expect_equal(pipe_out, res1)
 })
 
 # Test De-/Re- Complexify
