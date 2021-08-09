@@ -15,7 +15,7 @@
 #' @importFrom Seurat GetAssay GetAssayData
 #' @importFrom dplyr left_join
 #'
-#' @details CellPhoneDBv2 algorithm re-implementation in Python
+#' @details CellPhoneDBv2 algorithm re-implementation in Python.
 #'
 #' Note that `cluster_key` is a parameter passed to the Squidpy function,
 #' by default this will be set to the default Ident of the Seurat object.
@@ -39,6 +39,8 @@ call_squidpy <- function(seurat_object,
 
     if(length(kwargs$cluster_key) == 0){
         stop("Squidpy: Cluster annotations missing! Please specificy a column")
+    } else{
+        message(str_glue("Squidpy: running with {kwargs$cluster_key} as cluster_key"))
     }
 
     if(!is.factor(seurat_object@meta.data[[kwargs$cluster_key]])){
