@@ -82,10 +82,11 @@ liana_defaults <- function(
                cluster_key=NULL,
                n_perms=1000,
                threshold=expr_prop,
-               seed=as.integer(1004)
+               seed=as.integer(1004),
+               slot = "counts"
            )),
 
-        # deprecated call_* functions
+        # external call_* functions
         'call_sca' = call_sca.params %<>%
             `%||%`(list(
                 assay = assay,

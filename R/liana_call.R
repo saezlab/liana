@@ -361,8 +361,6 @@ cpdb_permute <- function(col_labels,
 
 
 
-
-
 #' Correlation Coefficient For Interactions
 #'
 #' @param sce SingleCellExperiment Object
@@ -396,4 +394,3 @@ corr_score <- function(lr_res,
         ) %>%
         distinct()
 }
-

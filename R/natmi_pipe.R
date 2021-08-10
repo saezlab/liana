@@ -100,7 +100,7 @@ call_natmi <- function(
                 row.names = TRUE
             )
         } else{
-            write.csv(100 * (exp(as.matrix( # this should not be 100...
+            write.csv(100 * (exp(as.matrix(
                 GetAssayData(object = seurat_object,
                              assay = assay,
                              slot = "data"))) - 1),
