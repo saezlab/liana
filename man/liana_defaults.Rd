@@ -10,7 +10,7 @@ liana_defaults(
   expr_prop = 0.2,
   cellchat.params = NULL,
   squidpy.params = NULL,
-  sca.params = NULL,
+  call_sca.params = NULL,
   liana_pipe.params = NULL,
   liana_call.params = NULL,
   call_natmi.params = NULL,
@@ -33,7 +33,7 @@ as an assumptions of these methods is that communication is coordinated at the c
 
 \item{squidpy.params}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
 
-\item{sca.params}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
+\item{call_sca.params}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
 
 \item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
 
