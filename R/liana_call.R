@@ -281,14 +281,14 @@ cpdb_score <- function(lr_res,
     if(parallelize){
         future::plan(future::multisession, workers = workers)
         perm <- furrr::future_map(.x = shuffled_clusts,
-                                  .f = cpdb_permute,
+                                  .f = mean_permute,
                                   sce_mat = sce_mat,
                                   trim = trim,
                                   .progress=TRUE
                                   )
     } else{
         perm <- map(.x = shuffled_clusts,
-                    .f = cpdb_permute,
+                    .f = mean_permute,
                     sce_mat = sce_mat,
                     trim = trim
                     )
@@ -341,7 +341,7 @@ cpdb_score <- function(lr_res,
 #'
 #' @return Returns a list of means per gene calculated with reshuffled
 #'    cluster/cell identity labels
-cpdb_permute <- function(col_labels,
+mean_permute <- function(col_labels,
                          sce_mat,
                          trim){
 
@@ -373,7 +373,7 @@ corr_score <- function(lr_res,
                        sce){
 
     # should filter to cell type A and B first? - this way it's not specific
-
+    # should also remove genes that are not in lr_res to save time
     corr_pairs <- scran::correlatePairs(sce) %>%
         as_tibble()
     corr_pairs <- corr_pairs %>%

@@ -33,10 +33,13 @@ trim = 0.1
 parallelize = FALSE
 workers = 4
 
+
+# perm_means
+
+
+
+
 # Filter by genes in lr_res
-rownames(sce)
-
-
 start.time <- Sys.time()
 
 # remove genes absent in lr_res
@@ -63,13 +66,13 @@ if(parallelize){
     future::plan(future::multisession, workers = workers)
     # make into exec and add progress bar
     perm <- furrr::future_map(.x = shuffled_clusts,
-                              .f = cpdb_permute,
+                              .f = mean_permute,
                               sce_mat = sce_mat,
                               trim = trim
     )
 } else{
     perm <- map(.x = shuffled_clusts,
-                .f = cpdb_permute,
+                .f = mean_permute,
                 sce_mat = sce_mat,
                 trim = trim
     )
@@ -132,7 +135,12 @@ end.avg - start.avg
 end.join - start.join
 
 
-##
+
+
+
+
+
+## Compare to the other algorithms ----
 squidpy_res <- call_squidpy(seurat_object = seurat_object,
                     op_resource = op_resource,
                     threshold = 0.2,
