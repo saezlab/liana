@@ -46,7 +46,7 @@ liana_pipe <- function(seurat_object,
     entity_genes = union(transmitters$gene,
                          receivers$gene)
 
-    # Get Global Mean (sca) - before subsetting
+    # Get Global Mean (sca) - before subsetting (needs to change to sce)
     # global_mean <- sce@assays@data$logcounts %>%
     #     .[Matrix::rowSums(.)>0,]
     global_mean <- seurat_object@assays$RNA@data %>%
@@ -72,13 +72,15 @@ liana_pipe <- function(seurat_object,
     scaled <- scaled@assays@data$mean
 
     # calculate truncated mean
-    trunc_mean <- aggregate(t(as.matrix(seurat_object@assays@data$counts)),
+    trunc_mean <- aggregate(t(as.matrix(seurat_object@assays@data[[assay.type]])),
                             list(colLabels(seurat_object)),
                             FUN=mean, trim=trim) %>%
         as_tibble() %>%
         rename(celltype = Group.1) %>%
         pivot_longer(-celltype, names_to = "gene") %>%
-        tidyr::pivot_wider(names_from=celltype, id_cols=gene,values_from=value) %>%
+        tidyr::pivot_wider(names_from = celltype,
+                           id_cols = gene,
+                           values_from = value) %>%
         column_to_rownames("gene")
 
     # Get Log2FC
@@ -91,7 +93,7 @@ liana_pipe <- function(seurat_object,
                                           full.stats = TRUE,
                                           test.type = test.type,
                                           pval.type = pval.type,
-                                          assay.type = "counts") %>%
+                                          assay.type = assay.type) %>%
         pluck("listData") %>%
         map2(., names(.), function(cluster, cluster_name){
             cluster %>%
