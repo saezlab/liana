@@ -46,7 +46,7 @@ liana_pipe <- function(seurat_object,
     entity_genes = union(transmitters$gene,
                          receivers$gene)
 
-    # Get Global Mean (sca) - before subsetting (needs to change to sce)
+    # Global Mean (sca) - before subsetting (needs to change to sce + assay.type)
     # global_mean <- sce@assays@data$logcounts %>%
     #     .[Matrix::rowSums(.)>0,]
     global_mean <- seurat_object@assays$RNA@data %>%
@@ -84,7 +84,7 @@ liana_pipe <- function(seurat_object,
         column_to_rownames("gene")
 
     # Get Log2FC
-    logfc_df <- get_log2FC(seurat_object)
+    logfc_df <- get_log2FC(seurat_object, assay.type)
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(seurat_object,
@@ -345,13 +345,15 @@ join_log2FC <- function(lr_res,
 #' @param sce SingleCellExperiment object
 #' @param subject leave-one-out subject, i.e. the cluster whose log2FC we wish
 #'    to calculate when compared to all other cells
+#' @inheritParams liana_pipe
 #'
 #' @return A log2FC dataframe for a given cell identity
 #'
 #' @details log2FC is calculated using the raw count average + a pseudocount of 1
 #'
 #' @noRd
-get_log2FC <- function(sce){
+get_log2FC <- function(sce,
+                       assay.type){
 
     # iterate over each possible cluster leaving one out
     levels(colLabels(sce)) %>%
@@ -360,7 +362,7 @@ get_log2FC <- function(sce){
             subject_avg <-
                 scater::calculateAverage(subset(sce,
                                                 select = colLabels(sce)==subject),
-                                         assay.type = "counts"
+                                         assay.type = assay.type
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(subject_avg = value)
@@ -369,7 +371,7 @@ get_log2FC <- function(sce){
             loso_avg <-
                 scater::calculateAverage(subset(sce,
                                                 select = colLabels(sce)!=subject),
-                                         assay.type = "counts"
+                                         assay.type = assay.type
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(loso_avg = value)
