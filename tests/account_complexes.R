@@ -8,7 +8,9 @@ require(SingleCellExperiment)
 
 
 lr_res <- liana_pipe(seurat_object,
-                     op_resource)
+                     op_resource,
+                     expr_prop = 0.2,
+                     assay.type = "counts")
 
 xd <- lr_res %>% recomplexify(
     columns = .score_specs()[["logfc"]]@columns,

@@ -46,34 +46,36 @@ liana_pipe <- function(seurat_object,
     entity_genes = union(transmitters$gene,
                          receivers$gene)
 
-    # Global Mean (sca) - before subsetting (needs to change to sce + assay.type)
-    # global_mean <- sce@assays@data$logcounts %>%
-    #     .[Matrix::rowSums(.)>0,]
-    global_mean <- seurat_object@assays$RNA@data %>%
-        .[Matrix::rowSums(.)>0,]
-    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+    global_mean <- get_global_mean(seurat_object,
+                                   assay,
+                                   assay.type)
 
-    # convert to SCE (seurat_object might be misleading here)
-    seurat_object %<>% seurat_to_sce(entity_genes = entity_genes,
-                             assay = assay)
+    # convert to SCE (seurat_object is really misleading here - shoud change)
+    sce <- seurat_object %>%
+        seurat_to_sce(entity_genes = entity_genes,
+                      assay = assay)
+    rm(seurat_object); gc()
 
 
     # Get Avg and  Prop. Expr Per Cluster
-    mean_prop <- scuttle::summarizeAssayByGroup(seurat_object,
-                                                ids = colLabels(seurat_object),
-                                                assay.type = assay.type)
+    mean_prop <-
+        scuttle::summarizeAssayByGroup(sce,
+                                       ids = colLabels(sce),
+                                       assay.type = assay.type,
+                                       statistics = c("mean", "prop.detected"))
     means <- mean_prop@assays@data$mean
     props <- mean_prop@assays@data$prop.detected
 
     # scaled (z-transformed) means
-    scaled <- scuttle::summarizeAssayByGroup(seurat_object,
-                                             ids = colLabels(seurat_object),
-                                             assay.type = "scaledata")
+    scaled <- scuttle::summarizeAssayByGroup(sce,
+                                             ids = colLabels(sce),
+                                             assay.type = "scaledata",
+                                             statistics = c("mean"))
     scaled <- scaled@assays@data$mean
 
     # calculate truncated mean
-    trunc_mean <- aggregate(t(as.matrix(seurat_object@assays@data[[assay.type]])),
-                            list(colLabels(seurat_object)),
+    trunc_mean <- aggregate(t(as.matrix(sce@assays@data[[assay.type]])),
+                            list(colLabels(sce)),
                             FUN=mean, trim=trim) %>%
         as_tibble() %>%
         rename(celltype = Group.1) %>%
@@ -84,11 +86,11 @@ liana_pipe <- function(seurat_object,
         column_to_rownames("gene")
 
     # Get Log2FC
-    logfc_df <- get_log2FC(seurat_object, assay.type)
+    logfc_df <- get_log2FC(sce, assay.type)
 
     # Find Markers and Format
-    cluster_markers <- scran::findMarkers(seurat_object,
-                                          groups = colLabels(seurat_object),
+    cluster_markers <- scran::findMarkers(sce,
+                                          groups = colLabels(sce),
                                           direction = "any",
                                           full.stats = TRUE,
                                           test.type = test.type,
@@ -104,8 +106,8 @@ liana_pipe <- function(seurat_object,
             })
 
     # Get all Possible Cluster pair combinations
-    pairs <- expand_grid(source = unique(colLabels(seurat_object)),
-                         target = unique(colLabels(seurat_object)))
+    pairs <- expand_grid(source = unique(colLabels(sce)),
+                         target = unique(colLabels(sce)))
 
     # Get DEGs to LR format
     lr_res <- pairs %>%
@@ -388,6 +390,32 @@ get_log2FC <- function(sce,
 }
 
 
+#' Helper function to obtain a global mean
+#'
+#' @inheritParams liana_pipe
+#'
+#' @return a single value for the whole dataset
+#'
+#' @details global mean is used in the SingleCellSignalR scores.
+get_global_mean <- function(seurat_object,
+                            assay,
+                            assay.type){
+    # Global Mean (sca) - before subsetting (needs to change to sce + assay.type)
+    # global_mean <- sce@assays@data$logcounts %>%
+    #     .[Matrix::rowSums(.)>0,]
+
+    if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
+        assay.type = "data"
+    }
+
+    global_mean <- SeuratObject::GetAssayData(seurat_object,
+                                              assay = assay,
+                                              slot = assay.type) %>%
+        .[Matrix::rowSums(.)>0,]
+    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+
+    return(global_mean)
+}
 
 #' Helper Function to 'decomplexify' ligands and receptors into
 #'
@@ -449,3 +477,4 @@ seurat_to_sce <- function(seurat_object,
     return(sce)
 
 }
+

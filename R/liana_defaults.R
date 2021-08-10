@@ -1,13 +1,13 @@
 #' Function to pass Default Arguments for each method
 #'
+#' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
+#' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
 #' @param cellchat.params list of Parameters passed to CellChat \code{\link{call_cellchat}}
-#' @param sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
 #' @param squidpy.params list of Parameters passed to Squidpy \code{\link{call_squidpy}}
 #' @param call_connectome.params list of Parameters passed to Connectome \code{\link{call_connectome}}
 #' @param call_italk.params list of Parameters passed to iTALK \code{\link{call_italk}}
 #' @param call_natmi.params list of Parameters passed to NATMI \code{\link{call_natmi}}
-#' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
-#' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
+#' @param call_sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
 #' @param assay Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 #'    and `call_connectome`
 #' @param decomplexify specify whether complexes in the resource should be
@@ -34,7 +34,7 @@ liana_defaults <- function(
     expr_prop = 0.2,
     cellchat.params = NULL,
     squidpy.params = NULL,
-    sca.params = NULL,
+    call_sca.params = NULL,
     liana_pipe.params = NULL,
     liana_call.params = NULL,
     call_natmi.params = NULL,
@@ -86,7 +86,7 @@ liana_defaults <- function(
            )),
 
         # deprecated call_* functions
-        'call_sca' = sca.params %<>%
+        'call_sca' = call_sca.params %<>%
             `%||%`(list(
                 assay = assay,
                 .format = TRUE,
