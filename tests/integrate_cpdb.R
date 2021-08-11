@@ -71,6 +71,9 @@ perm_means <- get_pemutations(lr_res,
                               parallelize = FALSE,
                               workers=4)
 
+
+
+
 dotdotdot <- list(parallelize = FALSE,
                   workers = 4,
                   perm_means = perm_means)
@@ -82,14 +85,25 @@ args <-
         dotdotdot
     )
 
-
-
 liana_cpdb <- exec(
     cpdb_score,
     !!!args) %>%
     ungroup()
 
 
+
+#
+pvals_df %>%
+    filter(ligand.complex == "ALOX5" &&
+           receptor.complex == "ALOX5AP")
+
+null_dist <- ecdf(pvals_df$lr_mean)
+
+test <- lr_res %>%
+    rowwise() %>%
+    mutate(lr.mean = mean(c(ligand.trunc, receptor.trunc)))
+
+percentile()
 
 
 

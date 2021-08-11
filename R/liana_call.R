@@ -358,17 +358,23 @@ cpdb_score <- function(lr_res,
 
     pvals_df <- perm_joined %>%
         bind_rows() %>%
-        group_by(ligand, receptor, source, target) %>%
+        left_join(lr_res %>%
+                      select(ligand, receptor,
+                             ligand.complex, receptor.complex),
+                  by = c("ligand", "receptor", "source", "target")) %>%
+        group_by(ligand.complex, receptor.complex, source, target) %>%
         dplyr::summarise({{ score_col }} :=
                              1 - (sum(og_mean >= lr_mean)/length(perm_means)))
 
     lr_res %<>%
         rowwise() %>%
         mutate(lr.mean = mean(c(ligand.trunc, receptor.trunc))) %>%
-        left_join(pvals_df, by = c("ligand", "receptor", "source", "target")) %>%
-        mutate({{ score_col }} :=
+        left_join(pvals_df,
+                  by = c("ligand.complex", "receptor.complex",
+                         "source", "target")) %>%
+        mutate({{ score_col }} := # replace pval of non-expressed rec and ligs
                    ifelse(ligand.trunc == 0 || receptor.trunc == 0,
-                          NA,
+                          1,
                           .data[[score_col]]))
 
     return(lr_res)

@@ -65,14 +65,19 @@ liana_wrap <- function(seurat_object,
       setNames(names(resource))
   }
 
+
+  if(any(method %in% c("cpdb"))){
+
+  }
+
   .select_method(method) %>%
     map2(names(.),
          safely(function(.method, method_name){
            message(str_glue("Now Running: {stringr::str_to_title(method_name)}"))
 
            map2(resource, names(resource), function(reso, reso_name){
-             # external calls
              if(method_name %in% c("squidpy", "cellchat")){
+               # external calls
                args <- append(
                  list("seurat_object" = seurat_object,
                       "op_resource" = reso),
@@ -81,7 +86,9 @@ liana_wrap <- function(seurat_object,
                rlang::invoke(.method,  args)
 
              } else if(method_name == "cpdb"){
-               print(123)
+               # permutation approaches
+
+
              } else {
                # re-implemented non-permutation approaches
                args <- append(
