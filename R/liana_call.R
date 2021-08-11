@@ -337,13 +337,17 @@ cpdb_score <- function(lr_res,
 #' @param sce_matrix single cell expression matrix (transposed)
 #' @param col_labels cluster labels
 #' @param trim truncate ends of mean
-#' @param lr_og LR res with only relevant
+#' @param pb progress bar object
+#'
+#' @importFrom dplyr progress_estimated
 #'
 #' @return Returns a list of means per gene calculated with reshuffled
 #'    cluster/cell identity labels
 mean_permute <- function(col_labels,
                          sce_mat,
-                         trim){
+                         trim,
+                         pb){
+    pb$tick()$print()
 
     stats::aggregate(sce_mat,
                      list(col_labels),

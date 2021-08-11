@@ -27,7 +27,7 @@ sce <- seurat_to_sce(seurat_object = seurat_object,
                      assay="RNA")
 
 score_col = "pvalue"
-nperms = 1000
+nperms = 10
 seed = 1234
 trim = 0.1
 parallelize = FALSE
@@ -57,6 +57,9 @@ get_pemutations <- function(lr_res,
             deframe()
     })
 
+    # progress_bar
+    progress_bar <- progress_estimated(nperms)
+
     # generate mean permutations
     if(parallelize){
         future::plan(future::multisession, workers = workers)
@@ -64,18 +67,23 @@ get_pemutations <- function(lr_res,
         perm <- furrr::future_map(.x = shuffled_clusts,
                                   .f = mean_permute,
                                   sce_mat = sce_mat,
-                                  trim = trim
-        )
+                                  trim = trim,
+                                  pb = progress_bar
+                                  )
     } else{
         perm <- map(.x = shuffled_clusts,
                     .f = mean_permute,
                     sce_mat = sce_mat,
-                    trim = trim
-        )
+                    trim = trim,
+                    pb = progress_bar
+                    )
     }
 
     return(perm)
 }
+
+
+
 
 
 #' cpdb_score
@@ -84,7 +92,7 @@ cpdb_score <- function(){
 }
 
 
-
+# Run alg
 perm_means <- get_pemutations(lr_res,
                               sce,
                               nperms=100,
@@ -96,8 +104,79 @@ perm_means <- get_pemutations(lr_res,
 
 
 
+og_res <- lr_res %>%
+    rowwise() %>%
+    mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+    select(ligand, receptor, source, target, og_mean = lr_mean)
 
 
+
+progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
+perm_joined <- perm_means %>%
+    map_custom(function(pmean){
+        og_res %>%
+            distinct() %>%
+            liana:::join_means(means = pmean,
+                               source_target = "source",
+                               entity = "ligand",
+                               type = "trunc",
+                               pb = progress_bar) %>%
+            liana:::join_means(means = pmean,
+                               source_target = "target",
+                               entity = "receptor",
+                               type = "trunc",
+                               pb = progress_bar) %>%
+            replace(is.na(.), 0) %>%
+            dplyr::rowwise() %>%
+            dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+    }, parallelize = TRUE, workers = 4)
+
+
+
+pvals_df <- perm_joined %>%
+    bind_rows() %>%
+    mutate(lr_mean = na_if(lr_mean, 0)) %>%
+    group_by(ligand, receptor, source, target) %>%
+    mutate(cc = (sum(og_mean >= lr_mean))) %>%
+    dplyr::summarise({{ score_col }} := 1 - (sum(og_mean >= lr_mean)/nperms))
+
+
+liana_res <- og_res %>%
+    select(ligand, receptor, source, target, lr_mean = og_mean) %>%
+    left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# custom map to prevent repetition
+map_custom <- function(.x, .f, parallelize, workers, ...){
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        furrr::future_map(.x = .x,
+                          .f = .f,
+                          .options = furrr::furrr_options(seed = TRUE),
+                          ...)
+
+    } else{
+        purrr::map(.x = .x,
+                   .f = .f,
+                   ...)
+    }
+}
 
 
 
@@ -143,7 +222,6 @@ if(parallelize){
     )
 }
 end.avg <- Sys.time()
-
 
 
 # This becomes cpdb score

@@ -266,7 +266,12 @@ join_means <- function(lr_res,
                        means,
                        source_target,
                        entity,
-                       type){
+                       type,
+                       pb = NULL){
+
+    if(!is.null(pb)){
+        pb$tick()$print()
+    }
 
     entity.avg <- sym(str_glue("{entity}.{type}"))
 
