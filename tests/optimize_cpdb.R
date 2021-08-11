@@ -34,7 +34,71 @@ parallelize = FALSE
 workers = 4
 
 
-# perm_means
+
+#' Helper Function to generate shuffled means
+get_pemutations <- function(lr_res,
+                            sce,
+                            nperms = 1000,
+                            seed = 1234,
+                            trim = 0.1,
+                            parallelize = FALSE,
+                            workers = 4){
+    # remove genes absent in lr_res
+    lr_genes <- union(lr_res$ligand, lr_res$receptor)
+    sce <- sce[rownames(sce) %in% lr_genes, ]
+    sce_mat <- t(as.matrix(sce@assays@data$counts))
+
+    # shuffle columns
+    set.seed(seed)
+    shuffled_clusts <- map(1:nperms, function(perm){
+        colLabels(sce) %>%
+            as_tibble(rownames = "cell") %>%
+            slice_sample(prop=1, replace = FALSE) %>%
+            deframe()
+    })
+
+    # generate mean permutations
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        # make into exec and add progress bar
+        perm <- furrr::future_map(.x = shuffled_clusts,
+                                  .f = mean_permute,
+                                  sce_mat = sce_mat,
+                                  trim = trim
+        )
+    } else{
+        perm <- map(.x = shuffled_clusts,
+                    .f = mean_permute,
+                    sce_mat = sce_mat,
+                    trim = trim
+        )
+    }
+
+    return(perm)
+}
+
+
+#' cpdb_score
+cpdb_score <- function(){
+
+}
+
+
+
+perm_means <- get_pemutations(lr_res,
+                              sce,
+                              nperms=100,
+                              seed=1234,
+                              trim=0.1,
+                              parallelize = FALSE,
+                              workers=4)
+
+
+
+
+
+
+
 
 
 
@@ -56,6 +120,7 @@ shuffled_clusts <- map(1:nperms, function(perm){
         slice_sample(prop=1, replace = FALSE) %>%
         deframe()
 })
+
 
 
 
@@ -90,7 +155,7 @@ og_res <- lr_res %>%
 
 start.join <- Sys.time()
 perm_joined <- perm %>%
-    map(function(perm_means){
+    map(function(perm_means){ # parallelize + progress
         og_res %>%
             distinct() %>%
             liana:::join_means(means = perm_means,

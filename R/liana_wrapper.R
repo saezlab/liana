@@ -71,7 +71,7 @@ liana_wrap <- function(seurat_object,
            message(str_glue("Now Running: {stringr::str_to_title(method_name)}"))
 
            map2(resource, names(resource), function(reso, reso_name){
-
+             # external calls
              if(!(method_name %in% c("natmi", "connectome", # change this
                                      "logfc", "sca"))){
                args <- append(
@@ -81,6 +81,7 @@ liana_wrap <- function(seurat_object,
                  )
                rlang::invoke(.method,  args)
                } else {
+                 # re-implemented non-permutation approaches
                  args <- append(
                    list("seurat_object" = seurat_object,
                         lr_res = lr_results[[reso_name]]),
