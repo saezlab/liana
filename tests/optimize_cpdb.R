@@ -134,7 +134,7 @@ cpdb_score <- function(lr_res,
 # Run alg
 perm_means <- get_pemutations(lr_res,
                               sce,
-                              nperms=10,
+                              nperms=1000,
                               seed=1234,
                               trim=0.1,
                               parallelize = FALSE,
@@ -147,9 +147,47 @@ liana_cpdb <- cpdb_score(lr_res = lr_res,
                          workers = 4,
                          score_col = "pvalue")
 
+og_res <- lr_res %>%
+    rowwise() %>%
+    mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+    select(ligand, receptor, source, target, og_mean = lr_mean)
 
+progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
+perm_joined <- perm_means %>%
+    map_custom(function(pmean){
+        og_res %>%
+            distinct() %>%
+            liana:::join_means(means = pmean,
+                               source_target = "source",
+                               entity = "ligand",
+                               type = "trunc",
+                               pb = progress_bar) %>%
+            liana:::join_means(means = pmean,
+                               source_target = "target",
+                               entity = "receptor",
+                               type = "trunc",
+                               pb = progress_bar) %>%
+            replace(is.na(.), 0) %>%
+            dplyr::rowwise() %>%
+            dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+    }, parallelize = parallelize, workers = workers)
 
+# calculate pvalues
+perms_bound <-
+    perm_joined %>%
+    bind_rows()
 
+pvals_df <- perms_bound %>%
+    mutate(og_mean = ifelse(ligand.trunc == 0 || receptor.trunc == 0,
+                             NA,
+                            og_mean)) %>%
+    group_by(ligand, receptor, source, target) %>%
+    mutate(cc = (sum(og_mean >= lr_mean))) %>%
+    dplyr::summarise({{ score_col }} :=
+                         1 - (sum(og_mean >= lr_mean)/length(perm_means)))
+
+og_res %>%
+    left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
 
 
 
@@ -329,7 +367,7 @@ write.csv(Idents(seurat_object) %>%
 ## original cpdb
 # conda activate cpdb
 # cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.2
-cpdb_means <- read_delim("~/Repos/cpdb/out/means.txt") %>%
+cpdb_means <- readr::read_delim("~/Repos/cpdb/out/means.txt") %>%
     select(-c(gene_a,
               gene_b, secreted, partner_a, partner_b,
               receptor_a, receptor_b, annotation_strategy,
@@ -339,7 +377,7 @@ cpdb_means <- read_delim("~/Repos/cpdb/out/means.txt") %>%
     mutate(value = as.numeric(value))  %>%
     separate(name, into=c("source", "target"), sep = "\\|")
 
-cpdb_pvalues <- read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
+cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
     select(-c(gene_a,
               gene_b, secreted, partner_a, partner_b,
               receptor_a, receptor_b, annotation_strategy,
@@ -349,7 +387,7 @@ cpdb_pvalues <- read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
     arrange(pvalue)
 
 cpdb_res <- cpdb_means %>% left_join(cpdb_pvalues) %>%
-    filter(pvalue <= 0.05) %>%
+    # filter(pvalue <= 0.05) %>%
     separate(interacting_pair, into = c("receptor", "ligand"), sep = "_") %>%
     select(ligand, receptor, everything()) %>%
     arrange(across(everything())) %>%

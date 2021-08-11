@@ -72,23 +72,25 @@ liana_wrap <- function(seurat_object,
 
            map2(resource, names(resource), function(reso, reso_name){
              # external calls
-             if(!(method_name %in% c("natmi", "connectome", # change this
-                                     "logfc", "sca"))){
+             if(method_name %in% c("squidpy", "cellchat")){
                args <- append(
                  list("seurat_object" = seurat_object,
                       "op_resource" = reso),
                  liana_defaults(...)[[method_name]]
                  )
                rlang::invoke(.method,  args)
-               } else {
-                 # re-implemented non-permutation approaches
-                 args <- append(
-                   list("seurat_object" = seurat_object,
-                        lr_res = lr_results[[reso_name]]),
-                   liana_defaults(...)[["liana_call"]]
-                   )
-                 rlang::invoke(.method,  args)
-                 }
+
+             } else if(method_name == "cpdb"){
+               print(123)
+             } else {
+               # re-implemented non-permutation approaches
+               args <- append(
+                 list("seurat_object" = seurat_object,
+                      lr_res = lr_results[[reso_name]]),
+                 liana_defaults(...)[["liana_call"]]
+                 )
+               rlang::invoke(.method,  args)
+               }
              })
            }, quiet = FALSE)) %>%
     # format errors

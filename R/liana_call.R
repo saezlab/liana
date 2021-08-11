@@ -78,6 +78,29 @@ get_logfc <- function(lr_res,
 }
 
 
+#' Function to obtain CellPhoneDB-like scores
+#' @inheritParams liana_pipe
+#' @inheritDotParams liana_call
+#'
+#' @noRd
+#'
+#' @return Returns a tibble with specificity weights (`pvalue`) as calculated
+#'    by CellPhoneDB
+#'
+#' @details unfinished
+get_cpdb <- function(lr_res,
+                     perm_means,
+                     ...){
+
+    liana_call(
+        method = "cpdb",
+        perm_means,
+        ...
+    )
+}
+
+
+
 #' Wrapper Function to obtain scores via liana_pipe
 #'
 #' @inheritParams liana_pipe
@@ -102,7 +125,6 @@ liana_call <- function(method,
                  decomplexify = decomplexify,
                  ...)
 }
-
 
 
 
@@ -139,9 +161,9 @@ liana_scores <- function(score_object,
 
     args <-
         append(
-            list(...),
             list(lr_res = lr_res,
-            score_col = score_object@method_score)
+            score_col = score_object@method_score),
+            list(...)
         )
 
 
@@ -223,32 +245,6 @@ sca_score <- function(lr_res,
         )
 }
 
-
-### To be finished ----
-#' Function to obtain CellPhoneDB-like scores
-#' @inheritParams liana_pipe
-#' @inheritDotParams liana_call
-#'
-#' @noRd
-#'
-#' @return Returns a tibble with specificity weights (`pvalue`) as calculated
-#'    by CellPhoneDB
-#'
-#' @details unfinished
-get_cpdb <- function(seurat_object,
-                     op_resource,
-                     ...){
-
-    liana_call(
-        method = "cpdb",
-        seurat_object = seurat_object,
-        op_resource = op_resource,
-        ...
-    )
-}
-
-
-
 #' Helper custom map function
 #'
 #' @inheritParams purrr::map
@@ -324,8 +320,11 @@ get_pemutations <- function(lr_res,
 
 
 #' Function to calculate p-values as in CellPhoneDB
+#'
 #' @inheritParams get_pemutations
 #' @param score_col name of the score column
+#'
+#' @returns lr_res + pvalue and lr.mean
 cpdb_score <- function(lr_res,
                        perm_means,
                        parallelize,
@@ -359,15 +358,20 @@ cpdb_score <- function(lr_res,
 
     pvals_df <- perm_joined %>%
         bind_rows() %>%
-        mutate(lr_mean = na_if(lr_mean, 0)) %>%
         group_by(ligand, receptor, source, target) %>%
-        mutate(cc = (sum(og_mean >= lr_mean))) %>%
         dplyr::summarise({{ score_col }} :=
                              1 - (sum(og_mean >= lr_mean)/length(perm_means)))
 
-    og_res %>%
-        select(ligand, receptor, source, target, lr.mean = og_mean) %>%
-        left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
+    lr_res %<>%
+        rowwise() %>%
+        mutate(lr.mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+        left_join(pvals_df, by = c("ligand", "receptor", "source", "target")) %>%
+        mutate({{ score_col }} :=
+                   ifelse(ligand.trunc == 0 || receptor.trunc == 0,
+                          NA,
+                          .data[[score_col]]))
+
+    return(lr_res)
 }
 
 
@@ -406,7 +410,7 @@ mean_permute <- function(col_labels,
 }
 
 
-
+### To be finished ----
 #' Correlation Coefficient For Interactions
 #'
 #' @param sce SingleCellExperiment Object
