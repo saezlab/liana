@@ -249,24 +249,54 @@ get_cpdb <- function(seurat_object,
 
 
 
-#' Function to calculate pvalues as in CPDB
+#' Helper custom map function
 #'
-#' @param lr_res LR_res as returned from `liana_pipe`
-#' @param sce single cell object
-#'
-#' @noRd
-#'
-#' @return lr_res with pvalues
-cpdb_score <- function(lr_res,
-                       score_col,
-                       sce,
-                       nperms = 100,
-                       seed = 1234,
-                       trim = 0.1,
-                       parallelize = FALSE,
-                       workers = 4){
+#' @inheritParams purrr::map
+#' @param parallelize whether to parallelize
+#' @param workers Number of workers to be used in parallelization
+#' @param ... params passed to the called function and to map functions
+map_custom <- function(.x, .f, parallelize, workers, ...){
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        furrr::future_map(.x = .x,
+                          .f = .f,
+                          .options = furrr::furrr_options(seed = TRUE),
+                          ...)
 
-    # !!!! Filter for genes only in lr_res (to account for prop if filtered)
+    } else{
+        purrr::map(.x = .x,
+                   .f = .f,
+                   ...)
+    }
+}
+
+
+
+#' Helper Function to generate shuffled means
+#'
+#' @param lr_res liana_pipe results
+#' @param sce SingleCellExperiment Object
+#' @param nperms number of permutations
+#' @param seed number used to set random seed
+#' @inheritParams liana_pipe
+#' @inheritParams map_custom
+#'
+#' @return Returns a list of shuffled gene means by cluster
+#'
+#' @details This function could be made generalizable to any set of genes,
+#'   depending on the set (currently lr_res genes) that is used to filter - i.e.
+#'   it could be replaced with e.g. genes from TF regulons
+get_pemutations <- function(lr_res,
+                            sce,
+                            nperms = 1000,
+                            seed = 1234,
+                            trim = 0.1,
+                            parallelize = FALSE,
+                            workers = 4){
+    # remove genes absent in lr_res
+    lr_genes <- union(lr_res$ligand, lr_res$receptor)
+    sce <- sce[rownames(sce) %in% lr_genes, ]
+    sce_mat <- t(as.matrix(sce@assays@data$counts))
 
     # shuffle columns
     set.seed(seed)
@@ -277,54 +307,66 @@ cpdb_score <- function(lr_res,
             deframe()
     })
 
-    # generate mean permutations
-    if(parallelize){
-        future::plan(future::multisession, workers = workers)
-        perm <- furrr::future_map(.x = shuffled_clusts,
-                                  .f = mean_permute,
-                                  sce_mat = sce_mat,
-                                  trim = trim,
-                                  .progress=TRUE
-                                  )
-    } else{
-        perm <- map(.x = shuffled_clusts,
-                    .f = mean_permute,
-                    sce_mat = sce_mat,
-                    trim = trim
-                    )
-    }
+    # progress_bar
+    progress_bar <- progress_estimated(nperms)
 
-    # keep only LR_mean
-    lr_og <- lr_res %>%
+    # generate mean permutations
+    perm <- map_custom(.x = shuffled_clusts,
+                       .f = mean_permute,
+                       sce_mat = sce_mat,
+                       trim = trim,
+                       pb = progress_bar,
+                       parallelize = parallelize,
+                       workers = workers)
+
+    return(perm)
+}
+
+
+#' Function to calculate p-values as in CellPhoneDB
+#' @inheritParams get_pemutations
+#' @param score_col name of the score column
+cpdb_score <- function(lr_res,
+                       perm_means,
+                       parallelize,
+                       workers,
+                       score_col = "pvalue"){
+
+    og_res <- lr_res %>%
         rowwise() %>%
         mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
         select(ligand, receptor, source, target, og_mean = lr_mean)
 
-    perm %<>%
-        map(function(perm_means){
-            lr_og %>%
-                liana:::join_means(means = perm_means,
+    progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
+    perm_joined <- perm_means %>%
+        map_custom(function(pmean){
+            og_res %>%
+                distinct() %>%
+                liana:::join_means(means = pmean,
                                    source_target = "source",
                                    entity = "ligand",
-                                   type = "trunc") %>%
-                liana:::join_means(means = perm_means,
+                                   type = "trunc",
+                                   pb = progress_bar) %>%
+                liana:::join_means(means = pmean,
                                    source_target = "target",
                                    entity = "receptor",
-                                   type = "trunc") %>%
+                                   type = "trunc",
+                                   pb = progress_bar) %>%
+                replace(is.na(.), 0) %>%
                 dplyr::rowwise() %>%
                 dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
-        })
+        }, parallelize = parallelize, workers = workers)
 
-
-    pvals_df <- perm %>%
+    pvals_df <- perm_joined %>%
         bind_rows() %>%
-        group_by(ligand, receptor, source, target) %>%
         mutate(lr_mean = na_if(lr_mean, 0)) %>%
-        summarise({{ score_col }} := 1 - (sum(og_mean >= lr_mean)/nperms))
+        group_by(ligand, receptor, source, target) %>%
+        mutate(cc = (sum(og_mean >= lr_mean))) %>%
+        dplyr::summarise({{ score_col }} :=
+                             1 - (sum(og_mean >= lr_mean)/length(perm_means)))
 
-
-    lr_res %>%
-        select(ligand, receptor, source, target, lr_mean) %>%
+    og_res %>%
+        select(ligand, receptor, source, target, lr.mean = og_mean) %>%
         left_join(pvals_df, by = c("ligand", "receptor", "source", "target"))
 }
 
