@@ -98,7 +98,8 @@ natmi_test %>%
 # Run liana /w re-implemented and original SCA
 sca_test <- liana_wrap(testdata,
                        method = c('call_sca', 'sca'),
-                       resource = c('OmniPath'))
+                       resource = c('OmniPath'),
+                       expr_prop=0)
 
 # compare results
 sca_test %<>% 
@@ -111,7 +112,7 @@ sca_test %<>%
 
 sca_test %<>%
     mutate_at(.vars = c("call_sca.LRscore", "sca.LRscore"),
-              round, digits = 5) %>% # account for different rounding
+              round, digits = 10) %>% # account for different rounding
     na.omit() # omit NAs*
 # *NAs result from internal filtering (not applied here) and because
 # SCAomni (SingleCellSignalR) seems to filter genes according to logFC and
