@@ -114,8 +114,8 @@ sca_test %<>%
               round, digits = 5) %>% # account for different rounding
     na.omit() # omit NAs*
 # *NAs result from internal filtering (not applied here) and because
-# SCAomni (SingleCellSignalR) returns paracrine (in this case) OR
-# autocrine interactions, not both
+# SCAomni (SingleCellSignalR) seems to filter genes according to logFC and
+# changing this parameter does not have any effect...
     
 sca_test %>%
     dplyr::filter(call_sca.LRscore!=sca.LRscore) # show only different
