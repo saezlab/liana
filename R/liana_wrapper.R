@@ -30,13 +30,10 @@ liana_wrap <- function(seurat_object,
                        external_resource,
                        .simplify = TRUE,
                        ...){
-  if(length(setdiff(tolower(method), show_methods())) > 0){
-    stop(str_glue("{setdiff(tolower(method), show_methods())} not part of LIANA "))
-    }
 
-    if(resource!='custom' & length(setdiff(resource, c(show_resources(), "all"))) > 0){
-      stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
-      }
+  if(resource!='custom' & length(setdiff(resource, c(show_resources(), "all"))) > 0){
+    stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
+    }
 
   if(resource!='custom'){
     resource %<>% select_resource
@@ -44,8 +41,13 @@ liana_wrap <- function(seurat_object,
     resource = list('custom_resource'=external_resource)
   }
 
+
+  decmplx <- liana_defaults(...)[["liana_pipe"]] %>%
+    pluck("decomplexify")
+
+
   if(any(method %in% c("natmi", "connectome", # change this
-                       "logfc", "sca"))){
+                       "logfc", "sca", "cellphonedb"))){
 
     lr_results <- resource %>%
       map(function(reso){
@@ -54,20 +56,14 @@ liana_wrap <- function(seurat_object,
           stop("Resource is NULL and LIANA PIPE methods have no default")
         }
 
-        args <- append(
-          list("seurat_object" = seurat_object,
-               "op_resource" = reso),
-          liana_defaults(...)[["liana_pipe"]]
-          )
-
-        rlang::invoke(liana_pipe, args)
+        rlang::invoke(liana_pipe,
+                      append(
+                        list("seurat_object" = seurat_object,
+                             "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
+                        liana_defaults(...)[["liana_pipe"]])
+                      )
         }) %>%
       setNames(names(resource))
-  }
-
-
-  if(any(method %in% c("cpdb"))){
-
   }
 
   .select_method(method) %>%
@@ -77,7 +73,7 @@ liana_wrap <- function(seurat_object,
 
            map2(resource, names(resource), function(reso, reso_name){
              if(method_name %in% c("squidpy", "cellchat")){
-               # external calls
+               # external calls (for complex-informed methods)
                args <- append(
                  list("seurat_object" = seurat_object,
                       "op_resource" = reso),
@@ -85,9 +81,35 @@ liana_wrap <- function(seurat_object,
                  )
                rlang::invoke(.method,  args)
 
-             } else if(method_name == "cpdb"){
-               # permutation approaches
+             } else if(startsWith(method_name, "call_")){
+               # external calls (for methods who don't deal with complexes)
+               args <- append(
+                 list("seurat_object" = seurat_object,
+                      "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
+                 liana_defaults(...)[[method_name]]
+               )
+               rlang::invoke(.method,  args)
 
+             } else if(method_name == "cellphonedb"){
+               # permutation-based approaches
+               perm_means <-
+                 get_permutations(lr_res = lr_results[[reso_name]],
+                                  sce = seurat_to_sce(seurat_object,
+                                                      entity_genes = union(lr_results[[reso_name]]$ligand,
+                                                                           lr_results[[reso_name]]$receptor),
+                                                      assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                                        pluck("assay")),
+                                 nperms=10,
+                                 seed=1234,
+                                 trim=0.1,
+                                 parallelize = FALSE,
+                                 workers=4)
+               xx <- cpdb_score(lr_res = lr_results[[reso_name]],
+                          perm_means = perm_means,
+                          parallelize = FALSE,
+                          workers = 4,
+                          score_col = "pvalue")
+               print(xx)
 
              } else {
                # re-implemented non-permutation approaches
@@ -148,6 +170,8 @@ select_resource <- function(resource){
             logfc = expr(get_logfc),
             natmi = expr(get_natmi),
             sca = expr(get_sca),
+            # liana_permutes
+            cellphonedb = expr(get_cpdb),
             # pipes
             squidpy = expr(call_squidpy),
             cellchat = expr(call_cellchat),
@@ -156,6 +180,7 @@ select_resource <- function(resource){
             call_connectome = expr(call_connectome),
             call_natmi = expr(call_natmi),
             call_italk = expr(call_italk)
+
         )
 
     method %>%
@@ -184,7 +209,9 @@ show_methods <- function(){
       "call_sca",
       'call_natmi',
       'call_italk',
-      'call_connectome')
+      'call_connectome',
+      "cellphonedb"
+      )
 }
 
 #' Helper Function to return the Resources in LIANA

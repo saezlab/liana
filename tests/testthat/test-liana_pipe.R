@@ -8,7 +8,7 @@ pipe_out <- readRDS(file.path(liana_path, "testdata",
 # Test Liana Pipe
 test_that("Test liana pipe", {
     res1 <- liana_pipe(seurat_object = seurat_object,
-                       op_resource = select_resource("OmniPath")[[1]])
+                       op_resource = select_resource("OmniPath")[[1]] %>% decomplexify())
 
     expect_equal(pipe_out, res1)
 })
@@ -16,7 +16,7 @@ test_that("Test liana pipe", {
 # Test De-/Re- Complexify
 test_that("Test liana pipe", {
     lr_cmplx <- liana_pipe(seurat_object,
-                           op_resource = select_resource("CellPhoneDB")[[1]])
+                           op_resource = select_resource("CellPhoneDB")[[1]] %>% decomplexify())
 
     recomplex <- recomplexify(lr_cmplx,
                               .score_specs()[["sca"]]@columns,

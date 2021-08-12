@@ -30,12 +30,7 @@ liana_pipe <- function(seurat_object,
                        assay = "RNA",
                        assay.type = "counts"){
 
-    # Resource Decomplexified
-    if(decomplexify){
-        message("LIANA: Resource was decomplexified!")
-        op_resource %<>% decomplexify()
-    }
-
+    ### this whole chunk needs to move to liana_wrap
     # Resource Format
     transmitters <- op_resource$source_genesymbol %>%
         as_tibble() %>%
@@ -50,11 +45,11 @@ liana_pipe <- function(seurat_object,
                                    assay,
                                    assay.type)
 
-    # convert to SCE (seurat_object is really misleading here - shoud change)
-    sce <- seurat_object %>%
-        seurat_to_sce(entity_genes = entity_genes,
-                      assay = assay)
+    sce <- seurat_to_sce(seurat_object,
+                         entity_genes = entity_genes,
+                         assay = assay)
     rm(seurat_object); gc()
+    ###
 
 
     # Get Avg and  Prop. Expr Per Cluster

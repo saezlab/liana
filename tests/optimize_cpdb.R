@@ -17,7 +17,7 @@ entity_genes = union(transmitters$gene,
 
 ## CPDB - this part is called in liana_wrap
 lr_res <- liana_pipe(seurat_object = seurat_object,
-                     op_resource = op_resource,
+                     op_resource = op_resource %<>% decomplexify(),
                      expr_prop = 0.2,
                      trim = 0.1,
                      assay.type = "logcounts")
@@ -324,6 +324,9 @@ liana_res <- og_res %>%
     filter(pvalue <=0.05) %>%
     arrange(across(everything())) %>%
     arrange(pvalue)
+
+
+
 
 
 end.time <- Sys.time()

@@ -17,7 +17,7 @@ entity_genes = union(transmitters$gene,
 
 ## CPDB - this part is called in liana_wrap
 lr_res <- liana_pipe(seurat_object = seurat_object,
-                     op_resource = op_resource,
+                     op_resource = op_resource %>% decomplexify(),
                      expr_prop = 0.2,
                      trim = 0.1,
                      assay.type = "logcounts")
@@ -28,26 +28,26 @@ sce <- seurat_to_sce(seurat_object = seurat_object,
 
 
 # Run alg externally:
-perm_means_ext <- get_pemutations(lr_res,
-                                  sce,
-                                  nperms=10,
-                                  seed=1234,
-                                  trim=0.1,
-                                  parallelize = FALSE,
-                                  workers=4)
+perm_means_ext <- get_permutations(lr_res,
+                                   sce,
+                                   nperms=10,
+                                   seed=1234,
+                                   trim=0.1,
+                                   parallelize = FALSE,
+                                   workers=4)
 
-liana_cpdb_ext <- cpdb_score(lr_res = lr_res,
-                             perm_means = perm_means_ext,
-                             parallelize = FALSE,
-                             workers = 4,
-                             score_col = "pvalue")
+liana_cpdb_ext <- cellphonedb_score(lr_res = lr_res,
+                                    perm_means = perm_means_ext,
+                                    parallelize = FALSE,
+                                    workers = 4,
+                                    score_col = "pvalue")
 
 
 
 
 # reproduce liana_scores
 #
-score_object <- .score_specs()[["cpdb"]]
+score_object <- .score_specs()[["cellphonedb"]]
 complex_policy = "min0"
 
 lr_res %<>%
@@ -63,15 +63,13 @@ lr_res %<>%
         complex_policy = complex_policy)
 
 
-perm_means <- get_pemutations(lr_res,
-                              sce,
-                              nperms=100,
-                              seed=1234,
-                              trim=0.1,
-                              parallelize = FALSE,
-                              workers=4)
-
-
+perm_means <- get_permutations(lr_res,
+                               sce,
+                               nperms=100,
+                               seed=1234,
+                               trim=0.1,
+                               parallelize = FALSE,
+                               workers=4)
 
 
 dotdotdot <- list(parallelize = FALSE,
@@ -86,24 +84,32 @@ args <-
     )
 
 liana_cpdb <- exec(
-    cpdb_score,
+    cellphonedb_score,
     !!!args) %>%
     ungroup()
 
 
 
-#
-pvals_df %>%
-    filter(ligand.complex == "ALOX5" &&
-           receptor.complex == "ALOX5AP")
 
-null_dist <- ecdf(pvals_df$lr_mean)
 
-test <- lr_res %>%
-    rowwise() %>%
-    mutate(lr.mean = mean(c(ligand.trunc, receptor.trunc)))
+perm_means <-
+    get_permutations(lr_res = lr_res,
+                     sce = seurat_to_sce(seurat_object,
+                                         entity_genes = union(lr_res$ligand,
+                                                              lr_res$receptor),
+                                         assay = liana_defaults()[["liana_pipe"]] %>%
+                                             pluck("assay")),
+                     nperms=10,
+                     seed=1234,
+                     trim=0.1,
+                     parallelize = FALSE,
+                     workers=4)
 
-percentile()
 
+xx <- cellphonedb_score(lr_res = lr_res,
+                        perm_means = perm_means,
+                        parallelize = FALSE,
+                        workers = 4,
+                        score_col = "pvalue")
 
 

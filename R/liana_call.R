@@ -282,7 +282,7 @@ map_custom <- function(.x, .f, parallelize, workers, ...){
 #' @details This function could be made generalizable to any set of genes,
 #'   depending on the set (currently lr_res genes) that is used to filter - i.e.
 #'   it could be replaced with e.g. genes from TF regulons
-get_pemutations <- function(lr_res,
+get_permutations <- function(lr_res,
                             sce,
                             nperms = 1000,
                             seed = 1234,
@@ -321,16 +321,15 @@ get_pemutations <- function(lr_res,
 
 #' Function to calculate p-values as in CellPhoneDB
 #'
-#' @inheritParams get_pemutations
+#' @inheritParams get_permutations
 #' @param score_col name of the score column
 #'
 #' @returns lr_res + pvalue and lr.mean
-cpdb_score <- function(lr_res,
-                       perm_means,
-                       parallelize,
-                       workers,
-                       score_col = "pvalue"){
-
+cellphonedb_score <- function(lr_res,
+                              perm_means,
+                              parallelize,
+                              workers,
+                              score_col = "pvalue"){
     og_res <- lr_res %>%
         rowwise() %>%
         mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
@@ -359,7 +358,7 @@ cpdb_score <- function(lr_res,
     pvals_df <- perm_joined %>%
         bind_rows() %>%
         left_join(lr_res %>%
-                      select(ligand, receptor,
+                      select(ligand, receptor, source, target,
                              ligand.complex, receptor.complex),
                   by = c("ligand", "receptor", "source", "target")) %>%
         group_by(ligand.complex, receptor.complex, source, target) %>%
@@ -412,7 +411,6 @@ mean_permute <- function(col_labels,
                            id_cols=gene,
                            values_from=value) %>%
         tibble::column_to_rownames("gene")
-
 }
 
 
