@@ -109,7 +109,7 @@ liana_defaults <- function(
                n_perms=1000,
                threshold=expr_prop,
                seed=as.integer(seed),
-               slot = "counts"
+               assay.type = assay.type
            )),
 
         # external call_* functions

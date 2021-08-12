@@ -33,10 +33,10 @@ call_connectome <- function(seurat_object,
                             lr_db$target_genesymbol)
 
         conn <- .conn_create(seurat_object,
-                            lr_symbols = lr_symbols,
-                            lr_db,
-                            ...
-        )
+                             lr_symbols = lr_symbols,
+                             lr_db,
+                             ...
+                             )
 
     } else{
 
@@ -45,7 +45,6 @@ call_connectome <- function(seurat_object,
 
         lr_symbols = union(lr_db$Ligand.ApprovedSymbol,
                            lr_db$Receptor.ApprovedSymbol)
-
 
         conn <- .conn_create(seurat_object,
                             lr_symbols = lr_symbols,

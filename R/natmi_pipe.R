@@ -68,9 +68,9 @@ call_natmi <- function(
     assay = "RNA",
     num_cor = 4,
     conda_env = NULL,
+    assay.type = "logcounts",
     .format = TRUE,
     .write_data = TRUE,
-    .use_raw = FALSE,
     .seed = 1004,
     .natmi_path = NULL){
 
@@ -95,7 +95,7 @@ call_natmi <- function(
 
     if(.write_data){
         log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
-        if(.use_raw){
+        if(assay.type=="counts"){
             write.csv(
                 GetAssayData(object = seurat_object,
                              assay = "RNA",

@@ -21,8 +21,13 @@ call_sca <- function(op_resource,
                      seurat_object,
                      .format = TRUE,
                      assay = "RNA",
-                     slot = "counts",
+                     assay.type = "logcounts",
                      ...){
+
+  if(assay.type=="logcounts"){
+    assay.type = "data"
+  }
+
   # Format OmnipathR resource
   if(!is.null(op_resource)){
     op_resource %<>% sca_formatDB
@@ -39,7 +44,7 @@ call_sca <- function(op_resource,
   input_data <-
     Seurat::GetAssayData(seurat_object,
                          assay = assay,
-                         slot = slot) %>%
+                         slot = assay.type) %>%
     as.matrix()
   labels <- Seurat::Idents(seurat_object)
 

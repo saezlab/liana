@@ -27,8 +27,13 @@ call_squidpy <- function(seurat_object,
                          op_resource,
                          .seed = 1004,
                          conda_env = NULL,
-                         slot = "counts",
+                         assay.type = "logcounts",
                          ...){
+
+    # required until I make the interchaengeable Seurat/SCE
+    if(assay.type=="logcounts"){
+        assay.type = "data"
+    }
 
     if(is_tibble(op_resource)){
         op_resource <- list("placeholder" = op_resource)
@@ -76,7 +81,8 @@ call_squidpy <- function(seurat_object,
     py_set_seed(.seed)
 
     py$squidpy_results <- py$call_squidpy(op_resources,
-                                          GetAssayData(seurat_object, slot=slot), # raw expr
+                                          GetAssayData(seurat_object,
+                                                       slot=assay.type), # raw expr
                                           seurat_object[[]], # meta
                                           GetAssay(seurat_object)[[]], # feature_meta
                                           kwargs # passed to squidpy.gr.ligrec

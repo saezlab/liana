@@ -5,7 +5,8 @@ seurat_object <-
 
 # liana Pipe Output ----
 pipe_out <- liana_pipe(seurat_object,
-                       op_resource = select_resource("OmniPath")[[1]])
+                       op_resource = select_resource("OmniPath")[[1]] %>%
+                           decomplexify())
 saveRDS(pipe_out, file.path(liana_path, "testdata",
                             "output", "liana_pipe.RDS"))
 
@@ -31,7 +32,8 @@ saveRDS(sca_score, file.path(liana_path, "testdata",
 
 # Recomplexify Output ----
 lr_cmplx <- liana_pipe(seurat_object,
-                       op_resource = select_resource("CellPhoneDB")[[1]])
+                       op_resource = select_resource("CellPhoneDB")[[1]] %>%
+                           decomplexify())
 
 recomplex <- recomplexify(lr_cmplx,
                           .score_specs()[["sca"]]@columns,
@@ -80,7 +82,7 @@ saveRDS(squidpy_res, file.path(liana_path, "testdata",
 
 
 # Test NATMI ----
-natmi_res <- call_natmi(op_resource = select_resource("OmniPath"),
+natmi_res <- call_natmi(op_resource = select_resource("OmniPath")[[1]],
                         seurat_object = seurat_object,
                         expr_file = "test_em.csv",
                         meta_file = "test_metadata.csv",
@@ -114,7 +116,8 @@ sca_res <- call_sca(op_resource = NULL,
 saveRDS(sca_res, file.path(liana_path, "testdata",
                            "output", "sca_res.RDS"))
 
-# Test CellChat
+
+# Test CellChat ----
 sca_res <- call_sca(op_resource = NULL,
                     seurat_object = seurat_object,
                     assay = 'RNA',
