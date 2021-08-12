@@ -58,9 +58,10 @@ call_cellchat <- function(op_resource,
                       ),
         meta = meta,
         group.by = "group")
-    cellchat.omni <- CellChat::addMeta(cellchat.omni, meta = meta)
-    cellchat.omni <- CellChat::setIdent(cellchat.omni, ident.use = "group")
-
+    cellchat.omni <- CellChat::addMeta(cellchat.omni,
+                                       meta = meta)
+    cellchat.omni <- CellChat::setIdent(cellchat.omni,
+                                        ident.use = "group")
 
     if(.do_parallel){
         future::plan("multiprocess")
@@ -98,10 +99,10 @@ call_cellchat <- function(op_resource,
     }
 
     cellchat.omni <- CellChat::computeCommunProb(cellchat.omni,
-                                       raw.use = .raw_use,
-                                       seed.use = .seed,
-                                       do.fast = TRUE,
-                                       nboot = nboot)
+                                                 raw.use = .raw_use,
+                                                 seed.use = .seed,
+                                                 do.fast = TRUE,
+                                                 nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
     cellchat.omni <- CellChat::filterCommunication(cellchat.omni, min.cells = 1)

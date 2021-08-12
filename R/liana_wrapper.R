@@ -93,16 +93,18 @@ liana_wrap <- function(seurat_object,
              } else if(method_name == "cellphonedb"){
                # permutation-based approaches
                lr_res <- lr_results[[reso_name]]
+               return(lr_res)
 
                perm_means <-
                  rlang::invoke(get_permutations,
-                               append(list(lr_res = lr_res,
-                                           sce = seurat_to_sce(seurat_object,
-                                                               entity_genes = union(lr_res$ligand,
-                                                                                    lr_res$receptor),
-                                                               assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                                                 pluck("assay"))),
-                                      liana_defaults(...)[["permutation"]]))
+                               append(
+                                 list(lr_res = lr_res,
+                                      sce = seurat_to_sce(seurat_object,
+                                                          entity_genes = union(lr_res$ligand,
+                                                                               lr_res$receptor),
+                                                          assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                                            pluck("assay"))),
+                                 liana_defaults(...)[["permutation"]]))
 
                args <- append(
                  list(lr_res = lr_res,

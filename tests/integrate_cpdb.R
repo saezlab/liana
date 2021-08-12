@@ -3,6 +3,7 @@ liana_path <- system.file(package = "liana")
 seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds")) %>%
     Seurat::NormalizeData()
+
 op_resource <- select_resource("CellPhoneDB")[[1]]
 # Resource Format
 transmitters <- op_resource$source_genesymbol %>%
@@ -99,7 +100,10 @@ xx <- liana_call("cellphonedb",
 
 
 ### via liana_wrap
-liana_cpdb <- liana_wrap(seurat_object = seurat_object,
-                         method = "cellphonedb")
+liana_cpdb_lr_res <- liana_wrap(seurat_object = seurat_object,
+                         method = "cellphonedb",
+                         resource = "CellPhoneDB",
+                         permutation.params = list(nperms=100),
+                         )
 
 

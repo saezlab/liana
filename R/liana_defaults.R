@@ -31,6 +31,7 @@
 #' @export
 liana_defaults <- function(
     assay = "RNA",
+    assay.type = "logcounts",
     decomplexify = TRUE,
     expr_prop = 0.2,
     seed = 1004,
@@ -76,7 +77,7 @@ liana_defaults <- function(
                     expr_prop = expr_prop,
                     trim = 0.1, # trim needs to be passed only once
                     assay = assay,
-                    assay.type = "counts"
+                    assay.type = assay.type
                     )
                 ),
 

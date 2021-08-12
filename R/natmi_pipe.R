@@ -47,6 +47,10 @@
 #' its called, unless .write_data is set to FALSE!
 #' This can be an extremely time consuming step when working with large datasets
 #'
+#' Also, NATMI will sometimes create duplicate files, so please consider
+#'  saving each run in a new folder. An easy fix would be to simply delete the
+#'  output, but I am reluctant to automatically delete files via an R script.
+#'
 #'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
