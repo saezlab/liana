@@ -27,7 +27,7 @@ sce <- seurat_to_sce(seurat_object = seurat_object,
                      assay="RNA")
 
 
-# Run alg externally:
+# Run alg externally: - this does not deal with complexes
 perm_means_ext <- get_permutations(lr_res,
                                    sce,
                                    nperms=10,
@@ -89,27 +89,17 @@ liana_cpdb <- exec(
     ungroup()
 
 
+### via liana_call
+xx <- liana_call("cellphonedb",
+                 lr_res = lr_res,
+                 seurat_object = seurat_object,
+                 perm_means = perm_means,
+                 parallelize = FALSE,
+                 workers = 4)
 
 
-
-perm_means <-
-    get_permutations(lr_res = lr_res,
-                     sce = seurat_to_sce(seurat_object,
-                                         entity_genes = union(lr_res$ligand,
-                                                              lr_res$receptor),
-                                         assay = liana_defaults()[["liana_pipe"]] %>%
-                                             pluck("assay")),
-                     nperms=10,
-                     seed=1234,
-                     trim=0.1,
-                     parallelize = FALSE,
-                     workers=4)
-
-
-xx <- cellphonedb_score(lr_res = lr_res,
-                        perm_means = perm_means,
-                        parallelize = FALSE,
-                        workers = 4,
-                        score_col = "pvalue")
+### via liana_wrap
+liana_cpdb <- liana_wrap(seurat_object = seurat_object,
+                         method = "cellphonedb")
 
 

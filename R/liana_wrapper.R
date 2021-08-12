@@ -79,7 +79,7 @@ liana_wrap <- function(seurat_object,
                       "op_resource" = reso),
                  liana_defaults(...)[[method_name]]
                  )
-               rlang::invoke(.method,  args)
+               rlang::invoke(.method, args)
 
              } else if(startsWith(method_name, "call_")){
                # external calls (for methods who don't deal with complexes)
@@ -88,28 +88,29 @@ liana_wrap <- function(seurat_object,
                       "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
                  liana_defaults(...)[[method_name]]
                )
-               rlang::invoke(.method,  args)
+               rlang::invoke(.method, args)
 
              } else if(method_name == "cellphonedb"){
                # permutation-based approaches
+               lr_res <- lr_results[[reso_name]]
+
                perm_means <-
-                 get_permutations(lr_res = lr_results[[reso_name]],
-                                  sce = seurat_to_sce(seurat_object,
-                                                      entity_genes = union(lr_results[[reso_name]]$ligand,
-                                                                           lr_results[[reso_name]]$receptor),
-                                                      assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                                        pluck("assay")),
-                                 nperms=10,
-                                 seed=1234,
-                                 trim=0.1,
-                                 parallelize = FALSE,
-                                 workers=4)
-               xx <- cpdb_score(lr_res = lr_results[[reso_name]],
-                          perm_means = perm_means,
-                          parallelize = FALSE,
-                          workers = 4,
-                          score_col = "pvalue")
-               print(xx)
+                 rlang::invoke(get_permutations,
+                               append(list(lr_res = lr_res,
+                                           sce = seurat_to_sce(seurat_object,
+                                                               entity_genes = union(lr_res$ligand,
+                                                                                    lr_res$receptor),
+                                                               assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                                                 pluck("assay"))),
+                                      liana_defaults(...)[["permutation"]]))
+
+               args <- append(
+                 list(lr_res = lr_res,
+                      perm_means = perm_means),
+                 liana_defaults(...)[[method_name]]
+                )
+
+               rlang::invoke(.method, args)
 
              } else {
                # re-implemented non-permutation approaches
@@ -171,7 +172,7 @@ select_resource <- function(resource){
             natmi = expr(get_natmi),
             sca = expr(get_sca),
             # liana_permutes
-            cellphonedb = expr(get_cpdb),
+            cellphonedb = expr(get_cellphonedb),
             # pipes
             squidpy = expr(call_squidpy),
             cellchat = expr(call_cellchat),

@@ -79,8 +79,9 @@ get_logfc <- function(lr_res,
 
 
 #' Function to obtain CellPhoneDB-like scores
-#' @inheritParams liana_pipe
-#' @inheritDotParams liana_call
+#' @inheritParams liana_scores
+#' @inheritParams cellphonedb_score
+#' @inheritDotParams cellphonedb_score
 #'
 #' @noRd
 #'
@@ -88,13 +89,12 @@ get_logfc <- function(lr_res,
 #'    by CellPhoneDB
 #'
 #' @details unfinished
-get_cpdb <- function(lr_res,
-                     perm_means,
-                     ...){
+get_cellphonedb <- function(lr_res,
+                            ...){
 
     liana_call(
-        method = "cpdb",
-        perm_means,
+        lr_res = lr_res,
+        method = "cellphonedb",
         ...
     )
 }
@@ -114,8 +114,8 @@ get_cpdb <- function(lr_res,
 liana_call <- function(method,
                        seurat_object,
                        op_resource,
-                       decomplexify = TRUE,
                        lr_res,
+                       decomplexify = TRUE,
                        complex_policy = 'min0',
                        ...){
 
@@ -143,13 +143,11 @@ liana_scores <- function(score_object,
                          decomplexify,
                          complex_policy,
                          ...){
-
     lr_res %<>%
         select(ligand, receptor,
                ends_with("complex"),
                source, target,
                !!score_object@columns)
-
 
     if(decomplexify){
         lr_res %<>%
@@ -165,7 +163,6 @@ liana_scores <- function(score_object,
             score_col = score_object@method_score),
             list(...)
         )
-
 
     exec(score_object@score_fun, !!!args) %>%
         ungroup()

@@ -15,6 +15,7 @@
 #' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default).
 #'  One should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these methods is that communication is coordinated at the cluster level.
+#' @param seed random seed integer
 #'
 #'
 #' @details The default parameters for each method can also be overwritten by
@@ -32,9 +33,12 @@ liana_defaults <- function(
     assay = "RNA",
     decomplexify = TRUE,
     expr_prop = 0.2,
+    seed = 1004,
     cellchat.params = NULL,
     squidpy.params = NULL,
     call_sca.params = NULL,
+    cellphonedb.params = NULL,
+    permutation.params = NULL,
     liana_pipe.params = NULL,
     liana_call.params = NULL,
     call_natmi.params = NULL,
@@ -42,7 +46,27 @@ liana_defaults <- function(
     call_italk.params = NULL){
 
     default_args <- list(
+        "cellphonedb" = cellphonedb.params %<>%
+        `%||%`(
+            list(
+                workers = 4,
+                parallelize = FALSE
+            )
+        ),
+
         # liana_scores (passed to get_* functions)
+        "permutation" = permutation.params %<>%
+            `%||%`(
+                list(
+                    nperms = 1000,
+                    parallelize = FALSE,
+                    workers = 4,
+                    seed=seed,
+                    trim = 0.1  # trim needs to be passed only once
+                    )
+            ),
+
+
         "liana_pipe" = liana_pipe.params %<>%
             `%||%`(
                 list(
@@ -50,17 +74,18 @@ liana_defaults <- function(
                     test.type = "wilcox",
                     pval.type = "all",
                     expr_prop = expr_prop,
-                    trim = 0.1,
-                    assay = "RNA",
+                    trim = 0.1, # trim needs to be passed only once
+                    assay = assay,
                     assay.type = "counts"
                     )
                 ),
 
+        # this thing needs to be either completely remove or moved to liana_wrap
         "liana_call" = liana_call.params %<>%
             `%||%`(
                 list(
                     complex_policy = "min0",
-                    decomplexify = decomplexify
+                    decomplexify = decomplexify # should always be true
                     )
             ),
 
@@ -82,7 +107,7 @@ liana_defaults <- function(
                cluster_key=NULL,
                n_perms=1000,
                threshold=expr_prop,
-               seed=as.integer(1004),
+               seed=as.integer(seed),
                slot = "counts"
            )),
 
@@ -115,7 +140,7 @@ liana_defaults <- function(
                 .format = TRUE,
                 .write_data = TRUE,
                 .use_raw = FALSE,
-                .seed = 1004,
+                .seed = seed,
                 .natmi_path = NULL
                 )),
 
