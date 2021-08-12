@@ -72,7 +72,8 @@ call_natmi <- function(
     .format = TRUE,
     .write_data = TRUE,
     .seed = 1004,
-    .natmi_path = NULL){
+    .natmi_path = NULL,
+    .delete_output = FALSE){
 
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
@@ -144,6 +145,11 @@ call_natmi <- function(
 
     # load and format results
     natmi_results <- FormatNatmi(.output_path, reso_name, .format)
+
+    if(.delete_output){
+        system(str_glue("rm -r {.output_path}/{reso_name}"))
+    }
+
 
     return(natmi_results)
 }

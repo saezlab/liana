@@ -1,7 +1,8 @@
 # input
 liana_path <- system.file(package = "liana")
 seurat_object <-
-    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+    readRDS(file.path(liana_path , "testdata",
+                      "input", "testdata.rds"))
 
 # liana Pipe Output ----
 pipe_out <- liana_pipe(seurat_object,
@@ -32,7 +33,8 @@ saveRDS(sca_score, file.path(liana_path, "testdata",
 
 # Recomplexify Output ----
 lr_cmplx <- liana_pipe(seurat_object,
-                       op_resource = select_resource("CellPhoneDB")[[1]] %>%
+                       op_resource =
+                           select_resource("CellPhoneDB")[[1]] %>%
                            decomplexify())
 
 recomplex <- recomplexify(lr_cmplx,
@@ -118,11 +120,10 @@ saveRDS(sca_res, file.path(liana_path, "testdata",
 
 
 # Test CellChat ----
-sca_res <- call_sca(op_resource = NULL,
-                    seurat_object = seurat_object,
-                    assay = 'RNA',
-                    .format = TRUE,
-                    s.score = 0,
-                    logFC = log2(1.5))
-saveRDS(sca_res, file.path(liana_path, "testdata",
-                           "output", "sca_res.RDS"))
+cellchat_res <- call_cellchat(op_resource = NULL,
+                         seurat_object = seurat_object,
+                         .normalize = TRUE)
+
+saveRDS(cellchat_res,
+        file.path(liana_path, "testdata",
+                  "output", "cc_res.RDS"))

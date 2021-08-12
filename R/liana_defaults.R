@@ -105,10 +105,10 @@ liana_defaults <- function(
 
         'squidpy' = squidpy.params %<>%
            `%||%`(list(
-               cluster_key=NULL,
-               n_perms=1000,
-               threshold=expr_prop,
-               seed=as.integer(seed),
+               cluster_key = NULL,
+               n_perms = 1000,
+               threshold = expr_prop,
+               seed = as.integer(seed),
                assay.type = assay.type
            )),
 
@@ -118,8 +118,8 @@ liana_defaults <- function(
                 assay = assay,
                 .format = TRUE,
                 s.score = 0,
-                logFC = log2(1.5))),
-
+                logFC = log2(1.5))
+                ),
 
         'call_connectome' = call_connectome.params %<>%
             `%||%`(list(
@@ -142,7 +142,8 @@ liana_defaults <- function(
                 .write_data = TRUE,
                 .use_raw = FALSE,
                 .seed = seed,
-                .natmi_path = NULL
+                .natmi_path = NULL,
+                .delete_output = FALSE
                 )),
 
         'call_italk' = call_italk.params %<>%

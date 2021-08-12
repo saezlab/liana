@@ -36,7 +36,7 @@ call_sca <- function(op_resource,
       load(system.file(package = "liana", "LRdb.rda"))
       op_resource <- LRdb
     } else{
-      warning("Could not locate LRdb.rda")
+      stop("Could not locate LRdb.rda")
     }
   }
 
@@ -55,26 +55,25 @@ call_sca <- function(op_resource,
                                     c.names = levels(Idents(seurat_object)),
                                     species = 'homo sapiens',
                                     LRdb = op_resource,
+                                    int.type="autocrine", # includes both para and auto...
                                     write = FALSE,
-                                    ...
+                                    verbose = FALSE,
+                                    # ...
                                     )
 
-
   # Compute intercellular gene networks
-  invisible(
-    sca_res <- SCAomni::inter_network(data = input_data,
-                                      signal = signal,
-                                      genes = row.names(input_data),
-                                      cluster = as.numeric(labels),
-                                      c.names = levels(Idents(seurat_object)),
-                                      write = FALSE
-                                      )
-  )
-
-
+  sca_res <- SCAomni::inter_network(data = input_data,
+                                    signal = signal,
+                                    genes = row.names(input_data),
+                                    cluster = as.numeric(labels),
+                                    c.names = levels(Idents(seurat_object)),
+                                    write = FALSE
+                                    )
   if (.format) {
-    sca_res %<>% FormatSCA(.data)
+    sca_res %<>% FormatSCA
   }
+
+
   return(sca_res)
 }
 

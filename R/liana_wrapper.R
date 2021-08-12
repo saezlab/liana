@@ -93,7 +93,6 @@ liana_wrap <- function(seurat_object,
              } else if(method_name == "cellphonedb"){
                # permutation-based approaches
                lr_res <- lr_results[[reso_name]]
-               return(lr_res)
 
                perm_means <-
                  rlang::invoke(get_permutations,

@@ -73,7 +73,7 @@ connectome_test %>%
 natmi_test <- liana_wrap(testdata,
                          method = c('call_natmi', 'natmi'),
                          resource = c('OmniPath'),
-                         call_natmi.params = list(.use_raw = TRUE))
+                         call_natmi.params = list(assay.type = "counts"))
 
 # compare results
 natmi_test %<>%
@@ -126,9 +126,7 @@ sca_test %>%
 # Run re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
 cpdb_test <- liana_wrap(testdata,
                         method = c('cellphonedb', 'squidpy'),
-                        resource = c('CellPhoneDB')
-                        )
-
+                        resource = c('CellPhoneDB'))
 
 ```
 
