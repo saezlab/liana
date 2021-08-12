@@ -8,8 +8,8 @@ liana_call(
   method,
   seurat_object,
   op_resource,
-  decomplexify = TRUE,
   lr_res,
+  decomplexify = TRUE,
   complex_policy = "min0",
   ...
 )
@@ -19,10 +19,10 @@ liana_call(
 
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
+\item{lr_res}{ligand-receptor DE results and other stats between clusters}
+
 \item{decomplexify}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}
-
-\item{lr_res}{ligand-receptor DE results and other stats between clusters}
 
 \item{complex_policy}{policy how to account for the presence of complexes.
 Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:

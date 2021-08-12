@@ -124,8 +124,12 @@ liana_wrap <- function(seurat_object,
              })
            }, quiet = FALSE)) %>%
     # format errors
-    {`if`(.simplify, map(., function(elem)
-      .list2tib(.list2tib(compact(elem)))))}
+    {
+      `if`(.simplify,
+           map(., function(elem)
+             .list2tib(.list2tib(compact(elem)))),
+           .)
+    } %>% .list2tib()
 }
 
 

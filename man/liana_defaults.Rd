@@ -8,9 +8,12 @@ liana_defaults(
   assay = "RNA",
   decomplexify = TRUE,
   expr_prop = 0.2,
+  seed = 1004,
   cellchat.params = NULL,
   squidpy.params = NULL,
   call_sca.params = NULL,
+  cellphonedb.params = NULL,
+  permutation.params = NULL,
   liana_pipe.params = NULL,
   liana_call.params = NULL,
   call_natmi.params = NULL,
@@ -28,6 +31,8 @@ dissociated and taken into account}
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default).
 One should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these methods is that communication is coordinated at the cluster level.}
+
+\item{seed}{random seed integer}
 
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 
