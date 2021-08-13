@@ -9,7 +9,7 @@ call_squidpy(
   op_resource,
   .seed = 1004,
   conda_env = NULL,
-  slot = "counts",
+  assay.type = "logcounts",
   ...
 )
 }

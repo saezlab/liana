@@ -137,6 +137,7 @@ liana_defaults <- function(
                 meta_file = "metadata.csv",
                 output_dir = "NATMI_results",
                 assay = assay,
+                assay.type = "logcounts",
                 num_cor = 4,
                 .format = TRUE,
                 .write_data = TRUE,

@@ -6,6 +6,7 @@
 \usage{
 liana_defaults(
   assay = "RNA",
+  assay.type = "logcounts",
   decomplexify = TRUE,
   expr_prop = 0.2,
   seed = 1004,

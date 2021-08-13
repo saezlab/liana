@@ -8,7 +8,8 @@ pipe_out <- readRDS(file.path(liana_path, "testdata",
 # Test Liana Pipe
 test_that("Test liana pipe", {
     res1 <- liana_pipe(seurat_object = seurat_object,
-                       op_resource = select_resource("OmniPath")[[1]] %>% decomplexify())
+                       op_resource = select_resource("OmniPath")[[1]] %>%
+                           decomplexify())
 
     expect_equal(pipe_out, res1)
 })

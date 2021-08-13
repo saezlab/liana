@@ -14,11 +14,12 @@ call_natmi(
   assay = "RNA",
   num_cor = 4,
   conda_env = NULL,
+  assay.type = "logcounts",
   .format = TRUE,
   .write_data = TRUE,
-  .use_raw = FALSE,
   .seed = 1004,
-  .natmi_path = NULL
+  .natmi_path = NULL,
+  .delete_output = FALSE
 )
 }
 \arguments{
@@ -38,11 +39,11 @@ call_natmi(
 
 \item{.write_data}{bool whether Extract data from Seurat Object}
 
-\item{.use_raw}{bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page}
-
 \item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
 \item{omnidbs_dir}{path of saved omnipath resources}
+
+\item{.use_raw}{bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page}
 
 \item{.default_run}{bool whether to run default DBs or not}
 }
@@ -84,4 +85,8 @@ Stats:
 Note that `call_natmi` will write the expression matrix to CSV each time
 its called, unless .write_data is set to FALSE!
 This can be an extremely time consuming step when working with large datasets
+
+Also, NATMI will sometimes create duplicate files, so please consider
+ saving each run in a new folder. An easy fix would be to simply delete the
+ output, but I am reluctant to automatically delete files via an R script.
 }

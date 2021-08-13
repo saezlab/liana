@@ -194,4 +194,13 @@ liana_cpdb3 <- liana_wrap(seurat_object = seurat_object,
 
 
 #
-
+op_resources <- select_resource("OmniPath")[[1]] %>%
+                        select(
+                            uniprot_source = source,
+                            unprot_target = target,
+                            source = source_genesymbol,
+                            target = target_genesymbol,
+                            category_intercell_source,
+                            category_intercell_target
+                        )
+write.csv(op_resources, "../cpdb/input/op_resource.csv", row.names = FALSE)

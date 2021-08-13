@@ -9,7 +9,7 @@ call_sca(
   seurat_object,
   .format = TRUE,
   assay = "RNA",
-  slot = "counts",
+  assay.type = "logcounts",
   ...
 )
 }

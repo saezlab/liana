@@ -80,15 +80,18 @@ pm_omni <-
 
 
 # check categories of ligands (category_intercell_source)
-pm_omni$category_intercell_source %>% unique()
+pm_omni$category_intercell_source %>%
+  unique()
 
 # and receptors (category_intercell_target)
-pm_omni$category_intercell_target %>% unique()
+pm_omni$category_intercell_target %>%
+  unique()
 
 # remove these categories
-pm_omni %<>% filter(!(category_intercell_source %in% c("activating_cofactor",
-                                                       "ligand_regulator",
-                                                       "inhibitory_cofactor")))
+pm_omni %<>%
+  filter(!(category_intercell_source %in% c("activating_cofactor",
+                                            "ligand_regulator",
+                                            "inhibitory_cofactor")))
 # glimpse into the PM
 pm_omni %>% glimpse()
 ```

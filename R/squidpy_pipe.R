@@ -96,15 +96,17 @@ call_squidpy <- function(seurat_object,
     squidpy_results <- map(names(op_resource),
                            function(x)
                                FormatSquidpy(.name=x,
-                                                .pval_list = squidpy_pvalues,
-                                                .mean_list = squidpy_means,
-                                                .meta_list = squidpy_metadata)) %>%
+                                             .pval_list = squidpy_pvalues,
+                                             .mean_list = squidpy_means,
+                                             .meta_list = squidpy_metadata)) %>%
         setNames(names(op_resource)) %>%
         map(function(res) res %>%
-                select(1:3, means, pvalue, uniprot_source, unprot_target) %>%
                 rename(ligand = source,
                        receptor = target) %>%
-                separate(pair, sep = "_", into=c("source", "target"))) %>%
+                separate(pair, sep = "_", into=c("target", "source")) %>%
+                select(source, target,
+                       ligand, receptor,
+                       means, pvalue)) %>%
         .list2tib()
 
     return(squidpy_results)
@@ -120,9 +122,9 @@ call_squidpy <- function(seurat_object,
 #'
 #' @noRd
 FormatSquidpy <- function(.name,
-                             .pval_list,
-                             .mean_list,
-                             .meta_list){
+                          .pval_list,
+                          .mean_list,
+                          .meta_list){
     x_pval <- .pval_list[[.name]] %>%
         py_to_r() %>%
         pivot_longer(cols = 3:ncol(.),

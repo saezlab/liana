@@ -35,6 +35,7 @@ As such, in this vignette we will compare the liana re-implementation of these m
 ```{r load_prereq, message=FALSE, warning=FALSE}
 require(liana)
 require(tibble)
+require(tidyr)
 require(purrr)
 require(magrittr)
 
@@ -73,7 +74,8 @@ connectome_test %>%
 natmi_test <- liana_wrap(testdata,
                          method = c('call_natmi', 'natmi'),
                          resource = c('OmniPath'),
-                         call_natmi.params = list(assay.type = "counts"))
+                         call_natmi.params = list(assay.type = "counts",
+                                                  .delete_output = TRUE))
 
 # compare results
 natmi_test %<>%
@@ -123,13 +125,16 @@ sca_test %>%
 ```
 
 ## CellPhoneDB
-```{r cellphonedb, message = FALSE, print = FALSE}
-# Run re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
-cpdb_test <- liana_wrap(testdata,
-                        method = c('cellphonedb', 'squidpy'),
-                        resource = c('CellPhoneDB'),
-                        expr_prop = 0.1)
 
+### Run liana re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
+```{r cellphonedb, message = FALSE, print = FALSE}
+cpdb_reimplements <- liana_wrap(testdata,
+                                method = c('cellphonedb', 'squidpy'),
+                                resource = c('CellPhoneDB'),
+                                expr_prop = 0.1)
+
+liana_cpdb <- cpdb_reimplements$cellphonedb
+squidpy_cpdb <- cpdb_reimplements$squidpy
 ```
 
 ### RUN original cpdb algorithm
@@ -150,16 +155,17 @@ pip install cellphonedb
 cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
 ```
 
+Load and format results
 ```{r og_cpdb, message = FALSE, print = FALSE}
-cpdb_means <- readr::read_delim("~/Repos/cpdb/out/means.txt") %>%
+cpdb_means <- readr::read_delim("~/Repos/cpdb/out/significant_means.txt") %>%
     select(-c(gene_a,
               gene_b, secreted, partner_a, partner_b,
               receptor_a, receptor_b, annotation_strategy,
               is_integrin, id_cp_interaction)) %>%
     mutate(across(everything(), as.character)) %>%
     pivot_longer(-interacting_pair) %>%
-    mutate(value = as.numeric(value))  %>%
-    separate(name, into=c("source", "target"), sep = "\\|")
+    mutate(mean = as.numeric(value), .keep = "unused")  %>%
+    separate(name, into=c("target", "source"), sep = "\\|")
 
 cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
     select(-c(gene_a,
@@ -167,11 +173,40 @@ cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
               receptor_a, receptor_b, annotation_strategy,
               is_integrin, id_cp_interaction)) %>%
     pivot_longer(-interacting_pair, values_to = "pvalue") %>%
-    separate(name, into=c("source", "target"), sep = "\\|") %>%
+    separate(name, into=c("target", "source"), sep = "\\|") %>%
     arrange(pvalue)
 
-cpdb_res <- cpdb_means %>% left_join(cpdb_pvalues) %>%
-    separate(interacting_pair, into = c("receptor", "ligand"), sep = "_")
+og_cpdb <- cpdb_means %>% left_join(cpdb_pvalues) %>%
+  separate(interacting_pair, into = c("receptor", "ligand"), sep = "_") %>%
+  select(source, target, ligand, receptor, everything())
+```
+
+### compare all 3 algorithms
+```{r cpdb_comparison}
+# Num of sig hits obtained:
+og_cpdb %>%
+  filter(pvalue <= 0.05) %>% 
+  nrow()
+liana_cpdb %>%
+  filter(pvalue <= 0.05) %>%
+  nrow()
+squidpy_cpdb  %>%
+  filter(pvalue <= 0.05) %>%
+  nrow()
+
+# Same interaction treated as NaN
+og_cpdb %>%
+  filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T")
+
+liana_cpdb %>%
+    filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T") %>%
+  select(-ligand.complex, - receptor.complex, -ligand.trunc, -receptor.trunc)
+
+squidpy_cpdb %>%
+    filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T")
 ```
 
 
