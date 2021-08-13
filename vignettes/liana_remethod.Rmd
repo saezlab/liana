@@ -127,10 +127,52 @@ sca_test %>%
 # Run re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
 cpdb_test <- liana_wrap(testdata,
                         method = c('cellphonedb', 'squidpy'),
-                        resource = c('CellPhoneDB'))
+                        resource = c('CellPhoneDB'),
+                        expr_prop = 0.1)
 
 ```
 
+### RUN original cpdb algorithm
+```{r, eval=FALSE}
+# save object
+testdata %<>% Seurat::NormalizeData(normalization.method = "LogNormalize")
+write.csv(GetAssayData(testdata),
+            "~/Repos/cpdb/input/test_em.csv")
+
+write.csv(Idents(testdata) %>%
+              enframe(name="barcode", value="annotation"),
+          file = "~/Repos/cpdb/input/metadata.csv",
+          row.names = FALSE)
+
+# we follow the installation procedure as on the CPDB GH page.
+conda activate cpdb
+pip install cellphonedb
+cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
+```
+
+```{r og_cpdb, message = FALSE, print = FALSE}
+cpdb_means <- readr::read_delim("~/Repos/cpdb/out/means.txt") %>%
+    select(-c(gene_a,
+              gene_b, secreted, partner_a, partner_b,
+              receptor_a, receptor_b, annotation_strategy,
+              is_integrin, id_cp_interaction)) %>%
+    mutate(across(everything(), as.character)) %>%
+    pivot_longer(-interacting_pair) %>%
+    mutate(value = as.numeric(value))  %>%
+    separate(name, into=c("source", "target"), sep = "\\|")
+
+cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
+    select(-c(gene_a,
+              gene_b, secreted, partner_a, partner_b,
+              receptor_a, receptor_b, annotation_strategy,
+              is_integrin, id_cp_interaction)) %>%
+    pivot_longer(-interacting_pair, values_to = "pvalue") %>%
+    separate(name, into=c("source", "target"), sep = "\\|") %>%
+    arrange(pvalue)
+
+cpdb_res <- cpdb_means %>% left_join(cpdb_pvalues) %>%
+    separate(interacting_pair, into = c("receptor", "ligand"), sep = "_")
+```
 
 
 ## Session information

@@ -390,11 +390,7 @@ cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
     arrange(pvalue)
 
 cpdb_res <- cpdb_means %>% left_join(cpdb_pvalues) %>%
-    # filter(pvalue <= 0.05) %>%
-    separate(interacting_pair, into = c("receptor", "ligand"), sep = "_") %>%
-    select(ligand, receptor, everything()) %>%
-    arrange(across(everything())) %>%
-    arrange(pvalue)
+    separate(interacting_pair, into = c("receptor", "ligand"), sep = "_")
 # DT
 
 hist(cpdb_res$pvalue)
