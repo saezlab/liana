@@ -328,9 +328,7 @@ cellphonedb_score <- function(lr_res,
                               workers,
                               score_col = "pvalue"){
     og_res <- lr_res %>%
-        rowwise() %>%
-        mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
-        select(ligand, receptor, source, target, og_mean = lr_mean)
+        select(ligand, receptor, source, target)
 
     progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
     perm_joined <- perm_means %>%
@@ -350,17 +348,30 @@ cellphonedb_score <- function(lr_res,
                 replace(is.na(.), 0) %>%
                 dplyr::rowwise() %>%
                 dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
-        }, parallelize = parallelize, workers = workers)
+        }, parallelize = parallelize, workers = workers) %>%
+        bind_rows()
 
-    pvals_df <- perm_joined %>%
-        bind_rows() %>%
-        left_join(lr_res %>%
-                      select(ligand, receptor, source, target,
-                             ligand.complex, receptor.complex),
-                  by = c("ligand", "receptor", "source", "target")) %>%
+    # calculate quantiles using ecdf null_dists
+    quantiles <- lr_res %>%
+        group_by(source, target, ligand.complex, receptor.complex) %>%
+        mutate(og_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+        select(source, target,
+               ligand.complex, ligand,
+               receptor, receptor.complex,
+               og_mean) %>%
+        left_join(perm_joined, by = c("source", "target", "ligand", "receptor")) %>%
         group_by(ligand.complex, receptor.complex, source, target) %>%
-        dplyr::summarise({{ score_col }} :=
-                             1 - (sum(og_mean >= lr_mean)/length(perm_means)))
+        group_split() %>%
+        map_dbl(function(interaction){
+            null_dist <- ecdf(interaction$lr_mean)
+            og_mean <- interaction %>% pull("og_mean") %>% unique()
+            null_dist(og_mean) %>% pluck(1)
+        })
+
+    pvals_df <- lr_res %>%
+        group_by(ligand.complex, receptor.complex, source, target) %>%
+        group_keys() %>%
+        mutate( {{ score_col }} :=  1 - quantiles)
 
     lr_res %<>%
         rowwise() %>%

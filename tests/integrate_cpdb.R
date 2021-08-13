@@ -3,7 +3,7 @@ liana_path <- system.file(package = "liana")
 seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds")) %>%
     Seurat::NormalizeData()
-op_resource <- select_resource("CellPhoneDB")[[1]]
+op_resource <- select_resource("CellChatDB")[[1]]
 
 # Resource Format
 transmitters <- op_resource$source_genesymbol %>%
@@ -15,6 +15,9 @@ receivers <- op_resource$target_genesymbol %>%
 entity_genes = union(transmitters$gene,
                      receivers$gene)
 
+score_col = "pvalue"
+parallelize = F
+workers = 4
 
 ## CPDB - this part is called in liana_wrap
 lr_res <- liana_pipe(seurat_object = seurat_object,
@@ -156,19 +159,19 @@ perm_joined %>%
     filter(lr_mean >= 0.0774)
 
 
-perm_joined %>%
-    filter(ligand == "FCER2" && receptor == "ITGAM" &&
-               source == "B" && target == "NK") %>%
-    filter(lr_mean >= 0.2137862)
+
 
 
 
 
 liana_cpdb4 %>%
-    filter(ligand == "TGFB1" && receptor == "TGFBR2" &&
-               source == "CD8 T" && target == "CD8 T")
+    filter(ligand == "TGFB1" && receptor == "TGFBR1" &&
+               source == "NK" && target == "NK")
 
-
+perm_joined %>%
+    filter(ligand == "TGFB1" && receptor == "TGFBR1" &&
+               source == "NK" && target == "NK") %>%
+    filter(lr_mean >= 0.455)
 
 
 
@@ -191,6 +194,4 @@ liana_cpdb3 <- liana_wrap(seurat_object = seurat_object,
 
 
 #
-
-
 
