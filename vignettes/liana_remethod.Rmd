@@ -198,7 +198,7 @@ squidpy_cpdb  %>%
   filter(pvalue <= 0.05) %>%
   nrow()
 
-# Same interaction treated as NaN
+# check specific interaction
 og_cpdb %>%
   filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
@@ -211,8 +211,6 @@ liana_cpdb %>%
 squidpy_cpdb %>%
     filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
-
-# other examples include MIF-CD74
 
 ```
 
