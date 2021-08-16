@@ -103,7 +103,7 @@ call_squidpy <- function(seurat_object,
         map(function(res) res %>%
                 rename(ligand = source,
                        receptor = target) %>%
-                separate(pair, sep = "_", into=c("target", "source")) %>%
+                separate(pair, sep = "_", into=c("source", "target")) %>%
                 select(source, target,
                        ligand, receptor,
                        means, pvalue)) %>%

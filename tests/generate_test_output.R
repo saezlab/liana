@@ -57,6 +57,17 @@ liana_aggr <- readRDS(file.path(liana_path, "testdata",
 saveRDS(liana_aggr, file.path(liana_path, "testdata",
                               "output", "liana_aggr.RDS"))
 
+
+# liana permutations and cpdb output
+cpdb_out <- liana_wrap(seurat_object,
+                       method = c('cellphonedb'),
+                       resource = c('CellPhoneDB'),
+                       permutation.params = list(nperms=20))
+saveRDS(cpdb_out, file.path(liana_path, "testdata",
+                            "output", "liana_cpdb.RDS"))
+
+
+
 # Test Connectome ----
 conn_res <- call_connectome(
     seurat_object = seurat_object,

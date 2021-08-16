@@ -204,3 +204,36 @@ op_resources <- select_resource("OmniPath")[[1]] %>%
                             category_intercell_target
                         )
 write.csv(op_resources, "../cpdb/input/op_resource.csv", row.names = FALSE)
+
+
+# check
+lr_res
+
+liana_cpdb3 <- liana_wrap(seurat_object = seurat_object,
+                          method = c("cellphonedb", "squidpy"),
+                          resource = "CellPhoneDB",
+                          permutation.params = list(nperms=1000),
+                          expr_prop = 0.1,
+                          trim = 0)
+
+xd <- liana_cpdb3 %>%
+    liana_aggregate()
+
+
+liana_cpdb3$cellphonedb %>% filter(pvalue <= 0.05)
+liana_cpdb3$squidpy %>% filter(pvalue <= 0.05)
+og_cpdb %>% filter(pvalue <= 0.05)
+
+
+mean_prop <-
+    scuttle::summarizeAssayByGroup(sce,
+                                   ids = colLabels(sce),
+                                   assay.type = "logcounts",
+                                   statistics = c("mean", "prop.detected"))
+means <- mean_prop@assays@data$mean %>%
+    as_tibble(rownames = "gene")
+props <- mean_prop@assays@data$prop.detected %>%
+    as_tibble(rownames = "gene")
+
+
+

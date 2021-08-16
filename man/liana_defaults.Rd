@@ -10,6 +10,7 @@ liana_defaults(
   decomplexify = TRUE,
   expr_prop = 0.2,
   seed = 1004,
+  trim = 0.1,
   cellchat.params = NULL,
   squidpy.params = NULL,
   call_sca.params = NULL,
@@ -34,6 +35,10 @@ One should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these methods is that communication is coordinated at the cluster level.}
 
 \item{seed}{random seed integer}
+
+\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each
+end of x before the mean is computed. This is relevant only for the
+CellPhoneDB algorithm re-implementation in liana.}
 
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 

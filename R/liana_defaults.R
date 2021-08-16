@@ -16,6 +16,9 @@
 #'  One should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these methods is that communication is coordinated at the cluster level.
 #' @param seed random seed integer
+#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each
+#'  end of x before the mean is computed. This is relevant only for the
+#'  CellPhoneDB algorithm re-implementation in liana.
 #'
 #'
 #' @details The default parameters for each method can also be overwritten by
@@ -35,6 +38,7 @@ liana_defaults <- function(
     decomplexify = TRUE,
     expr_prop = 0.2,
     seed = 1004,
+    trim = 0,
     cellchat.params = NULL,
     squidpy.params = NULL,
     call_sca.params = NULL,
@@ -63,7 +67,7 @@ liana_defaults <- function(
                     parallelize = FALSE,
                     workers = 4,
                     seed=seed,
-                    trim = 0.1  # trim needs to be passed only once
+                    trim = trim
                     )
             ),
 
@@ -75,7 +79,7 @@ liana_defaults <- function(
                     test.type = "wilcox",
                     pval.type = "all",
                     expr_prop = expr_prop,
-                    trim = 0.1, # trim needs to be passed only once
+                    trim = trim,
                     assay = assay,
                     assay.type = assay.type
                     )

@@ -128,10 +128,15 @@ sca_test %>%
 
 ### Run liana re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
 ```{r cellphonedb, message = FALSE, print = FALSE}
+# Run with non-log normalized counts
+# testdata %<>% Seurat::NormalizeData(normalization.method = "RC")
+
+# run LIANA CPDB and Squidpy CPDB
 cpdb_reimplements <- liana_wrap(testdata,
                                 method = c('cellphonedb', 'squidpy'),
                                 resource = c('CellPhoneDB'),
-                                expr_prop = 0.1)
+                                expr_prop = 0.1,
+                                trim = 0)
 
 liana_cpdb <- cpdb_reimplements$cellphonedb
 squidpy_cpdb <- cpdb_reimplements$squidpy
@@ -140,7 +145,6 @@ squidpy_cpdb <- cpdb_reimplements$squidpy
 ### RUN original cpdb algorithm
 ```{r, eval=FALSE}
 # save object
-testdata %<>% Seurat::NormalizeData(normalization.method = "LogNormalize")
 write.csv(GetAssayData(testdata),
             "~/Repos/cpdb/input/test_em.csv")
 
