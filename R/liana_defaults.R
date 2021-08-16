@@ -39,6 +39,8 @@ liana_defaults <- function(
     expr_prop = 0.2,
     seed = 1004,
     trim = 0,
+    parallelize = FALSE,
+    workers = 8,
     cellchat.params = NULL,
     squidpy.params = NULL,
     call_sca.params = NULL,
@@ -54,8 +56,8 @@ liana_defaults <- function(
         "cellphonedb" = cellphonedb.params %<>%
         `%||%`(
             list(
-                workers = 4,
-                parallelize = FALSE
+                workers = workers,
+                parallelize = parallelize
             )
         ),
 
@@ -64,8 +66,8 @@ liana_defaults <- function(
             `%||%`(
                 list(
                     nperms = 1000,
-                    parallelize = FALSE,
-                    workers = 4,
+                    parallelize = parallelize,
+                    workers = workers,
                     seed=seed,
                     trim = trim
                     )
