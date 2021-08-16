@@ -49,6 +49,8 @@ as an assumptions of these methods is that communication is coordinated at the c
     \item{\code{trim}}{the fraction (0 to 0.5) of observations to be trimmed from each
 end of x before the mean is computed. This is relevant only for the
 CellPhoneDB algorithm re-implementation in liana.}
+    \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
+    \item{\code{workers}}{number of workers to be called}
   }}
 }
 \value{

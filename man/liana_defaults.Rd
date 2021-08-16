@@ -42,6 +42,10 @@ as an assumptions of these methods is that communication is coordinated at the c
 end of x before the mean is computed. This is relevant only for the
 CellPhoneDB algorithm re-implementation in liana.}
 
+\item{parallelize}{whether to parallelize cellphonedb-like}
+
+\item{workers}{number of workers to be called}
+
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 
 \item{squidpy.params}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
