@@ -1,4 +1,5 @@
 #' CellChat x Omni Pipe function
+#'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param exclude_anns Annotation criteria to be excluded
@@ -7,24 +8,24 @@
 #' @param .normalize # bool whether to normalize non-normalized data with
 #' @param .raw_use whether use the raw data or gene expression data pojectected
 #'    to a ppi
+#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
+#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
 #'
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @import CellChat
-# #' @importFrom Seurat Idents GetAssayData
+#' @importFrom Seurat Idents GetAssayData
 #' @importFrom purrr pmap
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr select mutate mutate_at distinct_at filter
-#' @importFrom tibble column_to_rownames enframe
+#' @importFrom tibble column_to_rownames enframe tibble
 #' @importFrom tidyr unite unnest separate
-#' @importFrom logger log_info
+#'
 #' @export
+#'
 #' @details CellChat's objects are not documented/exported thus the
-#'    whole package has to be imported
+#'   whole package has to be imported.
 call_cellchat <- function(op_resource,
                           seurat_object,
                           .format = TRUE,
@@ -35,81 +36,79 @@ call_cellchat <- function(op_resource,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
                           .raw_use = TRUE,
+                          expr_prop = 0.2,
                           ...
                           ){
-
     stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
 
-
     # create a dataframe of the cell labels
-    labels <- Idents(seurat_object)
+    labels <- Seurat::Idents(seurat_object)
     meta <- data.frame(group = labels, row.names = names(labels))
 
-    cellchat.omni <- createCellChat(object =  `if`(.normalize,
-                                                   GetAssayData(seurat_object,
-                                                                assay = assay,
-                                                                slot = "data"),
-                                                   CellChat::normalizeData(
-                                                       GetAssayData(seurat_object,
-                                                                    assay = assay,
-                                                                    slot = "data"))
-                                                   ),
-                               meta = meta,
-                               group.by = "group")
-    cellchat.omni <- addMeta(cellchat.omni, meta = meta)
-    cellchat.omni <- setIdent(cellchat.omni, ident.use = "group")
-
+    cellchat.omni <- CellChat::createCellChat(
+        object = `if`(!.normalize,
+                      GetAssayData(seurat_object,
+                                   assay = assay,
+                                   slot = "data"), # works with lognorm data
+                      CellChat::normalizeData(
+                          GetAssayData(seurat_object,
+                                       assay = assay,
+                                       slot = "data"))
+                      ),
+        meta = meta,
+        group.by = "group")
+    cellchat.omni <- CellChat::addMeta(cellchat.omni,
+                                       meta = meta)
+    cellchat.omni <- CellChat::setIdent(cellchat.omni,
+                                        ident.use = "group")
 
     if(.do_parallel){
-        future::plan("multiprocess", workers = 10)
+        future::plan("multiprocess")
     }
 
     # load CellChatDB
     ccDB <- CellChat::CellChatDB.human
-
-
 
     if(!is.null(op_resource)){ # OmniPath resource conversion
         ccDB <- cellchat_formatDB(ccDB,
                                   op_resource,
                                   exclude_anns)
 
-
     } else{ # default CellChatDB
         ccDB$interaction <- ccDB$interaction %>%
             filter(!(annotation %in% exclude_anns))
     }
 
-    log_info("Number of interactions:
-                     {length(ccDB$interaction$interaction_name)}")
-
     ## set the used database in the object
     cellchat.omni@DB <- ccDB
 
     ## subset the expression data of signaling genes
-    cellchat.omni <- subsetData(cellchat.omni)
+    cellchat.omni <- CellChat::subsetData(cellchat.omni)
 
-    # Infer the cell state-specific communications,
-    cellchat.omni <- identifyOverExpressedGenes(cellchat.omni)
-    cellchat.omni <- identifyOverExpressedInteractions(cellchat.omni)
+    # Infer the cell state-specific communications
+    cellchat.omni <-
+        CellChat::identifyOverExpressedGenes(cellchat.omni,
+                                             thresh.pc = expr_prop)
+    cellchat.omni <- CellChat::identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
     if(!.raw_use){
-        cellchat.omni <- projectData(cellchat.omni, CellChat::PPI.human)
+        cellchat.omni <- CellChat::projectData(cellchat.omni,
+                                               CellChat::PPI.human)
     }
 
-    cellchat.omni <- computeCommunProb(cellchat.omni,
-                                       raw.use = .raw_use,
-                                       seed.use = .seed,
-                                       do.fast = TRUE,
-                                       nboot = nboot)
+    cellchat.omni <- CellChat::computeCommunProb(cellchat.omni,
+                                                 raw.use = .raw_use,
+                                                 seed.use = .seed,
+                                                 do.fast = TRUE,
+                                                 nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups
-    cellchat.omni <- filterCommunication(cellchat.omni, min.cells = 1)
+    cellchat.omni <- CellChat::filterCommunication(cellchat.omni, min.cells = 1)
 
     # Extract the inferred cellular communication network
-    df.omni <- subsetCommunication(cellchat.omni, ...)
+    df.omni <- CellChat::subsetCommunication(cellchat.omni, ...)
 
     if(.format){
         df.omni <- df.omni %>%
@@ -118,7 +117,8 @@ call_cellchat <- function(op_resource,
                    ligand,
                    receptor,
                    prob,
-                   pval)
+                   pval) %>%
+            as_tibble()
     }
 
     options(stringsAsFactors = stringsAsFactors)
@@ -129,7 +129,9 @@ call_cellchat <- function(op_resource,
 
 
 #' Helper Function to Format CellChatDB
+#'
 #' @param ccDB Inbuilt cellchatDB object
+#'
 #' @inheritParams call_cellchat
 #' @importFrom tibble enframe column_to_rownames
 #' @importFrom magrittr %>%
@@ -138,12 +140,12 @@ call_cellchat <- function(op_resource,
 #' @importFrom dplyr mutate mutate_at select filter
 #' @importFrom tidyselect everything
 #' @importFrom purrr pmap
+#'
+#' @export
 cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
     # get complexes and interactions from omnipath
     complex_interactions <- op_resource %>%
         select(
-            "genesymbol_intercell_source" = target,
-            "genesymbol_intercell_target" = source,
             "ligand" = source_genesymbol,
             "receptor" = target_genesymbol,
             "evidence" = sources,
@@ -180,8 +182,6 @@ cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
                                             co_A_receptor,
                                             co_I_receptor
         ){
-
-            log_trace(interaction_name)
 
             if(co_A_receptor=="" & co_I_receptor==""){
 

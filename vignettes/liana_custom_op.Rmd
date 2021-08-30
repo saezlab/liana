@@ -1,0 +1,159 @@
+---
+title: "LIANA Customize CCC OmniPath"
+author:
+  - name: Daniel Dimitrov
+    affiliation:
+        - Saezlab, Heidelberg University
+    email: daniel.dimitrov@uni-heidelberg.de
+date: "04/08/2021"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
+---
+
+# Customize CCC OmniPath
+This vignette showcases how to customize the OmniPath according to different
+inbuilt filter options and additional information from OmniPath, as well as 
+how to use `liana` with the customized resource.
+
+#### Load Prerequisites
+```{r load_prereq, message=FALSE, warning=FALSE}
+require(liana)
+require(tibble)
+require(purrr)
+require(magrittr)
+require(dplyr)
+
+liana_path <- system.file(package = "liana")
+testdata <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+```
+
+## OmniPath as in the manuscript
+
+We will first filter OmniPath as described in the LIANA paper:
+* we retained only interactions with literature references,
+* we kept interactions only where the receiver protein was plasma membrane transmembrane
+or peripheral according to at least 30% of the localisation annotations
+* we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).
+```{r liana_omni, message = FALSE, print = FALSE}
+# generate_omni returns a tibble with CCC OmniPath
+cust_omni <- generate_omni(loc_consensus_percentile = 30,
+                           consensus_percentile = NULL,
+                           transmitter_topology = c('secreted',
+                                                    'plasma_membrane_transmembrane',
+                                                    'plasma_membrane_peripheral'),
+                           receiver_topology = c('plasma_membrane_transmembrane',
+                                                 'plasma_membrane_peripheral'),
+                           min_curation_effort = 1,
+                           ligrecextra = FALSE,
+                           remove_complexes = TRUE,
+                           simplify = FALSE
+                           )
+
+liana_omni <- select_resource("OmniPath")[[1]]
+
+# Check if the same
+dplyr::all_equal(cust_omni, liana_omni)
+```
+
+
+## Surface/Membrane-bound Interactions only
+```{r pm_omni, message = FALSE, print = FALSE}
+pm_omni <- 
+  generate_omni(loc_consensus_percentile = 51, # increase localisation consensus threshold
+                consensus_percentile = NULL,
+                # include only PM-bound proteins
+                transmitter_topology = c('plasma_membrane_transmembrane',
+                                         'plasma_membrane_peripheral'),
+                receiver_topology = c('plasma_membrane_transmembrane',
+                                      'plasma_membrane_peripheral'),
+                min_curation_effort = 1,
+                ligrecextra = FALSE,
+                remove_complexes = FALSE, # keep complexes
+                simplify = TRUE # do simplify
+)
+
+
+# check categories of ligands (category_intercell_source)
+pm_omni$category_intercell_source %>%
+  unique()
+
+# and receptors (category_intercell_target)
+pm_omni$category_intercell_target %>%
+  unique()
+
+# remove these categories
+pm_omni %<>%
+  filter(!(category_intercell_source %in% c("activating_cofactor",
+                                            "ligand_regulator",
+                                            "inhibitory_cofactor")))
+# glimpse into the PM
+pm_omni %>% glimpse()
+```
+
+## Run LIANA with custom CCC resource
+
+#### RUN liana
+```{r liana_wrap, message = FALSE, print = FALSE}
+# Run liana with the custom resource
+# liana Wrap
+liana_test <- liana_wrap(seurat_object = testdata,
+                         resource='custom',
+                         external_resource = pm_omni,
+                         cellchat.params=list(.normalize=TRUE)) %>%
+  liana_aggregate()
+
+liana_test %>% glimpse
+```
+
+## Under the hood
+In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
+and simplifies their filtering according to liana-appropriate format.
+
+```{r omnipathr, message = FALSE, print = FALSE}
+# reproduce cust_op as from above with OmniPathR alone
+
+# import the OmniPathR intercell network component
+ligrec <- OmnipathR::import_intercell_network()
+
+# filter out the complexes
+ligrec %<>%
+  filter(!(entity_type_intercell_source == "complex" |
+             entity_type_intercell_target == "complex"))
+
+
+# apply filtering according to curation and localisation
+ligrec %<>% 
+  OmnipathR::filter_intercell_network(loc_consensus_percentile = 30,
+                                      consensus_percentile = NULL,
+                                      transmitter_topology = c('secreted',
+                                                               'plasma_membrane_transmembrane',
+                                                               'plasma_membrane_peripheral'),
+                                      receiver_topology = c('plasma_membrane_transmembrane',
+                                                            'plasma_membrane_peripheral'),
+                                      min_curation_effort = 1,
+                                      ligrecextra = FALSE)
+
+# remove duplicate LRs
+ligrec %<>% 
+  distinct_at(.vars = c("source_genesymbol", 
+                              "target_genesymbol"),
+                    .keep_all = TRUE)
+
+all_equal(ligrec, cust_omni)
+
+```
+To make use of the full potential of [OmniPathR](https://github.com/saezlab/OmnipathR) we kindly refer the user to it.
+
+It is worth noting that at this point, this tutorial only covers the intercellular component of OmniPathR, but future versions will aim to bridge this with its [intracellular part](https://omnipathdb.org/#about).
+
+## Session information
+```{r session_info, echo=TRUE}
+options(width = 120)
+sessioninfo::session_info()
+```

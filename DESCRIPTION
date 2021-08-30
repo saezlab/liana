@@ -1,6 +1,6 @@
-Package: intercell
+Package: liana
 Type: Package
-Title: Cell-cell communication resources and tools benchmark
+Title: LIANA: a LIgand-receptor ANalysis frAmework
 Version: 0.0.1
 Authors@R: c(
     person(
@@ -28,55 +28,49 @@ Authors@R: c(
         given = "James",
         family = "Nagai",
         role = c("aut"),
-        email = "",
+        email = "jshinitinaga@ukaachen.de",
         comment = c(ORCID = "0000-0002-7655-7206")
     ))
 Description: Comparative analysis of cell-cell communication resources and
     cell-cell communication inference tools.
 License: MIT + file LICENSE
 URL: https://omnipathdb.org/
-BugReports: https://github.com/saezlab/Cell_Cell_Investigation/issues
+BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-Remotes: Coolgenome/iTALK,
-    msraredon/Connectome,
-    sqjin/CellChat,
-    bioc::3.12/BiRewire
 Depends:
     R(>= 4.0)
 Imports:
-    graphics,
     utils,
-    tidyverse,
-    OmnipathR,
-    rprojroot,
     reticulate,
-    yardstick,
     stringr,
     magrittr,
     purrr,
+    furrr (>= 0.2.0),
     tidyr,
     tibble,
     readr,
     rlang,
     dplyr,
-    UpSetR,
-    RColorBrewer,
-    ggfortify,
-    ggplot2,
-    logger,
-    RCurl,
-    Barnard,
-    DescTools,
-    rlang,
-    viridis,
-    proxy
-Suggests:
-    Connectome,
-    CellChat,
-    iTALK,
-    knitr,
-    rmarkdown,
     Seurat,
-    SCAomni
+    SingleCellExperiment,
+    scran,
+    logger,
+    OmnipathR,
+    RobustRankAggreg
+Suggests:
+    BiRewire,
+    CellChat,
+    knitr,
+    BiocStyle,
+    rmarkdown,
+    workflowr,
+    testthat (>= 3.0.0),
+    sessioninfo
+Remotes: sqjin/CellChat,
+    bioc::3.12/BiRewire,
+    bioc::3.12/SingleCellExperiment,
+    bioc::3.12/scran,
+    saezlab/OmnipathR
 RoxygenNote: 7.1.1
+Config/testthat/edition: 3

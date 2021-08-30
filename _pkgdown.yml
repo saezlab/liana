@@ -1,0 +1,43 @@
+destination: docs
+
+development:
+  mode: auto
+
+navbar:
+  structure:
+    left: [home, intro, reference, articles, tutorials]
+    right: [github, twitter, homepage]
+  components:
+     twitter:
+       icon: "fab fa-twitter fa-lg"
+       href: https://twitter.com/saezlab
+     homepage:
+       icon: "fas fa-university"
+       href: http://www.saezlab.org
+
+reference:
+  - title: LIANA
+    desc: "`liana`-wrapper and related functions"
+    contents:
+      - starts_with("liana_")
+  - title: (External) Method calling functions
+    desc: >
+    contents:
+      - starts_with("call_")
+  - title: (Internal) Method calling functions
+    desc: >
+    contents:
+      - starts_with("get_")
+  - title: Format Method Output
+    desc: >
+    contents:
+      - starts_with("Format")
+  - title: Obtain Default Parametres
+    desc: "Default parametres passed to each method called by liana"
+    contents:
+      - liana_defaults
+  - title: Show_ or Select_ Functions
+    desc: "Functions used to obtain available methods and resources, lists, etc"
+    contents:
+      - starts_with("show_")
+      - starts_with("select_")

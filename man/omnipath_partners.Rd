@@ -11,7 +11,54 @@ omnipath_partners(side, ...)
 \item{side}{'ligand' (trans), 'receptor' (rec) or 'both' (both short or
 long notation can be used)}
 
-\item{...}{Passed to \code{OmnipathR::import_omnipath_intercell}.}
+\item{...}{
+  Arguments passed on to \code{\link[OmnipathR:import_omnipath_intercell]{OmnipathR::import_omnipath_intercell}}
+  \describe{
+    \item{\code{categories}}{vector containing the categories to be retrieved.
+All the genes belonging to those categories will be returned. For
+further information about the categories see
+code{\link[OmnipathR]{get_intercell_categories}}.}
+    \item{\code{resources}}{limit the query to certain resources; see the available
+resources by \code{\link[OmnipathR]{get_intercell_resources}}.}
+    \item{\code{parent}}{vector containing the parent classes to be retrieved.
+All the genes belonging to those classes will be returned. For
+furter information about the main classes see
+\code{\link[OmnipathR]{get_intercell_categories}}.}
+    \item{\code{scope}}{either `specific` or `generic`}
+    \item{\code{aspect}}{either `locational` or `functional`}
+    \item{\code{source}}{either `resource_specific` or `composite`}
+    \item{\code{transmitter}}{logical, include only transmitters i.e. proteins
+delivering signal from a cell to its environment.}
+    \item{\code{receiver}}{logical, include only receivers i.e. proteins delivering
+signal to the cell from its environment.}
+    \item{\code{secreted}}{logical, include only secreted proteins}
+    \item{\code{plasma_membrane_peripheral}}{logical, include only plasma membrane
+peripheral membrane proteins.}
+    \item{\code{plasma_membrane_transmembrane}}{logical, include only plasma membrane
+transmembrane proteins.}
+    \item{\code{proteins}}{limit the query to certain proteins}
+    \item{\code{topology}}{topology categories: one or more of `secreted` (sec),
+`plasma_membrane_peripheral` (pmp), `plasma_membrane_transmembrane`
+(pmtm) (both short or long notation can be used).}
+    \item{\code{causality}}{`transmitter` (trans), `receiver` (rec) or `both` (both
+short or long notation can be used).}
+    \item{\code{consensus_percentile}}{Numeric: a percentile cut off for the
+consensus score of generic categories. The consensus score is the
+number of resources supporting the classification of an entity into a
+category based on combined information of many resources. Here you can
+apply a cut-off, keeping only the annotations supported by a higher
+number of resources than a certain percentile of each category. If
+\code{NULL} no filtering will be performed. The value is either in the
+0-1 range, or will be divided by 100 if greater than 1. The
+percentiles will be calculated against the generic composite
+categories and then will be applied to their resource specific
+annotations and specific child categories.}
+    \item{\code{loc_consensus_percentile}}{Numeric: similar to
+code{consensus_percentile} for major localizations. For example, with
+a value of 50, the secreted, plasma membrane transmembrane or
+peripheral attributes will be true only where at least 50 percent
+of the resources support these.}
+  }}
 }
 \description{
 Retrieves intercellular communication partners (transmitters or receivers)

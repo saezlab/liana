@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
-#
-#  This file is part of the `intercell` R package
+#  This file is part of the `liana` R package
 #
 #  Copyright
 #  2021
@@ -10,13 +9,13 @@
 #  Author(s): Daniel Dimitrov
 #             Charlotte Boys
 #             Dénes Türei (turei.denes@gmail.com)
+#             James Nagai
 #
 #  Distributed under the MIT (Expat) License.
 #  See accompanying file `LICENSE` or find a copy at
 #      https://directory.fsf.org/wiki/License:Expat
 #
-#  Git repo: https://github.com/saezlab/Cell_Cell_Investigation
-#
+#  Git repo: https://github.com/saezlab/liana
 
 
 #' Dispatch log message to the OmnipathR logger
@@ -26,7 +25,7 @@
 logg <- function(level, ...){
 
     level %<>% (OmnipathR:::ensure_loglevel)
-    log_level(level, ..., namespace = 'OmnipathR')
+    log_level(level, ..., namespace = 'liana')
 
 }
 

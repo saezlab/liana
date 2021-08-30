@@ -4,13 +4,7 @@
 \alias{call_connectome}
 \title{Function to call connectome with databases from OmniPath}
 \usage{
-call_connectome(
-  seurat_object,
-  op_resource,
-  .format = TRUE,
-  .spatial = TRUE,
-  ...
-)
+call_connectome(seurat_object, op_resource = NULL, .format = TRUE, ...)
 }
 \arguments{
 \item{seurat_object}{Seurat object as input}
@@ -18,9 +12,11 @@ call_connectome(
 \item{op_resource}{OmniPath Intercell Resource DN}
 
 \item{.format}{bool whether to format output}
+
+\item{...}{dot params passed to connectome}
 }
 \value{
-An unfiltered connectome df
+An unfiltered connectome results df
 }
 \description{
 Function to call connectome with databases from OmniPath

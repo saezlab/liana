@@ -1,10 +1,11 @@
 #' Function to call connectome with databases from OmniPath
+#'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
-# #' @inheritDotParams Connectome::CreateConnectome
+#' @param ... dot params passed to connectome
 #'
-#' @return An unfiltered connectome df
+#' @return An unfiltered connectome results df
 #'
 #' @details
 #' Stats:
@@ -15,60 +16,45 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @import Connectome
-# #' @importFrom Seurat ScaleData
-#' @importFrom magrittr %>%
+#' @importFrom Seurat ScaleData
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
+#'
 #' @export
 call_connectome <- function(seurat_object,
-                            op_resource,
+                            op_resource = NULL,
                             .format = TRUE,
-                            .spatial = TRUE,
                             ...){
 
-    if(.spatial){
-        seurat_object@assays$RNA <- seurat_object@assays$Spatial
-        seurat_object@assays$Spatial <- NULL
-    }
-
     if(!is.null(op_resource)){
-        # Format db to connectome
-        lr_db <- op_resource %>%
-            select("source_genesymbol", "target_genesymbol") %>%
-            mutate(mode = "UNCAT") %>% # mode refers to interaction categories
-            arrange(.$source_genesymbol) %>%
-            distinct() %>%
-            as.data.frame()
 
-        # scale genes to ligands and receptors available in the resource
-        connectome.genes <- union(lr_db$source_genesymbol, lr_db$target_genesymbol)
-        genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
-        seurat_object <- ScaleData(seurat_object, features = genes)
+        lr_db <- conn_formatDB(op_resource)
+        lr_symbols <- union(lr_db$source_genesymbol,
+                            lr_db$target_genesymbol)
 
-        # create connectome
-        conn <- CreateConnectome(seurat_object,
-                                 LR.database = 'custom',
-                                 custom.list = lr_db,
-                                 ...)
+        conn <- .conn_create(seurat_object,
+                             lr_symbols = lr_symbols,
+                             lr_db,
+                             ...
+                             )
 
     } else{
-        connectome.genes <- union(Connectome::ncomms8866_human$Ligand.ApprovedSymbol,
-                                  Connectome::ncomms8866_human$Receptor.ApprovedSymbol)
-        genes <- connectome.genes[connectome.genes %in% rownames(seurat_object)]
 
-        seurat_object <- ScaleData(object = seurat_object,
-                                   features = genes)
-        conn <- CreateConnectome(seurat_object,
-                                 species = 'human',
-                                 ...)
+        lr_db <- Connectome::ncomms8866_human %>%
+            filter(Pair.Evidence == "literature supported")
+
+        lr_symbols = union(lr_db$Ligand.ApprovedSymbol,
+                           lr_db$Receptor.ApprovedSymbol)
+
+        conn <- .conn_create(seurat_object,
+                            lr_symbols = lr_symbols,
+                            lr_db,
+                            ...
+                            )
     }
 
     if(.format){
-        conn <- conn %>% FormatConnectome
+        conn %<>% FormatConnectome
     }
 
     return(conn)
@@ -78,21 +64,60 @@ call_connectome <- function(seurat_object,
 #' Helper function to filter and format connectome
 #'
 #' @param conn connectome object
-### These packages could go to "Suggests" in DESCRIPTION
-### because not all users want to install all the tools
-### to run one of them. Functions from these packages
-### should be referred by :: to avoid warnings
-# #' @importFrom Connectome FilterConnectome
+#' @import tibble
+#'
 #' @export
 FormatConnectome <- function(conn,
                              ...){
     conn <- conn %>%
-        FilterConnectome(remove.na=TRUE) %>%
+        Connectome::FilterConnectome(remove.na=TRUE) %>%
         select(source, target,
                ligand, receptor,
                weight_norm,
                weight_sc,
                p_val_adj.lig,
-               p_val_adj.rec)
+               p_val_adj.rec) %>%
+        as_tibble()
+
+
 }
 
+
+#' Helper Function to convert Omni to Connectome resource Format
+#' @param op_resource OmniPath resource
+#' @export
+conn_formatDB <- function(op_resource){
+    op_resource %>%
+        select("source_genesymbol", "target_genesymbol") %>%
+        mutate(mode = "UNCAT") %>% # mode refers to interaction categories
+        arrange(.$source_genesymbol) %>%
+        distinct() %>%
+        as.data.frame()
+}
+
+
+
+#' Helper function to create a conn object
+#'
+#' @inheritParams call_connectome
+#' @param lr_symbols ligand-receptor gene symbols
+#' @param lr_db ligand-receptor resource
+#' @param ... arguments passed `CreateConnectome` from `Connectome`
+#'
+#' @noRd
+.conn_create <- function(seurat_object,
+                        lr_symbols,
+                        lr_db,
+                        ...){
+
+    filt_genes <- lr_symbols[lr_symbols %in% rownames(seurat_object)]
+    seurat_object <- Seurat::ScaleData(object = seurat_object,
+                                       features = filt_genes)
+
+    conn <- Connectome::CreateConnectome(seurat_object,
+                                         LR.database = 'custom',
+                                         custom.list = lr_db,
+                                         ...
+                                         )
+    return(conn)
+}

@@ -15,6 +15,7 @@ call_cellchat(
   .normalize = FALSE,
   .do_parallel = FALSE,
   .raw_use = TRUE,
+  expr_prop = 0.2,
   ...
 )
 }
@@ -33,6 +34,64 @@ call_cellchat(
 
 \item{.raw_use}{whether use the raw data or gene expression data pojectected
 to a ppi}
+
+\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
+yet perhaps one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.}
+
+\item{...}{
+  Arguments passed on to \code{\link[CellChat:subsetCommunication]{CellChat::subsetCommunication}}
+  \describe{
+    \item{\code{object}}{CellChat object}
+    \item{\code{net}}{Alternative input is a data frame with at least with three columns defining the cell-cell communication network ("source","target","interaction_name")}
+    \item{\code{slot.name}}{the slot name of object: slot.name = "net" when extracting the inferred communications at the level of ligands/receptors; slot.name = "netP" when extracting the inferred communications at the level of signaling pathways}
+    \item{\code{sources.use}}{a vector giving the index or the name of source cell groups}
+    \item{\code{targets.use}}{a vector giving the index or the name of target cell groups.}
+    \item{\code{signaling}}{a character vector giving the name of signaling pathways of interest}
+    \item{\code{pairLR.use}}{a data frame consisting of one column named either "interaction_name" or "pathway_name", defining the interactions of interest}
+    \item{\code{thresh}}{threshold of the p-value for determining significant interaction}
+    \item{\code{datasets}}{select the inferred cell-cell communications from a particular `datasets` when inputing a data frame `net`}
+    \item{\code{ligand.pvalues}}{set threshold for ligand genes
+
+ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
+
+ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
+
+ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
+
+ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
+    \item{\code{ligand.logFC}}{set threshold for ligand genes
+
+ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
+
+ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
+
+ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
+
+ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
+    \item{\code{ligand.pct.1}}{set threshold for ligand genes
+
+ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
+
+ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
+
+ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
+
+ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
+    \item{\code{ligand.pct.2}}{set threshold for ligand genes
+
+ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
+
+ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
+
+ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
+
+ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
+    \item{\code{receptor.pvalues}}{set threshold for receptor genes}
+    \item{\code{receptor.logFC}}{set threshold for receptor genes}
+    \item{\code{receptor.pct.1}}{set threshold for receptor genes}
+    \item{\code{receptor.pct.2}}{set threshold for receptor genes}
+  }}
 }
 \value{
 A DF of intercellular communication network
@@ -42,5 +101,5 @@ CellChat x Omni Pipe function
 }
 \details{
 CellChat's objects are not documented/exported thus the
-   whole package has to be imported
+  whole package has to be imported.
 }

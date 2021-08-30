@@ -6,9 +6,6 @@
 \usage{
 omnipath_intercell(...)
 }
-\arguments{
-\item{...}{Passed to \code{OmnipathR::import_omnipath_intercell}.}
-}
 \value{
 A tibble with Intercell interactions from OmniPath
 }

@@ -4,7 +4,14 @@
 \alias{call_sca}
 \title{Function to call SingleCellSignalR with databases from OmniPath}
 \usage{
-call_sca(op_resource, seurat_object, .format = TRUE, assay = "SCT", ...)
+call_sca(
+  op_resource,
+  seurat_object,
+  .format = TRUE,
+  assay = "RNA",
+  assay.type = "logcounts",
+  ...
+)
 }
 \arguments{
 \item{op_resource}{OmniPath Intercell Resource DN}
@@ -16,7 +23,7 @@ call_sca(op_resource, seurat_object, .format = TRUE, assay = "SCT", ...)
 \item{assay}{Seurat assay data to use}
 }
 \value{
-An unfiltered iTALK df sorted by relevance
+An unfiltered SCA tibble
 }
 \description{
 Function to call SingleCellSignalR with databases from OmniPath

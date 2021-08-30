@@ -1,0 +1,480 @@
+#' Liana Pipe which runs DE analysis and merges needed information for LR inference
+#'
+#' @param seurat_object Seurat object
+#' @param op_resource resource tibble obtained via \link{liana::select_resource}
+#' @inheritParams liana_scores
+#' @inheritParams scran::findMarkers
+#' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default),
+#'  yet one should consider setting this to an appropriate value between 0 and 1,
+#'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each end
+#'  of x before the `truncated mean` is computed (0.1 by default)
+#' @param assay assay to be used ("RNA" by default)
+#' @param assay.type - the type of data to be used to calculate the means
+#'  (counts by default), available options are: "counts" and "logcounts"
+#'
+#' @import SingleCellExperiment SeuratObject
+#' @importFrom scran findMarkers
+#' @importFrom scuttle summarizeAssayByGroup
+#'
+#' @export
+#'
+#' @return Returns a tibble with information required for LR calc
+liana_pipe <- function(seurat_object,
+                       op_resource,
+                       decomplexify = TRUE,
+                       test.type = "wilcox",
+                       pval.type = "all",
+                       expr_prop = 0.2,
+                       trim = 0.1,
+                       assay = "RNA",
+                       assay.type = "counts"){
+
+    ### this whole chunk needs to move to liana_wrap
+    # Resource Format
+    transmitters <- op_resource$source_genesymbol %>%
+        as_tibble() %>%
+        select(gene = value)
+    receivers <- op_resource$target_genesymbol %>%
+        as_tibble() %>%
+        select(gene = value)
+    entity_genes = union(transmitters$gene,
+                         receivers$gene)
+
+    global_mean <- get_global_mean(seurat_object,
+                                   assay,
+                                   assay.type)
+
+    sce <- seurat_to_sce(seurat_object,
+                         entity_genes = entity_genes,
+                         assay = assay)
+    rm(seurat_object); gc()
+    ###
+
+
+    # Get Avg and  Prop. Expr Per Cluster
+    mean_prop <-
+        scuttle::summarizeAssayByGroup(sce,
+                                       ids = colLabels(sce),
+                                       assay.type = assay.type,
+                                       statistics = c("mean", "prop.detected"))
+    means <- mean_prop@assays@data$mean
+    props <- mean_prop@assays@data$prop.detected
+
+    # scaled (z-transformed) means
+    scaled <- scuttle::summarizeAssayByGroup(sce,
+                                             ids = colLabels(sce),
+                                             assay.type = "scaledata",
+                                             statistics = c("mean"))
+    scaled <- scaled@assays@data$mean
+
+    # calculate truncated mean
+    trunc_mean <- aggregate(t(as.matrix(sce@assays@data[[assay.type]])),
+                            list(colLabels(sce)),
+                            FUN=mean, trim=trim) %>%
+        as_tibble() %>%
+        rename(celltype = Group.1) %>%
+        pivot_longer(-celltype, names_to = "gene") %>%
+        tidyr::pivot_wider(names_from = celltype,
+                           id_cols = gene,
+                           values_from = value) %>%
+        column_to_rownames("gene")
+
+    # Get Log2FC
+    logfc_df <- get_log2FC(sce, assay.type)
+
+    # Find Markers and Format
+    cluster_markers <- scran::findMarkers(sce,
+                                          groups = colLabels(sce),
+                                          direction = "any",
+                                          full.stats = TRUE,
+                                          test.type = test.type,
+                                          pval.type = pval.type,
+                                          assay.type = assay.type) %>%
+        pluck("listData") %>%
+        map2(., names(.), function(cluster, cluster_name){
+            cluster %>%
+                as.data.frame() %>%
+                rownames_to_column("gene") %>%
+                as_tibble() %>%
+                select(gene, p.value, FDR, stat = summary.stats)
+            })
+
+    # Get all Possible Cluster pair combinations
+    pairs <- expand_grid(source = unique(colLabels(sce)),
+                         target = unique(colLabels(sce)))
+
+    # Get DEGs to LR format
+    lr_res <- pairs %>%
+        pmap(function(source, target){
+            source_stats <- ligrec_degformat(cluster_markers[[source]],
+                                             entity = transmitters,
+                                             source_target = "source")
+            target_stats <- ligrec_degformat(cluster_markers[[target]],
+                                             entity = receivers,
+                                             source_target = "target")
+
+            op_resource %>%
+                select(ligand = source_genesymbol,
+                       receptor = target_genesymbol) %>%
+                left_join(source_stats, by = "ligand") %>%
+                left_join(target_stats, by = "receptor") %>%
+                na.omit() %>%
+                distinct() %>%
+                mutate(source = source,
+                       target = target)
+        }) %>%
+        bind_rows()
+
+    # Join Expression Means
+    lr_res %<>%
+        join_means(means = means,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "expr") %>%
+        join_means(means = means,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "expr") %>%
+        join_means(means = scaled,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "scaled") %>%
+        join_means(means = props,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "prop") %>%
+        join_means(means = props,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "prop") %>%
+        join_means(means = scaled,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "scaled") %>%
+        join_sum_means(means = means,
+                       entity = "ligand") %>%
+        join_sum_means(means = means,
+                       entity = "receptor")  %>%
+        join_means(means = trunc_mean,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "trunc") %>%
+        join_means(means = trunc_mean,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "trunc") %>%
+        # logFC
+        join_log2FC(logfc_df,
+                    source_target = "source",
+                    entity="ligand") %>%
+        join_log2FC(logfc_df,
+                    source_target = "target",
+                    entity="receptor") %>%
+        # Global Mean
+        mutate(global_mean = global_mean)
+
+    if(expr_prop > 0){
+        lr_res %<>%
+            filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+    }
+    message("LIANA: LR summary stats calculated!")
+
+    if(decomplexify){
+        # Join complexes (recomplexify) to lr_res
+        cmplx <- op_resource %>%
+            select(
+                ligand = source_genesymbol,
+                ligand.complex = source_genesymbol_complex,
+                receptor = target_genesymbol,
+                receptor.complex = target_genesymbol_complex
+                )
+
+        lr_res %<>%
+            left_join(., cmplx,
+                      by=c("ligand", "receptor")) %>%
+            distinct()
+    }
+
+    return(lr_res)
+}
+
+
+
+#' Helper Function to join DEG stats to LR
+#'
+#' @param cluster_markers dataframe with DE stats for a cluster
+#' @param entity Transmitter or Receiver vector passed as tibble
+#' @param source_target whether this is the source or target cluster
+#'
+#' @return A tibble with stats for receivers or transmitters per cluster
+#'
+#' @noRd
+ligrec_degformat <- function(cluster_markers,
+                             entity,
+                             source_target){
+    cluster_markers %>%
+        left_join(entity, ., by = "gene") %>%
+        na.omit() %>%
+        {
+            if(source_target=="source"){
+                dplyr::select(
+                    .,
+                    ligand = gene,
+                    ligand.pval = p.value,
+                    ligand.FDR = FDR,
+                    ligand.stat = stat
+                )
+            }else if(source_target=="target"){
+                dplyr::select(
+                    .,
+                    receptor = gene,
+                    receptor.pval = p.value,
+                    receptor.FDR = FDR,
+                    receptor.stat = stat
+                )
+            } else{
+                stop("Incorrect entity!")
+            }
+        } %>%
+        distinct() %>%
+        na.omit()
+}
+
+
+
+
+#' Join Expression per Cluster
+#'
+#' @param lr_res LR formatted DE results from \link{ligrec_degformat}
+#' @param means Gene avg expression per cluster
+#' @param source_target target or source cell
+#' @param entity ligand or receptor
+#' @param type type of mean to join (count or scaled)
+#'
+#' @importFrom magrittr %>% %<>%
+#'
+#' @return Returns the Average Expression Per Cluster
+#'
+#' @noRd
+join_means <- function(lr_res,
+                       means,
+                       source_target,
+                       entity,
+                       type,
+                       pb = NULL){
+
+    if(!is.null(pb)){
+        pb$tick()$print()
+    }
+
+    entity.avg <- sym(str_glue("{entity}.{type}"))
+
+    means %<>%
+        as.data.frame() %>%
+        rownames_to_column("gene") %>%
+        pivot_longer(-gene, names_to = "cell", values_to = "avg") %>%
+        dplyr::rename({{ source_target }} := cell,
+                      {{ entity }} := gene,
+                      {{ entity.avg }} := avg)
+
+    lr_res %>%
+        left_join(means, by=c(source_target, entity))
+}
+
+
+#' Join Expression per Cluster
+#'
+#' @param lr_res LR formatted DE results from \link{ligrec_degformat}
+#' @param means Gene avg expression per cluster
+#' @param entity ligand or receptor
+#'
+#' @return Returns the Summed Average Expression Per Cluster
+#'
+#' @noRd
+join_sum_means <- function(lr_res, means, entity){
+
+    entity.expr = sym(str_glue("{entity}.sum"))
+
+    sums <- means %>%
+        as.data.frame() %>%
+        rownames_to_column("gene") %>%
+        rowwise("gene") %>%
+        mutate(sum.means = sum(c_across(where(is.numeric)))) %>%
+        select(gene, sum.means) %>%
+        dplyr::rename({{ entity }} := gene,
+                      {{ entity.expr }} := sum.means)  %>%
+        distinct() %>%
+        ungroup()
+
+    lr_res %>%
+        left_join(sums, by=c(entity))
+}
+
+
+#' Helper Function to join log2FC dataframe to LR_res
+#'
+#' @param lr_res LR formatted DE results from \link{ligrec_degformat}
+#' @param logfc_df obtained via \link{get_log2FC}
+#' @param source_target target or source cell
+#' @param entity ligand or receptor
+#'
+#' @noRd
+join_log2FC <- function(lr_res,
+                        logfc_df,
+                        source_target,
+                        entity){
+
+    entity.fc = sym(str_glue("{entity}.log2FC"))
+
+    logfc <- logfc_df %>%
+        dplyr::rename(
+            {{ source_target }} := cell,
+            {{ entity }} := gene,
+            {{ entity.fc }} := avg_log2FC)  %>%
+        distinct()
+
+    lr_res %>%
+        left_join(logfc, by=c(entity, source_target))
+
+}
+
+
+
+
+#' Get Log2FC of Subject vs LOSO (i.e. 1 cell type vs all other cells FC)
+#'
+#' @param sce SingleCellExperiment object
+#' @param subject leave-one-out subject, i.e. the cluster whose log2FC we wish
+#'    to calculate when compared to all other cells
+#' @inheritParams liana_pipe
+#'
+#' @return A log2FC dataframe for a given cell identity
+#'
+#' @details log2FC is calculated using the raw count average + a pseudocount of 1
+#'
+#' @noRd
+get_log2FC <- function(sce,
+                       assay.type){
+
+    # iterate over each possible cluster leaving one out
+    levels(colLabels(sce)) %>%
+        map(function(subject){
+            # Subject (i.e. target) Cluster avg
+            subject_avg <-
+                scater::calculateAverage(subset(sce,
+                                                select = colLabels(sce)==subject),
+                                         assay.type = assay.type
+                                         ) %>%
+                as_tibble(rownames = "gene") %>%
+                dplyr::rename(subject_avg = value)
+
+            # All other cells average
+            loso_avg <-
+                scater::calculateAverage(subset(sce,
+                                                select = colLabels(sce)!=subject),
+                                         assay.type = assay.type
+                                         ) %>%
+                as_tibble(rownames = "gene") %>%
+                dplyr::rename(loso_avg = value)
+
+            # Join avg and calculate FC
+            left_join(subject_avg, loso_avg, by="gene") %>%
+                mutate(avg_log2FC =
+                           log2((subject_avg + 1)) - log2((loso_avg + 1))) %>%
+                select(gene, avg_log2FC)
+
+        }) %>% setNames(levels(colLabels(sce))) %>%
+        enframe(name = "cell") %>%
+        unnest(value)
+}
+
+
+#' Helper function to obtain a global mean
+#'
+#' @inheritParams liana_pipe
+#'
+#' @return a single value for the whole dataset
+#'
+#' @details global mean is used in the SingleCellSignalR scores.
+get_global_mean <- function(seurat_object,
+                            assay,
+                            assay.type){
+    # Global Mean (sca) - before subsetting (needs to change to sce + assay.type)
+    # global_mean <- sce@assays@data$logcounts %>%
+    #     .[Matrix::rowSums(.)>0,]
+
+    if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
+        assay.type = "data"
+    }
+
+    global_mean <- SeuratObject::GetAssayData(seurat_object,
+                                              assay = assay,
+                                              slot = assay.type) %>%
+        .[Matrix::rowSums(.)>0,]
+    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+
+    return(global_mean)
+}
+
+#' Helper Function to 'decomplexify' ligands and receptors into
+#'
+#' @param resource a ligrec resource
+#' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot)
+#'
+#' @return returns a longer tibble with complex subunits on seperate rows
+#'
+#' @noRd
+decomplexify <- function(resource,
+                         columns = c("source_genesymbol",
+                                     "target_genesymbol")){
+    columns %>%
+        map(function(col){
+            sep_cols <- c(str_glue("col{rep(1:5)}"))
+            col.complex <- str_glue("{col}_complex")
+
+            resource <<- resource %>%
+                mutate({{ col.complex }} :=
+                           resource[[str_glue("{col}")]]) %>%
+                separate(col,
+                         into = sep_cols,
+                         sep = "_",
+                         extra = "drop",
+                         fill = "right") %>%
+                pivot_longer(cols = all_of(sep_cols),
+                             values_to = col,
+                             names_to = NULL) %>%
+                tidyr::drop_na(col) %>%
+                distinct() %>%
+                mutate_at(.vars = c(col),
+                          ~str_replace(., "COMPLEX:", ""))
+        })
+    return(resource)
+}
+
+
+#' Helper function to convert from Seurat to SCE.
+#'
+#' @param seurat_object seurat_obect
+#' @param entity_genes ligand and receptor genes (i.e. genes that are in the
+#' CCC resource)
+#' @param assay assay
+#'
+#' @details LIANA uses the SingleCellExperiment/Bioconductor architecture to
+#' generate the LR summary
+seurat_to_sce <- function(seurat_object,
+                          entity_genes,
+                          assay){
+
+    # Filter to LigRec and scale
+    seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
+    seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
+
+    sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay = assay)
+    colLabels(sce) <- SeuratObject::Idents(seurat_object)
+    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
+
+    return(sce)
+
+}
+

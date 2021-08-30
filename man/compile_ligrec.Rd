@@ -6,14 +6,15 @@
 For each resource and OmniPath variant compiles tables of ligands,
 receptors and interactions}
 \usage{
-compile_ligrec(omni_variants = FALSE, lr_pipeline = TRUE)
+compile_ligrec(lr_pipeline = TRUE)
 }
 \arguments{
+\item{lr_pipeline}{bool whether to format for lr_pipeline and remove
+
+duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))}
+
 \item{omni_variants}{bool whether to get different OmniPath variants (e.g.
 _full, based on ligrec resource quality quartile, or if only lig_rec)}
-
-\item{lr_pipeline}{bool whether to format for lr_pipeline and remove
-duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))}
 }
 \value{
 A list of OmniPath resources formatted according to the method pipes
