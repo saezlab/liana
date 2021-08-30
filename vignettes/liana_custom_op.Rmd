@@ -1,5 +1,5 @@
 ---
-title: "LIANA Customize CCC OmniPath"
+title: "LIANA Custome literature and database knowledge from OmniPath"
 author:
   - name: Daniel Dimitrov
     affiliation:
@@ -15,12 +15,60 @@ output:
       code_folding: show
 ---
 
-# Customize CCC OmniPath
-This vignette showcases how to customize the OmniPath according to different
-inbuilt filter options and additional information from OmniPath, as well as 
-how to use `liana` with the customized resource.
+# Custome literature and database knowledge from OmniPath
 
-#### Load Prerequisites
+All prediction methods in LIANA require literature and database knowledge
+about intercellular signaling interactions. LIANA provides facilities to
+obtain this prior knowledge from the
+[OmniPath web service](https://omnipathdb.org/).
+Here we show how to customize and quality filter the prior knowledge from
+OmniPath, and how to use LIANA with a custome database resource.
+
+## Intercellular communication data in OmniPath
+
+OmniPath combines data from more than 20 resources to depict the roles of
+proteins in intercellular communication, and it uses around 50 network
+resources to connect these proteins by signaling interactions. In its
+intercellular communication annotation (intercell) database, OmniPath
+aims to cover the broadest range of information, and contains numerous
+false positive records. Hence, for using in prediction methods, as we do in
+LIANA, quality filtering OmniPath is highly recommended. We do quality
+filtering based on 1) the amount of evidences (number of resources and
+references), 2) the consensus between resources for each annotation record,
+3) the localization of proteins (e.g. secreted, plasma membrane). The
+design of the OmniPath database is described in
+[Turei et al. Mol Syst Biol (2021)17:e9923](https://www.embopress.org/doi/full/10.15252/msb.20209923),
+while you can read more about the quality filtering options
+[here](https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html),
+[here](https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html) and
+[here](https://saezlab.github.io/OmnipathR/articles/bioc_workshop.html#intercellular-communication-roles).
+
+### Complexes
+
+A few resources in OmniPath, such as CellChatDB, CellPhoneDB and ICELLNET,
+provide information about protein complexes in intercellular communication.
+Besides these, most of the protein complex annotations in OmniPath are in
+silico inferred, based on the members of the complex. Network interactions
+of protein complexes are very sparse, as only few resources provide this
+kind of data.
+
+### Connecting LIANA and OmniPath
+
+OmniPath data is distributed by the web service at
+[OmniPath web service](https://omnipathdb.org/), and the
+[`OmnipathR` R/Bioconductor package](https://saezlab.github.io/OmnipathR/)
+offer a direct access in R. In `OmnipathR`, the
+[`import_intercell_network`](https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html)
+and
+[filter_intercell_network](https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html)
+functions represent the interface to the intercellular communication
+network. In `liana`, the
+[`generate_omni`](https://saezlab.github.io/liana/reference/generate_omni.html)
+function wraps the `Omnipath` functions and ensures the output is suitable
+for the downstream methods in LIANA.
+
+## Loading prerequisites
+
 ```{r load_prereq, message=FALSE, warning=FALSE}
 require(liana)
 require(tibble)
@@ -33,49 +81,72 @@ testdata <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 ```
 
-## OmniPath as in the manuscript
+## OmniPath data as it is in the manuscript
 
-We will first filter OmniPath as described in the LIANA paper:
-* we retained only interactions with literature references,
-* we kept interactions only where the receiver protein was plasma membrane transmembrane
-or peripheral according to at least 30% of the localisation annotations
-* we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).
+In the first example, we filter OmniPath as described in the LIANA paper:
+* Only interactions with literature references
+* Interactions only where the receiver protein is plasma membrane
+transmembrane or peripheral, according to at least 30% of the localisation
+annotations
+* Only interactions between single proteins (interactions between complexes
+are also available in OmniPath).
+
 ```{r liana_omni, message = FALSE, print = FALSE}
 # generate_omni returns a tibble with CCC OmniPath
-cust_omni <- generate_omni(loc_consensus_percentile = 30,
-                           consensus_percentile = NULL,
-                           transmitter_topology = c('secreted',
-                                                    'plasma_membrane_transmembrane',
-                                                    'plasma_membrane_peripheral'),
-                           receiver_topology = c('plasma_membrane_transmembrane',
-                                                 'plasma_membrane_peripheral'),
-                           min_curation_effort = 1,
-                           ligrecextra = FALSE,
-                           remove_complexes = TRUE,
-                           simplify = FALSE
-                           )
+cust_omni <- generate_omni(
+    loc_consensus_percentile = 30,
+    consensus_percentile = NULL,
+    transmitter_topology = c(
+        'secreted',
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    receiver_topology = c(
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    min_curation_effort = 1,
+    ligrecextra = FALSE,
+    remove_complexes = TRUE,
+    simplify = FALSE
+)
+```
 
+The resulted data is identical to the that used by LIANA without
+customization, provided by `select_resource("OmniPath")`:
+
+```{r liana_omni_2, message = FALSE, print = FALSE}
 liana_omni <- select_resource("OmniPath")[[1]]
 
 # Check if the same
 dplyr::all_equal(cust_omni, liana_omni)
 ```
 
+## Surface or Membrane-bound Interactions only
 
-## Surface/Membrane-bound Interactions only
+In the next example, we restrict our query to cell-surface (i.e. membrane
+bound) interactions, and also alter some further parameters: we set a more
+stringent threshold for consensus of resources on localization, we include
+also protein complexes, and we simplify the data frame to keep only the
+most relevant columns.
+
 ```{r pm_omni, message = FALSE, print = FALSE}
-pm_omni <- 
-  generate_omni(loc_consensus_percentile = 51, # increase localisation consensus threshold
-                consensus_percentile = NULL,
-                # include only PM-bound proteins
-                transmitter_topology = c('plasma_membrane_transmembrane',
-                                         'plasma_membrane_peripheral'),
-                receiver_topology = c('plasma_membrane_transmembrane',
-                                      'plasma_membrane_peripheral'),
-                min_curation_effort = 1,
-                ligrecextra = FALSE,
-                remove_complexes = FALSE, # keep complexes
-                simplify = TRUE # do simplify
+pm_omni <- generate_omni(
+    loc_consensus_percentile = 51, # increase localisation consensus threshold
+    consensus_percentile = NULL,
+    # include only PM-bound proteins
+    transmitter_topology = c(
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    receiver_topology = c(
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    min_curation_effort = 1,
+    ligrecextra = FALSE,
+    remove_complexes = FALSE, # keep complexes
+    simplify = TRUE # do simplify
 )
 
 
@@ -87,33 +158,43 @@ pm_omni$category_intercell_source %>%
 pm_omni$category_intercell_target %>%
   unique()
 
-# remove these categories
-pm_omni %<>%
-  filter(!(category_intercell_source %in% c("activating_cofactor",
-                                            "ligand_regulator",
-                                            "inhibitory_cofactor")))
-# glimpse into the PM
+# remove some categories
+pm_omni %<>% filter(
+    !category_intercell_source %in% c(
+        'activating_cofactor',
+        'ligand_regulator',
+        'inhibitory_cofactor'
+    )
+)
+# an overview of the resulted data frame:
 pm_omni %>% glimpse()
 ```
 
 ## Run LIANA with custom CCC resource
 
-#### RUN liana
+### RUN liana
+
 ```{r liana_wrap, message = FALSE, print = FALSE}
 # Run liana with the custom resource
 # liana Wrap
-liana_test <- liana_wrap(seurat_object = testdata,
-                         resource='custom',
-                         external_resource = pm_omni,
-                         cellchat.params=list(.normalize=TRUE)) %>%
-  liana_aggregate()
+liana_test <-
+    liana_wrap(
+        seurat_object = testdata,
+        resource='custom',
+        external_resource = pm_omni,
+        cellchat.params=list(.normalize=TRUE)
+    ) %>%
+    liana_aggregate()
 
 liana_test %>% glimpse
 ```
 
 ## Under the hood
-In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
-and simplifies their filtering according to liana-appropriate format.
+
+In reality, `generate_omni` is just a wrapper function that calls the
+appropriate `OmnipathR` functions, provide a convenient interface and
+ensures a liana-appropriate format. Here we give an insight into this
+process.
 
 ```{r omnipathr, message = FALSE, print = FALSE}
 # reproduce cust_op as from above with OmniPathR alone
@@ -122,37 +203,54 @@ and simplifies their filtering according to liana-appropriate format.
 ligrec <- OmnipathR::import_intercell_network()
 
 # filter out the complexes
-ligrec %<>%
-  filter(!(entity_type_intercell_source == "complex" |
-             entity_type_intercell_target == "complex"))
+ligrec %<>% filter(
+    entity_type_intercell_source != 'complex' &
+    entity_type_intercell_target != 'complex'
+)
 
 
 # apply filtering according to curation and localisation
 ligrec %<>% 
-  OmnipathR::filter_intercell_network(loc_consensus_percentile = 30,
-                                      consensus_percentile = NULL,
-                                      transmitter_topology = c('secreted',
-                                                               'plasma_membrane_transmembrane',
-                                                               'plasma_membrane_peripheral'),
-                                      receiver_topology = c('plasma_membrane_transmembrane',
-                                                            'plasma_membrane_peripheral'),
-                                      min_curation_effort = 1,
-                                      ligrecextra = FALSE)
+    OmnipathR::filter_intercell_network(
+        loc_consensus_percentile = 30,
+        consensus_percentile = NULL,
+        transmitter_topology = c(
+            'secreted',
+            'plasma_membrane_transmembrane',
+            'plasma_membrane_peripheral'
+        ),
+        receiver_topology = c(
+            'plasma_membrane_transmembrane',
+            'plasma_membrane_peripheral'
+        ),
+        min_curation_effort = 1,
+        ligrecextra = FALSE
+    )
 
 # remove duplicate LRs
 ligrec %<>% 
-  distinct_at(.vars = c("source_genesymbol", 
-                              "target_genesymbol"),
-                    .keep_all = TRUE)
+    distinct_at(
+        .vars = c(
+            'source_genesymbol',
+            'target_genesymbol'
+        ),
+        .keep_all = TRUE
+    )
 
 all_equal(ligrec, cust_omni)
-
 ```
-To make use of the full potential of [OmniPathR](https://github.com/saezlab/OmnipathR) we kindly refer the user to it.
 
-It is worth noting that at this point, this tutorial only covers the intercellular component of OmniPathR, but future versions will aim to bridge this with its [intracellular part](https://omnipathdb.org/#about).
+## Further reading
+
+To make use of the full potential of `OmnipathR` we kindly refer the user
+to [its documentation](https://saezlab.github.io/OmnipathR).
+
+This tutorial only presents the intercellular component of OmniPath,
+in the future we will add more details about [intracellular signaling and
+gene regulation](https://omnipathdb.org/#about).
 
 ## Session information
+
 ```{r session_info, echo=TRUE}
 options(width = 120)
 sessioninfo::session_info()
