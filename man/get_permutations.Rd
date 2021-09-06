@@ -11,7 +11,8 @@ get_permutations(
   seed = 1234,
   trim = 0.1,
   parallelize = FALSE,
-  workers = 4
+  workers = 4,
+  assay.type = "logcounts"
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ of x before the `truncated mean` is computed (0.1 by default)}
 \item{parallelize}{whether to parallelize}
 
 \item{workers}{Number of workers to be used in parallelization}
+
+\item{assay.type}{- the type of data to be used to calculate the means
+(counts by default), available options are: "counts" and "logcounts"}
 }
 \value{
 Returns a list of shuffled gene means by cluster

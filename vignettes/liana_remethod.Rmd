@@ -136,7 +136,8 @@ cpdb_reimplements <- liana_wrap(testdata,
                                 method = c('cellphonedb', 'squidpy'),
                                 resource = c('CellPhoneDB'),
                                 expr_prop = 0.1,
-                                trim = 0)
+                                trim = 0,
+                                assay.type = "logcounts")
 
 liana_cpdb <- cpdb_reimplements$cellphonedb
 squidpy_cpdb <- cpdb_reimplements$squidpy

@@ -285,11 +285,12 @@ get_permutations <- function(lr_res,
                             seed = 1234,
                             trim = 0.1,
                             parallelize = FALSE,
-                            workers = 4){
+                            workers = 4,
+                            assay.type = "logcounts"){
     # remove genes absent in lr_res
     lr_genes <- union(lr_res$ligand, lr_res$receptor)
     sce <- sce[rownames(sce) %in% lr_genes, ]
-    sce_mat <- t(as.matrix(sce@assays@data$counts))
+    sce_mat <- t(as.matrix(sce@assays@data[[assay.type]]))
 
     # shuffle columns
     set.seed(seed)

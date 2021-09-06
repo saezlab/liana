@@ -23,7 +23,7 @@ workers = 4
 lr_res <- liana_pipe(seurat_object = seurat_object,
                      op_resource = op_resource %>% decomplexify(),
                      expr_prop = 0.1,
-                     trim = 0.1,
+                     trim = 0,
                      assay.type = "logcounts")
 
 sce <- seurat_to_sce(seurat_object = seurat_object,
@@ -237,3 +237,15 @@ props <- mean_prop@assays@data$prop.detected %>%
 
 
 
+#
+liana_cpdb3 <- liana_wrap(seurat_object = seurat_object,
+                          method = c("cellphonedb", "squidpy"),
+                          resource = "CellPhoneDB",
+                          permutation.params = list(nperms=1000),
+                          expr_prop = 0,
+                          trim = 0,
+                          assay.type = "counts")
+liana_cpdb3$cellphonedb %>% filter(pvalue <= 0.05)
+liana_cpdb3$squidpy %>% filter(pvalue <= 0.05)
+
+xd <- liana_cpdb3 %>% liana_aggregate()
