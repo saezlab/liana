@@ -373,8 +373,7 @@ get_log2FC <- function(sce,
             # All other cells average
             loso_avg <-
                 scater::calculateAverage(subset(sce,
-                                                select = colLabels(sce)!=subject) %>%
-                                             .[, colSums(counts(.)) > 0], # remove cells with no expression
+                                                select = !(colLabels(sce) %in% subject)),
                                          assay.type = assay.type
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
