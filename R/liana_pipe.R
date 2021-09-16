@@ -28,7 +28,7 @@ liana_pipe <- function(seurat_object,
                        expr_prop = 0.2,
                        trim = 0.1,
                        assay = "RNA",
-                       assay.type = "counts"){
+                       assay.type = "logcounts"){
 
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
@@ -47,7 +47,8 @@ liana_pipe <- function(seurat_object,
 
     sce <- seurat_to_sce(seurat_object,
                          entity_genes = entity_genes,
-                         assay = assay)
+                         assay = assay) %>%
+        .[, colSums(counts(.)) > 0]
     rm(seurat_object); gc()
     ###
 
@@ -73,7 +74,7 @@ liana_pipe <- function(seurat_object,
                             list(colLabels(sce)),
                             FUN=mean, trim=trim) %>%
         as_tibble() %>%
-        rename(celltype = Group.1) %>%
+        dplyr::rename(celltype = Group.1) %>%
         pivot_longer(-celltype, names_to = "gene") %>%
         tidyr::pivot_wider(names_from = celltype,
                            id_cols = gene,
@@ -372,7 +373,8 @@ get_log2FC <- function(sce,
             # All other cells average
             loso_avg <-
                 scater::calculateAverage(subset(sce,
-                                                select = colLabels(sce)!=subject),
+                                                select = colLabels(sce)!=subject) %>%
+                                             .[, colSums(counts(.)) > 0], # remove cells with no expression
                                          assay.type = assay.type
                                          ) %>%
                 as_tibble(rownames = "gene") %>%

@@ -1,3 +1,27 @@
+seurat_object <- readRDS("../ligrec_decouple/data/input/cmbc_seurat_test.RDS")
+require(SingleCellExperiment)
+
+# convert to singlecell object
+sce <- SingleCellExperiment::SingleCellExperiment(
+    assays=list(counts = GetAssayData(seurat_object, assay = "ADT", slot = "data")),
+    colData=DataFrame(label=seurat_object@meta.data$seurat_clusters)
+)
+
+
+# get OP and filter by ADTs to reduce comp time
+op_resource <- select_resource("OmniPath")[[1]] %>%
+    filter(source_genesymbol %in% rownames(sce))
+
+liana_res <- liana_wrap(seurat_object,
+                        squidpy.params=list(cluster_key = "seurat_clusters"),
+                        expr_prop = 0.1,
+                        resource = "custom",
+                        external_resource = op_resource
+)
+
+
+
+
 # library(scRNAseq) # more datasets
 require(tidymodels)
 require(SingleCellExperiment)
@@ -19,6 +43,14 @@ test_summ@colData
 test_summ@assays@data$mean # gene mean across cell types
 test_summ@assays@data$prop.detected # gene prop
 # test_summ@assays@data$num.detected # num times detected
+
+
+op_resource <- liana::select_resource("OmniPath")
+
+
+
+
+
 
 # (global) Avg Expr by gene
 scuttle::calculateAverage(test_sce)
