@@ -20,6 +20,12 @@ liana_res <- liana_wrap(seurat_object,
 )
 
 
+liana_res2 <- liana_wrap(seurat_object,
+                        squidpy.params=list(cluster_key = "seurat_clusters"),
+                        expr_prop = 0.1,
+                        resource = "custom",
+                        external_resource = op_resource
+)
 
 
 # library(scRNAseq) # more datasets

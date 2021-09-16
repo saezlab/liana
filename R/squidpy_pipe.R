@@ -2,7 +2,7 @@
 #' @param seurat_object Seurat object as input
 #' @param op_resource Tibble or list of OmniPath resources, typically obtained via
 #'    \code{\link{select_resource}}
-#' @param .seed used to python seed
+#' @param seed seed passed to squidpy's ligrec function
 #' @param conda_env python conda environment to run Squidpy; set to liana_env by default
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
@@ -25,7 +25,7 @@
 #' @export
 call_squidpy <- function(seurat_object,
                          op_resource,
-                         .seed = 1004,
+                         seed = 1004,
                          conda_env = NULL,
                          assay.type = "logcounts",
                          ...){
@@ -41,7 +41,7 @@ call_squidpy <- function(seurat_object,
 
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
-    kwargs$seed %<>% `%||%`(.seed)
+    kwargs$seed <- as.integer(seed)
 
     if(length(kwargs$cluster_key) == 0){
         stop("Squidpy: Cluster annotations missing! Please specificy a column")
@@ -79,7 +79,7 @@ call_squidpy <- function(seurat_object,
 
     # Call Squidpy
     reticulate::source_python(system.file(package = 'liana', "squidpy_pipe.py"))
-    py_set_seed(.seed)
+    py_set_seed(seed)
 
     py$squidpy_results <- py$call_squidpy(op_resources,
                                           GetAssayData(seurat_object,
