@@ -41,6 +41,7 @@ call_squidpy <- function(seurat_object,
 
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
+    kwargs$seed %<>% `%||%`(.seed)
 
     if(length(kwargs$cluster_key) == 0){
         stop("Squidpy: Cluster annotations missing! Please specificy a column")

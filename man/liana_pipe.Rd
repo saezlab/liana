@@ -13,7 +13,7 @@ liana_pipe(
   expr_prop = 0.2,
   trim = 0.1,
   assay = "RNA",
-  assay.type = "counts"
+  assay.type = "logcounts"
 )
 }
 \arguments{
