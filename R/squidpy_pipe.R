@@ -51,7 +51,8 @@ call_squidpy <- function(seurat_object,
 
     if(!is.factor(seurat_object@meta.data[[kwargs$cluster_key]])){
         seurat_object@meta.data[[kwargs$cluster_key]] <-
-            seurat_object@meta.data %>% pull(kwargs$cluster_key) %>%
+            seurat_object@meta.data %>%
+            pull(kwargs$cluster_key) %>%
             as.factor()
         message(str_glue("Squidpy: {kwargs$cluster_key} was converted to factor"))
     }
@@ -167,5 +168,7 @@ FormatSquidpy <- function(.name,
             }
 
             return()
-        }) %>% compact %>% as.character
+        }) %>% compact %>%
+        as.character %>%
+        pluck(1) # to handle scenario when there are two identical columns
 }

@@ -1,5 +1,20 @@
 seurat_object <- readRDS("../ligrec_decouple/data/input/cmbc_seurat_test.RDS")
 require(SingleCellExperiment)
+require(Seurat)
+
+testdata <- readRDS("data/input/test_data.rds")
+testdata %<>%
+    FindVariableFeatures() %>%
+    NormalizeData() %>%
+    ScaleData() %>%
+    RunPCA(verbose = TRUE) %>%
+    FindNeighbors(reduction = "pca") %>%
+    FindClusters(resolution = 0.4, verbose = TRUE)
+
+
+liana_wrap(testdata,
+           method = "squidpy")
+
 
 # convert to singlecell object
 sce <- SingleCellExperiment::SingleCellExperiment(
@@ -20,12 +35,6 @@ liana_res <- liana_wrap(seurat_object,
 )
 
 
-liana_res2 <- liana_wrap(seurat_object,
-                        squidpy.params=list(cluster_key = "seurat_clusters"),
-                        expr_prop = 0.1,
-                        resource = "custom",
-                        external_resource = op_resource
-)
 
 
 # library(scRNAseq) # more datasets
