@@ -60,6 +60,7 @@ liana_aggregate <- function(liana_res,
                 arrange(!!.rank_col) %>%
                 rename( {{ .method }} := method_score) %>%
                 select(source, ligand, target, receptor, !!.method, !!.rank_col) %>%
+                mutate(across(c(source, target), as.character)) %>%
                 distinct() %>%
                 as_tibble()
         })
