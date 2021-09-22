@@ -8,7 +8,6 @@
 #' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
 #' @param .write_data bool whether Extract data from Seurat Object
-#' @param .use_raw bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page
 #' @param .default_run bool whether to run default DBs or not
 #' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
 #' @param assay Seurat assay to be used

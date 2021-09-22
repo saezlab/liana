@@ -149,7 +149,6 @@ liana_defaults <- function(
                 num_cor = 4,
                 .format = TRUE,
                 .write_data = TRUE,
-                .use_raw = FALSE,
                 .seed = seed,
                 .natmi_path = NULL,
                 .delete_output = FALSE
