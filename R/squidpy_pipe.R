@@ -84,7 +84,8 @@ call_squidpy <- function(seurat_object,
 
     # Check if assay meta.features match object rownames
     # if not assign a placeholder (Seurat-specific fix)
-    if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object)){
+    if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object) |
+       ncol(seurat_object@assays$RNA@meta.features)==0){
         seurat_object@assays$RNA@meta.features <-
             data.frame(row.names = rownames(seurat_object),
                        placeholder = rownames(seurat_object))
