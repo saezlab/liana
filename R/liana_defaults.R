@@ -70,7 +70,7 @@ liana_defaults <- function(
                     nperms = 1000,
                     parallelize = parallelize,
                     workers = workers,
-                    seed=seed,
+                    seed = seed,
                     trim = trim
                     )
             ),
@@ -108,7 +108,8 @@ liana_defaults <- function(
                 assay = assay,
                 .normalize = FALSE,
                 .do_parallel = FALSE,
-                .raw_use = TRUE
+                .raw_use = TRUE,
+                organism = "human"
                 )),
 
         'squidpy' = squidpy.params %<>%
