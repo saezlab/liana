@@ -96,17 +96,6 @@ test_summ@assays@data$mean %>%
            order = c("B", "NK"))
 
 
-# Test ccr data
-testdata <- readRDS("data/input/test_data.rds")
 
-xx <- liana_wrap(testdata,
-                 method = c("natmi", "connectome", "logfc",
-                            "cellchat", "sca", "squidpy"),
-                 assay.type = "counts",
-                 resource = "CellPhoneDB",
-                 parallelize = TRUE,
-                 workers = 4)
-xx_aggr <- xx %>% liana_aggregate()
 
-xx_aggr %>%
-    filter(squidpy.pvalue <= 0.05)
+

@@ -82,6 +82,14 @@ call_squidpy <- function(seurat_object,
     reticulate::source_python(system.file(package = 'liana', "squidpy_pipe.py"))
     py_set_seed(seed)
 
+    # Check if assay meta.features match object rownames
+    # if not assign a placeholder (Seurat-specific fix)
+    if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object)){
+        seurat_object@assays$RNA@meta.features <-
+            data.frame(row.names = rownames(seurat_object),
+                       placeholder = rownames(seurat_object))
+    }
+
     py$squidpy_results <- py$call_squidpy(op_resources,
                                           GetAssayData(seurat_object,
                                                        slot=assay.type), # raw expr
