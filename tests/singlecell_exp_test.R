@@ -83,8 +83,6 @@ test_t@listData
 
 
 
-
-
 # t-test by cluster (all genes together)
 test_summ@assays@data$mean %>%
     as_tibble() %>%
@@ -110,3 +108,30 @@ xx_aggr <- xx %>% liana_aggregate()
 
 xx_aggr %>%
     filter(squidpy.pvalue <= 0.05)
+
+
+#
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
+seurat_object@meta.data <- seurat_object@meta.data %>%
+    rownames_to_column(var = "Bar_Code") %>%
+    as_tibble() %>%
+    group_by(seurat_annotations) %>%
+    slice_sample(prop = 0.1) %>%
+    ungroup() %>%
+    as.data.frame() %>%
+    column_to_rownames("Bar_Code") %>%
+    mutate(seurat_annotations = as.factor(as.numeric(seurat_annotations)))
+
+seurat_object <- subset(seurat_object,
+                        cells = rownames(seurat_object@meta.data)) %>%
+    Seurat::NormalizeData()
+length(Seurat::Idents(seurat_object)) # 9 xD
+
+Seurat::Idents(seurat_object) <- seurat_object@meta.data$seurat_annotations
+
+liana_res <- liana_wrap(seurat_object)
+
+liana_res %>% liana_aggregate()

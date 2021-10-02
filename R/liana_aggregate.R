@@ -142,9 +142,11 @@ liana_aggregate <- function(liana_res,
 .aggregate_rank <- function(liana_mlist, ...){
     liana_mlist %>%
         map(function(res){
+            # bad practice, but almost unavoidable here...
             res %>%
                 unite(c("source", "ligand",
-                        "target", "receptor"), col = "interaction") %>%
+                        "target", "receptor"),
+                      col = "interaction", sep = "⊎") %>%
                 pull("interaction")
         }) %>%
         RobustRankAggreg::aggregateRanks(rmat = RobustRankAggreg::rankMatrix(.),
@@ -152,7 +154,7 @@ liana_aggregate <- function(liana_res,
         as_tibble() %>%
         rename(aggregate_rank = Score,
                interaction = Name) %>%
-        separate(col = "interaction", sep = "_",
+        separate(col = "interaction", sep = "⊎",
                  into = c("source", "ligand", "target", "receptor"))
 }
 
