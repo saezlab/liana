@@ -1,3 +1,17 @@
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
+Idents(seurat_object) %<>%
+    as.numeric() %>% as.character() %>% as.factor()
+
+seurat_object@meta.data$seurat_annotations <- Idents(seurat_object)
+seurat_object@meta.data
+
+liana_wrap(seurat_object,
+           method="call_natmi")
+
+
 # Load and and format Data
 seurat_object <- readRDS("~/Repos/ligrec_decouple/data/input/cbmc_seurat.rds")
 

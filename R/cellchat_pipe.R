@@ -11,6 +11,7 @@
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param organism Obtain CellChatDB for which organism ('mouse' or 'human')
 #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
@@ -37,6 +38,7 @@ call_cellchat <- function(op_resource,
                           .do_parallel = FALSE,
                           .raw_use = TRUE,
                           expr_prop = 0.2,
+                          organism = "human",
                           ...
                           ){
     stringsAsFactors <- options('stringsAsFactors')[[1]]
@@ -68,7 +70,11 @@ call_cellchat <- function(op_resource,
     }
 
     # load CellChatDB
-    ccDB <- CellChat::CellChatDB.human
+    if(organism == "human"){
+        ccDB <- CellChat::CellChatDB.human
+    } else if(organism == "mouse") {
+        ccDB <- CellChat::CellChatDB.mouse
+    }
 
     if(!is.null(op_resource)){ # OmniPath resource conversion
         ccDB <- cellchat_formatDB(ccDB,
