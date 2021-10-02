@@ -43,8 +43,6 @@ call_natmi(
 
 \item{omnidbs_dir}{path of saved omnipath resources}
 
-\item{.use_raw}{bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page}
-
 \item{.default_run}{bool whether to run default DBs or not}
 }
 \value{

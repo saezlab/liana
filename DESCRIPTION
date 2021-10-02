@@ -55,6 +55,7 @@ Imports:
     Seurat,
     SingleCellExperiment,
     scran,
+    scater,
     logger,
     OmnipathR,
     RobustRankAggreg

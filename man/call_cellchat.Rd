@@ -16,6 +16,7 @@ call_cellchat(
   .do_parallel = FALSE,
   .raw_use = TRUE,
   expr_prop = 0.2,
+  organism = "human",
   ...
 )
 }
@@ -38,6 +39,8 @@ to a ppi}
 \item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
 yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
+
+\item{organism}{Obtain CellChatDB for which organism ('mouse' or 'human')}
 
 \item{...}{
   Arguments passed on to \code{\link[CellChat:subsetCommunication]{CellChat::subsetCommunication}}
