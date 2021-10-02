@@ -71,7 +71,7 @@ Suggests:
 Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
-    bioc::3.12/scran,,
+    bioc::3.12/scran,
     bioc::3.12/scater,
     saezlab/OmnipathR
 RoxygenNote: 7.1.1
