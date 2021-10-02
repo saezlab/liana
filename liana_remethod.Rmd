@@ -1,0 +1,217 @@
+---
+title: "LIANA Re-implemented Methods"
+author:
+  - name: Daniel Dimitrov
+    affiliation:
+        - Saezlab, Heidelberg University
+    email: daniel.dimitrov@uni-heidelberg.de
+date: "03/08/2021"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# `liana`: Method re-implementation
+
+Cell-cell communication often relies on multi-subunit protein complexes and several datasets were incorporate such information (such as [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), [ICELLNET](https://www.nature.com/articles/s41467-021-21244-x), [Baccin2019](https://www.nature.com/articles/s41556-019-0439-6), and [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9)). To leverage this information in a similar way to [CellChatDB](https://www.nature.com/articles/s41467-021-21246-9) and the [CellPhoneDB](https://www.nature.com/articles/s41596-020-0292-x), we have developed the architecture in liana to account for complex subunits.
+
+This is particularly relevant for the measures introduced by `SingleCellSignalR (sca)`, `NATMI`, and `Connectome`, as the original implementations of these methods were not developed to take complexes into account.
+
+As such, in this vignette we will compare the liana re-implementation of these methods with toy data.
+
+
+#### Load Prerequisites
+```{r load_prereq, message=FALSE, warning=FALSE}
+require(liana)
+require(tibble)
+require(tidyr)
+require(purrr)
+require(magrittr)
+
+liana_path <- system.file(package = "liana")
+testdata <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+```
+
+## Connectome weights
+```{r conectome_run, message = FALSE, print = FALSE, warning=FALSE}
+# Run liana /w re-implemented and original Connectome
+connectome_test <- liana_wrap(testdata,
+                              method = c('call_connectome', 'connectome'),
+                              resource = c('OmniPath'))
+
+# compare results
+connectome_test %<>% 
+    map(function(conn)
+        conn %>%
+            select(source, target, ligand, receptor, weight_sc) %>%
+            arrange_at(vars(everything()))
+            ) %>%
+    liana_aggregate()
+
+connectome_test %>%
+    mutate_at(.vars = c("call_connectome.weight_sc", "connectome.weight_sc"),
+              round, digits = 5) %>% # account for different rounding
+    filter(call_connectome.weight_sc!=connectome.weight_sc) # keep only different
+
+```
+
+
+## NATMI edges
+```{r natmi_run, message = FALSE, print = FALSE}
+# Run liana /w re-implemented and original NATMI
+natmi_test <- liana_wrap(testdata,
+                         method = c('call_natmi', 'natmi'),
+                         resource = c('OmniPath'),
+                         call_natmi.params = list(assay.type = "counts",
+                                                  .delete_output = TRUE))
+
+# compare results
+natmi_test %<>%
+    map(function(res)
+        res %>%
+            select(source, target, ligand, receptor, edge_specificity) %>%
+            arrange_at(vars(everything()))
+            ) %>%
+    liana_aggregate() %>%
+    na.omit() # remove NAs (as these are treated differently, filtered in NATMI, assigned 0s in LIANA)
+
+natmi_test %>%
+    mutate_at(.vars = c("call_natmi.edge_specificity", "natmi.edge_specificity"),
+              round, digits = 5) %>%
+    filter(call_natmi.edge_specificity!=natmi.edge_specificity) # keep only different
+
+```
+
+
+## SingleCellSignalR LRscore
+```{r sca_run, message = FALSE, print = FALSE}
+# Run liana /w re-implemented and original SCA
+sca_test <- liana_wrap(testdata,
+                       method = c('call_sca', 'sca'),
+                       resource = c('OmniPath'),
+                       expr_prop=0)
+
+# compare results
+sca_test %<>% 
+    map(function(res)
+        res %>%
+            select(source, target, ligand, receptor, LRscore) %>%
+            arrange_at(vars(everything()))
+        ) %>%
+    liana_aggregate()
+
+sca_test %<>%
+    mutate_at(.vars = c("call_sca.LRscore", "sca.LRscore"),
+              round, digits = 10) %>% # account for different rounding
+    na.omit() # omit NAs*
+# *NAs result from internal filtering (not applied here) and because
+# SCAomni (SingleCellSignalR) seems to filter genes according to logFC and
+# changing this parameter does not have any effect...
+    
+sca_test %>%
+    dplyr::filter(call_sca.LRscore!=sca.LRscore) # show only different
+```
+
+## CellPhoneDB
+
+### Run liana re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
+```{r cellphonedb, message = FALSE, print = FALSE}
+cpdb_reimplements <- liana_wrap(testdata,
+                                method = c('cellphonedb', 'squidpy'),
+                                resource = c('CellPhoneDB'),
+                                expr_prop = 0.1)
+
+liana_cpdb <- cpdb_reimplements$cellphonedb
+squidpy_cpdb <- cpdb_reimplements$squidpy
+```
+
+### RUN original cpdb algorithm
+```{r, eval=FALSE}
+# save object
+testdata %<>% Seurat::NormalizeData(normalization.method = "LogNormalize")
+write.csv(GetAssayData(testdata),
+            "~/Repos/cpdb/input/test_em.csv")
+
+write.csv(Idents(testdata) %>%
+              enframe(name="barcode", value="annotation"),
+          file = "~/Repos/cpdb/input/metadata.csv",
+          row.names = FALSE)
+
+# we follow the installation procedure as on the CPDB GH page.
+conda activate cpdb
+pip install cellphonedb
+cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
+```
+
+Load and format results
+```{r og_cpdb, message = FALSE, print = FALSE}
+cpdb_means <- readr::read_delim("~/Repos/cpdb/out/significant_means.txt") %>%
+    select(-c(gene_a,
+              gene_b, secreted, partner_a, partner_b,
+              receptor_a, receptor_b, annotation_strategy,
+              is_integrin, id_cp_interaction)) %>%
+    mutate(across(everything(), as.character)) %>%
+    pivot_longer(-interacting_pair) %>%
+    mutate(mean = as.numeric(value), .keep = "unused")  %>%
+    separate(name, into=c("target", "source"), sep = "\\|")
+
+cpdb_pvalues <- readr::read_delim("~/Repos/cpdb/out/pvalues.txt") %>%
+    select(-c(gene_a,
+              gene_b, secreted, partner_a, partner_b,
+              receptor_a, receptor_b, annotation_strategy,
+              is_integrin, id_cp_interaction)) %>%
+    pivot_longer(-interacting_pair, values_to = "pvalue") %>%
+    separate(name, into=c("target", "source"), sep = "\\|") %>%
+    arrange(pvalue)
+
+og_cpdb <- cpdb_means %>% left_join(cpdb_pvalues) %>%
+  separate(interacting_pair, into = c("receptor", "ligand"), sep = "_") %>%
+  select(source, target, ligand, receptor, everything())
+```
+
+### compare all 3 algorithms
+```{r cpdb_comparison}
+# Num of sig hits obtained:
+og_cpdb %>%
+  filter(pvalue <= 0.05) %>% 
+  nrow()
+liana_cpdb %>%
+  filter(pvalue <= 0.05) %>%
+  nrow()
+squidpy_cpdb  %>%
+  filter(pvalue <= 0.05) %>%
+  nrow()
+
+# Same interaction treated as NaN
+og_cpdb %>%
+  filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T")
+
+liana_cpdb %>%
+    filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T") %>%
+  select(-ligand.complex, - receptor.complex, -ligand.trunc, -receptor.trunc)
+
+squidpy_cpdb %>%
+    filter(ligand == "CD58", receptor == "CD2",
+         source == "NK", target == "CD8 T")
+```
+
+
+## Session information
+```{r session_info, echo=TRUE}
+options(width = 120)
+sessioninfo::session_info()
+```
