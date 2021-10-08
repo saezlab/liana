@@ -39,6 +39,7 @@ call_cellchat <- function(op_resource,
                           .raw_use = TRUE,
                           expr_prop = 0.2,
                           organism = "human",
+                          thresh = 1,
                           ...
                           ){
     stringsAsFactors <- options('stringsAsFactors')[[1]]
@@ -114,7 +115,7 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- CellChat::filterCommunication(cellchat.omni, min.cells = 1)
 
     # Extract the inferred cellular communication network
-    df.omni <- CellChat::subsetCommunication(cellchat.omni, ...)
+    df.omni <- CellChat::subsetCommunication(cellchat.omni, thresh = thresh, ...)
 
     if(.format){
         df.omni <- df.omni %>%
