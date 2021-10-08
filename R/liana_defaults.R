@@ -118,6 +118,7 @@ liana_defaults <- function(
                n_perms = 1000,
                threshold = expr_prop,
                seed = as.integer(seed),
+               assay = assay,
                assay.type = assay.type
            )),
 

@@ -28,6 +28,7 @@ call_squidpy <- function(seurat_object,
                          seed = 1004,
                          conda_env = NULL,
                          assay.type = "logcounts",
+                         assay = "RNA",
                          ...){
 
     # required until I make the interchaengeable Seurat/SCE
@@ -85,8 +86,8 @@ call_squidpy <- function(seurat_object,
     # Check if assay meta.features match object rownames
     # if not assign a placeholder (Seurat-specific fix)
     if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object) |
-       ncol(seurat_object@assays$RNA@meta.features)==0){
-        seurat_object@assays$RNA@meta.features <-
+       ncol(seurat_object@assays[[assay]]@meta.features)==0){
+        seurat_object@assays[[assay]]@meta.features <-
             data.frame(row.names = rownames(seurat_object),
                        placeholder = rownames(seurat_object))
     }
