@@ -87,6 +87,8 @@ call_squidpy <- function(seurat_object,
     # if not assign a placeholder (Seurat-specific fix)
     if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object) |
        ncol(seurat_object@assays[[assay]]@meta.features)==0){
+        message("Meta features were reassigned to match object")
+
         seurat_object@assays[[assay]]@meta.features <-
             data.frame(row.names = rownames(seurat_object),
                        placeholder = rownames(seurat_object))
