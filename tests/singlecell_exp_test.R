@@ -137,4 +137,21 @@ liana_res <- liana_wrap(seurat_object)
 liana_res %>% liana_aggregate()
 
 
+#
+omni_resources_x <- readRDS("inst/omni_resources.rds")
+omni_resources <- compile_ligrec()
+omni_resources_x$Default <- NULL
+omni_resources$Default <- NULL
+
+map2(omni_resources_x, omni_resources, all_equal)
+
+
+
+
+
+saveRDS(omni_resources, "inst/omni_resources.rds")
+
+
+
+
 

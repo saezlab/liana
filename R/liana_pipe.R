@@ -473,7 +473,7 @@ seurat_to_sce <- function(seurat_object,
 
     sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay = assay)
     colLabels(sce) <- SeuratObject::Idents(seurat_object)
-    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
+    sce@assays@data$scaledata <- seurat_object@assays[[assay]]@scale.data
 
     return(sce)
 
