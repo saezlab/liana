@@ -2,7 +2,7 @@ seurat_object <- readRDS("../ligrec_decouple/data/input/cmbc_seurat_test.RDS")
 require(SingleCellExperiment)
 require(Seurat)
 
-testdata <- readRDS("data/input/test_data.rds")
+
 testdata %<>%
     FindVariableFeatures() %>%
     NormalizeData() %>%
@@ -153,5 +153,29 @@ saveRDS(omni_resources, "inst/omni_resources.rds")
 
 
 
+# Fix issue with defaults
+squidpy.params = NULL
+squidpy.defined = list(cluster_key = "xd")
+
+# xxxx
+assay = "RNA"
+assay.type = "logcounts"
+decomplexify = TRUE
+expr_prop = 0.2
+seed = 1004
+trim = 0
+parallelize = FALSE
+workers = 8
 
 
+
+squidpy.defaults <- list(
+    cluster_key = NULL,
+    n_perms = 1000,
+    threshold = expr_prop,
+    seed = as.integer(seed),
+    assay = assay,
+    assay.type = assay.type)
+
+squidpy.params = list("cluster_key" = "xd")
+'squidpy' = squidpy.params %<>% reassign_params(., squidpy.defaults)

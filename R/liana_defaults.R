@@ -54,113 +54,152 @@ liana_defaults <- function(
     call_connectome.params = NULL,
     call_italk.params = NULL){
 
+    # Define Defaults
+    # CellPhoneDB defaults
+    cellphonedb.defaults <- list(
+        workers = workers,
+        parallelize = parallelize
+        )
+
+    # Permutation defaults (permutations to be used in e.g. CPDB)
+    permutation.defaults <- list(
+        nperms = 1000,
+        parallelize = parallelize,
+        workers = workers,
+        seed = seed,
+        trim = trim)
+
+    # LIANA_pipe defaults
+    liana_pipe.defaults <- list(
+        decomplexify = decomplexify,
+        test.type = "wilcox",
+        pval.type = "all",
+        expr_prop = expr_prop,
+        trim = trim,
+        assay = assay,
+        assay.type = assay.type
+        )
+
+    # liana_call.defaults
+    liana_call.defaults <- list(
+        complex_policy = "min0",
+        decomplexify = decomplexify # should always be true
+    )
+
+    # Squidpy defaults
+    squidpy.defaults <- list(
+        cluster_key = NULL,
+        n_perms = 1000,
+        threshold = expr_prop,
+        seed = as.integer(seed),
+        assay = assay,
+        assay.type = assay.type
+    )
+
+    # CellChat Default
+    cellchat.defaults <- list(
+        nboot = 100,
+        expr_prop = expr_prop,
+        exclude_anns = NULL,
+        thresh = 1,
+        assay = assay,
+        .normalize = FALSE,
+        .do_parallel = FALSE,
+        .raw_use = TRUE,
+        organism = "human")
+
+
+    # SingleCellSignalR Defaults
+    sca.defaults <- list(
+        assay = assay,
+        .format = TRUE,
+        s.score = 0,
+        logFC = log2(1.5)
+        )
+
+    # Connectome Defaults
+    conn.defaults <- list(
+        min.cells.per.ident = 1,
+        p.values = TRUE,
+        calculate.DOR = FALSE,
+        assay = assay,
+        .format = TRUE,
+        .spatial = FALSE
+        )
+
+    # NATMI Defaults
+    natmi.defaults <- list(
+        expr_file = "test_em.csv",
+        meta_file = "metadata.csv",
+        output_dir = "NATMI_results",
+        assay = assay,
+        assay.type = "logcounts",
+        num_cor = 4,
+        .format = TRUE,
+        .write_data = TRUE,
+        .seed = seed,
+        .natmi_path = NULL,
+        .delete_output = FALSE
+    )
+
+    # iTalk Defaults
+    italk.defaults <- list(
+        assay = assay,
+        .format = TRUE,
+        .DE = TRUE
+        )
+
+
+    # List of Defaults (reasigned if needed)
     default_args <- list(
         "cellphonedb" = cellphonedb.params %<>%
-        `%||%`(
-            list(
-                workers = workers,
-                parallelize = parallelize
-            )
-        ),
+            reassign_params(., cellphonedb.defaults),
 
         # liana_scores (passed to get_* functions)
         "permutation" = permutation.params %<>%
-            `%||%`(
-                list(
-                    nperms = 1000,
-                    parallelize = parallelize,
-                    workers = workers,
-                    seed = seed,
-                    trim = trim
-                    )
-            ),
-
+            reassign_params(., permutation.defaults),
 
         "liana_pipe" = liana_pipe.params %<>%
-            `%||%`(
-                list(
-                    decomplexify = decomplexify,
-                    test.type = "wilcox",
-                    pval.type = "all",
-                    expr_prop = expr_prop,
-                    trim = trim,
-                    assay = assay,
-                    assay.type = assay.type
-                    )
-                ),
+            reassign_params(., liana_pipe.defaults),
 
         # this thing needs to be either completely remove or moved to liana_wrap
         "liana_call" = liana_call.params %<>%
-            `%||%`(
-                list(
-                    complex_policy = "min0",
-                    decomplexify = decomplexify # should always be true
-                    )
-            ),
+            reassign_params(., liana_call.defaults),
 
         # call_* functions/pipes
         "cellchat" = cellchat.params %<>%
-            `%||%`(list(
-                nboot = 100,
-                expr_prop = expr_prop,
-                exclude_anns = NULL,
-                thresh = 1,
-                assay = assay,
-                .normalize = FALSE,
-                .do_parallel = FALSE,
-                .raw_use = TRUE,
-                organism = "human"
-                )),
+            reassign_params(., cellchat.defaults),
 
         'squidpy' = squidpy.params %<>%
-           `%||%`(list(
-               cluster_key = NULL,
-               n_perms = 1000,
-               threshold = expr_prop,
-               seed = as.integer(seed),
-               assay = assay,
-               assay.type = assay.type
-           )),
+            reassign_params(., squidpy.defaults),
 
         # external call_* functions
         'call_sca' = call_sca.params %<>%
-            `%||%`(list(
-                assay = assay,
-                .format = TRUE,
-                s.score = 0,
-                logFC = log2(1.5))
-                ),
+            reassign_params(., sca.defaults),
 
         'call_connectome' = call_connectome.params %<>%
-            `%||%`(list(
-                min.cells.per.ident = 1,
-                p.values = TRUE,
-                calculate.DOR = FALSE,
-                assay = assay,
-                .format = TRUE,
-                .spatial = FALSE
-                )),
+            reassign_params(., conn.defaults),
 
         'call_natmi' = call_natmi.params %<>%
-            `%||%`(list(
-                expr_file = "test_em.csv",
-                meta_file = "metadata.csv",
-                output_dir = "NATMI_results",
-                assay = assay,
-                assay.type = "logcounts",
-                num_cor = 4,
-                .format = TRUE,
-                .write_data = TRUE,
-                .seed = seed,
-                .natmi_path = NULL,
-                .delete_output = FALSE
-                )),
+            reassign_params(., natmi.defaults),
 
         'call_italk' = call_italk.params %<>%
-            `%||%`(list(
-                assay = assay,
-                .format = TRUE,
-                .DE = TRUE
-            ))
+            reassign_params(., italk.defaults)
     )
+}
+
+
+#' Helper function to replace default parameters
+#' @param replacements named list corresponding to default arguments
+#' @param defaults named list with default arguments
+#'
+#' @returns a named list with the same arguments
+reassign_params <- function(replacements,
+                            defaults){
+    if(!is.null(replacements)){
+            nm1 <- intersect(names(defaults), names(is.na(replacements)))
+            modifyList(defaults, replacements[nm1])
+        } else{
+            defaults
+        }
 }

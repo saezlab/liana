@@ -9,6 +9,7 @@
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param assay assay name
 #'
 #' @import reticulate tibble
 #' @importFrom tidyr pivot_longer
@@ -27,8 +28,8 @@ call_squidpy <- function(seurat_object,
                          op_resource,
                          seed = 1004,
                          conda_env = NULL,
-                         assay.type = "logcounts",
                          assay = "RNA",
+                         assay.type = "logcounts",
                          ...){
 
     # required until I make the interchaengeable Seurat/SCE

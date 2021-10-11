@@ -41,7 +41,6 @@ liana_wrap <- function(seurat_object,
     resource = list('custom_resource'=external_resource)
   }
 
-
   decmplx <- liana_defaults(...)[["liana_pipe"]] %>%
     pluck("decomplexify")
 
@@ -95,15 +94,16 @@ liana_wrap <- function(seurat_object,
                lr_res <- lr_results[[reso_name]]
 
                perm_means <-
-                 rlang::invoke(get_permutations,
-                               append(
-                                 list(lr_res = lr_res,
-                                      sce = seurat_to_sce(seurat_object,
-                                                          entity_genes = union(lr_res$ligand,
-                                                                               lr_res$receptor),
-                                                          assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                                            pluck("assay"))),
-                                 liana_defaults(...)[["permutation"]]))
+                 rlang::invoke(
+                   get_permutations,
+                   append(
+                     list(lr_res = lr_res,
+                          sce = seurat_to_sce(seurat_object,
+                                              entity_genes = union(lr_res$ligand,
+                                                                   lr_res$receptor),
+                                              assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                                pluck("assay"))),
+                     liana_defaults(...)[["permutation"]]))
 
                args <- append(
                  list(lr_res = lr_res,

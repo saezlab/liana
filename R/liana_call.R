@@ -320,7 +320,10 @@ get_permutations <- function(lr_res,
 #' Function to calculate p-values as in CellPhoneDB
 #'
 #' @inheritParams get_permutations
+#' @param lr_res liana pipe results
 #' @param score_col name of the score column
+#' @param parallelize whether to parallelize
+#' @param workers number of workers
 #'
 #' @returns lr_res + pvalue and lr.mean
 cellphonedb_score <- function(lr_res,
