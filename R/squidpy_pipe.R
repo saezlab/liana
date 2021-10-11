@@ -96,7 +96,8 @@ call_squidpy <- function(seurat_object,
 
     py$squidpy_results <- py$call_squidpy(op_resources,
                                           GetAssayData(seurat_object,
-                                                       slot=assay.type), # raw expr
+                                                       assay=assay,
+                                                       slot=assay.type), # expr
                                           seurat_object[[]], # meta
                                           GetAssay(seurat_object,
                                                    assay=assay)[[]], # feature_meta
