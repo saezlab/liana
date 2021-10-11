@@ -98,7 +98,8 @@ call_squidpy <- function(seurat_object,
                                           GetAssayData(seurat_object,
                                                        slot=assay.type), # raw expr
                                           seurat_object[[]], # meta
-                                          GetAssay(seurat_object)[[]], # feature_meta
+                                          GetAssay(seurat_object,
+                                                   assay=assay)[[]], # feature_meta
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
 
