@@ -155,9 +155,9 @@ write.csv(Idents(testdata) %>%
           row.names = FALSE)
 
 # we follow the installation procedure as on the CPDB GH page.
-conda activate cpdb
-pip install cellphonedb
-cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
+# conda activate cpdb
+# pip install cellphonedb
+# cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
 ```
 
 Load and format results
@@ -195,11 +195,11 @@ og_cpdb %>%
 liana_cpdb %>%
   filter(pvalue <= 0.05) %>%
   nrow()
-squidpy_cpdb  %>%
+squidpy_cpdb %>%
   filter(pvalue <= 0.05) %>%
   nrow()
 
-# check specific interaction
+# check specific interaction -> identical
 og_cpdb %>%
   filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
@@ -212,6 +212,29 @@ liana_cpdb %>%
 squidpy_cpdb %>%
     filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
+
+
+liana_inter <- liana_cpdb %>% select(source, ligand, target, receptor)
+squidpy_inter <- squidpy_cpdb %>% select(source, ligand, target, receptor)
+
+
+setdiff(liana_inter, squidpy_inter)
+
+```
+
+###
+```{r check_squidpy_vs_mine}
+#
+liana_cpdb %<>%
+  filter(pvalue <= 0.05)%>% 
+  na.omit() %>%
+  arrange(source, target, ligand, receptor)
+
+# 
+squidpy_cpdb %<>%
+  filter(pvalue <= 0.05) %>% 
+  na.omit() %>%
+  arrange(source, target, ligand, receptor)
 
 ```
 
