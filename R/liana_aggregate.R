@@ -17,6 +17,12 @@
 #' @param get_ranks boolean, whether to return consensus ranks for methods
 #' @param get_agrank boolean, whether to return aggregate rank using the
 #'    `RobustRankAggreg` package.
+#' @param .score_mode defines the way that the methods would be aggragate.
+#' By default, we use the score of each method which reflects specificity
+#' (if available), if not e.g. the case of SCA we use it's sole scoring function.
+#' This aggregation is by default done on the basis of the list returns by
+#' `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
+#' aggragate of the housekeeping interactions of each `external` LIANA++ method.
 #'
 #' @return Tibble with the interaction results and ranking for each method
 #'
@@ -32,6 +38,7 @@ liana_aggregate <- function(liana_res,
                             cap = NULL,
                             get_ranks = TRUE,
                             get_agrank = TRUE,
+                            .score_mode = .score_specs,
                             ...){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
@@ -45,8 +52,8 @@ liana_aggregate <- function(liana_res,
 
     liana_mlist <- liana_res %>%
         map2(names(.), function(res, method_name){
-            method_score <- .score_specs()[[method_name]]@method_score
-            desc_order <- .score_specs()[[method_name]]@descending_order
+            method_score <- .score_mode()[[method_name]]@method_score
+            desc_order <- .score_mode()[[method_name]]@descending_order
 
             .method = sym(as.character(str_glue("{method_name}.{method_score}")))
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))

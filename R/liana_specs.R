@@ -29,7 +29,9 @@ setClass("ScoreSpecifics",
 #'
 #' @noRd
 #'
-#' @details to be explained better and to replace .rank_specs in liana_aggregate
+#' @details This function returns a list with objects per method in LIANA.
+#' These object are used in the liana aggragate function, as well as in
+#' liana_score and liana_call.
 .score_specs <- function(){
     list(
         "connectome" =
@@ -139,6 +141,63 @@ setClass("ScoreSpecifics",
 
 
 
+
+
+#' Helper function to call aggragate housekeeping scores of external methods.
+#'
+#' @details functions the same way as .score_specs, but is only used in
+#' liana_aggragate for the purpose of the manuscript.
+.score_housekeep <- function(){
+    list(
+        "squidpy" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "Squidpy",
+                method_score = "means",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "cellchat" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cellchat",
+                method_score = "prob",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_connectome" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "connectome",
+                method_score = "weight_norm",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
+        "call_natmi" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "natmi",
+                method_score = "edge_avg_expr",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            )
+    )
+}
+
+
+
 #' S4 Class used to generate aggregate/consesus scores for the methods.
 #'
 #' @name RankSpecifics-class
@@ -150,6 +209,8 @@ setClass("ScoreSpecifics",
 #'  descending order (i.e. highest score for an interaction is most likely)
 #'
 #' @exportClass RankSpecifics
+#'
+#' @details to be deleted
 setClass("RankSpecifics",
          slots=list(method_name="character",
                     method_score="character",
