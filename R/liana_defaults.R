@@ -38,7 +38,7 @@ liana_defaults <- function(
     assay = "RNA",
     assay.type = "logcounts",
     decomplexify = TRUE,
-    expr_prop = 0.2,
+    expr_prop = 0.1,
     seed = 1004,
     trim = 0,
     parallelize = FALSE,

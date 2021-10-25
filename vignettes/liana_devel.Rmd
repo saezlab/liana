@@ -35,7 +35,7 @@ First, we start with a LR_res table with many relevant columns, such as stats fo
 ```{r lr_res, message=FALSE, warning=FALSE}
 # Obtain LR summary res with OmniPath 
 liana_pipe(seurat_object = testdata,
-           op_resource = select_resource("OmniPath")[[1]]
+           op_resource = select_resource("OmniPath")[[1]] %>% decomplexify()
            ) %>%
     glimpse()
 

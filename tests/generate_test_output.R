@@ -131,10 +131,18 @@ saveRDS(sca_res, file.path(liana_path, "testdata",
 
 
 # Test CellChat ----
-cellchat_res <- call_cellchat(op_resource = NULL,
-                         seurat_object = seurat_object,
-                         .normalize = TRUE)
+cellchat_res <- call_cellchat(
+    op_resource = NULL,
+    seurat_object = seurat_object,
+    nboot = 10,
+    exclude_anns = NULL,
+    thresh = 1,
+    assay = "RNA",
+    .normalize = TRUE,
+    .do_parallel = FALSE,
+    .raw_use = TRUE)
 
 saveRDS(cellchat_res,
         file.path(liana_path, "testdata",
                   "output", "cc_res.RDS"))
+
