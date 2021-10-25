@@ -2,7 +2,7 @@
 
 ## Changes
 
-* Changed expr_thresh to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default   
+* Changed `expr_thresh` to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default   
 * Changed the way that default parameters are passed to each method  
 * Enabled housekeeping score aggregation for external methods (needed for revisions) via `.score_housekeep`
 
