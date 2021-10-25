@@ -67,7 +67,8 @@ liana_defaults <- function(
         parallelize = parallelize,
         workers = workers,
         seed = seed,
-        trim = trim)
+        trim = trim
+        )
 
     # LIANA_pipe defaults
     liana_pipe.defaults <- list(
@@ -94,7 +95,7 @@ liana_defaults <- function(
         seed = as.integer(seed),
         assay = assay,
         assay.type = assay.type
-    )
+        )
 
     # CellChat Default
     cellchat.defaults <- list(
@@ -106,7 +107,8 @@ liana_defaults <- function(
         .normalize = FALSE,
         .do_parallel = FALSE,
         .raw_use = TRUE,
-        organism = "human")
+        organism = "human"
+        )
 
 
     # SingleCellSignalR Defaults
