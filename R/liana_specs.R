@@ -143,7 +143,7 @@ setClass("ScoreSpecifics",
 
 
 
-#' Helper function to call aggragate housekeeping scores of external methods.
+#' Helper function to call aggregate housekeeping scores of external methods.
 #'
 #' @details functions the same way as .score_specs, but is only used in
 #' liana_aggragate for the purpose of the manuscript.
@@ -196,23 +196,3 @@ setClass("ScoreSpecifics",
     )
 }
 
-
-
-#' S4 Class used to generate aggregate/consesus scores for the methods.
-#'
-#' @name RankSpecifics-class
-#'
-#' @field method_name name of the method (e.g. cellchat)
-#' @field method_score The interaction score provided by the method (typically
-#' the score that reflects the specificity of interaction)
-#' @field descending_order whether the score should be interpreted in
-#'  descending order (i.e. highest score for an interaction is most likely)
-#'
-#' @exportClass RankSpecifics
-#'
-#' @details to be deleted
-setClass("RankSpecifics",
-         slots=list(method_name="character",
-                    method_score="character",
-                    descending_order="logical")
-)

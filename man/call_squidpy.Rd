@@ -9,6 +9,7 @@ call_squidpy(
   op_resource,
   seed = 1004,
   conda_env = NULL,
+  assay = "RNA",
   assay.type = "logcounts",
   ...
 )
@@ -22,6 +23,8 @@ call_squidpy(
 \item{seed}{seed passed to squidpy's ligrec function}
 
 \item{conda_env}{python conda environment to run Squidpy; set to liana_env by default}
+
+\item{assay}{assay name}
 
 \item{...}{kwargs passed to Squidpy; For more information see:
 \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}

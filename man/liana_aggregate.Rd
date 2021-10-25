@@ -11,6 +11,7 @@ liana_aggregate(
   cap = NULL,
   get_ranks = TRUE,
   get_agrank = TRUE,
+  .score_mode = .score_specs,
   ...
 )
 }
@@ -37,6 +38,13 @@ returned and the ranking will be carried out solely on them}
 
 \item{get_agrank}{boolean, whether to return aggregate rank using the
 `RobustRankAggreg` package.}
+
+\item{.score_mode}{defines the way that the methods would be aggragate.
+By default, we use the score of each method which reflects specificity
+(if available), if not e.g. the case of SCA we use it's sole scoring function.
+This aggregation is by default done on the basis of the list returns by
+`.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
+aggragate of the housekeeping interactions of each `external` LIANA++ method.}
 }
 \value{
 Tibble with the interaction results and ranking for each method

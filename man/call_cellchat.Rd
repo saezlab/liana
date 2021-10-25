@@ -17,6 +17,7 @@ call_cellchat(
   .raw_use = TRUE,
   expr_prop = 0.2,
   organism = "human",
+  thresh = 1,
   ...
 )
 }
