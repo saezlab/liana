@@ -14,7 +14,7 @@ test_that("Test CellChat with Default", {
         exclude_anns = NULL,
         thresh = 1,
         assay = "RNA",
-        .normalize = TRUE,
+        .normalize = FALSE,
         .do_parallel = FALSE,
         .raw_use = TRUE
     )

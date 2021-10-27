@@ -35,24 +35,3 @@ def_list <- liana_def_test(seurat_object,
                            cellchat.params=list(nboot=1000),
                            method = c('call_natmi', 'call_connectome', 'logfc',
                                       'cellchat', 'call_sca', 'squidpy'))
-
-
-
-
-# Check with LIANA wrap
-def <- liana_wrap(seurat_object,
-                  method = c('call_natmi', 'call_connectome', 'logfc',
-                             'cellchat', 'call_sca', 'squidpy'),
-                  expr_prop=0,
-                  cellchat.params=list(nboot=1000, .normalize=TRUE))
-
-def_new <- liana_wrap(seurat_object,
-                      method = c('call_natmi', 'call_connectome', 'logfc',
-                                 'cellchat', 'call_sca', 'squidpy'),
-                      expr_prop=0,
-                      squidpy.params=list(threshold = 0.1),
-                      cellchat.params=list(nboot=1000, .normalize=TRUE))
-
-def$squidpy %>% filter(pvalue <= 0.05)
-
-def_new$squidpy %>% filter(pvalue <= 0.05)

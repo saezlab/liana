@@ -30,6 +30,14 @@ saveRDS(sca_score, file.path(liana_path, "testdata",
                               "output", "sca_score.RDS"))
 
 
+# liana permutations and cpdb output
+cpdb_out <- liana_wrap(seurat_object,
+                       method = c('cellphonedb'),
+                       resource = c('CellPhoneDB'),
+                       permutation.params = list(nperms=20))
+saveRDS(cpdb_out, file.path(liana_path, "testdata",
+                            "output", "liana_cpdb.RDS"))
+
 
 # Recomplexify Output ----
 lr_cmplx <- liana_pipe(seurat_object,
@@ -50,23 +58,27 @@ wrap_out <- liana_wrap(seurat_object,
 saveRDS(wrap_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))
 
+# wrap_default
+wrap_def_out <- liana_wrap(seurat_object,
+                           method = c('sca','squidpy', "call_sca"),
+                           resource = "Default")
+saveRDS(wrap_def_out, file.path(liana_path, "testdata",
+                                "output", "liana_def_res.RDS"))
+
+
+# LIANA Defaults
+def_arg <- liana_defaults(expr_prop=0,
+                          squidpy.params=list(threshold = 0.1),
+                          cellchat.params=list(nboot=1000))
+saveRDS(def_arg, file.path(liana_path, "testdata",
+                           "output", "liana_def_args.RDS"))
+
 # liana aggregate output ----
 liana_aggr <- readRDS(file.path(liana_path, "testdata",
                           "output", "liana_res.RDS")) %>%
     liana_aggregate()
 saveRDS(liana_aggr, file.path(liana_path, "testdata",
                               "output", "liana_aggr.RDS"))
-
-
-# liana permutations and cpdb output
-cpdb_out <- liana_wrap(seurat_object,
-                       method = c('cellphonedb'),
-                       resource = c('CellPhoneDB'),
-                       permutation.params = list(nperms=20))
-saveRDS(cpdb_out, file.path(liana_path, "testdata",
-                            "output", "liana_cpdb.RDS"))
-
-
 
 # Test Connectome ----
 conn_res <- call_connectome(
@@ -138,7 +150,7 @@ cellchat_res <- call_cellchat(
     exclude_anns = NULL,
     thresh = 1,
     assay = "RNA",
-    .normalize = TRUE,
+    .normalize = FALSE,
     .do_parallel = FALSE,
     .raw_use = TRUE)
 

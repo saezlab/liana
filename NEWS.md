@@ -6,7 +6,7 @@
 * Changed the way that default parameters are passed to each method  
 * Enabled housekeeping score aggregation for external methods (needed for revisions) via `.score_housekeep`
 * Fixed Bug where external methods could not be called with their default DB. The resource is now always decomplexified.
-
+* Seurat Testdata is now properly normalized
 
 # LIANA 0.0.1
 
