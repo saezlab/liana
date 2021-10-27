@@ -13,11 +13,11 @@ cellphonedb_score(
 )
 }
 \arguments{
-\item{lr_res}{liana_pipe results}
+\item{lr_res}{liana pipe results}
 
 \item{parallelize}{whether to parallelize}
 
-\item{workers}{Number of workers to be used in parallelization}
+\item{workers}{number of workers}
 
 \item{score_col}{name of the score column}
 }

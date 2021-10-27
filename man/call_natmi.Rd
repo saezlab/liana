@@ -19,7 +19,7 @@ call_natmi(
   .write_data = TRUE,
   .seed = 1004,
   .natmi_path = NULL,
-  .delete_output = FALSE
+  .delete_input_output = FALSE
 )
 }
 \arguments{
