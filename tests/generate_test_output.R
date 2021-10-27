@@ -146,7 +146,7 @@ saveRDS(sca_res, file.path(liana_path, "testdata",
 cellchat_res <- call_cellchat(
     op_resource = NULL,
     seurat_object = seurat_object,
-    nboot = 10,
+    nboot = 2,
     exclude_anns = NULL,
     thresh = 1,
     assay = "RNA",

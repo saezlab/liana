@@ -28,7 +28,7 @@
 #' any complex present in the results (particularly relevant for CellChat which
 #' returns complexes by default)
 #'
-#' @inheritDotParams
+#' @inheritDotParams RobustRankAggreg::aggregateRanks
 #'
 #' @return Tibble with the interaction results and ranking for each method
 #'
@@ -66,9 +66,7 @@ liana_aggregate <- function(liana_res,
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))
 
             res %>%
-                {if(.decomplexify)
-                    . %>% decomplexify(., columns = c("ligand", "receptor"))
-                    else .} %>%
+                {if(.decomplexify) decomplexify(., columns = c("ligand", "receptor")) else .} %>%
                 top_n(n=if_else(desc_order,
                                 cap,
                                 -cap),
