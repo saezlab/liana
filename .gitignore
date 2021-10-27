@@ -8,3 +8,5 @@ output
 .Rprofile
 .gitattributes
 docs
+.DS_Store
+omnipathr-log/
