@@ -5,7 +5,7 @@
 * Changed `expr_thresh` to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default   
 * Changed the way that default parameters are passed to each method  
 * Enabled housekeeping score aggregation for external methods (needed for revisions) via `.score_housekeep`
-
+* Fixed Bug where external methods could not be called with their default DB. The resource is now always decomplexified.
 
 
 # LIANA 0.0.1

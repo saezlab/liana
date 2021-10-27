@@ -4,7 +4,6 @@ seurat_object <- readRDS(file.path(liana_path , "testdata",
                                    "input", "testdata.rds"))
 
 
-
 # Function to check the passed default params
 liana_def_test <- function(seurat_object,
                            method,

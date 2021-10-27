@@ -4,7 +4,7 @@ seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 # Test
-test_that("Test CellChat", {
+test_that("Test CellChat with Default", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "cc_res.RDS"))
     res1 <- call_cellchat(
@@ -20,4 +20,6 @@ test_that("Test CellChat", {
     )
 
     expect_equal(exp1, res1)
+
 })
+

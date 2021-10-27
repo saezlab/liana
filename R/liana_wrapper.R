@@ -1,4 +1,4 @@
-#' Run LIANA Wrapper
+#' LIANA wrapper function
 #'
 #' @param seurat_object seurat object
 #' @param method method(s) to be run via liana
@@ -41,24 +41,22 @@ liana_wrap <- function(seurat_object,
     resource = list('custom_resource'=external_resource)
   }
 
-  decmplx <- liana_defaults(...)[["liana_pipe"]] %>%
-    pluck("decomplexify")
-
-
   if(any(method %in% c("natmi", "connectome", # change this
                        "logfc", "sca", "cellphonedb"))){
 
+    # LIANA pipe map over resource
     lr_results <- resource %>%
       map(function(reso){
 
         if(is.null(reso)){
-          stop("Resource is NULL and LIANA PIPE methods have no default")
+          warning("Resource was NULL and LIANA PIPE methods were run with OmniPath")
+          reso <- select_resource("OmniPath")[[1]] # To be changed to OmniPath_complex
         }
 
         rlang::invoke(liana_pipe,
                       append(
                         list("seurat_object" = seurat_object,
-                             "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
+                             "op_resource" = reso %>% decomplexify()),
                         liana_defaults(...)[["liana_pipe"]])
                       )
         }) %>%
@@ -84,7 +82,7 @@ liana_wrap <- function(seurat_object,
                # external calls (for methods who don't deal with complexes)
                args <- append(
                  list("seurat_object" = seurat_object,
-                      "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
+                      "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
                  liana_defaults(...)[[method_name]]
                )
                rlang::invoke(.method, args)
@@ -109,7 +107,7 @@ liana_wrap <- function(seurat_object,
                  list(lr_res = lr_res,
                       perm_means = perm_means),
                  liana_defaults(...)[[method_name]]
-                )
+                 )
 
                rlang::invoke(.method, args)
 
