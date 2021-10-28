@@ -104,12 +104,140 @@ pm_omni %>% glimpse()
 # liana Wrap
 liana_test <- liana_wrap(seurat_object = testdata,
                          resource='custom',
-                         external_resource = pm_omni,
-                         cellchat.params=list(.normalize=TRUE)) %>%
+                         external_resource = pm_omni) %>%
   liana_aggregate()
 
 liana_test %>% glimpse
 ```
+
+
+## Make use of Intracellular OmniPath
+Here, we will perform an over-representation representation (ORA)
+to obtain enriched SignaLink pathways in preferentially ranked ligand-receptor
+interactions from LIANA.
+
+### First, let's run LIANA with the OmniPath `intercellular` resource as in the manuscript.
+#### RUN liana
+```{r liana_wrap, message = FALSE, print = FALSE}
+# Run liana with the OmniPath resource
+# here we pass it as an external resource, as we need it later
+op_resource <- decomplexify(liana_omni)
+# liana Wrap
+liana_res <- liana_wrap(seurat_object = testdata,
+                        resource='custom',
+                        external_resource = op_resource) %>%
+  liana_aggregate() # aggregate
+
+
+# we keep only the columns that we need
+# in this case we will use the aggragate for all methods
+liana_form <- liana_res %>%
+  select(source, ligand, target, receptor, aggregate_rank) %>%
+  # one could treat the aggragate rank as 
+  # the probability to observe an interaction
+  # as preferentially highly ranked
+  # one could also p.adjust, 
+  # but since we work with testdata - we don't
+  filter(aggregate_rank <= 0.05)
+liana_form
+
+```
+
+
+```{r load_sig}
+# Get MSigDB Genest from OmniPath - takes a while :)
+msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
+                                                 wide = TRUE) %>%
+  filter(collection=="hallmark") %>%
+  select(genesymbol, geneset)
+```
+
+Establish the Resource as the background/universe
+```{r establish_universe}
+# Here, we join pathways associated with ligand and receptors, separately
+omni_universe <- liana_omni %>% 
+  select(source_genesymbol, target_genesymbol) %>%
+  left_join(msigdb, by=c("source_genesymbol"="genesymbol")) %>%
+  rename(source_geneset = geneset) %>%
+  left_join(msigdb, by=c("target_genesymbol"="genesymbol")) %>%
+  rename(target_geneset = geneset)
+
+# Establish Ligand Universe
+ligand_universe <- omni_universe %>%
+  select(source_genesymbol, geneset = source_geneset) %>%
+  na.omit() %>%
+  mutate(total = n()) %>%
+  group_by(geneset) %>%
+  mutate(hit = n()) %>%
+  ungroup() %>%
+  select(-source_genesymbol) %>%
+  distinct() %>%
+  arrange(desc(hit)) %>%
+  mutate(truth_guess = "truth")
+
+#' Function to Run FET on Liana vs OP truth
+#' @param gs geneset
+#' @param lr_paths ligand-receptor with functional annotations
+#' @param universe CCC resource with joined functional annotations
+geneset_fet <- function(gs, lr_funcs, universe){
+  # filter by geneset 
+  guess <- lr_funcs %>% filter(geneset==gs)
+  truth <- universe %>% filter(geneset==gs)
+  
+  # transform to contingency tables
+  cont_table <- bind_rows(guess, truth) %>%
+    select(-geneset) %>%
+    as.data.frame() %>%
+    column_to_rownames("truth_guess") %>% 
+    t()
+  
+  fet_result <- fisher.test(cont_table)
+  
+  tibble(geneset = gs,
+         pval = last(fet_result$p.value),
+         odds_ratio = fet_result$estimate)
+}
+
+```
+
+Join pathways to LIANA results
+```{r run_decoupleR}
+# we then split by celltype and join the functional annotation from OmniPath
+liana_enrich <- liana_form %>%
+  group_by(source) %>%
+  group_nest(.key = "ligand_data") %>%
+  mutate(ligand_data = map(ligand_data,
+                           function(res){
+                             res %>%
+                               select(ligand) %>%
+                               left_join(msigdb, by=c("ligand"="genesymbol")) %>%
+                               na.omit() # remove any ligands without annotations
+                           })
+         ) %>%
+      # we then obtain counts per cell type, per functional set
+  mutate(ligand_cont = map(ligand_data, function(enr){
+    counts_by_geneset <- enr %>%
+      mutate(total = n()) %>%
+      group_by(geneset) %>%
+      mutate(hit = n()) %>%
+      ungroup() %>%
+      select(-ligand) %>%
+      distinct() %>%
+      arrange(desc(hit)) %>%
+      mutate(truth_guess = "guess")
+     
+    # finally we perform FET
+    map(counts_by_geneset$geneset, function(gs){
+        geneset_fet(gs, counts_by_geneset, ligand_universe)
+      })
+  })) %>%
+  select(-ligand_data) %>% 
+  unnest(ligand_cont) %>%
+  unnest(ligand_cont) %>%
+  arrange(desc(odds_ratio))
+
+```
+
 
 ## Under the hood
 In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
