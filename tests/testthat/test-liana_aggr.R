@@ -10,21 +10,33 @@ test_that("Test liana aggregate", {
                               "output", "liana_res.RDS")) %>%
         liana_aggregate(.decomplexify = FALSE)
 
+    expect_equal(exp1, res1)
+})
+
+
+# aggregate with housekeeping
+test_that("Test liana aggregate (housekeep)", {
+    exp2 <- readRDS(file.path(liana_path, "testdata",
+                              "output", "liana_house_aggr.RDS"))
+    res2 <- readRDS(file.path(liana_path, "testdata",
+                              "output", "liana_res_plus.RDS")) %>%
+        liana_aggregate(.score_mode = .score_housekeep,
+                        .decomplexify = FALSE)
+
     expect_equal(exp2, res2)
 })
 
 
+
 # Test with decomplexify
 test_that("Test liana aggregate with CellChat complexes", {
-    res2 <- readRDS(file.path(liana_path, "testdata",
-                              "output", "liana_res.RDS"))
-    # append cellchat
-    res2$cellchat <- readRDS(file.path(liana_path, "testdata",
-                                       "output", "cc_res.RDS"))
+    exp3 <- readRDS(file.path(liana_path, "testdata",
+                              "output", "liana_agg_decomplex.RDS"))
+    res3 <- readRDS(file.path(liana_path, "testdata",
+                              "output", "liana_res_plus.RDS")) %>%
+        liana_aggregate(.decomplexify = TRUE)
 
-    res2_no <- res2 %>% liana_aggregate(.decomplexify = FALSE)
-
-    res2 %<>% liana_aggregate()
-
-    expect_equal(exp1, res1)
+    expect_equal(exp3, res3)
 })
+
+

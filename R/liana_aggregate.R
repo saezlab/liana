@@ -59,6 +59,14 @@ liana_aggregate <- function(liana_res,
 
     liana_mlist <- liana_res %>%
         map2(names(.), function(res, method_name){
+
+            if(is.null(.score_mode()[[method_name]])){
+                warning(str_glue("Unknown method name or missing specifics for: {method_name}"))
+                return()
+            } else{
+                message(str_glue("Now aggragating {method_name}"))
+            }
+
             method_score <- .score_mode()[[method_name]]@method_score
             desc_order <- .score_mode()[[method_name]]@descending_order
 
@@ -78,7 +86,7 @@ liana_aggregate <- function(liana_res,
                 mutate(across(c(source, target), as.character)) %>%
                 distinct() %>%
                 as_tibble()
-        })
+        }) %>% compact()
 
     liana_aggr <- liana_mlist %>%
         purrr::reduce(., full_join, by = c("source", "ligand", # Join all res

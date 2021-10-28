@@ -73,12 +73,7 @@ def_arg <- liana_defaults(expr_prop=0,
 saveRDS(def_arg, file.path(liana_path, "testdata",
                            "output", "liana_def_args.RDS"))
 
-# liana aggregate output ----
-liana_aggr <- readRDS(file.path(liana_path, "testdata",
-                          "output", "liana_res.RDS")) %>%
-    liana_aggregate()
-saveRDS(liana_aggr, file.path(liana_path, "testdata",
-                              "output", "liana_aggr.RDS"))
+
 
 # Test Connectome ----
 conn_res <- call_connectome(
@@ -158,3 +153,34 @@ saveRDS(cellchat_res,
         file.path(liana_path, "testdata",
                   "output", "cc_res.RDS"))
 
+# liana aggregate output ----
+# Simplest scenario
+liana_aggr <- readRDS(file.path(liana_path, "testdata",
+                                "output", "liana_res.RDS")) %>%
+    liana_aggregate()
+saveRDS(liana_aggr, file.path(liana_path, "testdata",
+                              "output", "liana_aggr.RDS"))
+
+# External Methods + Housekeep scores
+liana_res <- readRDS(file.path(liana_path, "testdata",
+                               "output", "liana_res.RDS"))
+
+liana_res$call_natmi <- readRDS(file.path(liana_path, "testdata",
+                                          "output", "natmi_res.RDS"))
+
+liana_res$cellchat <- readRDS(file.path(liana_path, "testdata",
+                                        "output", "cc_res.RDS"))
+saveRDS(liana_res, file.path(liana_path, "testdata",
+                             "output", "liana_res_plus.RDS"))
+
+liana_agg_house <- liana_res %>%
+    liana_aggregate(.score_mode = .score_housekeep,
+                    .decomplexify = FALSE)
+saveRDS(liana_agg_house, file.path(liana_path, "testdata",
+                              "output", "liana_house_aggr.RDS"))
+
+# Aggragate + decomplexify
+liana_agg_decomplex <- liana_res %>%
+    liana_aggregate(.decomplexify = TRUE)
+saveRDS(liana_agg_decomplex, file.path(liana_path, "testdata",
+                                   "output", "liana_agg_decomplex.RDS"))
