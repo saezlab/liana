@@ -112,12 +112,51 @@ liana_test %>% glimpse
 
 
 ## Make use of Intracellular OmniPath
-Here, we will perform an over-representation representation (ORA)
-to obtain enriched SignaLink pathways in preferentially ranked ligand-receptor
-interactions from LIANA.
 
-### First, let's run LIANA with the OmniPath `intercellular` resource as in the manuscript.
+### A) Filter OmniPath by specific functional annotations
+Here, we will assume that we have strong reason to believe that the RTK pathway
+is particularly relevant in our study and we are hence solely interested in
+interactions from the `RKT` pathway. Thus, we will filter OmniPath to only
+interactions are associated to the `RKT` pathway from SignaLink.
+```{r filter_by_op}
+# load signalling
+signalink_pathways <-
+    OmnipathR::import_omnipath_annotations(
+        resources = 'SignaLink_pathway',
+        entity_types = 'protein',
+        wide = TRUE
+    )
+
+# We join the functional annotations to OmniPath
+# and retain ONLY interactions in which BOTH the ligand and receptor 
+# are associated with RTK pathways
+rkt_omni <- liana_omni %>% 
+  left_join(signalink_pathways, by=c("source_genesymbol"="genesymbol")) %>%
+  rename(source_geneset = pathway) %>%
+  left_join(signalink_pathways, by=c("target_genesymbol"="genesymbol")) %>%
+  rename(target_geneset = pathway) %>%
+  filter(source_geneset == "Receptor tyrosine kinase") %>%
+  filter(target_geneset == "Receptor tyrosine kinase")
+
+# We can then again run LIANA
+liana_rtk <- liana_wrap(seurat_object = testdata,
+                         resource='custom',
+                         external_resource = rkt_omni,
+                        method=c("natmi", "sca", "squidpy")) %>%
+  liana_aggregate()
+
+liana_rtk %>% glimpse
+```
+
+
+
+
+### B) Perform an over-representation representation (ORA) on ligands/receptors
+Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB  
+genesets in preferentially ranked ligand-receptor interactions from LIANA.
+
 #### RUN liana
+First, let's run LIANA with the OmniPath `intercellular` resource as in the manuscript.
 ```{r liana_wrap, message = FALSE, print = FALSE}
 # Run liana with the OmniPath resource
 # here we pass it as an external resource, as we need it later
@@ -143,9 +182,9 @@ liana_form
 
 ```
 
+#### Obtain MSigDB Genesets from OmniPath - takes a while :)
+```{r load_msig}
 
-```{r load_sig}
-# Get MSigDB Genest from OmniPath - takes a while :)
 msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
                                                  wide = TRUE) %>%
   filter(collection=="hallmark") %>%
@@ -236,6 +275,7 @@ liana_enrich <- liana_form %>%
   unnest(ligand_cont) %>%
   arrange(desc(odds_ratio))
 
+liana_enrich
 ```
 
 
