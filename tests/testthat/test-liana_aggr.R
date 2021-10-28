@@ -19,7 +19,8 @@ test_that("Test liana aggregate (housekeep)", {
     exp2 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))
 
-    testthat::expect_warning( # warning should be thrown by liana-sca not having a 'housekeeping score'
+    # warning should be thrown by liana-sca not having a 'housekeeping score'
+    testthat::expect_warning(
         res2 <- readRDS(file.path(liana_path, "testdata",
                                   "output", "liana_res_plus.RDS")) %>%
             liana_aggregate(.score_mode = .score_housekeep,
