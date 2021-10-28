@@ -7,6 +7,8 @@
 * Enabled housekeeping score aggregation for external methods (needed for revisions) via `.score_housekeep`
 * Fixed Bug where external methods could not be called with their default DB. The resource is now always decomplexified
 * Seurat Testdata is now properly normalized
+* liana_aggragate will now by defaul dissociate complexes - meaning that CellChat Complexes are now appropriately dissociated 
+
 
 # LIANA 0.0.1
 
