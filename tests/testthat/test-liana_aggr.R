@@ -23,25 +23,9 @@ test_that("Test liana aggregate (housekeep)", {
     testthat::expect_warning(
         res2 <- readRDS(file.path(liana_path, "testdata",
                                   "output", "liana_res_plus.RDS")) %>%
-            liana_aggregate(.score_mode = .score_housekeep,
-                            .decomplexify = FALSE)
+            liana_aggregate(.score_mode = .score_housekeep)
     )
 
 
     expect_equal(exp2, res2)
 })
-
-
-
-# Test with decomplexify
-test_that("Test liana aggregate with CellChat complexes", {
-    exp3 <- readRDS(file.path(liana_path, "testdata",
-                              "output", "liana_agg_decomplex.RDS"))
-    res3 <- readRDS(file.path(liana_path, "testdata",
-                              "output", "liana_res_plus.RDS")) %>%
-        liana_aggregate(.decomplexify = TRUE)
-
-    expect_equal(exp3, res3)
-})
-
-

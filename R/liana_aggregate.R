@@ -24,9 +24,6 @@
 #' `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
 #' aggragate of the housekeeping interactions of each `external` LIANA++ method.
 #'
-#' @param .decomplexify whether to attempt to decomplexify  in
-#' any complex present in the results (particularly relevant for CellChat which
-#' returns complexes by default)
 #'
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
 #'
@@ -37,6 +34,9 @@
 #'   by default this is set to \link{base::max}, but any other function that
 #'   works with vectors could be passed - e.g. min, mean, etc.
 #'
+#' This function also decomplexifies any complex present in the CellChat results
+#' which returns complexes by default
+#'
 #' @export
 liana_aggregate <- function(liana_res,
                             resource = NULL,
@@ -45,7 +45,6 @@ liana_aggregate <- function(liana_res,
                             get_ranks = TRUE,
                             get_agrank = TRUE,
                             .score_mode = .score_specs,
-                            .decomplexify = TRUE,
                             ...){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
@@ -74,7 +73,7 @@ liana_aggregate <- function(liana_res,
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))
 
             res %>%
-                {if(.decomplexify) decomplexify(., columns = c("ligand", "receptor")) else .} %>%
+                {if(method_name=="cellchat") decomplexify(., columns = c("ligand", "receptor")) else .} %>%
                 top_n(n=if_else(desc_order,
                                 cap,
                                 -cap),

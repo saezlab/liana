@@ -174,13 +174,8 @@ saveRDS(liana_res, file.path(liana_path, "testdata",
                              "output", "liana_res_plus.RDS"))
 
 liana_agg_house <- liana_res %>%
-    liana_aggregate(.score_mode = .score_housekeep,
-                    .decomplexify = FALSE)
+    liana_aggregate(.score_mode = .score_housekeep)
 saveRDS(liana_agg_house, file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))
 
-# Aggragate + decomplexify
-liana_agg_decomplex <- liana_res %>%
-    liana_aggregate(.decomplexify = TRUE)
-saveRDS(liana_agg_decomplex, file.path(liana_path, "testdata",
-                                   "output", "liana_agg_decomplex.RDS"))
+
