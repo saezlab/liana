@@ -169,3 +169,10 @@ liana_cts <- lr_res %>%
     ungroup()
 
 
+# Test with a real dataset
+seurat_object <- readRDS("~/Repos/ligrec_decouple/data/input/citeseq/5k_pbmcs/5k_pbmcs_seurat.RDS")
+seurat_object@meta.data$seurat_clusters
+test_wrap <- liana_wrap(seurat_object,
+                        squidpy.params = list(cluster_key = "seurat_clusters"))
+
+test_agg <- liana_aggregate(test_wrap)
