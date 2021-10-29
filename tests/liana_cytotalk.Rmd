@@ -1,0 +1,159 @@
+---
+title: "LIANA's CytoTalk re-implementation"
+author:
+  - name: Martin Garrid-Rodriguez
+    affiliation:
+        - Saezlab, Heidelberg University
+    email: martin.garrido@uni-heidelberg.de
+date: "28/10/2021"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
+---
+
+# Summary
+
+The objective of this vignette is to exemplify how to use LIANA's implementation
+of the cross-talk score defined by the authors of [CytoTalk](https://www.science.org/doi/10.1126/sciadv.abf1356). 
+
+# Libraries and data
+
+Load libraries and functions
+
+```{r, message=FALSE}
+require(liana)
+library(Seurat)
+library(tidyverse)
+library(CytoTalk)
+library(SingleCellExperiment)
+```
+
+Load liana test data and ligand-receptor interactions
+
+```{r}
+liana_path <- system.file(package = "liana")
+test_data <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+op_resource <- select_resource("OmniPath")[[1]] %>% 
+  liana:::decomplexify()
+ligand_receptor_df <- dplyr::select(op_resource, ligand = source_genesymbol, receptor = target_genesymbol)
+```
+
+Transform SeuratObject into SingleCellExperiment object
+
+```{r}
+sce <- liana:::seurat_to_sce(seurat_object = test_data, 
+                             entity_genes = unique(c(op_resource$source_genesymbol, op_resource$target_genesymbol)), 
+                             assay = "RNA")
+```
+
+CytoTalk stores intermediate results as CSV files. Because of this, we split and prepare
+the test data employed in LIANA to be used by CytoTalk as temporary files, which are then
+loaded into R.
+
+```{r}
+temp_dir <- tempdir()
+norm_data <- as.matrix(sce@assays@data[["logcounts"]])
+norm_data_by_cell <- lapply(levels(colLabels(sce)), function(cell) {
+  
+  write.csv(x = norm_data[, colLabels(sce) == cell],
+            file = paste0(temp_dir, "/", "scRNAseq_", cell, ".csv"),
+            quote = FALSE, row.names = TRUE)
+  
+})
+```
+
+CytoTalk cross-talk score is composed by two metrics: The preferential expression 
+measures (PEMs) and the non-self talk score (NSTs). The first one reflects the specific expression for quantified genes across all the cell types. The second is defined 
+on the basis of information theoretic measures and quantifies the mutual information
+for a pair of genes (ligand and receptor) within the same cell type. Once those values 
+are calculated, the cross-talk score (CST) can be calculated for each ligand-receptor pair and for each pair of cell types as the product of normalized mean PEM and NST values.
+
+# Preferential Expression Measures (PEM)
+
+Run CytoTalk functions to compute PEMs
+
+```{r, message=FALSE, time}
+pem_file <- paste0(temp_dir, "/", "GeneCellTypeSpecific.txt")
+if(file.exists(pem_file)) file.remove(pem_file)
+CytoTalk::compute_pem(dir_in = temp_dir, dir_out = temp_dir)
+cytotalk_pems <- read_tsv(pem_file, col_types = cols()) %>%
+  column_to_rownames("rowname") %>%
+  as.matrix()
+```
+
+Run our implementation to compute PEMs
+
+```{r}
+liana_pems <- compute_pem_scores(sce = sce, assay.type = "logcounts")
+```
+
+Compare PEM values
+```{r}
+# set NAs and negative values to 0 in Cytotalk PEM table
+cytotalk_pems[cytotalk_pems < 0 | is.na(cytotalk_pems)] <- 0
+all(round(cytotalk_pems, 5) == round(as.matrix(liana_pems), 5))
+```
+
+# Non-self talk scores (NST)
+
+Run Cytotalk implementation to compute NST
+```{r}
+ligands <- as.matrix(ligand_receptor_df)
+nst_file_a <- paste0(temp_dir, "/NonSelfTalkSco_TypA.txt")
+nst_file_b <- paste0(temp_dir, "/NonSelfTalkSco_TypB.txt")
+if(file.exists(nst_file_a)) file.remove(nst_file_a)
+if(file.exists(nst_file_b)) file.remove(nst_file_b)
+set.seed(149)
+CytoTalk:::compute_non_self_talk_type(ligands = ligands, type = "B", 
+                                      letter = "A", dir_in = temp_dir, 
+                                      dir_out = temp_dir)
+cytotalk_nst_a <- read_tsv(nst_file_a, col_types = cols()) %>%
+  mutate(mi_dist = ifelse(mi_dist < 0 | is.na(mi_dist), 0, mi_dist))
+set.seed(149)
+CytoTalk:::compute_non_self_talk_type(ligands = ligands, type = "NK", 
+                                      letter = "B", dir_in = temp_dir, 
+                                      dir_out = temp_dir)
+cytotalk_nst_b <- read_tsv(nst_file_b, col_types = cols()) %>%
+  mutate(mi_dist = ifelse(mi_dist < 0 | is.na(mi_dist), 0, mi_dist))
+```
+
+Run our implementation to compute NST
+```{r}
+set.seed(149)
+liana_nst_a <- compute_nst_from_matrix(mat = norm_data[, colLabels(sce) == "B"], 
+                                     ligand_receptor_df = ligand_receptor_df)
+set.seed(149)
+liana_nst_b <- compute_nst_from_matrix(mat = norm_data[, colLabels(sce) == "NK"], 
+                                     ligand_receptor_df = ligand_receptor_df) 
+```
+
+Compare NST
+```{r}
+all(round(liana_nst_a$nst_score, digits = 5) == round(cytotalk_nst_a$mi_dist, digits = 5))
+all(round(liana_nst_b$nst_score, digits = 5) == round(cytotalk_nst_b$mi_dist, digits = 5))
+```
+
+# Cross-talk score
+Finally, we exemplify how to use our function to compute the cross-talk score 
+for each pair of ligand-receptors and cell types as prepared by LIANA.
+
+```{r}
+set.seed(149)
+liana_crosstalk <- call_cytotalk(seurat_object = test_data, op_resouce = op_resource) 
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
+
+
+
+
+
