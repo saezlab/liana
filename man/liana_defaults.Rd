@@ -17,6 +17,7 @@ liana_defaults(
   squidpy.params = NULL,
   call_sca.params = NULL,
   cellphonedb.params = NULL,
+  cytotalk.params = NULL,
   permutation.params = NULL,
   liana_pipe.params = NULL,
   liana_call.params = NULL,
