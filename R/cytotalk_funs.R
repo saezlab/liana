@@ -14,9 +14,10 @@ cytotalk_score <- function(lr_res,
                                    ligand_receptor_df = lr_res %>%
                                      ungroup() %>%
                                      select(ligand, receptor) %>%
-                                     distinct(),
+                                     distinct() %>%
+                                     arrange(ligand, receptor),
                                    assay.type = assay.type,
-                                   seed = 1234)
+                                   seed = 1004)
 
   lr_res %>%
     ungroup() %>%
@@ -47,7 +48,8 @@ cytotalk_score <- function(lr_res,
            ligand, ligand.complex,
            receptor, receptor.complex,
            ligand.pem, receptor.pem,
-           es, Nes, nst, Nnst,
+           es, Nes,
+           source.nst, target.nst, nst, Nnst,
            !!score_col)
 }
 
@@ -72,13 +74,11 @@ cytotalk_score <- function(lr_res,
 #' pair on each cell-type.
 #'
 #' @import SingleCellExperiment dplyr
-#'
 compute_nst_scores <- function(sce,
                                ligand_receptor_df,
                                assay.type = "logcounts",
-                               seed = 1234) {
+                               seed = 1004) {
 
-  set.seed(seed)
   # extract normalized data
   norm_data <- as.matrix(sce@assays@data[[assay.type]])
 
@@ -87,7 +87,10 @@ compute_nst_scores <- function(sce,
   nst_scores <- lapply(cell_types, function(cell) {
 
     mat <- norm_data[, colLabels(sce) == cell]
-    nst_tibble <- compute_nst_from_matrix(mat = mat, ligand_receptor_df = ligand_receptor_df) %>%
+    nst_tibble <-
+      compute_nst_from_matrix(mat = mat,
+                              ligand_receptor_df = ligand_receptor_df,
+                              seed = seed) %>%
       mutate(celltype = cell)
     return(nst_tibble)
 
@@ -112,15 +115,14 @@ compute_nst_scores <- function(sce,
 #'
 #' @import dplyr
 #'
-compute_nst_from_matrix <- function(mat, ligand_receptor_df) {
-
+compute_nst_from_matrix <- function(mat, ligand_receptor_df, seed) {
   # extract number of columns and bins from the gene expression matrix
   n_cols <- ncol(mat)
   n_bins <- sqrt(n_cols)
 
   # add noise
   is_zero <- rowSums(mat) == 0
-  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)), .gen_noise))
+  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)), .gen_noise, seed=seed))
 
   # filter ligand-receptor pairs
   keep <- pmap(ligand_receptor_df,
@@ -190,7 +192,9 @@ compute_mi_dist <- function(exp1, exp2, n_bins) {
 #' @return A vector of length n with noise in a random position
 #'
 #' @noRd
-.gen_noise <- function(n) {
+.gen_noise <- function(n,
+                       seed) {
+  set.seed(seed)
   rng <- seq_len(n)
   (sample(rng, 1) == rng) * 1e-20
 }

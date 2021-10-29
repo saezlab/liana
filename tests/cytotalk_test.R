@@ -14,25 +14,35 @@ call_cytotalk <- function(seurat_object,
                           op_resouce,
                           assay.type = "logcounts") {
 
+    set.seed(1234)
     # Seurat to SCE
     ligand_receptor_df <- op_resource[, c("source_genesymbol", "target_genesymbol")]
     colnames(ligand_receptor_df) <- c("ligand", "receptor")
+
     entity_genes <- union(op_resource$source_genesymbol, op_resource$target_genesymbol)
     sce <- seurat_to_sce(seurat_object, entity_genes = entity_genes, assay = "RNA")
+
+    # remove any genes that are not in the sce object
+    ligand_receptor_df %<>%
+        filter(ligand %in% rownames(sce)) %>%
+        filter(receptor %in% rownames(sce)) %>%
+        arrange(ligand, receptor)
 
     # get LR pairs
     pairs <- expand_grid(source = unique(colLabels(sce)),
                          target = unique(colLabels(sce)))
 
     # apply cytotalk functions
-    pem_scores <- compute_pem_scores(sce = sce, assay.type = assay.type) %>%
+    pem_scores <- compute_pem_scores(sce = sce,
+                                     assay.type = assay.type) %>%
         rownames_to_column("gene") %>%
         pivot_longer(-gene, names_to = "celltype", values_to = "pem")
 
     # Compute -log10 non-self-talk scores
     nst_scores <- compute_nst_scores(sce = sce,
                                      ligand_receptor_df = ligand_receptor_df,
-                                     assay.type = assay.type)
+                                     assay.type = assay.type,
+                                     seed = 1234)
 
     # compute all possible pairs of cell types
     pairs <- combn(x = unique(colLabels(sce)), m = 2, simplify = FALSE)
@@ -86,7 +96,37 @@ liana_res <- liana_out %>%
 
 
 
+liana_cytotalk <- liana_wrap(seurat_object,
+                             method=c("cytotalk"),
+                             expr_prop = 0,
+                             resource = "OmniPath") %>%
+    # we remove autocrine as original cytotalk does not return them
+    # in liana we use the inverse of the NST for autocrine signalling
+    # to make cytotalk comparable to the other methods
+    filter(source!=target) %>%
+    select(source, ligand, target, receptor, crosstalk_score) %>%
+    arrange(crosstalk_score, source, ligand, target, receptor)
 
+
+# Get cytotalk scores
+martin_crosstalk <- call_cytotalk(seurat_object = seurat_object,
+                                  op_resouce = op_resource) %>%
+    # set crosstalk to 0 if either pem is 0
+    mutate(crosstalk_score :=
+               if_else(pem_ligand==0 | pem_receptor==0,
+                       0,
+                       crosstalk_score)) %>%
+    select(source, ligand, target, receptor, crosstalk_score) %>%
+    as_tibble() %>%
+    arrange(crosstalk_score, source, ligand, target, receptor)
+
+diff <- setdiff(liana_cytotalk, martin_crosstalk)
+diff
+
+
+
+
+### To integrate
 # LIANA call natmi as example
 liana_call("natmi",
            seurat_object = seurat_object,
@@ -100,36 +140,6 @@ liana_call("cytotalk",
            op_resource = op_resource,
            lr_res = liana_out,
            sce = sce)
-
-
-liana_cytotalk <- liana_wrap(seurat_object,
-                             method=c("cytotalk"),
-                             expr_prop = 0,
-                             resource = "OmniPath") %>%
-    # we remove autocrine as original cytotalk does not return them
-    # in liana we use the inverse of the NST for autocrine signalling
-    # to make cytotalk comparable to the other methods
-    filter(source!=target) %>%
-    # select(source, ligand, target, receptor, crosstalk_score) %>%
-    arrange(crosstalk_score, source, ligand, target, receptor)
-
-
-# Get cytotalk scores
-martin_crosstalk <- call_cytotalk(seurat_object = seurat_object,
-                                  op_resouce = op_resource) %>%
-    # set crosstalk to 0 if either pem is 0
-    mutate( crosstalk_score :=
-                if_else(pem_ligand==0 | pem_receptor==0,
-                        0,
-                        crosstalk_score)) %>%
-    # select(source, ligand, target, receptor, crosstalk_score) %>%
-    as_tibble() %>%
-    arrange(crosstalk_score, source, ligand, target, receptor)
-
-diff <- setdiff(liana_cytotalk, martin_crosstalk)
-
-
-
 
 # NST - in LIANA wrap
 nst_scores <- compute_nst_scores(sce = sce,

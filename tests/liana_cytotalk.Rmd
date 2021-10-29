@@ -48,6 +48,10 @@ Transform SeuratObject into SingleCellExperiment object
 sce <- liana:::seurat_to_sce(seurat_object = test_data, 
                              entity_genes = unique(c(op_resource$source_genesymbol, op_resource$target_genesymbol)), 
                              assay = "RNA")
+
+# only keep the genes in the single-cell object 
+ligand_receptor_df %<>% filter(ligand %in% rownames(sce)) %>% filter(receptor %in% rownames(sce))
+
 ```
 
 CytoTalk stores intermediate results as CSV files. Because of this, we split and prepare
