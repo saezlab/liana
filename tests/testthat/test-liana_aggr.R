@@ -8,7 +8,7 @@ test_that("Test liana aggregate", {
 
     res1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_res.RDS")) %>%
-        liana_aggregate(.decomplexify = FALSE)
+        liana_aggregate()
 
     expect_equal(exp1, res1)
 })

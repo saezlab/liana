@@ -1,11 +1,235 @@
+#### CROSS-TALK SCORE ####
+
+#' Compute cross-talk score from a Seurat Object
+#'
+#' This function executes all the required functions to extract and compute the
+#' cross-talk scores as defined by the Cytotalk authors. .
+#'
+#' @param SeuratObject Seurat object as input
+#' @param op_resouce The resource of ligand-receptor interactions
+#'
+#' @return A data frame containing the resulting scores
+#'
+#' @import SingleCellExperiment SeuratObject tibble tidyr dplyr
+#'
+call_cytotalk <- function(seurat_object, op_resouce, assay.type = "logcounts") {
+
+  # Seurat to SCE
+  ligand_receptor_df <- op_resource[, c("source_genesymbol", "target_genesymbol")]
+  colnames(ligand_receptor_df) <- c("ligand", "receptor")
+  entity_genes <- union(op_resource$source_genesymbol, op_resource$target_genesymbol)
+  sce <- seurat_to_sce(seurat_object, entity_genes = entity_genes, assay = "RNA")
+
+  # get LR pairs
+  pairs <- expand_grid(source = unique(colLabels(sce)),
+                       target = unique(colLabels(sce)))
+
+  # apply cytotalk functions
+  pem_scores <- compute_pem_scores(sce = sce, assay.type = assay.type) %>%
+    rownames_to_column("gene") %>%
+    pivot_longer(-gene, names_to = "celltype", values_to = "pem")
+
+  # Compute -log10 non-self-talk scores
+  nst_scores <- compute_nst_scores(sce = sce,
+                                   ligand_receptor_df = ligand_receptor_df,
+                                   assay.type = assay.type)
+
+  # compute all possible pairs of cell types
+  pairs <- combn(x = unique(colLabels(sce)), m = 2, simplify = FALSE)
+  result_df <- lapply(pairs, function(cell_types) {
+
+    out_df <- data.frame(source = cell_types, target = rev(cell_types)) %>%
+      left_join(nst_scores, by = c("source" = "celltype")) %>%
+      dplyr::rename(nst_score_ligand = nst_score) %>%
+      left_join(nst_scores, by = c("target" = "celltype", "ligand", "receptor")) %>%
+      dplyr::rename(nst_score_receptor = nst_score) %>%
+      left_join(pem_scores, by = c("ligand" = "gene", "source" = "celltype")) %>%
+      dplyr::rename(pem_ligand = pem) %>%
+      left_join(pem_scores, by = c("receptor" = "gene", "target" = "celltype")) %>%
+      dplyr::rename(pem_receptor = pem) %>%
+      # compute cross-talk
+      mutate(es = (pem_ligand + pem_receptor) / 2, # calculate Expression Score
+             nst = (nst_score_ligand + nst_score_receptor) / 2 # combine -log10 NST score
+             ) %>%
+      mutate(Nes = minmax(es), Nnst = minmax(nst)) %>%
+      mutate(cross_talk_score = Nes * Nnst) %>%
+      select(source, ligand, target, receptor, everything())
+
+    return(out_df)
+
+  }) %>%
+    bind_rows()
+
+  return(result_df)
+
+}
+
+
+#### NST ####
+
+#' Compute non-self talk scores from SingleCellExperiment object
+#'
+#' This function computes the non-self talk scores for all the cell types contained
+#' in a SingleCellExperiment object. It iterates through the ligand-receptor pairs
+#' that are provided as input and calculates these entropy-based measurements for each
+#' cell type using its normalized expression matrix, which should contain log-transformed
+#' values.
+#'
+#' @param sce A SingleCellExperiment object containing log-normalized expression
+#' values and cell type annotations as colLabels
+#' @param ligand_receptor_df A data frame with, at least, two columns named 'ligand'
+#' and 'receptor' containing the ligand-receptor pairs to evaluate
+#' @param assay.type The name of the data slot containing the log-normalized expression
+#' values in the SingleCellExperiment object
+#'
+#' @return A data frame with the computed non-self-talk score for each ligand-receptor
+#' pair on each cell-type.
+#'
+#' @import SingleCellExperiment dplyr
+#'
+compute_nst_scores <- function(sce,
+                               ligand_receptor_df,
+                               assay.type = "logcounts",
+                               seed = 1234) {
+
+  set.seed(seed)
+  # extract normalized data
+  norm_data <- as.matrix(sce@assays@data[[assay.type]])
+
+  # iterate through cell types, calculating NST for each ligand-receptor
+  cell_types <- levels(colLabels(sce))
+  nst_scores <- lapply(cell_types, function(cell) {
+
+    mat <- norm_data[, colLabels(sce) == cell]
+    nst_tibble <- compute_nst_from_matrix(mat = mat, ligand_receptor_df = ligand_receptor_df) %>%
+      mutate(celltype = cell)
+    return(nst_tibble)
+
+  }) %>%
+    bind_rows()
+
+  return(nst_scores)
+
+}
+
+#' Compute non-self talk scores from matrix
+#'
+#' Calculates the non-self talk scores (also refered to as mutual information distances)
+#' for each ligand-receptor pair using the normalized expression matrix for a given
+#' cell type. It expects log-transformed expression values.
+#'
+#' @param mat A matrix containing the log-transformed normalized expression values.
+#' @param ligand_receptor_df A data frame with, at least, two columns named 'ligand'
+#' and 'receptor' containing the ligand-receptor pairs to evaluate
+#'
+#' @return A data frame with the non-self-talk score for each pair of genes (ligand-receptors).
+#'
+#' @import dplyr
+#'
+compute_nst_from_matrix <- function(mat, ligand_receptor_df) {
+
+  # extract number of columns and bins from the gene expression matrix
+  n_cols <- ncol(mat)
+  n_bins <- sqrt(n_cols)
+
+  # add noise
+  is_zero <- rowSums(mat) == 0
+  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)), .gen_noise))
+
+  # filter ligand-receptor pairs
+  keep <- pmap(ligand_receptor_df,
+               function(ligand, receptor)
+                 ligand %in% rownames(mat) &
+                 receptor %in% rownames(mat)) %>%
+    as.logical()
+
+  # calculate mi distances
+  nst_score <- pmap(ligand_receptor_df[keep,],
+                    function(ligand, receptor) {
+                      mi_dist <- compute_mi_dist(exp1 = mat[ligand, ],
+                                                 exp2 = mat[receptor, ],
+                                                 n_bins = n_bins)
+    return(mi_dist)
+  }) %>%
+    as.numeric()
+
+  out_df <- data.frame(ligand_receptor_df[keep, ], nst_score) %>%
+    # set negative and NAs PEMs to 0
+    mutate(nst_score = ifelse(nst_score < 0 | is.na(nst_score), 0, nst_score))
+
+  return(out_df)
+
+}
+
+#' Compute mutual information distance from expression vectors
+#'
+#' Given two normalized gene expression vectors, and a given number of bins, this
+#' function uses the entropy package to compute the mutual information between the
+#' two vectors. Values passed to this function should be log-transformed.
+#'
+#' @param exp1 A vector containing the normalized gene expression for the first
+#' gene (ligand)
+#' @param exp2 A vector containing the normalized gene expression for the first
+#' gene (receptor)
+#' @param n_bins Number of bins to discretize the expression values.
+#'
+#' @return The mututal information distance, also refered to as non-self atalk score
+#'
+#' @import entropy
+#'
+compute_mi_dist <- function(exp1, exp2, n_bins) {
+
+  y2d <- entropy::discretize2d(exp1, exp2, n_bins, n_bins)
+  H1 <- entropy::entropy(rowSums(y2d), method = "MM")
+  H2 <- entropy::entropy(colSums(y2d), method = "MM")
+  H12 <- entropy::entropy(y2d, method = "MM")
+  mi <- H1 + H2 - H12
+
+  norm <- min(c(H1, H2))
+  mi_dist <- -log10(mi / norm)
+
+  return(mi_dist)
+
+}
+
+
+#' Helper function to generate random noise for cytotalk scores
+#'
+#' @details generate a vector of length n with a noise value inserted in a
+#' random position of the vector. This is needed to compute the entropy-related
+#' values.
+#'
+#' @param n Length of the vector to generate
+#'
+#' @return A vector of length n with noise in a random position
+#'
+#' @noRd
+.gen_noise <- function(n) {
+  rng <- seq_len(n)
+  (sample(rng, 1) == rng) * 1e-20
+}
+
+
+
+#' Helper min-max function
+#'  @noRd
+minmax <- function(x, ...) {
+  (x - min(x, ...)) / (max(x, ...) - min(x, ...))
+}
+
+
+
+### IN ----
 #### PEM ####
 
 #' Compute Preferential Expression Measure scores from SingleCellExperiment object
 #'
-#' Uses the information contained in a SingleCellExperiment object to stratify the
-#' expression matrix by cell type, and then computes the PEM scores from the exponential
-#' of the normalized expression values. IMPORTANT: This function expects an object
-#' containing log-transformed values (not raw counts).
+#' @details Uses the information contained in a SingleCellExperiment object to
+#' stratify the expression matrix by cell type, and then computes the PEM scores
+#' from the exponential of the normalized expression values.
+#'
+#' IMPORTANT:
+#' This function expects an object containing log-transformed values (not raw counts).
 #'
 #' @param sce A SingleCellExperiment object containing log-normalized expression
 #' values and cell type annotations as colLabels
@@ -82,204 +306,4 @@ pems_from_means <- function(means_per_cell) {
 
 }
 
-#### NST ####
 
-#' Compute non-self talk scores from SingleCellExperiment object
-#'
-#' This function computes the non-self talk scores for all the cell types contained
-#' in a SingleCellExperiment object. It iterates through the ligand-receptor pairs
-#' that are provided as input and calculates these entropy-based measurements for each
-#' cell type using its normalized expression matrix, which should contain log-transformed
-#' values.
-#'
-#' @param sce A SingleCellExperiment object containing log-normalized expression
-#' values and cell type annotations as colLabels
-#' @param ligand_receptor_df A data frame with, at least, two columns named 'ligand'
-#' and 'receptor' containing the ligand-receptor pairs to evaluate
-#' @param assay.type The name of the data slot containing the log-normalized expression
-#' values in the SingleCellExperiment object
-#'
-#' @return A data frame with the computed non-self-talk score for each ligand-receptor
-#' pair on each cell-type.
-#'
-#' @import SingleCellExperiment dplyr
-#'
-compute_nst_scores <- function(sce, ligand_receptor_df, assay.type = "logcounts") {
-
-  # extract normalized data
-  norm_data <- as.matrix(sce@assays@data[[assay.type]])
-
-  # iterate through cell types, calculating NST for each ligand-receptor
-  cell_types <- levels(colLabels(sce))
-  nst_scores <- lapply(cell_types, function(cell) {
-
-    mat <- norm_data[, colLabels(sce) == cell]
-    nst_tibble <- compute_nst_from_matrix(mat = mat, ligand_receptor_df = ligand_receptor_df) %>%
-      mutate(cell_type = cell)
-    return(nst_tibble)
-
-  }) %>%
-    bind_rows()
-
-  return(nst_scores)
-
-}
-
-#' Compute non-self talk scores from matrix
-#'
-#' Calculates the non-self talk scores (also refered to as mutual information distances)
-#' for each ligand-receptor pair using the normalized expression matrix for a given
-#' cell type. It expects log-transformed expression values.
-#'
-#' @param mat A matrix containing the log-transformed normalized expression values.
-#' @param ligand_receptor_df A data frame with, at least, two columns named 'ligand'
-#' and 'receptor' containing the ligand-receptor pairs to evaluate
-#'
-#' @return A data frame with the non-self-talk score for each pair of genes (ligand-receptors).
-#'
-#' @import dplyr
-#'
-compute_nst_from_matrix <- function(mat, ligand_receptor_df) {
-
-  # extract number of columns and bins from the gene expression matrix
-  n_cols <- ncol(mat)
-  n_bins <- sqrt(n_cols)
-
-  # add noise
-  is_zero <- rowSums(mat) == 0
-  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)), noise))
-
-  # filter ligand-receptor pairs
-  keep <- pmap(ligand_receptor_df,
-               function(ligand, receptor)
-                 ligand %in% rownames(mat) &
-                 receptor %in% rownames(mat)) %>%
-    as.logical()
-
-  # calculate mi distances
-  nst_score <- pmap(ligand_receptor_df[keep,],
-                    function(ligand, receptor) {
-                      mi_dist <- compute_mi_dist(exp1 = mat[ligand, ],
-                                                 exp2 = mat[receptor, ],
-                                                 n_bins = n_bins)
-    return(mi_dist)
-  }) %>%
-    as.numeric()
-
-  out_df <- data.frame(ligand_receptor_df[keep, ], nst_score) %>%
-    # set negative and NAs PEMs to 0
-    mutate(nst_score = ifelse(nst_score < 0 | is.na(nst_score), 0, nst_score))
-
-  return(out_df)
-
-}
-
-#' Compute mutual information distance from expression vectors
-#'
-#' Given two normalized gene expression vectors, and a given number of bins, this
-#' function uses the entropy package to compute the mutual information between the
-#' two vectors. Values passed to this function should be log-transformed.
-#'
-#' @param exp1 A vector containing the normalized gene expression for the first
-#' gene (ligand)
-#' @param exp2 A vector containing the normalized gene expression for the first
-#' gene (receptor)
-#' @param n_bins Number of bins to discretize the expression values.
-#'
-#' @return The mututal information distance, also refered to as non-self atalk score
-#'
-#' @import entropy
-#'
-compute_mi_dist <- function(exp1, exp2, n_bins) {
-
-  y2d <- entropy::discretize2d(exp1, exp2, n_bins, n_bins)
-  H1 <- entropy::entropy(rowSums(y2d), method = "MM")
-  H2 <- entropy::entropy(colSums(y2d), method = "MM")
-  H12 <- entropy::entropy(y2d, method = "MM")
-  mi <- H1 + H2 - H12
-
-  norm <- min(c(H1, H2))
-  mi_dist <- -log10(mi / norm)
-
-  return(mi_dist)
-
-}
-
-#' Generate random noise
-#'
-#' This function generates a vector of length n with a noise value inserted in a
-#' random position of the vector. This is needed to compute the entropy-related
-#' values.
-#'
-#' @param n Length of the vector to generate
-#'
-#' @return A vector of length n with noise in a random position
-#'
-noise <- function(n) {
-  rng <- seq_len(n)
-  (sample(rng, 1) == rng) * 1e-20
-}
-
-#### CROSS-TALK SCORE ####
-
-#' Compute cross-talk score from a Seurat Object
-#'
-#' This function executes all the required functions to extract and compute the
-#' cross-talk scores as defined by the Cytotalk authors. .
-#'
-#' @param SeuratObject Seurat object as input
-#' @param op_resouce The resource of ligand-receptor interactions
-#'
-#' @return A data frame containing the resulting scores
-#'
-#' @import SingleCellExperiment SeuratObject tibble tidyr dplyr
-#'
-call_cytotalk <- function(SeuratObject, op_resouce, assay.type = "logcounts") {
-
-  # Seurat to SCE
-  ligand_receptor_df <- op_resource[, c("source_genesymbol", "target_genesymbol")]
-  colnames(ligand_receptor_df) <- c("ligand", "receptor")
-  entity_genes <- union(op_resource$source_genesymbol, op_resource$target_genesymbol)
-  sce <- seurat_to_sce(SeuratObject, entity_genes = entity_genes, assay = "RNA")
-  pairs <- expand_grid(source = unique(colLabels(sce)),
-                       target = unique(colLabels(sce)))
-
-  # apply cytotalk functions
-  pem_scores <- compute_pem_scores(sce = sce, assay.type = assay.type) %>%
-    rownames_to_column("gene") %>%
-    pivot_longer(-gene, names_to = "cell_type", values_to = "pem")
-  nst_scores <- compute_nst_scores(sce = sce, ligand_receptor_df = ligand_receptor_df, assay.type = assay.type)
-
-  # compute all possible pairs of cell types
-  pairs <- combn(x = unique(colLabels(sce)), m = 2, simplify = FALSE)
-  result_df <- lapply(pairs, function(cell_types) {
-
-    out_df <- data.frame(source = cell_types, target = rev(cell_types)) %>%
-      left_join(nst_scores, by = c("source" = "cell_type")) %>%
-      dplyr::rename(nst_score_ligand = nst_score) %>%
-      left_join(nst_scores, by = c("target" = "cell_type", "ligand", "receptor")) %>%
-      dplyr::rename(nst_score_receptor = nst_score) %>%
-      left_join(pem_scores, by = c("ligand" = "gene", "source" = "cell_type")) %>%
-      dplyr::rename(pem_ligand = pem) %>%
-      left_join(pem_scores, by = c("receptor" = "gene", "target" = "cell_type")) %>%
-      dplyr::rename(pem_receptor = pem) %>%
-      # compute cross-talk
-      mutate(es = (pem_ligand + pem_receptor) / 2,
-             nst = (nst_score_ligand + nst_score_receptor) / 2) %>%
-      mutate(Nes = minmax(es), Nnst = minmax(nst)) %>%
-      mutate(cross_talk_score = Nes * Nnst) %>%
-      dplyr::select(source, target, ligand, receptor, cross_talk_score)
-
-    return(out_df)
-
-  }) %>%
-    bind_rows()
-
-  return(result_df)
-
-}
-
-#' @noRd
-minmax <- function(x, ...) {
-  (x - min(x, ...)) / (max(x, ...) - min(x, ...))
-}

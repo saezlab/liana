@@ -2,7 +2,7 @@
 % Please edit documentation in R/liana_wrapper.R
 \name{liana_wrap}
 \alias{liana_wrap}
-\title{Run LIANA Wrapper}
+\title{LIANA wrapper function}
 \usage{
 liana_wrap(
   seurat_object,
@@ -60,7 +60,7 @@ If only one resource is selected, a single tibble (with results for that
  resource) will be returned for each of the selected methods
 }
 \description{
-Run LIANA Wrapper
+LIANA wrapper function
 }
 \details{
 LIANA wrapper method that can be used to call each method with
