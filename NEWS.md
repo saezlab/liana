@@ -6,7 +6,7 @@ In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with
 Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions,
 and thus make cytotalk comparable to the rest of the methods in LIANA.
 Finally, as part of LIANA, CytoTalk's re-implemented scores would not take account of complexes and we also apply
-liana-specifc filtering such as according to `expr_prop.
+liana-specifc filtering such as according to `expr_prop`.
 
 ## Changes
 
