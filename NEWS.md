@@ -1,5 +1,13 @@
 # LIANA 0.0.2
 
+## New Features
+* [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired Cross-talk Scores (CTSs) were added.
+In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. 
+Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions,
+and thus make cytotalk comparable to the rest of the methods in LIANA.
+Finally, as part of LIANA, CytoTalk's re-implemented scores would not take account of complexes and we also apply
+liana-specifc filtering such as according to `expr_prop.
+
 ## Changes
 
 * Changed `expr_thresh` to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default   
