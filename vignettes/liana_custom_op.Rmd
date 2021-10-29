@@ -110,23 +110,92 @@ liana_test <- liana_wrap(seurat_object = testdata,
 liana_test %>% glimpse
 ```
 
+## Under the hood
+In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
+and simplifies their filtering according to liana-appropriate format.
 
-## Make use of Intracellular OmniPath
+```{r omnipathr, message = FALSE, print = FALSE}
+# reproduce cust_op as from above with OmniPathR alone
+
+# import the OmniPathR intercell network component
+ligrec <- OmnipathR::import_intercell_network()
+
+# filter out the complexes
+ligrec %<>%
+  filter(!(entity_type_intercell_source == "complex" |
+             entity_type_intercell_target == "complex"))
+
+
+# apply filtering according to curation and localisation
+ligrec %<>% 
+  OmnipathR::filter_intercell_network(loc_consensus_percentile = 30,
+                                      consensus_percentile = NULL,
+                                      transmitter_topology = c('secreted',
+                                                               'plasma_membrane_transmembrane',
+                                                               'plasma_membrane_peripheral'),
+                                      receiver_topology = c('plasma_membrane_transmembrane',
+                                                            'plasma_membrane_peripheral'),
+                                      min_curation_effort = 1,
+                                      ligrecextra = FALSE)
+
+# remove duplicate LRs
+ligrec %<>% 
+  distinct_at(.vars = c("source_genesymbol", 
+                              "target_genesymbol"),
+                    .keep_all = TRUE)
+
+all_equal(ligrec, cust_omni)
+
+```
+
+## Making use of [Intracellular OmniPath](https://omnipathdb.org/#about)
 
 ### A) Filter OmniPath by specific functional annotations
+   
 Here, we will assume that we have strong reason to believe that the RTK pathway
 is particularly relevant in our study and we are hence solely interested in
-interactions from the `RKT` pathway. Thus, we will filter OmniPath to only
-interactions are associated to the `RKT` pathway from SignaLink.
-```{r filter_by_op}
-# load signalling
+interactions from the `RKT` pathway. Thus, we will filter LIANA and OmniPath to 
+only interactions associated with the `RKT` pathway from [SignaLink](https://link.springer.com/protocol/10.1007/978-1-4939-8618-7_3).
+
+First, let's load SignaLink
+```{r load_signalink}
 signalink_pathways <-
     OmnipathR::import_omnipath_annotations(
         resources = 'SignaLink_pathway',
         entity_types = 'protein',
         wide = TRUE
-    )
+    ) %>%
+  select(genesymbol, pathway)
+```
 
+#### Filter LIANA output to only RTK interactions
+```{r filter_by_liana}
+# Run liana with the OmniPath resource
+# here we pass it as an external resource, as we need it later
+op_resource <- decomplexify(liana_omni)
+# liana Wrap
+liana_res <- liana_wrap(seurat_object = testdata,
+                        resource='custom',
+                        external_resource = op_resource) %>%
+  liana_aggregate() # aggregate
+
+liana_rtk <- liana_res %>% 
+  left_join(signalink_pathways, by=c("ligand"="genesymbol")) %>%
+  rename(ligand_pathway = pathway) %>% 
+  left_join(signalink_pathways, by=c("receptor"="genesymbol")) %>%
+  rename(receptor_pathway = pathway) %>%
+  filter(ligand_pathway == "Receptor tyrosine kinase") %>%
+  filter(receptor_pathway == "Receptor tyrosine kinase")
+
+# Show only interactions in which BOTH the ligand and the receptor
+# are associated with the RTK pathway
+liana_rtk
+```
+
+#### Run LIANA with only specific interactions
+One could also do the reverse - i.e. filter the resource in regards to a given
+functional annotation term.
+```{r filter_by_op}
 # We join the functional annotations to OmniPath
 # and retain ONLY interactions in which BOTH the ligand and receptor 
 # are associated with RTK pathways
@@ -138,10 +207,10 @@ rkt_omni <- liana_omni %>%
   filter(source_geneset == "Receptor tyrosine kinase") %>%
   filter(target_geneset == "Receptor tyrosine kinase")
 
-# We can then again run LIANA
+# We can then again run LIANA with the RKT-associated interactions alone
 liana_rtk <- liana_wrap(seurat_object = testdata,
-                         resource='custom',
-                         external_resource = rkt_omni,
+                        resource='custom',
+                        external_resource = rkt_omni,
                         method=c("natmi", "sca", "squidpy")) %>%
   liana_aggregate()
 
@@ -149,26 +218,13 @@ liana_rtk %>% glimpse
 ```
 
 
-
-
 ### B) Perform an over-representation representation (ORA) on ligands/receptors
 Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB  
 genesets in preferentially ranked ligand-receptor interactions from LIANA.
 
-#### RUN liana
-First, let's run LIANA with the OmniPath `intercellular` resource as in the manuscript.
+#### First, format LIANA's output
 ```{r liana_wrap, message = FALSE, print = FALSE}
-# Run liana with the OmniPath resource
-# here we pass it as an external resource, as we need it later
-op_resource <- decomplexify(liana_omni)
-# liana Wrap
-liana_res <- liana_wrap(seurat_object = testdata,
-                        resource='custom',
-                        external_resource = op_resource) %>%
-  liana_aggregate() # aggregate
-
-
-# we keep only the columns that we need
+# we take liana from above and keep only the columns that we need
 # in this case we will use the aggragate for all methods
 liana_form <- liana_res %>%
   select(source, ligand, target, receptor, aggregate_rank) %>%
@@ -184,7 +240,6 @@ liana_form
 
 #### Obtain MSigDB Genesets from OmniPath - takes a while :)
 ```{r load_msig}
-
 msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
                                                  wide = TRUE) %>%
   filter(collection=="hallmark") %>%
@@ -278,47 +333,7 @@ liana_enrich <- liana_form %>%
 liana_enrich
 ```
 
-
-## Under the hood
-In reality, `generate_omni` is just a wrapper function that calls the appropriate `OmniPathR` functions
-and simplifies their filtering according to liana-appropriate format.
-
-```{r omnipathr, message = FALSE, print = FALSE}
-# reproduce cust_op as from above with OmniPathR alone
-
-# import the OmniPathR intercell network component
-ligrec <- OmnipathR::import_intercell_network()
-
-# filter out the complexes
-ligrec %<>%
-  filter(!(entity_type_intercell_source == "complex" |
-             entity_type_intercell_target == "complex"))
-
-
-# apply filtering according to curation and localisation
-ligrec %<>% 
-  OmnipathR::filter_intercell_network(loc_consensus_percentile = 30,
-                                      consensus_percentile = NULL,
-                                      transmitter_topology = c('secreted',
-                                                               'plasma_membrane_transmembrane',
-                                                               'plasma_membrane_peripheral'),
-                                      receiver_topology = c('plasma_membrane_transmembrane',
-                                                            'plasma_membrane_peripheral'),
-                                      min_curation_effort = 1,
-                                      ligrecextra = FALSE)
-
-# remove duplicate LRs
-ligrec %<>% 
-  distinct_at(.vars = c("source_genesymbol", 
-                              "target_genesymbol"),
-                    .keep_all = TRUE)
-
-all_equal(ligrec, cust_omni)
-
-```
 To make use of the full potential of [OmniPathR](https://github.com/saezlab/OmnipathR) we kindly refer the user to it.
-
-It is worth noting that at this point, this tutorial only covers the intercellular component of OmniPathR, but future versions will aim to bridge this with its [intracellular part](https://omnipathdb.org/#about).
 
 ## Session information
 ```{r session_info, echo=TRUE}
