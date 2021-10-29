@@ -47,9 +47,9 @@ cytotalk_score <- function(lr_res,
     select(source, target,
            ligand, ligand.complex,
            receptor, receptor.complex,
-           ligand.pem, receptor.pem,
-           es, Nes,
-           source.nst, target.nst, nst, Nnst,
+           # ligand.pem, receptor.pem,
+           # es, Nes,
+           # source.nst, target.nst, nst, Nnst,
            !!score_col)
 }
 
