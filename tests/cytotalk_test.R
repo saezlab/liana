@@ -14,7 +14,7 @@ call_cytotalk <- function(seurat_object,
                           op_resouce,
                           assay.type = "logcounts") {
 
-    set.seed(1234)
+    set.seed(1004)
     # Seurat to SCE
     ligand_receptor_df <- op_resource[, c("source_genesymbol", "target_genesymbol")]
     colnames(ligand_receptor_df) <- c("ligand", "receptor")
@@ -42,7 +42,7 @@ call_cytotalk <- function(seurat_object,
     nst_scores <- compute_nst_scores(sce = sce,
                                      ligand_receptor_df = ligand_receptor_df,
                                      assay.type = assay.type,
-                                     seed = 1234)
+                                     seed = 1004)
 
     # compute all possible pairs of cell types
     pairs <- combn(x = unique(colLabels(sce)), m = 2, simplify = FALSE)

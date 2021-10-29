@@ -38,6 +38,13 @@ cpdb_out <- liana_wrap(seurat_object,
 saveRDS(cpdb_out, file.path(liana_path, "testdata",
                             "output", "liana_cpdb.RDS"))
 
+# cytotalk
+cytotalk_out <- liana_wrap(seurat_object,
+                             method = c('cytotalk'),
+                             resource = c('OmniPath'))
+saveRDS(cytotalk_score, file.path(liana_path, "testdata",
+                                  "output", "liana_cytotalk.RDS"))
+
 
 # Recomplexify Output ----
 lr_cmplx <- liana_pipe(seurat_object,

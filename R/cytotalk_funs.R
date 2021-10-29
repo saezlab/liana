@@ -7,7 +7,9 @@
 #' @import SingleCellExperiment tibble tidyr dplyr
 cytotalk_score <- function(lr_res,
                            sce,
-                           score_col){
+                           score_col,
+                           assay.type,
+                           seed){
 
   # NST - in LIANA wrap
   nst_scores <- compute_nst_scores(sce = sce,
@@ -17,7 +19,7 @@ cytotalk_score <- function(lr_res,
                                      distinct() %>%
                                      arrange(ligand, receptor),
                                    assay.type = assay.type,
-                                   seed = 1004)
+                                   seed = seed)
 
   lr_res %>%
     ungroup() %>%
@@ -174,7 +176,7 @@ compute_mi_dist <- function(exp1, exp2, n_bins) {
   mi <- H1 + H2 - H12
 
   norm <- min(c(H1, H2))
-  mi_dist <- -log10(mi / norm)
+  suppressWarnings(mi_dist <- -log10(mi / norm))
 
   return(mi_dist)
 

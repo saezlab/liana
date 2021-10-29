@@ -25,7 +25,7 @@
 #' @export
 liana_wrap <- function(seurat_object,
                        method = c('natmi', 'connectome', 'logfc',
-                                  'cellchat', 'sca', 'squidpy'),
+                                  'cellchat', 'sca', 'squidpy', "cytotalk"),
                        resource = c('OmniPath'),
                        external_resource,
                        .simplify = TRUE,

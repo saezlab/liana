@@ -47,6 +47,7 @@ liana_defaults <- function(
     squidpy.params = NULL,
     call_sca.params = NULL,
     cellphonedb.params = NULL,
+    cytotalk.params = NULL,
     permutation.params = NULL,
     liana_pipe.params = NULL,
     liana_call.params = NULL,
@@ -110,6 +111,11 @@ liana_defaults <- function(
         organism = "human"
         )
 
+    # CytoTalk
+    cytotalk.defaults <- list(
+        assay.type = assay.type,
+        seed = seed
+    )
 
     # SingleCellSignalR Defaults
     sca.defaults <- list(
@@ -174,6 +180,9 @@ liana_defaults <- function(
 
         'squidpy' = squidpy.params %<>%
             reassign_params(., squidpy.defaults),
+
+        "cytotalk" = cytotalk.params %<>%
+            reassign_params(., cytotalk.defaults),
 
         # external call_* functions
         'call_sca' = call_sca.params %<>%
