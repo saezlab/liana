@@ -80,6 +80,15 @@ setClass("ScoreSpecifics",
                 score_fun = cellphonedb_score,
                 columns = c("ligand.trunc", "receptor.trunc")
             ),
+        "cytotalk" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cytotalk",
+                method_score = "crosstalk_score",
+                descending_order = TRUE,
+                score_fun = cytotalk_score,
+                columns = c("receptor.pem", "ligand.pem")
+            ),
         "squidpy" =
             methods::new(
                 "ScoreSpecifics",

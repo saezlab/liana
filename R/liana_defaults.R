@@ -152,7 +152,7 @@ liana_defaults <- function(
         )
 
 
-    # List of Defaults (reasigned if needed)
+    # List of Defaults (re-assigned if needed)
     default_args <- list(
         "cellphonedb" = cellphonedb.params %<>%
             reassign_params(., cellphonedb.defaults),

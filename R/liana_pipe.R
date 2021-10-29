@@ -81,6 +81,10 @@ liana_pipe <- function(seurat_object,
                            values_from = value) %>%
         column_to_rownames("gene")
 
+    # calculate PEM scores
+    pem_scores <- compute_pem_scores(sce = sce,
+                                     assay.type = assay.type)
+
     # Get Log2FC
     logfc_df <- get_log2FC(sce, assay.type)
 
@@ -165,6 +169,15 @@ liana_pipe <- function(seurat_object,
                    source_target = "target",
                    entity = "receptor",
                    type = "trunc") %>%
+        # Join PEM scores
+        join_means(means = pem_scores,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "pem") %>%
+        join_means(means = pem_scores,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "pem") %>%
         # logFC
         join_log2FC(logfc_df,
                     source_target = "source",
