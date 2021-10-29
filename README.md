@@ -34,7 +34,7 @@ The tools implemented in this repository are:
 - [Connectome](https://github.com/msraredon/Connectome)*
 - [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR)* (SCA)
 - [iTALK](https://github.com/Coolgenome/iTALK) (logfc)*
-  
+- [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired Cross-talk Scores (CTSs)
   
 *The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
