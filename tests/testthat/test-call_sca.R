@@ -13,6 +13,7 @@ test_that("Test SingleCellSignalR", {
                      .format = TRUE,
                      s.score = 0,
                      logFC = log2(1.5)
+
     )
 
     expect_equal(exp1, res1)
