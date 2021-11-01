@@ -6,8 +6,8 @@
 #' @param nboot number of bootstraps to calculate p-value
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
-#' @param .raw_use whether use the raw data or gene expression data pojectected
-#'    to a ppi
+#' @param .raw_use whether use the raw data or gene expression data projectected
+#'    to a ppi (should be kept to TRUE)
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
@@ -25,7 +25,7 @@
 #'
 #' @export
 #'
-#' @details CellChat's objects are not documented/exported thus the
+#' @details CellChat's objects are not lazily documented/exported thus the
 #'   whole package has to be imported.
 call_cellchat <- function(op_resource,
                           seurat_object,
