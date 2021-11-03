@@ -58,7 +58,8 @@ Imports:
     scater,
     logger,
     OmnipathR,
-    RobustRankAggreg
+    RobustRankAggreg,
+    entropy
 Suggests:
     BiRewire,
     CellChat,
@@ -67,8 +68,7 @@ Suggests:
     rmarkdown,
     workflowr,
     testthat (>= 3.0.0),
-    sessioninfo,
-    entropy
+    sessioninfo
 Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
