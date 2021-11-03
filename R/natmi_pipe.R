@@ -74,6 +74,7 @@ call_natmi <- function(
     .natmi_path = NULL,
     .delete_input_output = FALSE){
 
+    # Get Reticulate path
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
                              conda = "auto",
                              required = TRUE)

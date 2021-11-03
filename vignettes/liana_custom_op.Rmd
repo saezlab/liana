@@ -22,11 +22,10 @@ how to use `liana` with the customized resource.
 
 #### Load Prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
+require(tidyverse)
 require(liana)
-require(tibble)
 require(purrr)
 require(magrittr)
-require(dplyr)
 
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -172,7 +171,7 @@ signalink_pathways <-
 ```{r filter_by_liana}
 # Run liana with the OmniPath resource
 # here we pass it as an external resource, as we need it later
-op_resource <- decomplexify(liana_omni)
+op_resource <- liana:::decomplexify(liana_omni)
 # liana Wrap
 liana_res <- liana_wrap(seurat_object = testdata,
                         resource='custom',
