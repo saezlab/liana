@@ -203,7 +203,8 @@ FormatNatmi <- function(output_path,
         separate(value,
                  into = c("resource", "file"),
                  remove = FALSE,
-                 extra = "drop") %>%
+                 extra = "drop",
+                 sep="\\/") %>%
         filter(resource %in% resource_names) %>%
         mutate(value =  value %>% map(function(csv)
             read.csv(str_glue("{output_path}/{csv}")))) %>%
