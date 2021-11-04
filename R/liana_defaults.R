@@ -147,7 +147,8 @@ liana_defaults <- function(
         .write_data = TRUE,
         .seed = seed,
         .natmi_path = NULL,
-        .delete_input_output = FALSE
+        .delete_input_output = FALSE,
+        reso_name = "placeholder"
     )
 
     # iTalk Defaults

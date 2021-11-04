@@ -120,7 +120,7 @@ call_natmi <- function(
               file = file.path(.input_path, meta_file),
               row.names = FALSE)
 
-    log_info(str_glue("Saving resource to {.natmi_path}/lrdbs"))
+    log_info(str_glue("Saving resource to {.natmi_path}/lrdbs/{reso_name}"))
     # Deal with Default (i.e. NULL)
     if(is.null(op_resource)){
         reso_name <- "lrc2p"
