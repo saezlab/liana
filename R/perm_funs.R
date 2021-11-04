@@ -1,27 +1,3 @@
-
-#' Helper custom map function
-#'
-#' @inheritParams purrr::map
-#' @param parallelize whether to parallelize
-#' @param workers Number of workers to be used in parallelization
-#' @param ... params passed to the called function and to map functions
-map_custom <- function(.x, .f, parallelize, workers, ...){
-    if(parallelize){
-        future::plan(future::multisession, workers = workers)
-        furrr::future_map(.x = .x,
-                          .f = .f,
-                          .options = furrr::furrr_options(seed = TRUE),
-                          ...)
-
-    } else{
-        purrr::map(.x = .x,
-                   .f = .f,
-                   ...)
-    }
-}
-
-
-
 #' Helper Function to generate shuffled means
 #'
 #' @param lr_res liana_pipe results
@@ -170,5 +146,29 @@ mean_permute <- function(col_labels,
                                    ids=col_labels,
                                    statistics = c("mean"),
                                    assay.type = assay.type)@assays@data$mean
+}
+
+
+
+
+#' Helper custom map function
+#'
+#' @inheritParams purrr::map
+#' @param parallelize whether to parallelize
+#' @param workers Number of workers to be used in parallelization
+#' @param ... params passed to the called function and to map functions
+map_custom <- function(.x, .f, parallelize, workers, ...){
+    if(parallelize){
+        future::plan(future::multisession, workers = workers)
+        furrr::future_map(.x = .x,
+                          .f = .f,
+                          .options = furrr::furrr_options(seed = TRUE),
+                          ...)
+
+    } else{
+        purrr::map(.x = .x,
+                   .f = .f,
+                   ...)
+    }
 }
 

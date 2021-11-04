@@ -69,7 +69,8 @@ liana_pipe <- function(seurat_object,
                                              statistics = c("mean"))
     scaled <- scaled@assays@data$mean
 
-    # calculate truncated mean
+    # calculate truncated mean (need to remove this and keep the mean instead)
+    # used in CPDB - but not needed
     trunc_mean <- aggregate(t(as.matrix(sce@assays@data[[assay.type]])),
                             list(colLabels(sce)),
                             FUN=mean, trim=trim) %>%
