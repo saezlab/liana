@@ -40,14 +40,12 @@ get_permutations <- function(lr_res,
                              sce,
                              nperms = 1000,
                              seed = 1234,
-                             trim = 0.1,
                              parallelize = FALSE,
                              workers = 4,
                              assay.type = "logcounts"){
     # remove genes absent in lr_res
     lr_genes <- union(lr_res$ligand, lr_res$receptor)
     sce <- sce[rownames(sce) %in% lr_genes, ]
-    sce_mat <- t(as.matrix(sce@assays@data[[assay.type]]))
 
     # shuffle columns
     set.seed(seed)
@@ -64,8 +62,8 @@ get_permutations <- function(lr_res,
     # generate mean permutations
     perm <- map_custom(.x = shuffled_clusts,
                        .f = mean_permute,
-                       sce_mat = sce_mat,
-                       trim = trim,
+                       sce = sce,
+                       assay.type = assay.type,
                        pb = progress_bar,
                        parallelize = parallelize,
                        workers = workers)
@@ -156,7 +154,6 @@ cellphonedb_score <- function(lr_res,
 #'
 #' @param sce_matrix single cell expression matrix (transposed)
 #' @param col_labels cluster labels
-#' @param trim truncate ends of mean
 #' @param pb progress bar object
 #'
 #' @importFrom dplyr progress_estimated
@@ -164,21 +161,14 @@ cellphonedb_score <- function(lr_res,
 #' @return Returns a list of means per gene calculated with reshuffled
 #'    cluster/cell identity labels
 mean_permute <- function(col_labels,
-                         sce_mat,
-                         trim,
-                         pb){
+                         sce,
+                         pb,
+                         assay.type){
     pb$tick()$print()
 
-    stats::aggregate(sce_mat,
-                     list(col_labels),
-                     FUN=mean,
-                     trim=trim) %>%
-        tibble::as_tibble() %>%
-        dplyr::rename(celltype = Group.1) %>%
-        tidyr::pivot_longer(-celltype, names_to = "gene") %>%
-        tidyr::pivot_wider(names_from=celltype,
-                           id_cols=gene,
-                           values_from=value) %>%
-        tibble::column_to_rownames("gene")
+    scuttle::summarizeAssayByGroup(sce,
+                                   ids=col_labels,
+                                   statistics = c("mean"),
+                                   assay.type = assay.type)@assays@data$mean
 }
 

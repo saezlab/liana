@@ -67,8 +67,7 @@ liana_defaults <- function(
         nperms = 1000,
         parallelize = parallelize,
         workers = workers,
-        seed = seed,
-        trim = trim
+        seed = seed
         )
 
     # LIANA_pipe defaults

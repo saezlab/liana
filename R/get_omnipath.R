@@ -18,7 +18,7 @@ get_lr_resources <- function(){
             'HPMR',
             'Guide2Pharma',
             'connectomeDB2020',
-            'talklr',
+            'talklr', # remove?
             'CellTalkDB'
         )
     )
@@ -117,8 +117,7 @@ reform_omni <- function(ligrec){
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
                         .keep_all = TRUE)) %>%
-        append(list("Reshuffled" = shuffle_omnipath(.$connectomeDB2020),
-                    "Default" = NULL),
+        append(list("Default" = NULL),
                .)
 }
 

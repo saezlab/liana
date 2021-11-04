@@ -26,7 +26,7 @@ liana_pipe <- function(seurat_object,
                        test.type = "wilcox",
                        pval.type = "all",
                        expr_prop = 0.1,
-                       trim = 0.1,
+                       trim = 0,
                        assay = "RNA",
                        assay.type = "logcounts"){
 
