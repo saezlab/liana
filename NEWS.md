@@ -1,8 +1,8 @@
 # LIANA 0.0.3
 ## Improvements
-* The R re-implementation of CellPhoneDB's permutation algorithm was optimized
-and set as the default option in LIANA (replacing the re-implementation of the
-same algorithm from squidpy)
+* The R re-implementation of CellPhoneDBv2's permutation algorithm was optimized
+to work with sparse matrices (and is now uqicker), and set as the default option
+in LIANA (replacing the re-implementation of the same algorithm from squidpy)
 
 
 # LIANA 0.0.2
