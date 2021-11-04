@@ -35,3 +35,27 @@ def_list <- liana_def_test(seurat_object,
                            cellchat.params=list(nboot=1000),
                            method = c('call_natmi', 'call_connectome', 'logfc',
                                       'cellchat', 'call_sca', 'squidpy'))
+
+
+#
+liana_path <- system.file(package = "liana")
+testdata <-
+    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
+liana_res <- liana_wrap(testdata,
+                        method = c(
+                            'call_natmi',
+                            'call_connectome',
+                            'logfc',
+                            'cellchat',
+                            'call_sca',
+                            'cellphonedb',
+                            "cytotalk"
+                            ),
+                        expr_prop=0.1,
+                        cellchat.params = list(nboot=1000,
+                                               expr_prop = 0))
+
+saveRDS(liana_res, "data/output/test123.RDS")
+
+
