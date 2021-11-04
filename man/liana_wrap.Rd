@@ -6,7 +6,8 @@
 \usage{
 liana_wrap(
   seurat_object,
-  method = c("natmi", "connectome", "logfc", "cellchat", "sca", "squidpy", "cytotalk"),
+  method = c("natmi", "connectome", "logfc", "cellchat", "sca", "cellphonedb",
+    "cytotalk"),
   resource = c("OmniPath"),
   external_resource,
   .simplify = TRUE,

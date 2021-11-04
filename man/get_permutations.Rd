@@ -9,7 +9,6 @@ get_permutations(
   sce,
   nperms = 1000,
   seed = 1234,
-  trim = 0.1,
   parallelize = FALSE,
   workers = 4,
   assay.type = "logcounts"
@@ -23,9 +22,6 @@ get_permutations(
 \item{nperms}{number of permutations}
 
 \item{seed}{number used to set random seed}
-
-\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each end
-of x before the `truncated mean` is computed (0.1 by default)}
 
 \item{parallelize}{whether to parallelize}
 

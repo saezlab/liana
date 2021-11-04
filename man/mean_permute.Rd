@@ -5,14 +5,14 @@
 \title{Function to calculate mean LR expression from shuffled cluster label matrices
  as done in CellPhoneDB}
 \usage{
-mean_permute(col_labels, sce_mat, trim, pb)
+mean_permute(col_labels, sce, pb, assay.type)
 }
 \arguments{
 \item{col_labels}{cluster labels}
 
-\item{trim}{truncate ends of mean}
-
 \item{pb}{progress bar object}
+
+\item{assay.type}{assay type (counts, logcounts, etc)}
 
 \item{sce_matrix}{single cell expression matrix (transposed)}
 }

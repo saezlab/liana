@@ -131,6 +131,7 @@ cellphonedb_score <- function(lr_res,
 #' @param sce_matrix single cell expression matrix (transposed)
 #' @param col_labels cluster labels
 #' @param pb progress bar object
+#' @param assay.type assay type (counts, logcounts, etc)
 #'
 #' @importFrom dplyr progress_estimated
 #'
