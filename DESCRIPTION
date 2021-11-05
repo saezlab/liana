@@ -18,6 +18,13 @@ Authors@R: c(
         comment = c(ORCID = "0000-0003-3955-5110")
     ),
     person(
+        given = "Martin",
+        family = "Garrido Rodríguez",
+        role = c("aut"),
+        email = "martin.garrido@uni-heidelberg.de",
+        comment = c(ORCID = "0000-0003-4125-5643")
+    ),
+    person(
         given = "Denes",
         family = "Turei",
         role = c("aut"),
