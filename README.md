@@ -28,7 +28,7 @@ LIANA also goes a step further as it provides:
 
 The tools implemented in this repository are:
 
-- [CellPhoneDB](https://github.com/Teichlab/cellphonedb) method (via [Squidpy](https://squidpy.readthedocs.io/en/latest/))
+- [CellPhoneDBv2](https://github.com/Teichlab/cellphonedb)
 - [CellChat](https://github.com/sqjin/CellChat)
 - [NATMI](https://github.com/forrest-lab/NATMI)*
 - [Connectome](https://github.com/msraredon/Connectome)*
@@ -90,16 +90,6 @@ If you wish to make use of the CellChat algorithm:
 devtools::install_github("sqjin/CellChat")
 ```
 
-If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up
-a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
-environment by running the following lines in the terminal:
-```{bash}
-conda create -n liana_env
-conda activate liana_env
-conda install -c anaconda python=3.8.5
-pip install squidpy
-```
-  
   
 ## Tutorial
 See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!

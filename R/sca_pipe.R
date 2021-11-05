@@ -93,10 +93,10 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
     pluck("full-network") %>%
     separate(ligand,
              into = c("source", "ligand"),
-             sep = "[.]") %>%
+             sep = "⊎") %>%
     separate(receptor,
              into = c("target", "receptor"),
-             sep = "[.]") %>%
+             sep = "⊎") %>%
     select(source, ligand, target, receptor, LRscore) %>%
     as_tibble()
   return(sca_res)
