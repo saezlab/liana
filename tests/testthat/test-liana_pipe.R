@@ -19,13 +19,14 @@ test_that("Test liana pipe", {
     lr_cmplx <- liana_pipe(seurat_object,
                            op_resource = select_resource("CellPhoneDB")[[1]] %>% decomplexify())
 
+
+    recomplex_exp <- readRDS(file.path(liana_path, "testdata",
+                                       "output", "recomplex.RDS"))
     recomplex <- recomplexify(lr_cmplx,
                               .score_specs()[["sca"]]@columns,
                               complex_policy ='min0')
-    recomplex_exp <- readRDS(file.path(liana_path, "testdata",
-                                       "output", "recomplex.RDS"))
 
-    expect_equal(recomplex, recomplex_exp)
+    expect_equal(recomplex_exp, recomplex)
 })
 
 

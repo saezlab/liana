@@ -13,21 +13,21 @@ saveRDS(pipe_out, file.path(liana_path, "testdata",
 
 
 # Scores Output ----
-conn_score <- get_connectome(pipe_out)
-saveRDS(conn_score, file.path(liana_path, "testdata",
+conn_out <- get_connectome(pipe_out)
+saveRDS(conn_out, file.path(liana_path, "testdata",
                             "output", "conn_score.RDS"))
 
-logfc_score <- get_logfc(pipe_out)
-saveRDS(logfc_score, file.path(liana_path, "testdata",
+logfc_out <- get_logfc(pipe_out)
+saveRDS(logfc_out, file.path(liana_path, "testdata",
                             "output", "logfc_score.RDS"))
 
-natmi_score <- get_natmi(pipe_out)
-saveRDS(natmi_score, file.path(liana_path, "testdata",
+natmi_out <- get_natmi(pipe_out)
+saveRDS(natmi_out, file.path(liana_path, "testdata",
                             "output", "natmi_score.RDS"))
 
-sca_score <- get_sca(pipe_out)
-saveRDS(sca_score, file.path(liana_path, "testdata",
-                              "output", "sca_score.RDS"))
+sca_out <- get_sca(pipe_out)
+saveRDS(sca_out, file.path(liana_path, "testdata",
+                           "output", "sca_score.RDS"))
 
 
 # liana permutations and cpdb output
@@ -40,10 +40,10 @@ saveRDS(cpdb_out, file.path(liana_path, "testdata",
 
 # cytotalk
 cytotalk_out <- liana_wrap(seurat_object,
-                             method = c('cytotalk'),
-                             resource = c('OmniPath'))
-saveRDS(cytotalk_score, file.path(liana_path, "testdata",
-                                  "output", "liana_cytotalk.RDS"))
+                           method = c('cytotalk'),
+                           resource = c('OmniPath'))
+saveRDS(cytotalk_out, file.path(liana_path, "testdata",
+                                "output", "liana_cytotalk.RDS"))
 
 
 # Recomplexify Output ----
@@ -60,7 +60,7 @@ saveRDS(recomplex, file.path(liana_path, "testdata",
 
 # liana Wrapper Output ----
 wrap_out <- liana_wrap(seurat_object,
-                       method = c('sca','squidpy'),
+                       method = c('logfc','natmi', 'connectome'),
                        resource = c('OmniPath'))
 saveRDS(wrap_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))

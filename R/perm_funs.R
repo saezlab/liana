@@ -61,7 +61,8 @@ cellphonedb_score <- function(lr_res,
                               perm_means,
                               parallelize,
                               workers,
-                              score_col = "pvalue"){
+                              score_col = "pvalue",
+                              ...){
     og_res <- lr_res %>%
         select(ligand, receptor, source, target)
 

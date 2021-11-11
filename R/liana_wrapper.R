@@ -38,10 +38,10 @@ liana_wrap <- function(seurat_object,
   if(resource!='custom'){
     resource %<>% select_resource
   } else{
-    resource = list('custom_resource'=external_resource)
+    resource = list('custom_resource' = external_resource)
   }
 
-  if(any(method %in% c("natmi", "connectome", # change this
+  if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
                        "logfc", "sca", "cellphonedb", "cytotalk"))){
 
     # LIANA pipe map over resource
@@ -57,7 +57,8 @@ liana_wrap <- function(seurat_object,
                       append(
                         list("seurat_object" = seurat_object,
                              "op_resource" = reso %>% decomplexify()),
-                        liana_defaults(...)[["liana_pipe"]])
+                        liana_defaults(...)[["liana_pipe"]]
+                        )
                       )
         }) %>%
       setNames(names(resource))
@@ -89,7 +90,9 @@ liana_wrap <- function(seurat_object,
 
              } else if(method_name == "cellphonedb"){
                # get lr_res for this specific resource
-               lr_res <- lr_results[[reso_name]]
+               lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
+                                          method_name,
+                                          ...)
 
                # permutation-based approaches
                perm_means <-
@@ -114,7 +117,9 @@ liana_wrap <- function(seurat_object,
                rlang::invoke(.method, args)
 
              } else if(method_name == "cytotalk"){
-               lr_res <- lr_results[[reso_name]]
+               lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
+                                          method_name,
+                                          ...)
 
                args <- append(
                  list(lr_res = lr_res,
@@ -129,14 +134,17 @@ liana_wrap <- function(seurat_object,
                rlang::invoke(.method, args)
 
             } else {
-               # re-implemented non-permutation approaches
-               args <- append(
-                 list("seurat_object" = seurat_object,
-                      lr_res = lr_results[[reso_name]]),
-                 liana_defaults(...)[["liana_call"]]
-                 )
-               rlang::invoke(.method,  args)
-               }
+              # re-implemented non-permutation approaches
+              args <- append(
+                list("seurat_object" = seurat_object,
+                     lr_res = .filt_liana_pipe(lr_results[[reso_name]],
+                                               method_name,
+                                               ...)
+                     ),
+                liana_defaults(...)[["liana_call"]]
+                )
+              rlang::invoke(.method,  args)
+              }
              })
            }, quiet = FALSE)) %>%
     # format errors
@@ -262,3 +270,29 @@ show_resources <- function(){
         res %>% pluck(.x)
     } else{ res }
 }
+
+
+#' Helper Function to do prop filtering of liana_pipe output
+#' @param liana_res resutls from `liana_pipe`
+#' @param method current method
+#' @inheritDotParams liana_defaults
+.filt_liana_pipe <- function(liana_res, method, ...){
+
+  # Convert prop_filt logical to 0 or 1
+  #  (step not required, but should be explicit)
+  filt_or_not <- as.integer(liana_defaults(...)[[method]]$prop_filt)
+
+  # set to value of expr_prop from defaults, or 0 if not to filter
+  expr_prop <- liana_defaults(...)$expr_prop * filt_or_not
+
+  if(expr_prop > 0){
+    liana_res %>%
+      filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+  } else if(expr_prop == 0){
+    liana_res
+  } else{ # shouldn't happen (sanity check)
+    stop("Expression Proportion is Negative")
+  }
+
+}
+

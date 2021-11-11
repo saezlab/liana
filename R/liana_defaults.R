@@ -13,8 +13,10 @@
 #' @param decomplexify specify whether complexes in the resource should be
 #'   dissociated and taken into account
 #' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
-#'  One should consider setting this to an appropriate value between 0 and 1,
-#'  as an assumptions of these methods is that communication is coordinated at the cluster level.
+#'  This is further applied at a method-specific level - it is not applied to
+#'   Connectome and Cytotalk, as these methods calculate/normalize the score (or
+#'   statistics used in their scores) across all cell types or cell type pairs.
+#'
 #' @param seed random seed integer
 #' @param trim the fraction (0 to 0.5) of observations to be trimmed from each
 #'  end of x before the mean is computed. This is relevant only for the
@@ -43,24 +45,38 @@ liana_defaults <- function(
     trim = 0,
     parallelize = FALSE,
     workers = 8,
-    cellchat.params = NULL,
-    squidpy.params = NULL,
-    call_sca.params = NULL,
-    cellphonedb.params = NULL,
-    cytotalk.params = NULL,
     permutation.params = NULL,
     liana_pipe.params = NULL,
     liana_call.params = NULL,
+    cellphonedb.params = NULL,
+    natmi.params = NULL,
+    sca.params = NULL,
+    connectome.params = NULL,
+    cytotalk.params = NULL,
+    logfc.params = NULL,
+    cellchat.params = NULL,
+    squidpy.params = NULL,
+    call_sca.params = NULL,
     call_natmi.params = NULL,
     call_connectome.params = NULL,
     call_italk.params = NULL){
 
-    # Define Defaults
-    # CellPhoneDB defaults
-    cellphonedb.defaults <- list(
-        workers = workers,
-        parallelize = parallelize
-        )
+    # Internal ----
+    # LIANA_pipe defaults
+    liana_pipe.defaults <- list(
+        decomplexify = decomplexify,
+        test.type = "wilcox",
+        pval.type = "all",
+        trim = trim,
+        assay = assay,
+        assay.type = assay.type
+    )
+
+    # liana_call.defaults
+    liana_call.defaults <- list(
+        complex_policy = "min0",
+        decomplexify = decomplexify # should always be true
+    )
 
     # Permutation defaults (permutations to be used in e.g. CPDB)
     permutation.defaults <- list(
@@ -68,24 +84,47 @@ liana_defaults <- function(
         parallelize = parallelize,
         workers = workers,
         seed = seed
-        )
-
-    # LIANA_pipe defaults
-    liana_pipe.defaults <- list(
-        decomplexify = decomplexify,
-        test.type = "wilcox",
-        pval.type = "all",
-        expr_prop = expr_prop,
-        trim = trim,
-        assay = assay,
-        assay.type = assay.type
-        )
-
-    # liana_call.defaults
-    liana_call.defaults <- list(
-        complex_policy = "min0",
-        decomplexify = decomplexify # should always be true
     )
+
+    # Define Defaults
+    # CellPhoneDB defaults
+    cellphonedb.defaults <- list(
+        workers = workers,
+        parallelize = parallelize,
+        prop_filt = TRUE
+        )
+
+    # NATMI
+    natmi.defaults <- list(
+        prop_filt = TRUE
+    )
+
+    # logFC
+    logfc.defaults <- list(
+        prop_filt = TRUE
+    )
+
+    ## Connectome and Cytotalk calculate scores are calculated at
+    ## the cell-cluster-pair level -> We don't apply prop filtering to those
+    # Connectome
+    connectome.defaults <- list(
+        prop_filt = FALSE
+    )
+
+    # CytoTalk
+    cytotalk.defaults <- list(
+        assay.type = assay.type,
+        seed = seed,
+        prop_filt = FALSE
+    )
+
+    # SCA
+    sca.defaults <- list(
+        prop_filt = TRUE
+    )
+
+
+    # External ----
 
     # Squidpy defaults
     squidpy.defaults <- list(
@@ -95,7 +134,7 @@ liana_defaults <- function(
         seed = as.integer(seed),
         assay = assay,
         assay.type = assay.type
-        )
+    )
 
     # CellChat Default
     cellchat.defaults <- list(
@@ -108,16 +147,10 @@ liana_defaults <- function(
         .do_parallel = FALSE,
         .raw_use = TRUE,
         organism = "human"
-        )
-
-    # CytoTalk
-    cytotalk.defaults <- list(
-        assay.type = assay.type,
-        seed = seed
     )
 
     # SingleCellSignalR Defaults
-    sca.defaults <- list(
+    call_sca.defaults <- list(
         assay = assay,
         .format = TRUE,
         s.score = 0,
@@ -125,7 +158,7 @@ liana_defaults <- function(
         )
 
     # Connectome Defaults
-    conn.defaults <- list(
+    call_conn.defaults <- list(
         min.cells.per.ident = 1,
         p.values = TRUE,
         calculate.DOR = FALSE,
@@ -135,7 +168,7 @@ liana_defaults <- function(
         )
 
     # NATMI Defaults
-    natmi.defaults <- list(
+    call_natmi.defaults <- list(
         expr_file = "test_em.csv",
         meta_file = "metadata.csv",
         output_dir = "NATMI_results",
@@ -148,20 +181,18 @@ liana_defaults <- function(
         .natmi_path = NULL,
         .delete_input_output = FALSE,
         reso_name = "placeholder"
-    )
+        )
 
     # iTalk Defaults
-    italk.defaults <- list(
+    call_italk.defaults <- list(
         assay = assay,
         .format = TRUE,
         .DE = TRUE
         )
 
-
     # List of Defaults (re-assigned if needed)
     default_args <- list(
-        "cellphonedb" = cellphonedb.params %<>%
-            reassign_params(., cellphonedb.defaults),
+        "expr_prop" = expr_prop,
 
         # liana_scores (passed to get_* functions)
         "permutation" = permutation.params %<>%
@@ -170,33 +201,50 @@ liana_defaults <- function(
         "liana_pipe" = liana_pipe.params %<>%
             reassign_params(., liana_pipe.defaults),
 
-        # this thing needs to be either completely remove or moved to liana_wrap
+        # this thing needs to be either completely removed or moved to liana_wrap
         "liana_call" = liana_call.params %<>%
             reassign_params(., liana_call.defaults),
 
-        # call_* functions/pipes
+        "cellphonedb" = cellphonedb.params %<>%
+            reassign_params(., cellphonedb.defaults),
+
+        "cytotalk" = cytotalk.params %<>%
+            reassign_params(., cytotalk.defaults),
+
+        "connectome" = connectome.params %<>%
+            reassign_params(., connectome.defaults),
+
+        "natmi" = natmi.params %<>%
+            reassign_params(., natmi.defaults),
+
+        "sca" = sca.params %<>%
+            reassign_params(., sca.defaults),
+
+        "logfc" = logfc.params %<>%
+            reassign_params(., logfc.defaults),
+
+        # external methods
         "cellchat" = cellchat.params %<>%
             reassign_params(., cellchat.defaults),
 
         'squidpy' = squidpy.params %<>%
             reassign_params(., squidpy.defaults),
 
-        "cytotalk" = cytotalk.params %<>%
-            reassign_params(., cytotalk.defaults),
-
-        # external call_* functions
+        # call_* functions/pipes
         'call_sca' = call_sca.params %<>%
-            reassign_params(., sca.defaults),
+            reassign_params(., call_sca.defaults),
 
         'call_connectome' = call_connectome.params %<>%
-            reassign_params(., conn.defaults),
+            reassign_params(., call_conn.defaults),
 
         'call_natmi' = call_natmi.params %<>%
-            reassign_params(., natmi.defaults),
+            reassign_params(., call_natmi.defaults),
 
         'call_italk' = call_italk.params %<>%
-            reassign_params(., italk.defaults)
+            reassign_params(., call_italk.defaults)
     )
+
+    return(default_args)
 }
 
 

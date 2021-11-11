@@ -25,7 +25,6 @@ liana_pipe <- function(seurat_object,
                        decomplexify = TRUE,
                        test.type = "wilcox",
                        pval.type = "all",
-                       expr_prop = 0.1,
                        trim = 0,
                        assay = "RNA",
                        assay.type = "logcounts"){
@@ -189,10 +188,6 @@ liana_pipe <- function(seurat_object,
         # Global Mean
         mutate(global_mean = global_mean)
 
-    if(expr_prop > 0){
-        lr_res %<>%
-            filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
-    }
     message("LIANA: LR summary stats calculated!")
 
     if(decomplexify){

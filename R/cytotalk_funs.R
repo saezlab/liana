@@ -9,7 +9,8 @@ cytotalk_score <- function(lr_res,
                            sce,
                            score_col,
                            assay.type,
-                           seed){
+                           seed,
+                           ...){
 
   # NST - in LIANA wrap
   nst_scores <- compute_nst_scores(sce = sce,

@@ -8,7 +8,7 @@ test_that("Test liana wrapper", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_res.RDS"))
     res1 <- liana_wrap(seurat_object,
-                       method = c('sca','squidpy'),
+                       method = c('logfc','natmi', 'connectome'),
                        resource = c('OmniPath'))
 
     expect_equal(exp1, res1)
@@ -26,7 +26,7 @@ test_that("Test liana wrapper", {
 })
 
 
-# Test Default :Params
+# Test Default Params
 test_that("Test liana wrapper", {
     exp3 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_def_args.RDS"))
@@ -36,3 +36,15 @@ test_that("Test liana wrapper", {
 
     expect_equal(exp3, res3)
 })
+
+# Test Expression_prop filtering
+test_that("Test expr_prop filtering", {
+    liana_pipe_res <- readRDS(file.path(liana_path, "testdata",
+                                        "output", "liana_pipe.RDS"))
+
+    expect_equal(nrow(.filt_liana_pipe(liana_pipe_res, "connectome")), 9396)
+    expect_equal(nrow(.filt_liana_pipe(liana_pipe_res, "cellphonedb")), 662)
+
+})
+
+

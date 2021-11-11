@@ -2,21 +2,31 @@
 ## Improvements
 * The R re-implementation of CellPhoneDBv2's permutation algorithm was optimized
 to work with sparse matrices (and is now uqicker), and set as the default option
-in LIANA (replacing the re-implementation of the same algorithm from squidpy)
+in LIANA (replacing the re-implementation of the same algorithm from squidpy)  
+
+* Custom proportion filtering - Connectome and CytoTalk are now not filtered by
+expr_prop as this affects the way that their scores are calculated, since they 
+require all clusters/cluster pairs to be present to appropriately scale or
+normalize their scores.
+
 
 ## Bug Fixes
-* Fixed an issue where logFC was assigned only the value of the ligand
+* Fixed an issue where logFC was assigned only the value of the ligand   
+
 
 
 # LIANA 0.0.2
 
 ## New Features
-* [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired Cross-talk Scores (CTSs) were added.
-In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. 
-Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions,
+* [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired 
+Cross-talk Scores (CTSs) were added.
+In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with
+PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk
+scores calculated in CytoTalk to also allow for autocrine signalling interactions,
 and thus make cytotalk comparable to the rest of the methods in LIANA.
-Finally, as part of LIANA, CytoTalk's re-implemented scores would not take account of complexes and we also apply
-liana-specifc filtering such as according to `expr_prop`.
+Finally, as part of LIANA, CytoTalk's re-implemented scores would not take 
+account of complexes and we also apply liana-specifc filtering such as according
+to `expr_prop`.
 
 ## Changes
 
