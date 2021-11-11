@@ -131,19 +131,23 @@ sca_test %>%
 
 ### Run liana re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
 ```{r cellphonedb, message = FALSE, print = FALSE}
-# Run with non-log normalized counts
-# testdata %<>% Seurat::NormalizeData(normalization.method = "RC")
+# real dataset
+testdata <- readRDS("~/Repos/ligrec_decouple/data/input/citeseq/5k_pbmcs/5k_pbmcs_seurat.RDS")
+
 
 # run LIANA CPDB and Squidpy CPDB
 cpdb_reimplements <- liana_wrap(testdata,
-                                method = c('cellphonedb', 'squidpy'),
+                                method = c('squidpy', "cellphonedb"),
                                 resource = c('CellPhoneDB'),
                                 expr_prop = 0.1,
                                 trim = 0,
-                                assay.type = "logcounts")
+                                assay.type = "logcounts",
+                                squidpy.params=list(cluster_key="seurat_clusters"))
 
 liana_cpdb <- cpdb_reimplements$cellphonedb
 squidpy_cpdb <- cpdb_reimplements$squidpy
+squidpy_cpdb %<>% na.omit() # remove non-expressed (i.e. < 0.1)
+
 ```
 
 ### RUN original cpdb algorithm
@@ -221,7 +225,7 @@ liana_inter <- liana_cpdb %>% select(source, ligand, target, receptor)
 squidpy_inter <- squidpy_cpdb %>% select(source, ligand, target, receptor)
 
 
-setdiff(liana_inter, squidpy_inter)
+cpdb_diff <-setdiff(liana_inter, squidpy_inter)
 
 ```
 

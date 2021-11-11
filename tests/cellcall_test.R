@@ -202,3 +202,14 @@ liana_res %<>%
 
 
 cellcall_lr <- cellcall_out@data$expr_l_r %>% as_tibble(rownames="lr")
+
+
+#### Resource test
+cellcall_lr <- read.table("/home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0/cellcall/extdata/new_ligand_receptor_TFs.txt", header=TRUE)
+# * extended table is also available but the number does not match with what's reported in the paper
+
+cellcall_lr %>%
+    select(Ligand_Symbol, Receptor_Symbol) %>%
+    distinct() %>%
+    nrow()
+

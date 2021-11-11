@@ -63,7 +63,7 @@ liana_aggregate <- function(liana_res,
                 warning(str_glue("Unknown method name or missing specifics for: {method_name}"))
                 return()
             } else{
-                message(str_glue("Now aggragating {method_name}"))
+                message(str_glue("Now aggregating {method_name}"))
             }
 
             method_score <- .score_mode()[[method_name]]@method_score
@@ -162,6 +162,8 @@ liana_aggregate <- function(liana_res,
 #' @param liana_mlist liana list with method tibbles
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
 .aggregate_rank <- function(liana_mlist, ...){
+    message("Aggregating Ranks")
+
     liana_mlist %>%
         map(function(res){
             # bad practice, but almost unavoidable here...

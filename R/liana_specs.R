@@ -18,7 +18,9 @@ setClass("ScoreSpecifics",
                     method_score = "character",
                     descending_order= "logical",
                     score_fun = "function",
-                    columns = "character")
+                    columns = "character",
+                    prop_filt = "logical"
+                    )
 )
 
 
@@ -41,7 +43,8 @@ setClass("ScoreSpecifics",
                 method_score = "weight_sc",
                 descending_order = TRUE,
                 score_fun = connectome_score,
-                columns = c("ligand.scaled", "receptor.scaled")
+                columns = c("ligand.scaled", "receptor.scaled"),
+                prop_filt = FALSE
             ),
         "logfc" =
             methods::new(
@@ -50,7 +53,8 @@ setClass("ScoreSpecifics",
                 method_score = "logfc_comb",
                 descending_order = TRUE,
                 score_fun = logfc_score,
-                columns = c("ligand.log2FC", "receptor.log2FC")
+                columns = c("ligand.log2FC", "receptor.log2FC"),
+                prop_filt = TRUE
             ),
         "natmi" =
             methods::new(
@@ -60,7 +64,8 @@ setClass("ScoreSpecifics",
                 descending_order = TRUE,
                 score_fun = natmi_score,
                 columns = c("ligand.expr", "receptor.expr",
-                            "ligand.sum", "receptor.sum")
+                            "ligand.sum", "receptor.sum"),
+                prop_filt = TRUE
             ),
         "sca" =
             methods::new(
@@ -69,7 +74,8 @@ setClass("ScoreSpecifics",
                 method_score = "LRscore",
                 descending_order = TRUE,
                 score_fun = sca_score,
-                columns = c("ligand.expr", "receptor.expr", "global_mean")
+                columns = c("ligand.expr", "receptor.expr", "global_mean"),
+                prop_filt = TRUE
             ),
         "cellphonedb" =
             methods::new(
@@ -78,7 +84,8 @@ setClass("ScoreSpecifics",
                 method_score = "pvalue",
                 descending_order = FALSE,
                 score_fun = cellphonedb_score,
-                columns = c("ligand.trunc", "receptor.trunc")
+                columns = c("ligand.trunc", "receptor.trunc"),
+                prop_filt = TRUE
             ),
         "cytotalk" =
             methods::new(
@@ -87,7 +94,8 @@ setClass("ScoreSpecifics",
                 method_score = "crosstalk_score",
                 descending_order = TRUE,
                 score_fun = cytotalk_score,
-                columns = c("receptor.pem", "ligand.pem")
+                columns = c("receptor.pem", "ligand.pem"),
+                prop_filt = FALSE
             ),
         "squidpy" =
             methods::new(
@@ -96,7 +104,8 @@ setClass("ScoreSpecifics",
                 method_score = "pvalue",
                 descending_order = FALSE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                prop_filt = TRUE
             ),
         "cellchat" =
             methods::new(
@@ -105,7 +114,8 @@ setClass("ScoreSpecifics",
                 method_score = "pval",
                 descending_order = FALSE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                prop_filt = TRUE
             ),
 
         # deprecated
@@ -116,7 +126,8 @@ setClass("ScoreSpecifics",
                 method_score = "weight_sc",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                prop_filt = FALSE
             ),
         "call_sca" = methods::new(
             "ScoreSpecifics",
@@ -124,7 +135,8 @@ setClass("ScoreSpecifics",
             method_score = "LRscore",
             descending_order = TRUE,
             score_fun = function(){},
-            columns = ""
+            columns = "",
+            prop_filt = TRUE
         ),
         "call_italk" =
             methods::new(
@@ -133,7 +145,8 @@ setClass("ScoreSpecifics",
                 method_score = "logfc_comb",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                prop_filt = TRUE
             ),
         "call_natmi" =
             methods::new(
@@ -142,7 +155,8 @@ setClass("ScoreSpecifics",
                 method_score = "edge_specificity",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                prop_filt = TRUE
             )
     )
 }

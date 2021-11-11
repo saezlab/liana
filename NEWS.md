@@ -4,6 +4,9 @@
 to work with sparse matrices (and is now uqicker), and set as the default option
 in LIANA (replacing the re-implementation of the same algorithm from squidpy)
 
+## Bug Fixes
+* Fixed an issue where logFC was assigned only the value of the ligand
+
 
 # LIANA 0.0.2
 

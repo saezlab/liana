@@ -46,7 +46,7 @@ logfc_score <- function(lr_res,
                         score_col){
     lr_res %>%
         rowwise() %>%
-        mutate( {{ score_col }} := mean(ligand.log2FC, receptor.log2FC))
+        mutate( {{ score_col }} := mean(c(ligand.log2FC, receptor.log2FC)))
 }
 
 
