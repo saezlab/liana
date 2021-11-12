@@ -16,6 +16,24 @@ get_sca <- function(lr_res,
     )
 }
 
+#' Function to obtain scConnect-like interaction scores
+#'
+#' @inheritParams liana_scores
+#' @inheritDotParams liana_call
+#'
+#' @export
+#'
+#' @return Returns a tibble with interaction scores (`interaction_score`)
+#'   as calculated by scConnect
+get_scconnect <- function(lr_res,
+                          ...){
+    liana_call(
+        lr_res = lr_res,
+        method = "scconnect",
+        ...
+    )
+}
+
 
 
 #' Function to obtain connectome-like weights

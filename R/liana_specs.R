@@ -90,6 +90,18 @@ setClass("ScoreSpecifics",
                 score_fun = cytotalk_score,
                 columns = c("receptor.pem", "ligand.pem")
             ),
+        "scconnect" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "scconnect",
+                method_score = "interaction_score",
+                descending_order = TRUE,
+                score_fun = scconnect_score,
+                columns = c("ligand.expr", "receptor.expr",
+                            "ligand.pval", "receptor.pval")
+            ),
+
+        # External
         "squidpy" =
             methods::new(
                 "ScoreSpecifics",

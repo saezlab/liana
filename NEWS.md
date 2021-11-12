@@ -1,3 +1,9 @@
+# LIANA 0.0.4
+## New Features
+* [`scConnect`](https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453)-inspired
+interactions scores were implemented.
+
+
 # LIANA 0.0.3
 ## Improvements
 * The R re-implementation of CellPhoneDBv2's permutation algorithm was optimized

@@ -42,7 +42,8 @@ liana_wrap <- function(seurat_object,
   }
 
   if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
-                       "logfc", "sca", "cellphonedb", "cytotalk"))){
+                       "logfc", "sca",
+                       "cellphonedb", "cytotalk", "scconnect"))){
 
     # LIANA pipe map over resource
     lr_results <- resource %>%
@@ -199,6 +200,7 @@ select_resource <- function(resource){
             logfc = expr(get_logfc),
             natmi = expr(get_natmi),
             sca = expr(get_sca),
+            scconnect = expr(get_scconnect),
             # liana_permutes
             cellphonedb = expr(get_cellphonedb),
             # cytotalk

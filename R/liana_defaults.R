@@ -54,6 +54,7 @@ liana_defaults <- function(
     connectome.params = NULL,
     cytotalk.params = NULL,
     logfc.params = NULL,
+    scconnect.params = NULL,
     cellchat.params = NULL,
     squidpy.params = NULL,
     call_sca.params = NULL,
@@ -103,6 +104,12 @@ liana_defaults <- function(
     logfc.defaults <- list(
         prop_filt = TRUE
     )
+
+    # scConnect
+    scconnect.defaults <- list(
+        prop_filt = TRUE
+    )
+
 
     ## Connectome and Cytotalk calculate scores are calculated at
     ## the cell-cluster-pair level -> We don't apply prop filtering to those
@@ -222,6 +229,9 @@ liana_defaults <- function(
 
         "logfc" = logfc.params %<>%
             reassign_params(., logfc.defaults),
+
+        "scconnect" = logfc.params %<>%
+            reassign_params(., scconnect.defaults),
 
         # external methods
         "cellchat" = cellchat.params %<>%
