@@ -18,7 +18,8 @@ scconnect_score <- function(lr_res,
         mutate(specificity = -log10(mean(c(ligand.pval, receptor.pval)))) %>%
         mutate(score = sqrt(ligand.expr * receptor.expr)) %>%
         mutate(importance = log10(score) * specificity) %>%
-        select(ligand, receptor, contains("complex"), importance)
+        select(source, target, ligand, receptor,
+               contains("complex"), importance)
 }
 
 
