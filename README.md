@@ -8,6 +8,25 @@ However, these methods and resources are usually in a fixed combination of a
 tool and its corresponding resource, but in principle any resource could be
 combined with any method.  
 
+    
+## Install LIANA  
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+devtools::install_github('saezlab/liana')
+```
+
+If you wish to make use of the CellChat algorithm:
+```{r}
+devtools::install_github("sqjin/CellChat")
+```
+
+  
+## Tutorial
+See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
+The tutorial with the test data takes minutes to complete!  
+   
   
 ## LIANA Framework
   
@@ -28,13 +47,15 @@ LIANA also goes a step further as it provides:
 
 The tools implemented in this repository are:
 
-- [CellPhoneDBv2](https://github.com/Teichlab/cellphonedb)
+- [CellPhoneDBv2](https://github.com/Teichlab/cellphonedb) (*)
 - [CellChat](https://github.com/sqjin/CellChat)
-- [NATMI](https://github.com/forrest-lab/NATMI)*
-- [Connectome](https://github.com/msraredon/Connectome)*
-- [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR)* (SCA)
-- [iTALK](https://github.com/Coolgenome/iTALK) (logfc)*
-- [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired Cross-talk Scores (CTSs)
+- [NATMI](https://github.com/forrest-lab/NATMI) (*)
+- [Connectome](https://github.com/msraredon/Connectome) (`edge_weights`) (*)
+- [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR) (`LRscores`) (SCA) (*)
+- [iTALK](https://github.com/Coolgenome/iTALK)-inspired mean logFC score (`logfc`) (*)
+- [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
+- [scConnect](https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453)-inspired `importance` scores (*)
+- [RobustRank](https://pubmed.ncbi.nlm.nih.gov/22247279/)-aggregate (`aggregate_rank`) scores (*)
   
 *The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
@@ -75,26 +96,6 @@ We made use of this information regarding the and by default the `OmniPath`CCC
 resource in LIANA is filtered according to the consensus localisation and curation of
 ligand-receptor interactions. To obtain more information how we filtered the default CCC `OmniPath`,
 as well as to explore custom filter options see [customizing OmniPath resources](https://saezlab.github.io/liana/articles/liana_custom_op.html).  
-  
-  
-## Install LIANA  
-```{r}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-    
-devtools::install_github('saezlab/liana')
-```
-
-If you wish to make use of the CellChat algorithm:
-```{r}
-devtools::install_github("sqjin/CellChat")
-```
-
-  
-## Tutorial
-See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
-The tutorial with the test data takes minutes to complete!
-  
   
   
 ## LIANA++

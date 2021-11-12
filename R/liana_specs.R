@@ -94,7 +94,7 @@ setClass("ScoreSpecifics",
             methods::new(
                 "ScoreSpecifics",
                 method_name = "scconnect",
-                method_score = "interaction_score",
+                method_score = "importance",
                 descending_order = TRUE,
                 score_fun = scconnect_score,
                 columns = c("ligand.expr", "receptor.expr",
