@@ -1,3 +1,9 @@
+liana_path <- system.file(package = "liana")
+seurat_object <-
+    readRDS(file.path(liana_path , "testdata",
+                      "input", "testdata.rds"))
+
+
 softmax <- function(par){
     n.par <- length(par)
     par1 <- sort(par, decreasing = TRUE)
@@ -8,6 +14,35 @@ softmax <- function(par){
     val <- exp(par - Lk)
     return(val)
 }
+
+# liana Pipe Output ----
+pipe_out <- liana_pipe(seurat_object,
+                       op_resource = select_resource("OmniPath")[[1]] %>%
+                           liana:::decomplexify())
+
+
+
+pipe_out %>%
+    select(source, target,
+           ligand, receptor,
+           ligand.expr, receptor.expr) %>%
+    mutate(ligand.soft = softmax(ligand.expr)) %>%
+    mutate(receptor.soft = softmax(receptor.expr)) %>%
+    mutate(comm_score = pmap_dbl(.l = list(.$ligand.soft, .$receptor.soft),
+                             .f = function(l, r){
+                                 m <- matrix(cbind(l, r), nrow = 1)
+                                 norm(m, type = "2")
+                                 }
+                             )) %>%
+    arrange(desc(comm_score))
+
+
+
+
+
+
+
+
 
 # Example 1
 vec <- c(-1,2,1,-3)

@@ -6,20 +6,22 @@
 get_lr_resources <- function(){
     return(
         list(
-            'CellChatDB',
-            'CellPhoneDB',
-            'Ramilowski2015',
             'Baccin2019',
-            'LRdb',
-            'Kirouac2010',
+            'CellCall',
+            'CellChatDB',
+            'Cellinker',
+            'CellPhoneDB',
+            'CellTalkDB',
+            'connectomeDB2020',
+            'EMBRACE',
+            'Guide2Pharma',
+            'HPMR',
             'ICELLNET',
             'iTALK',
-            'EMBRACE',
-            'HPMR',
-            'Guide2Pharma',
-            'connectomeDB2020',
-            'talklr', # remove?
-            'CellTalkDB'
+            'Kirouac2010',
+            'LRdb',
+            'scConnect',
+            'Ramilowski2015'
         )
     )
 }
@@ -27,7 +29,7 @@ get_lr_resources <- function(){
 # only the ones different from the current defaults:
 op_ic_quality_param <- list( # used for nodes
     resource = 'OmniPath', # this is just necessary in all the calls
-    loc_consensus_percentile = 30,
+    loc_consensus_percentile = 51,
     consensus_percentile = NULL
 )
 
@@ -253,6 +255,7 @@ omnipath_partners <- function(side, ...){
 #' @return A shuffled omnipath-formatted resource
 #'
 #' @import tibble
+#' @noRd
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 

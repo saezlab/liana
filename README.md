@@ -78,7 +78,6 @@ The following CCC resources are accessible via this pipeline:
 - HPMR
 - Guide2Pharma
 - connectomeDB2020
-- talklr
 - CellTalkDB
 - OmniPath
   

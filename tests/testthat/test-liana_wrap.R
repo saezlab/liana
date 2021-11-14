@@ -11,7 +11,7 @@ test_that("Test liana wrapper", {
                        method = c('logfc','natmi', 'connectome'),
                        resource = c('OmniPath'))
 
-    expect_equal(exp1, res1)
+    expect_equal(res1, exp1)
 })
 
 # Test with Default ----
@@ -42,8 +42,8 @@ test_that("Test expr_prop filtering", {
     liana_pipe_res <- readRDS(file.path(liana_path, "testdata",
                                         "output", "liana_pipe.RDS"))
 
-    expect_equal(nrow(.filt_liana_pipe(liana_pipe_res, "connectome")), 9396)
-    expect_equal(nrow(.filt_liana_pipe(liana_pipe_res, "cellphonedb")), 662)
+    expect_equal(9396, nrow(.filt_liana_pipe(liana_pipe_res, "connectome")))
+    expect_equal(662, nrow(.filt_liana_pipe(liana_pipe_res, "cellphonedb")))
 
 })
 

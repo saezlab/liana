@@ -8,7 +8,7 @@ pipe_out <- liana_pipe(seurat_object,
                        op_resource = select_resource("OmniPath")[[1]] %>%
                            liana:::decomplexify())
 
-scconnect_score(pipe_out%>%
+scconnect_score(pipe_out %>%
                     filter(ligand.prop >= 0.1) %>%
                     filter(receptor.prop >= 0.1))
 
@@ -23,7 +23,11 @@ pipe_out %>%
     rowwise() %>%
     mutate(specificity = -log10(mean(c(ligand.pval, receptor.pval)))) %>%
     mutate(score = sqrt(ligand.expr * receptor.expr)) %>%
-    mutate(importance = log10(score) * specificity)# %>%
+    mutate(importance = log10(score) * specificity) %>%
+    arrange(desc(importance))
+
+
+# %>%
     # select(ligand, receptor, contains("complex"), importance)
 
 

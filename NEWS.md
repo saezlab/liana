@@ -2,6 +2,7 @@
 ## New Features
 * [`scConnect`](https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453)-inspired
 interactions scores were implemented.
+* Filtered OmniPath resource was updated
 
 
 # LIANA 0.0.3
