@@ -1,10 +1,163 @@
-require(tidyverse)
-require(liana)
-require(magrittr)
-
 ligrec <- compile_ligrec(lr_pipeline = FALSE)
 ligrec2 <- reform_omni(ligrec)
 saveRDS(ligrec2, "inst/omni_resources.rds")
+
+
+
+
+
+
+
+
+
+
+cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
+    mutate(across(everything(), ~as.character(.x))) %>%
+    # we can also get extended interactions
+    # bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
+    #               mutate(across(everything(), ~as.character(.x)))) %>%
+    dplyr::select(Ligand_ID,
+           Receptor_ID) %>%
+    filter(Ligand_ID != Receptor_ID) %>%
+    mutate(across(everything(), ~gsub("\\,", "\\_", .x))) %>%
+    distinct()
+
+# Get UniProt Query DB
+up <- UniProt.ws::UniProt.ws(taxId=9606)
+# Get Dict
+up_dict <- get_up_dict(cellcall, up)
+
+# convert to lists for recode
+up_dict_uniprot <- up_dict %>%
+    dplyr::select(GENEID, uniprot) %>%
+    mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+    deframe() %>%
+    as.list()
+
+#
+up_dict_symbol <- up_dict %>%
+    dplyr::select(GENEID, genesymbol) %>%
+    mutate(genesymbol = gsub("*\\s..*" ,"" , genesymbol)) %>%
+    mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+    deframe() %>%
+    as.list()
+
+
+
+xd <- cellcall %>%
+    filter(Ligand_ID != Receptor_ID) %>%
+    mutate(across(everything(), ~gsub("\\,", "\\_", .x))) %>%
+    distinct() %>%
+    rowwise() %>%
+    mutate(source = geneid_to_uniprot(Ligand_ID, up_dict_uniprot)) %>%
+    mutate(target = geneid_to_uniprot(Receptor_ID, up_dict_uniprot)) %>%
+    mutate(source_genesymbol = geneid_to_uniprot(Ligand_ID, up_dict_symbol)) %>%
+    mutate(target_genesymbol = geneid_to_uniprot(Receptor_ID, up_dict_symbol)) %>%
+    ungroup() %>%
+    select(-c(Ligand_ID, Receptor_ID)) %>%
+    mutate(is_directed = 1,
+           is_stimulation = 1,
+           is_inhibition = 1,
+           consensus_direction = 1,
+           consensus_stimulation = 1,
+           consensus_inhibition = 1,
+           dip_url = "placeholder",
+           sources = "placeholder",
+           references = "placeholder",
+           curation_effort = "placeholder",
+           n_references = 1,
+           n_resources = 1,
+           category_intercell_source = "placeholder",
+           category_intercell_target = "placeholder"
+    )
+
+
+geneid_to_uniprot(c(4040), up_dict_unprot)
+
+
+cellcall %>%
+    head(20) %>%
+    pmap(.f = function(Ligand_ID, Receptor_ID){
+        lig = geneid_to_uniprot(Ligand_ID, up_dict_unprot)
+        rec = geneid_to_uniprot(Receptor_ID, up_dict_unprot)
+
+        })
+
+
+
+cellcall <- get_cellcall()
+
+
+
+
+keys = unlist(union(flatten(str_split(cellcall$Ligand_ID,
+                                      pattern = "_")),
+                    flatten(str_split(cellcall$Receptor_ID,
+                                      pattern = "_"))))
+
+up_dict <- UniProt.ws::select(up, keytype = c("GENEID"),
+                               columns = c("UNIPROTKB", "GENES","REVIEWED"),
+                               keys = unlist(union(flatten(str_split(cellcall$Ligand_ID,
+                                                                     pattern = "_")),
+                                                   flatten(str_split(cellcall$Receptor_ID,
+                                                                     pattern = "_"))))) %>%
+    filter(REVIEWED == "reviewed") %>%
+    dplyr::select(uniprot = UNIPROTKB,
+                  genesymbol = GENES) %>%
+    # Keep only first gene symbol (i.e. official one)
+    mutate(genesymbol = gsub("*\\s..*", "", genesymbol)) %>%
+    tibble()
+
+
+
+up_query <- UniProt.ws::select(up, keytype = c("GENEID"),
+                               columns = c("UNIPROTKB", "GENES","REVIEWED"),
+                               keys = c("IFNA1", "IFNAR1"),
+                              ) %>%
+    filter(REVIEWED == "reviewed") %>%
+    dplyr::select(uniprot = UNIPROTKB,
+           genesymbol = GENES) %>%
+    mutate(genesymbol = gsub("*[\\s[", "", genesymbol))
+
+up_query
+
+keytypes(up)
+columns(up)
+
+AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
+                      keys=c("IFNA1", "IFNAR1"),
+                      keytype = "SYMBOL",
+                      columns = c("SYMBOL", "UNIPROT", "EVIDENCE"))
+
+
+
+
+
+
+
+#' Helper Function to translate to UniProt
+#' @param st any genesymbol string - to be separate by `_`
+geneid_to_uniprot <- function(st){
+    st.split <- as.vector(str_split(st, pattern = "_"))[[1]]
+
+    tryCatch(
+        {
+            UniProt.ws::select(up, keytype = c("GENEID"),
+                               columns = c("UNIPROTKB", "GENES","REVIEWED"),
+                               keys = st.split) %>%
+                filter(REVIEWED == "reviewed") %>%
+                dplyr::select(uniprot = UNIPROTKB,
+                              genesymbol = GENES) %>%
+                # Keep only first gene symbol (i.e. official one)
+                mutate(genesymbol = gsub("*\\s..*", "", genesymbol)) %>%
+                tibble()
+        },
+        error = function(cond) {
+            message(str_glue("{st} had no match!"))
+            return(NA)
+        }
+    )
+}
 
 
 

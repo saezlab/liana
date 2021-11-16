@@ -444,21 +444,45 @@ generate_omni <- function(remove_complexes=TRUE,
 #'
 #' @returns cellcall db converted to LIANA/OP format
 get_cellcall <- function(){
-    read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
+    # Get UniProt Query DB
+
+    cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
         mutate(across(everything(), ~as.character(.x))) %>%
+        # we can also get extended interactions
         # bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
         #               mutate(across(everything(), ~as.character(.x)))) %>%
-        select(source_genesymbol = Ligand_Symbol,
-               target_genesymbol = Receptor_Symbol) %>%
-        filter(source_genesymbol != target_genesymbol) %>%
-        mutate(across(ends_with("genesymbol"), ~gsub("\\,", "\\_", .x))) %>%
-        distinct() %>%
-        filter(source_genesymbol != target_genesymbol) %>%
-        # translate to Uniprot
+        dplyr::select(Ligand_ID,
+                      Receptor_ID) %>%
+        filter(Ligand_ID != Receptor_ID) %>%
+        mutate(across(everything(), ~gsub("\\,", "\\_", .x))) %>%
+        distinct()
+
+    up <- UniProt.ws::UniProt.ws(taxId=9606)
+    # Get Dict
+    up_dict <- get_up_dict(cellcall, up)
+
+    # convert to lists for recode
+    up_dict_uniprot <- up_dict %>%
+        dplyr::select(GENEID, uniprot) %>%
+        mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+        deframe() %>%
+        as.list()
+    up_dict_symbol <- up_dict %>%
+        dplyr::select(GENEID, genesymbol) %>%
+        mutate(genesymbol = gsub("*\\s..*" ,"" , genesymbol)) %>%
+        mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+        deframe() %>%
+        as.list()
+
+    # translate to Uniprot and format
+    cellcall %>%
         rowwise() %>%
-        mutate(target = genesymbol_to_uniprot(target_genesymbol)) %>%
-        mutate(source = genesymbol_to_uniprot(source_genesymbol)) %>%
+        mutate(source = geneid_to_uniprot(Ligand_ID, up_dict_uniprot)) %>%
+        mutate(target = geneid_to_uniprot(Receptor_ID, up_dict_uniprot)) %>%
+        mutate(source_genesymbol = geneid_to_uniprot(Ligand_ID, up_dict_symbol)) %>%
+        mutate(target_genesymbol = geneid_to_uniprot(Receptor_ID, up_dict_symbol)) %>%
         ungroup() %>%
+        select(-c(Ligand_ID, Receptor_ID)) %>%
         mutate(is_directed = 1,
                is_stimulation = 1,
                is_inhibition = 1,
@@ -473,7 +497,11 @@ get_cellcall <- function(){
                n_resources = 1,
                category_intercell_source = "placeholder",
                category_intercell_target = "placeholder"
-        )
+        ) %>%
+        mutate(across(c("source", "target",
+                        "source_genesymbol",
+                        "target_genesymbol"),
+                      ~as.character(.x)))
 }
 
 
@@ -484,12 +512,63 @@ genesymbol_to_uniprot <- function(st){
     AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
                           keys=st.split,
                           keytype = "SYMBOL",
-                          columns = c("SYMBOL", "UNIPROT")) %>%
+                          columns = c("SYMBOL", "UNIPROT", "EVIDENCE")) %>%
         arrange(desc(UNIPROT)) %>%
         distinct_at(c("SYMBOL"), .keep_all = TRUE) %>%
         pluck("UNIPROT") %>%
         glue::collapse(sep = "_")
 }
+
+
+#' Helper function to get UniProt dictionary
+#' @param ligrec_res ligand_receptor resource to translate
+#' @param up uniprot db to be queried
+#' @param key_column1
+#' @param key_column2
+get_up_dict <- function(ligrec_res,
+                        up,
+                        key_column1 = "Ligand_ID",
+                        key_column2 = "Receptor_ID"){
+
+    keys <- unlist(union(str_split(ligrec_res[[key_column1]], pattern = "_"),
+                         str_split(ligrec_res[[key_column2]], pattern = "_")))
+
+    up_dict <- UniProt.ws::select(up, keytype = c("GENEID"),
+                                  columns = c("UNIPROTKB", "GENES","REVIEWED"),
+                                  keys = keys) %>%
+        filter(REVIEWED == "reviewed") %>%
+        dplyr::select(GENEID,
+                      uniprot = UNIPROTKB,
+                      genesymbol = GENES) %>%
+        # Keep only first gene symbol (i.e. official one)
+        tibble() %>%
+        mutate(GENEID = gsub("\\s", "", GENEID))
+
+    return(up_dict)
+}
+
+#' Helper Function to translate to UniProt
+#' @param st any genesymbol string - to be separate by `_`
+#' @param dict dfgdfg
+geneid_to_uniprot <- function(st,
+                              dict){
+    st.split <- str_split(st, pattern = "_")[[1]]
+
+    tryCatch(
+        {
+            map(st.split, function(spl){
+                recode(as.character(gsub("\\s", "", spl)), !!!dict)
+            }) %>%
+                glue::glue_collapse(sep = "_")
+
+        },
+        error = function(cond){
+            message(str_glue("{st} had no match!"))
+            return(NA)
+        }
+    )
+}
+
 
 
 #' Helper Function to get Missing Interactions from OG CellChatDB
@@ -506,7 +585,8 @@ get_cellchat_missing <- function(){
         # translate to Uniprot
         rowwise() %>%
         mutate(target = genesymbol_to_uniprot(target_genesymbol)) %>%
-        mutate(source = genesymbol_to_uniprot(source_genesymbol))
+        mutate(source = genesymbol_to_uniprot(source_genesymbol)) %>%
+        ungroup()
 }
 
 #' Helper function to obtain distinct transmitter and receiver lists
@@ -524,43 +604,4 @@ assign_ligrecs <- function(ligrec_list){
         distinct()
 
     return(ligrec_list)
-}
-
-
-
-#' Helper function to obtain unformatted CellCall DB from its source
-#' @returns cellcall db formatted to OmniPath/LIANA
-get_cellcall <- function(){
-    read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
-        mutate(across(everything(), ~as.character(.x))) %>%
-        # we can also get extended interactions
-        # bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
-        #               mutate(across(everything(), ~as.character(.x)))) %>%
-        select(source_genesymbol = Ligand_Symbol,
-               target_genesymbol = Receptor_Symbol) %>%
-        filter(source_genesymbol != target_genesymbol) %>%
-        mutate(across(ends_with("genesymbol"), ~gsub("\\,", "\\_", .x))) %>%
-        distinct() %>%
-        filter(source_genesymbol != target_genesymbol) %>%
-        # translate to Uniprot
-        rowwise() %>%
-        mutate(target = genesymbol_to_uniprot(target_genesymbol)) %>%
-        mutate(source = genesymbol_to_uniprot(source_genesymbol)) %>%
-        ungroup() %>%
-        # fill placeholders
-        mutate(is_directed = 1,
-               is_stimulation = 1,
-               is_inhibition = 1,
-               consensus_direction = 1,
-               consensus_stimulation = 1,
-               consensus_inhibition = 1,
-               dip_url = "placeholder",
-               sources = "placeholder",
-               references = "placeholder",
-               curation_effort = "placeholder",
-               n_references = 1,
-               n_resources = 1,
-               category_intercell_source = "placeholder",
-               category_intercell_target = "placeholder"
-        )
 }
