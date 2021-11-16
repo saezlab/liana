@@ -5,22 +5,15 @@ saveRDS(ligrec2, "inst/omni_resources.rds")
 
 
 
-
-
-
-
-
-
 cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
     mutate(across(everything(), ~as.character(.x))) %>%
     # we can also get extended interactions
-    # bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
-    #               mutate(across(everything(), ~as.character(.x)))) %>%
+    bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
+                  mutate(across(everything(), ~as.character(.x)))) %>%
     dplyr::select(Ligand_ID,
            Receptor_ID) %>%
     filter(Ligand_ID != Receptor_ID) %>%
-    mutate(across(everything(), ~gsub("\\,", "\\_", .x))) %>%
-    distinct()
+    mutate(across(everything(), ~gsub("\\,", "\\_", .x)))
 
 # Get UniProt Query DB
 up <- UniProt.ws::UniProt.ws(taxId=9606)
