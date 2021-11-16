@@ -1,8 +1,13 @@
 # LIANA 0.0.4
 ## New Features
 * [`scConnect`](https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453)-inspired
-interactions scores were implemented.
-* OmniPath resource was updated -
+interactions scores were implemented. Further tests are required before its included to the default parameters.  
+
+* OmniPath resource was updated - `CellCall` and `Cellinker` resources were added,
+while talklr was removed. The OmniPath resources itself was filtered further and 1,000
+lower quality interactions were excluded. Further improvements were made to all resources,
+most of which were minor. Changes worth mentioning were made to ICELLNET (updated to latest resource version), 
+CellPhoneDB (was filtered for ambigous interactions), and CellChatDB was filtered for mislaballed interactions.
 
 
 # LIANA 0.0.3
