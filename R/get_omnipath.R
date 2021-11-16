@@ -142,11 +142,11 @@ compile_ligrec <- function(lr_pipeline = TRUE){
         filter(!(wrong_receivers & dups)) %>%
         # mismatched transmitters
         filter(!(target %in% c("P09917"))) %>%
-        select(-starts_with("interaction"))
+        select(-starts_with("interaction"), -starts_with("wrong"), -dups)
 
 
     # CellChatDB Fix (append missing) ----
-    ligrec$CellPhoneDB$interactions %<>%
+    ligrec$CellChatDB$interactions %<>%
         # append missing OG CellChatDB interactions
         bind_rows(get_cellchat_missing()) %>%
         mutate(across(where(is_double), ~replace_na(.x, 1))) %>%
@@ -498,7 +498,7 @@ get_cellchat_missing <- function(){
         pluck("interaction") %>%
         select(source_genesymbol = ligand,
                target_genesymbol = receptor) %>%
-        mutate(across(everything(), ~str_to_upper(.x))) %>%
+        mutate(across(everything(), ~stringr::str_to_upper(.x))) %>%
         mutate(across(everything(), ~gsub("*\\s..*" ,"" , .x))) %>%
         mutate(across(everything(), ~gsub("\\:" ,"_" , .x))) %>%
         # Obtain only ITGA1_ITGB1-interactions (they are missing from CellChatDB in Omni)
