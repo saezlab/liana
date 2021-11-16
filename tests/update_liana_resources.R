@@ -7,6 +7,7 @@ ligrec2 <- reform_omni(ligrec)
 saveRDS(ligrec2, "inst/omni_resources.rds")
 
 
+
 # exclude complexes from OmniPath CCC
 ligrec$OmniPath$interactions %<>%
     filter(!(entity_type_intercell_source == "complex" |
