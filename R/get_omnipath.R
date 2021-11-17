@@ -95,7 +95,7 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                    !(str_detect(category_intercell_source, "ligand_regulator")))%>%
         # remove ambiguous/non-membrane associated receptor-receptor interactions
         # as well as others which seem to be misannotated (manually)
-        filter(!(source %in% c("O75462", "Q13261", "P00533",
+        filter(!(source %in% c("O75462", "Q13261", "P00533", "O00220",
                                "P06213", "P08254", "Q99835",
                                "Q9ULT6", "P06213", "Q13467", "P09619")
                  )) %>%
@@ -126,7 +126,9 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                source_genesymbol = source_genesymbol_new) %>%
         dplyr::select(-ends_with("new")) %>%
         distinct() %>%
-        select(-starts_with("plasma_membrane"))
+        select(-starts_with("plasma_membrane")) %>%
+        select(source_genesymbol, target_genesymbol,
+               source, target, everything())
 
 
     # Format CPDB ----

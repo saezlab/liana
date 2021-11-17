@@ -3,6 +3,12 @@ ligrec2 <- reform_omni(ligrec)
 saveRDS(ligrec2, "inst/omni_resources.rds")
 
 
+
+op <- ligrec2$OmniPath
+op %>% filter(source %in% target)
+
+
+
 cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
     mutate(across(everything(), ~as.character(.x))) %>%
     # we can also get extended interactions
