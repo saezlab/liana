@@ -7,7 +7,8 @@
 #' @param meta_file annotations (i.e. clusters) file name
 #' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
-#' @param .write_data bool whether Extract data from Seurat Object
+#' @param .overwrite_data bool whether Extract and overwrite csv with
+#'    data from Seurat Object
 #' @param .default_run bool whether to run default DBs or not
 #' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
 #' @param assay Seurat assay to be used
@@ -43,7 +44,7 @@
 #'  in one cell type
 #'
 #' Note that `call_natmi` will write the expression matrix to CSV each time
-#' its called, unless .write_data is set to FALSE!
+#' its called, unless .overwrite_data is set to FALSE!
 #' This can be an extremely time consuming step when working with large datasets
 #'
 #' Also, NATMI will sometimes create duplicate files, so please consider
@@ -69,7 +70,7 @@ call_natmi <- function(
     conda_env = NULL,
     assay.type = "logcounts",
     .format = TRUE,
-    .write_data = TRUE,
+    .overwrite_data = TRUE,
     .seed = 1004,
     .natmi_path = NULL,
     .delete_input_output = FALSE){
@@ -85,6 +86,7 @@ call_natmi <- function(
     .natmi_path %<>% `%||%`(system.file('NATMI/', package = 'liana'))
     .input_path = file.path(.natmi_path, 'data', 'input')
     .output_path = file.path(.natmi_path, 'data', 'output', output_dir)
+    .csv_path = file.path(.input_path, expr_file)
 
     if(!dir.exists(file.path(.input_path))){
         log_success(str_glue("Input path created: {.input_path}"))
@@ -94,22 +96,22 @@ call_natmi <- function(
         log_success(str_glue("Output path created: {.output_path}"))
         dir.create(file.path(.output_path), recursive = TRUE)
 
-    if(.write_data){
-        log_info(str_glue("Writing EM to {.input_path}/{expr_file}"))
+        print(.csv_path)
+
+    if(.overwrite_data || !file.exists(.csv_path)){
+        log_info(str_glue("Writing EM to {.csv_path}"))
         if(assay.type=="counts"){
-            write.csv(
-                GetAssayData(object = seurat_object,
-                             assay = "RNA",
-                             slot = "counts"),
-                file = file.path(.input_path, expr_file),
-                row.names = TRUE
-            )
+            write.csv(GetAssayData(object = seurat_object,
+                                   assay = "RNA",
+                                   slot = "counts"),
+                      file = .csv_path,
+                      row.names = TRUE)
         } else{
             write.csv(100 * (exp(as.matrix(
                 GetAssayData(object = seurat_object,
                              assay = assay,
                              slot = "data"))) - 1),
-                file = file.path(.input_path, expr_file),
+                file = .csv_path,
                 row.names = TRUE)
         }
     }
@@ -132,11 +134,10 @@ call_natmi <- function(
                       file.path(.natmi_path, "lrdbs"))
     }
 
-
     # submit native sys request
     system(str_glue("{python_path} {.natmi_path}/ExtractEdges.py ",
                     "--species human ",
-                    "--emFile {.input_path}/{expr_file} ",
+                    "--emFile {.csv_path} ",
                     "--annFile {.input_path}/{meta_file} ",
                     "--interDB {.natmi_path}/lrdbs/{reso_name}.csv ",
                     "--coreNum {num_cor} ",

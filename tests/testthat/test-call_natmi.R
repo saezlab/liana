@@ -16,7 +16,10 @@ test_that("Test NATMI", {
                        num_cor = 4,
                        .format = TRUE,
                        .seed = 1004,
-                       .natmi_path = NULL)
+                       .natmi_path = NULL,
+                       .overwrite_data = FALSE)
 
     expect_equal(exp1, res1)
 })
+
+

@@ -183,7 +183,7 @@ liana_defaults <- function(
         assay.type = "logcounts",
         num_cor = 4,
         .format = TRUE,
-        .write_data = TRUE,
+        .overwrite_data = TRUE,
         .seed = seed,
         .natmi_path = NULL,
         .delete_input_output = FALSE,
