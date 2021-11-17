@@ -94,7 +94,13 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                    !(str_detect(category_intercell_target, "cofactor")) &
                    !(str_detect(category_intercell_source, "ligand_regulator")))%>%
         # remove ambiguous/non-membrane associated receptor-receptor interactions
-        filter(!(source %in% c("O75462", "Q13261"))) %>%
+        # as well as others which seem to be misannotated (manually)
+        filter(!(source %in% c("O75462", "Q13261", "P00533",
+                               "P06213", "P08254", "Q99835",
+                               "Q9ULT6", "P06213", "Q13467", "P09619")
+                 )) %>%
+        # Filter KEA if it's the only curation
+        filter(!(str_detect(sources, "KEA") & curation_effort==1)) %>%
         # filter any ion_channel/adp-associated interactions
         filter(parent_intercell_target != "ion_channel") %>%
         # interactions need to be reversed
@@ -119,7 +125,8 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                source = source_new,
                source_genesymbol = source_genesymbol_new) %>%
         dplyr::select(-ends_with("new")) %>%
-        distinct()
+        distinct() %>%
+        select(-starts_with("plasma_membrane"))
 
 
     # Format CPDB ----

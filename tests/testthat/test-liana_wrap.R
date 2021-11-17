@@ -42,8 +42,8 @@ test_that("Test expr_prop filtering", {
     liana_pipe_res <- readRDS(file.path(liana_path, "testdata",
                                         "output", "liana_pipe.RDS"))
 
-    expect_equal(10548, nrow(.filt_liana_pipe(liana_pipe_res, "connectome")))
-    expect_equal(998, nrow(.filt_liana_pipe(liana_pipe_res, "cellphonedb")))
+    expect_equal(10161, nrow(.filt_liana_pipe(liana_pipe_res, "connectome")))
+    expect_equal(996, nrow(.filt_liana_pipe(liana_pipe_res, "cellphonedb")))
 
 })
 
