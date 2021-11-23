@@ -180,6 +180,15 @@ setClass("ScoreSpecifics",
                 score_fun = function(){},
                 columns = ""
             ),
+        "cellphonedb" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "Squidpy",
+                method_score = "lr.mean",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
         "cellchat" =
             methods::new(
                 "ScoreSpecifics",
