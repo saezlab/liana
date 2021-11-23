@@ -215,6 +215,14 @@ setClass("ScoreSpecifics",
             score_fun = function(){},
             columns = ""
         ),
+        "sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
         "call_natmi" =
             methods::new(
                 "ScoreSpecifics",
