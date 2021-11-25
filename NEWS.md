@@ -1,3 +1,11 @@
+# LIANA 0.0.5
+
+* I now filter Cytotalk's Crosstalk scores to include only those > 0. Otherwise,
+LIANA would return all possible combinations of clusters and interactions, which
+would be simply NAs and 0s for Cytotalk. Should do the same for Connectome.
+ 
+
+
 # LIANA 0.0.4
 
 * The OmniPath resource had a major update.
