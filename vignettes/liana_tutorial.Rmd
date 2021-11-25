@@ -85,15 +85,12 @@ Here we use only the "OmniPath" CCC resource, but any of the
 aforementioned ones (available via `show_resources()`) can be added to the `resource` parameter
 ```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
-liana_test <- liana_wrap(testdata,
-                         method = c("sca", "natmi", "logfc", "connectome",
-                                    "cellchat", "squidpy"),
-                         resource = c('OmniPath'))
+liana_test <- liana_wrap(testdata)
 ```
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
+By default, LIANA will call only the internal scoring function (or those that are re-implemented in LIANA).
 
-By default `sca`-, `natmi`, and `logfc`-, and `connectome`-like scores are obtained via their `liana` re-implementations, while `Squidpy` and `CellChat` pipelines are called externally.
-
+However, one can use LIANA to also run the original methods.
 For more information and validation with the original methods see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) and [validate scores](https://saezlab.github.io/liana/articles/liana_remethod.html), respectively.
 
 
@@ -105,11 +102,19 @@ ranks
 # Liana returns a list of results, each element of which corresponds to a method
 liana_test %>% glimpse
 
-# We can aggregate these results into a dataframe with consensus ranks
+# We can aggregate these results into a tibble with consensus ranks
 liana_test %>%
   liana_aggregate()
 ```
-*The aggregate consensus rank is obtained using the RobustRankAggreg package and its [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method.
+
+Voila! That's it. A very brief intro to LIANA and how to obtain the scoring functions†
+for each method implemented in it, as well as an aggregate_rank* which serves as a consensus across methods.
+
+(†) Note that here we focus on the scores recommended to be used to prioritize interaction in a 
+single sample system. Most of these, with the exception of SingleCellSignalR's LRscore, take
+the specificity of the cluster pair into account.
+
+(*) The aggregate consensus rank is obtained using the RobustRankAggreg package and its [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method.
 
 `RRA` scores can be interpreted as p-values and interactions which are
 ranked consistently higher than random are assigned low scores/p-values.
