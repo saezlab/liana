@@ -5,7 +5,7 @@ author:
     affiliation:
         - Saezlab, Heidelberg University
     email: daniel.dimitrov@uni-heidelberg.de
-date: "04/08/2021"
+date: "`r Sys.Date()`"
 output: 
   BiocStyle::html_document:
       self_contained: true

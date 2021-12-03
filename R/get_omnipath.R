@@ -439,7 +439,7 @@ generate_omni <- function(remove_complexes=TRUE,
                        "source", "target", "source_genesymbol", "target_genesymbol",
                        "is_directed", "is_stimulation", "is_inhibition",
                        "consensus_direction","consensus_stimulation", "consensus_inhibition",
-                       "dip_url",    "sources","references", "curation_effort",
+                       "sources","references", "curation_effort",
                        "n_references", "n_resources",
                        "category_intercell_source", "category_intercell_target")
             else .
