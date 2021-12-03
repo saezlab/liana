@@ -1,13 +1,17 @@
 # LIANA 0.0.5
 
 ## Changes
-* I now filter Cytotalk's Crosstalk scores to include only those > 0. Otherwise,
+* I now filter the Crosstalk scores to include only those > 0. Otherwise,
 LIANA would return all possible combinations of clusters and interactions, which
-would be simply NAs and 0s for Cytotalk. Should do the same for Connectome (>0).
+would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (>0).
 
-* `CellChat` will no longer by called by default by liana_wrap. However, it is still
-available as an option to be passed to the `method` parameter.
- 
+* `CellChat` and Crosstalk scores/`cytotalk` will no longer by called by default by liana_wrap.
+However, it both are available as an option to be passed to the `method` parameter.
+
+* I now filter all methods by `expr_prop`. This is done in a slightly different manner for Connectome's 
+scaled weights and crosstalk scores, since they require all pairs/clusters to be present to appropriately
+calculate their scores. Thus, for them we filter after we calculate the scores, while for the others methods
+we pre-filter.
 
 
 # LIANA 0.0.4
@@ -40,15 +44,15 @@ normalize their scores.
 # LIANA 0.0.2
 
 ## New Features
-* [`CytoTalk`](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired 
-Cross-talk Scores (CTSs) were added.
+* `Crosstalk scores` inspired by [Cytotalk]((https://advances.sciencemag.org/content/7/16/eabf1356)) were added.
 In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with
 PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk
 scores calculated in CytoTalk to also allow for autocrine signalling interactions,
-and thus make cytotalk comparable to the rest of the methods in LIANA.
+and thus make Crosstalk scores comparable to the rest of the methods in LIANA.
 Finally, as part of LIANA, CytoTalk's re-implemented scores would not take 
 account of complexes and we also apply liana-specifc filtering such as according
-to `expr_prop`.
+to `expr_prop`. Worth noting, we only re-implement the cross-talk scores, but we
+don't include the intracellular part of Cytotalk.
 
 ## Changes
 

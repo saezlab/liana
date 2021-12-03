@@ -17,8 +17,8 @@ test_that("Test liana pipe", {
 # Test De-/Re- Complexify
 test_that("Test liana pipe", {
     lr_cmplx <- liana_pipe(seurat_object,
-                           op_resource = select_resource("CellPhoneDB")[[1]] %>% decomplexify())
-
+                           op_resource = select_resource("CellPhoneDB")[[1]] %>%
+                               decomplexify())
 
     recomplex_exp <- readRDS(file.path(liana_path, "testdata",
                                        "output", "recomplex.RDS"))
@@ -33,7 +33,7 @@ test_that("Test liana pipe", {
 
 # Test Get Scores
 test_that("Test LIANA Scores", {
-    conn_score <- get_connectome(pipe_out)
+    conn_score <- get_connectome(pipe_out, expr_prop=0)
     conn_exp <- readRDS(file.path(liana_path, "testdata",
                                   "output", "conn_score.RDS"))
 

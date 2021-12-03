@@ -25,7 +25,7 @@
 #' @export
 liana_wrap <- function(seurat_object,
                        method = c('natmi', 'connectome', 'logfc',
-                                  'sca', 'cellphonedb', "cytotalk"),
+                                  'sca', 'cellphonedb'),
                        resource = c('OmniPath'),
                        external_resource,
                        .simplify = TRUE,
@@ -144,7 +144,7 @@ liana_wrap <- function(seurat_object,
                      ),
                 liana_defaults(...)[["liana_call"]]
                 )
-              rlang::invoke(.method,  args)
+              rlang::invoke(.method, args)
               }
              })
            }, quiet = FALSE)) %>%
@@ -278,7 +278,9 @@ show_resources <- function(){
 #' @param liana_res resutls from `liana_pipe`
 #' @param method current method
 #' @inheritDotParams liana_defaults
-.filt_liana_pipe <- function(liana_res, method, ...){
+.filt_liana_pipe <- function(liana_res,
+                             method,
+                             ...){
 
   # Convert prop_filt logical to 0 or 1
   #  (step not required, but should be explicit)

@@ -39,7 +39,6 @@
 liana_defaults <- function(
     assay = "RNA",
     assay.type = "logcounts",
-    decomplexify = TRUE,
     expr_prop = 0.1,
     seed = 1004,
     trim = 0,
@@ -65,7 +64,7 @@ liana_defaults <- function(
     # Internal ----
     # LIANA_pipe defaults
     liana_pipe.defaults <- list(
-        decomplexify = decomplexify,
+        decomplexify = TRUE,
         test.type = "wilcox",
         pval.type = "all",
         trim = trim,
@@ -76,7 +75,8 @@ liana_defaults <- function(
     # liana_call.defaults
     liana_call.defaults <- list(
         complex_policy = "min0",
-        decomplexify = decomplexify # should always be true
+        decomplexify = TRUE, # should always be true
+        expr_prop = expr_prop
     )
 
     # Permutation defaults (permutations to be used in e.g. CPDB)

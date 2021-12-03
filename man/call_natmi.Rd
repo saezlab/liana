@@ -16,7 +16,7 @@ call_natmi(
   conda_env = NULL,
   assay.type = "logcounts",
   .format = TRUE,
-  .write_data = TRUE,
+  .overwrite_data = TRUE,
   .seed = 1004,
   .natmi_path = NULL,
   .delete_input_output = FALSE
@@ -37,7 +37,8 @@ call_natmi(
 
 \item{.format}{bool whether to format output}
 
-\item{.write_data}{bool whether Extract data from Seurat Object}
+\item{.overwrite_data}{bool whether Extract and overwrite csv with
+data from Seurat Object}
 
 \item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
@@ -81,7 +82,7 @@ Stats:
  in one cell type
 
 Note that `call_natmi` will write the expression matrix to CSV each time
-its called, unless .write_data is set to FALSE!
+its called, unless .overwrite_data is set to FALSE!
 This can be an extremely time consuming step when working with large datasets
 
 Also, NATMI will sometimes create duplicate files, so please consider

@@ -37,11 +37,11 @@ testdata <-
 We will first filter OmniPath as described in the LIANA paper:
 * we retained only interactions with literature references,
 * we kept interactions only where the receiver protein was plasma membrane transmembrane
-or peripheral according to at least 30% of the localisation annotations
+or peripheral according to at least 51% of the localisation annotations
 * we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).
 ```{r liana_omni, message = FALSE, print = FALSE}
 # generate_omni returns a tibble with CCC OmniPath
-cust_omni <- generate_omni(loc_consensus_percentile = 30,
+cust_omni <- generate_omni(loc_consensus_percentile = 51,
                            consensus_percentile = NULL,
                            transmitter_topology = c('secreted',
                                                     'plasma_membrane_transmembrane',
@@ -53,12 +53,8 @@ cust_omni <- generate_omni(loc_consensus_percentile = 30,
                            remove_complexes = TRUE,
                            simplify = FALSE
                            )
-
-liana_omni <- select_resource("OmniPath")[[1]]
-
-# Check if the same
-dplyr::all_equal(cust_omni, liana_omni)
 ```
+One could use stricter filtering options, such as only importing from certain CCC-dedicated resources, etc.
 
 
 ## Surface/Membrane-bound Interactions only
@@ -145,191 +141,6 @@ ligrec %<>%
 
 all_equal(ligrec, cust_omni)
 
-```
-
-## Making use of [Intracellular OmniPath](https://omnipathdb.org/#about)
-
-### A) Filter OmniPath by specific functional annotations
-   
-Here, we will assume that we have strong reason to believe that the RTK pathway
-is particularly relevant in our study and we are hence solely interested in
-interactions from the `RKT` pathway. Thus, we will filter LIANA and OmniPath to 
-only interactions associated with the `RKT` pathway from [SignaLink](https://link.springer.com/protocol/10.1007/978-1-4939-8618-7_3).
-
-First, let's load SignaLink
-```{r load_signalink}
-signalink_pathways <-
-    OmnipathR::import_omnipath_annotations(
-        resources = 'SignaLink_pathway',
-        entity_types = 'protein',
-        wide = TRUE
-    ) %>%
-  select(genesymbol, pathway)
-```
-
-#### Filter LIANA output to only RTK interactions
-```{r filter_by_liana}
-# Run liana with the OmniPath resource
-# here we pass it as an external resource, as we need it later
-op_resource <- liana:::decomplexify(liana_omni)
-# liana Wrap
-liana_res <- liana_wrap(seurat_object = testdata,
-                        resource='custom',
-                        external_resource = op_resource) %>%
-  liana_aggregate() # aggregate
-
-liana_rtk <- liana_res %>% 
-  left_join(signalink_pathways, by=c("ligand"="genesymbol")) %>%
-  rename(ligand_pathway = pathway) %>% 
-  left_join(signalink_pathways, by=c("receptor"="genesymbol")) %>%
-  rename(receptor_pathway = pathway) %>%
-  filter(ligand_pathway == "Receptor tyrosine kinase") %>%
-  filter(receptor_pathway == "Receptor tyrosine kinase")
-
-# Show only interactions in which BOTH the ligand and the receptor
-# are associated with the RTK pathway
-liana_rtk
-```
-
-#### Run LIANA with only specific interactions
-One could also do the reverse - i.e. filter the resource in regards to a given
-functional annotation term.
-```{r filter_by_op}
-# We join the functional annotations to OmniPath
-# and retain ONLY interactions in which BOTH the ligand and receptor 
-# are associated with RTK pathways
-rkt_omni <- liana_omni %>% 
-  left_join(signalink_pathways, by=c("source_genesymbol"="genesymbol")) %>%
-  rename(source_geneset = pathway) %>%
-  left_join(signalink_pathways, by=c("target_genesymbol"="genesymbol")) %>%
-  rename(target_geneset = pathway) %>%
-  filter(source_geneset == "Receptor tyrosine kinase") %>%
-  filter(target_geneset == "Receptor tyrosine kinase")
-
-# We can then again run LIANA with the RKT-associated interactions alone
-liana_rtk <- liana_wrap(seurat_object = testdata,
-                        resource='custom',
-                        external_resource = rkt_omni,
-                        method=c("natmi", "sca", "squidpy")) %>%
-  liana_aggregate()
-
-liana_rtk %>% glimpse
-```
-
-
-### B) Perform an over-representation representation (ORA) on ligands/receptors
-Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB  
-genesets in preferentially ranked ligand-receptor interactions from LIANA.
-
-#### First, format LIANA's output
-```{r liana_wrap, message = FALSE, print = FALSE}
-# we take liana from above and keep only the columns that we need
-# in this case we will use the aggragate for all methods
-liana_form <- liana_res %>%
-  select(source, ligand, target, receptor, aggregate_rank) %>%
-  # one could treat the aggragate rank as 
-  # the probability to observe an interaction
-  # as preferentially highly ranked
-  # one could also p.adjust, 
-  # but since we work with testdata - we don't
-  filter(aggregate_rank <= 0.05)
-liana_form
-
-```
-
-#### Obtain MSigDB Genesets from OmniPath - takes a while :)
-```{r load_msig}
-msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
-                                                 wide = TRUE) %>%
-  filter(collection=="hallmark") %>%
-  select(genesymbol, geneset)
-```
-
-Establish the Resource as the background/universe
-```{r establish_universe}
-# Here, we join pathways associated with ligand and receptors, separately
-omni_universe <- liana_omni %>% 
-  select(source_genesymbol, target_genesymbol) %>%
-  left_join(msigdb, by=c("source_genesymbol"="genesymbol")) %>%
-  rename(source_geneset = geneset) %>%
-  left_join(msigdb, by=c("target_genesymbol"="genesymbol")) %>%
-  rename(target_geneset = geneset)
-
-# Establish Ligand Universe
-ligand_universe <- omni_universe %>%
-  select(source_genesymbol, geneset = source_geneset) %>%
-  na.omit() %>%
-  mutate(total = n()) %>%
-  group_by(geneset) %>%
-  mutate(hit = n()) %>%
-  ungroup() %>%
-  select(-source_genesymbol) %>%
-  distinct() %>%
-  arrange(desc(hit)) %>%
-  mutate(truth_guess = "truth")
-
-#' Function to Run FET on Liana vs OP truth
-#' @param gs geneset
-#' @param lr_paths ligand-receptor with functional annotations
-#' @param universe CCC resource with joined functional annotations
-geneset_fet <- function(gs, lr_funcs, universe){
-  # filter by geneset 
-  guess <- lr_funcs %>% filter(geneset==gs)
-  truth <- universe %>% filter(geneset==gs)
-  
-  # transform to contingency tables
-  cont_table <- bind_rows(guess, truth) %>%
-    select(-geneset) %>%
-    as.data.frame() %>%
-    column_to_rownames("truth_guess") %>% 
-    t()
-  
-  fet_result <- fisher.test(cont_table)
-  
-  tibble(geneset = gs,
-         pval = last(fet_result$p.value),
-         odds_ratio = fet_result$estimate)
-}
-
-```
-
-Join pathways to LIANA results
-```{r run_decoupleR}
-# we then split by celltype and join the functional annotation from OmniPath
-liana_enrich <- liana_form %>%
-  group_by(source) %>%
-  group_nest(.key = "ligand_data") %>%
-  mutate(ligand_data = map(ligand_data,
-                           function(res){
-                             res %>%
-                               select(ligand) %>%
-                               left_join(msigdb, by=c("ligand"="genesymbol")) %>%
-                               na.omit() # remove any ligands without annotations
-                           })
-         ) %>%
-      # we then obtain counts per cell type, per functional set
-  mutate(ligand_cont = map(ligand_data, function(enr){
-    counts_by_geneset <- enr %>%
-      mutate(total = n()) %>%
-      group_by(geneset) %>%
-      mutate(hit = n()) %>%
-      ungroup() %>%
-      select(-ligand) %>%
-      distinct() %>%
-      arrange(desc(hit)) %>%
-      mutate(truth_guess = "guess")
-     
-    # finally we perform FET
-    map(counts_by_geneset$geneset, function(gs){
-        geneset_fet(gs, counts_by_geneset, ligand_universe)
-      })
-  })) %>%
-  select(-ligand_data) %>% 
-  unnest(ligand_cont) %>%
-  unnest(ligand_cont) %>%
-  arrange(desc(odds_ratio))
-
-liana_enrich
 ```
 
 To make use of the full potential of [OmniPathR](https://github.com/saezlab/OmnipathR) we kindly refer the user to it.

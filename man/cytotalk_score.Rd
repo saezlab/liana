@@ -4,7 +4,7 @@
 \alias{cytotalk_score}
 \title{Compute cross-talk score from a Seurat Object}
 \usage{
-cytotalk_score(lr_res, sce, score_col, assay.type, seed)
+cytotalk_score(lr_res, sce, score_col, assay.type, seed, ...)
 }
 \description{
 This function executes all the required functions to extract and compute the

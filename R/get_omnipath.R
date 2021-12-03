@@ -530,10 +530,11 @@ genesymbol_to_uniprot <- function(st){
 
 
 #' Helper function to get UniProt dictionary
+#'
 #' @param ligrec_res ligand_receptor resource to translate
 #' @param up uniprot db to be queried
-#' @param key_column1
-#' @param key_column2
+#' @param key_column1 name of the ligand  column
+#' @param key_column2 name of the receptor column
 get_up_dict <- function(ligrec_res,
                         up,
                         key_column1 = "Ligand_ID",

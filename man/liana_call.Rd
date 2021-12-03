@@ -34,9 +34,6 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
-    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.2 by default),
-yet one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.}
     \item{\code{trim}}{the fraction (0 to 0.5) of observations to be trimmed from each end
 of x before the `truncated mean` is computed (0.1 by default)}
     \item{\code{assay}}{assay to be used ("RNA" by default)}

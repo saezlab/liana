@@ -9,7 +9,8 @@ cellphonedb_score(
   perm_means,
   parallelize,
   workers,
-  score_col = "pvalue"
+  score_col = "pvalue",
+  ...
 )
 }
 \arguments{

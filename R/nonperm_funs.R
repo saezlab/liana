@@ -7,7 +7,8 @@
 #'
 #' @return lr_res with an added `LRscore` column
 scconnect_score <- function(lr_res,
-                            score_col){
+                            score_col,
+                            ...){
     lr_res %>%
         select(source, target,
                ligand, receptor,
@@ -31,10 +32,14 @@ scconnect_score <- function(lr_res,
 #'
 #' @return lr_res with an added `weight_sc` column
 connectome_score <- function(lr_res,
-                             score_col){
+                             score_col,
+                             ...){
+    expr_prop <- list(...)[["expr_prop"]]
+
     lr_res %>%
         rowwise() %>%
-        mutate( {{ score_col }} := mean(c(ligand.scaled, receptor.scaled)))
+        mutate( {{ score_col }} := mean(c(ligand.scaled, receptor.scaled))) %>%
+        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
 }
 
 
@@ -50,7 +55,8 @@ connectome_score <- function(lr_res,
 #' @details In the original NATMI implementation NAs are filtered out, but
 #' here replace NAs with 0s, as they are needed to account for complexes
 natmi_score <- function(lr_res,
-                        score_col){
+                        score_col,
+                        ...){
     lr_res %>%
         rowwise() %>%
         mutate( {{ score_col }} := ((ligand.expr*(ligand.sum^-1))) *
@@ -68,7 +74,8 @@ natmi_score <- function(lr_res,
 #'
 #' @return lr_res with an added `logfc_comb` column
 logfc_score <- function(lr_res,
-                        score_col){
+                        score_col,
+                        ...){
     lr_res %>%
         rowwise() %>%
         mutate( {{ score_col }} := mean(c(ligand.log2FC, receptor.log2FC)))
@@ -85,7 +92,8 @@ logfc_score <- function(lr_res,
 #'
 #' @return lr_res with an added `LRscore` column
 sca_score <- function(lr_res,
-                      score_col){
+                      score_col,
+                      ...){
     lr_res %>%
         rowwise() %>%
         mutate( {{ score_col }} :=
@@ -105,7 +113,8 @@ sca_score <- function(lr_res,
 #'
 #' @return
 corr_score <- function(lr_res,
-                       sce){
+                       sce,
+                       ...){
 
     # should filter to cell type A and B first? - this way it's not specific
     # should also remove genes that are not in lr_res to save time

@@ -54,7 +54,8 @@ cytotalk_score <- function(lr_res,
            # es, Nes,
            # source.nst, target.nst, nst, Nnst,
            !!score_col) %>%
-    filter(.data[[score_col]] > 0) # only keep those that have signal
+    filter(.data[[score_col]] > 0) %>% # only keep those that have signal
+    filter()
 }
 
 #### NST ####

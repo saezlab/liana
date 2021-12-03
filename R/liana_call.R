@@ -108,7 +108,6 @@ get_logfc <- function(lr_res,
 #'    by CellPhoneDB
 get_cellphonedb <- function(lr_res,
                             ...){
-
     liana_call(
         lr_res = lr_res,
         method = "cellphonedb",
@@ -180,11 +179,11 @@ liana_scores <- function(score_object,
                          decomplexify,
                          complex_policy,
                          ...){
-
     lr_res %<>%
         select(ligand, receptor,
                ends_with("complex"),
                source, target,
+               ends_with("prop"),
                !!score_object@columns)
 
     if(decomplexify){
@@ -202,7 +201,9 @@ liana_scores <- function(score_object,
             list(...)
         )
 
-    exec(score_object@score_fun, !!!args) %>% ungroup()
+    exec(score_object@score_fun, !!!args) %>%
+        ungroup() %>%
+        select(-ends_with("prop"))
 }
 
 

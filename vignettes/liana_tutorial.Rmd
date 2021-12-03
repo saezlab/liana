@@ -61,9 +61,9 @@ Each of the resources can then be run with any of the following methods:
 # Resource currently included in OmniPathR (and hence `liana`) include:
 show_methods()
 ```
-Note that the different algorithms (or scoring measures) used in `sca`, `natmi`, `italk`, and `connectome` were re-implemented in LIANA.
+Note that the different algorithms (or scoring measures) used in `sca`, `natmi`,
+`connectome`, `cellphonedb`, `cytotalk`'s crosstalk scores, and `logfc` were re-implemented in LIANA.
 Yet, the original method pipelines can be called via the `call_*` functions.
-The original methods did not take complexes into account, while their re-implementations in liana *do* (see below). 
 
 ## `liana` wrapper function
 
@@ -94,7 +94,7 @@ However, one can use LIANA to also run the original methods.
 For more information and validation with the original methods see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) and [validate scores](https://saezlab.github.io/liana/articles/liana_remethod.html), respectively.
 
 
-## Obtain Consensus Ranks
+## Aggregate and Obiain Consensus Ranks
 `liana` also provides consensus ranks for the results obtained using different
 methods. By default, `liana` will provide mean, median, and aggregate* consensus
 ranks
@@ -120,7 +120,8 @@ the specificity of the cluster pair into account.
 ranked consistently higher than random are assigned low scores/p-values.
 
 
-## SingleCellSignalR, NATMI, and Connectome Scores /w Complexes
+
+## SingleCellSignalR, CytoTalk, NATMI, and Connectome scores /w Complexes
 The re-implementation of the aforementioned methods in LIANA enables us to make use of 
 multimeric complex information as provided by the e.g. CellPhoneDB, CellChatDB, and ICELLNET resources
 
@@ -170,22 +171,6 @@ perfectly viable approaches could also include e.g. the Trimean of CellChat.
 ###### Information about the parameters passed to each method can be obtained via `liana_call` and via
 `call_*` functions - e.g. ?call_cellchat or ?call_squidpy.
 A list with the default parameters themselves can be obtained via `liana_defaults()`
-
-
-## Call a method pipeline alone
-To call a any single method, you can use any of the `call_*` methods:
-```{r liana_call}
-# RUN cellchat alone with OmniPath
-cc_res <- call_cellchat(
-  seurat_object = testdata,
-  op_resource = select_resource('OmniPath')[[1]],
-  .normalize = TRUE,
-  nboot = 10)
-
-# Show CellChat Results
-cc_res
-```
-It is however important to note that the methods available via `call_*` will not installed in LIANA by default, and further installation steps might need to be taken (See [liana landing page](https://saezlab.github.io/liana/index.html) for CellChat and Squidpy, and [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) for the rest).
 
 
 ## Citation
