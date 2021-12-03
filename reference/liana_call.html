@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -154,8 +160,8 @@
   <span class='va'>method</span>,
   <span class='va'>seurat_object</span>,
   <span class='va'>op_resource</span>,
-  decomplexify <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>lr_res</span>,
+  decomplexify <span class='op'>=</span> <span class='cn'>TRUE</span>,
   complex_policy <span class='op'>=</span> <span class='st'>"min0"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -172,13 +178,13 @@
       <td><p>resource tibble obtained via liana::select_resource</p></td>
     </tr>
     <tr>
+      <th>lr_res</th>
+      <td><p>ligand-receptor DE results and other stats between clusters</p></td>
+    </tr>
+    <tr>
       <th>decomplexify</th>
       <td><p>whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not</p></td>
-    </tr>
-    <tr>
-      <th>lr_res</th>
-      <td><p>ligand-receptor DE results and other stats between clusters</p></td>
     </tr>
     <tr>
       <th>complex_policy</th>
@@ -192,11 +198,11 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
     <tr>
       <th>...</th>
       <td><p>Arguments passed on to <code><a href='liana_pipe.html'>liana_pipe</a></code></p><dl>
-    <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0 by default),
-yet one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.</p></dd>
     <dt><code>trim</code></dt><dd><p>the fraction (0 to 0.5) of observations to be trimmed from each end
 of x before the `truncated mean` is computed (0.1 by default)</p></dd>
+    <dt><code>assay</code></dt><dd><p>assay to be used ("RNA" by default)</p></dd>
+    <dt><code>assay.type</code></dt><dd><p>- the type of data to be used to calculate the means
+(counts by default), available options are: "counts" and "logcounts"</p></dd>
     <dt><code>test.type</code></dt><dd><p>String specifying the type of pairwise test to perform -
 a t-test with <code>"t"</code>, a Wilcoxon rank sum test with <code>"wilcox"</code>, 
 or a binomial test with <code>"binom"</code>.</p></dd>
@@ -221,7 +227,7 @@ or a binomial test with <code>"binom"</code>.</p></dd>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

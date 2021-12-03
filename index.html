@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -61,12 +61,18 @@
       <a href="articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -105,6 +111,21 @@
 <a href="#liana-a-ligand-receptor-analysis-framework-" class="anchor"></a>LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
 </h1></div>
 <p>The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked an immense interest in understanding intercellular crosstalk. Multiple tools and resources that aid the investigation of cell-cell communication (CCC) were published recently. However, these methods and resources are usually in a fixed combination of a tool and its corresponding resource, but in principle any resource could be combined with any method.</p>
+<div id="install-liana" class="section level2">
+<h2 class="hasAnchor">
+<a href="#install-liana" class="anchor"></a>Install LIANA</h2>
+<pre class="{r}"><code>if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+devtools::install_github('saezlab/liana')</code></pre>
+<p>If you wish to make use of the CellChat algorithm:</p>
+<pre class="{r}"><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("sqjin/CellChat")</a></code></pre>
+</div>
+<div id="tutorial" class="section level2">
+<h2 class="hasAnchor">
+<a href="#tutorial" class="anchor"></a>Tutorial</h2>
+<p>See a <a href="https://saezlab.github.io/liana/articles/liana_tutorial.html">tutorial</a> how to use LIANA to run all methods and resource from above! The tutorial with the test data takes minutes to complete!</p>
+</div>
 <div id="liana-framework" class="section level2">
 <h2 class="hasAnchor">
 <a href="#liana-framework" class="anchor"></a>LIANA Framework</h2>
@@ -123,16 +144,22 @@
 <p>The tools implemented in this repository are:</p>
 <ul>
 <li>
-<a href="https://github.com/Teichlab/cellphonedb">CellPhoneDB</a> method (via <a href="https://squidpy.readthedocs.io/en/latest/">Squidpy</a>)</li>
+<a href="https://github.com/Teichlab/cellphonedb">CellPhoneDBv2</a> (*)</li>
 <li><a href="https://github.com/sqjin/CellChat">CellChat</a></li>
 <li>
-<a href="https://github.com/forrest-lab/NATMI">NATMI</a>*</li>
+<a href="https://github.com/forrest-lab/NATMI">NATMI</a> (*)</li>
 <li>
-<a href="https://github.com/msraredon/Connectome">Connectome</a>*</li>
+<a href="https://github.com/msraredon/Connectome">Connectome</a> (<code>edge_weights</code>) (*)</li>
 <li>
-<a href="https://github.com/SCA-IRCM/SingleCellSignalR">SingleCellSignalR</a>* (SCA)</li>
+<a href="https://github.com/SCA-IRCM/SingleCellSignalR">SingleCellSignalR</a> (<code>LRscores</code>) (SCA) (*)</li>
 <li>
-<a href="https://github.com/Coolgenome/iTALK">iTALK</a> (logfc)*</li>
+<a href="https://github.com/Coolgenome/iTALK">iTALK</a>-inspired mean logFC score (<code>logfc</code>) (*)</li>
+<li>
+<a href="https://advances.sciencemag.org/content/7/16/eabf1356">CytoTalk</a>-inspired <code>cross-talk</code> scores (*)</li>
+<li>
+<a href="https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453">scConnect</a>-inspired <code>importance</code> scores (*)</li>
+<li>
+<a href="https://pubmed.ncbi.nlm.nih.gov/22247279/">RobustRank</a>-aggregate (<code>aggregate_rank</code>) scores (*)</li>
 </ul>
 <p>*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see <a href="https://saezlab.github.io/liana/articles/liana_devel.html">LIANA++</a>.</p>
 </div>
@@ -156,7 +183,6 @@
 <li>HPMR</li>
 <li>Guide2Pharma</li>
 <li>connectomeDB2020</li>
-<li>talklr</li>
 <li>CellTalkDB</li>
 <li>OmniPath</li>
 </ul>
@@ -167,26 +193,6 @@
 <p>All the resources above are retrieved from <a href="https://omnipathdb.org/">OmniPath</a>, and more specifically <a href="https://github.com/saezlab/OmnipathR">OmnipathR</a>. However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing imperfections.</p>
 <p><code>OmniPath</code> itself serves as a composite CCC resource combining all the ones listed above + <a href="https://doi.org/10.15252/msb.20209923">more</a>. <code>OmniPath</code> also collects further information about the roles and localisation of proteins in intercellular communication. We made use of this information regarding the and by default the <code>OmniPath</code>CCC resource in LIANA is filtered according to the consensus localisation and curation of ligand-receptor interactions. To obtain more information how we filtered the default CCC <code>OmniPath</code>, as well as to explore custom filter options see <a href="https://saezlab.github.io/liana/articles/liana_custom_op.html">customizing OmniPath resources</a>.</p>
 </div>
-</div>
-<div id="install-liana" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-liana" class="anchor"></a>Install LIANA</h2>
-<pre class="{r}"><code>if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-    
-devtools::install_github('saezlab/liana')</code></pre>
-<p>If you wish to make use of the CellChat algorithm:</p>
-<pre class="{r}"><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("sqjin/CellChat")</a></code></pre>
-<p>If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up a <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/index.html">conda</a> environment by running the following lines in the terminal:</p>
-<pre class="{bash}"><code>conda create -n liana_env
-conda activate liana_env
-conda install -c anaconda python=3.8.5
-pip install squidpy</code></pre>
-</div>
-<div id="tutorial" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tutorial" class="anchor"></a>Tutorial</h2>
-<p>See a <a href="https://saezlab.github.io/liana/articles/liana_tutorial.html">tutorial</a> how to use LIANA to run all methods and resource from above! The tutorial with the test data takes minutes to complete!</p>
 </div>
 <div id="liana" class="section level2">
 <h2 class="hasAnchor">
@@ -244,6 +250,7 @@ pip install squidpy</code></pre>
 <ul class="list-unstyled">
 <li>Daniel Dimitrov <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0002-5197-2112" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Charlotte Boys <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-3955-5110" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Martin Garrido Rodríguez <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4125-5643" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Denes Turei <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7249-9379" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>James Nagai <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7655-7206" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
@@ -254,7 +261,7 @@ pip install squidpy</code></pre>
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

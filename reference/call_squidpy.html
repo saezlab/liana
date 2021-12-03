@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -153,9 +159,10 @@
     <pre class="usage"><span class='fu'>call_squidpy</span><span class='op'>(</span>
   <span class='va'>seurat_object</span>,
   <span class='va'>op_resource</span>,
-  .seed <span class='op'>=</span> <span class='fl'>1004</span>,
+  seed <span class='op'>=</span> <span class='fl'>1004</span>,
   conda_env <span class='op'>=</span> <span class='cn'>NULL</span>,
-  slot <span class='op'>=</span> <span class='st'>"counts"</span>,
+  assay <span class='op'>=</span> <span class='st'>"RNA"</span>,
+  assay.type <span class='op'>=</span> <span class='st'>"logcounts"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -172,12 +179,16 @@
 <code><a href='select_resource.html'>select_resource</a></code></p></td>
     </tr>
     <tr>
-      <th>.seed</th>
-      <td><p>used to python seed</p></td>
+      <th>seed</th>
+      <td><p>seed passed to squidpy's ligrec function</p></td>
     </tr>
     <tr>
       <th>conda_env</th>
       <td><p>python conda environment to run Squidpy; set to liana_env by default</p></td>
+    </tr>
+    <tr>
+      <th>assay</th>
+      <td><p>assay name</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -197,7 +208,7 @@ as an assumptions of these method is that communication is coordinated at the cl
     <p>A list of Squidpy results for each resource</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>CellPhoneDBv2 algorithm re-implementation in Python</p>
+    <p>CellPhoneDBv2 algorithm re-implementation in Python.</p>
 <p>Note that `cluster_key` is a parameter passed to the Squidpy function,
 by default this will be set to the default Ident of the Seurat object.</p>
 
@@ -212,7 +223,7 @@ by default this will be set to the default Ident of the Seurat object.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

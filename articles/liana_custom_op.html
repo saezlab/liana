@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -60,12 +60,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -106,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">04/08/2021</h4>
+            <h4 class="date">2021-12-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_custom_op.Rmd"><code>vignettes/liana_custom_op.Rmd</code></a></small>
       <div class="hidden name"><code>liana_custom_op.Rmd</code></div>
@@ -123,11 +129,10 @@
 <h4 class="hasAnchor">
 <a href="#load-prerequisites" class="anchor"></a>Load Prerequisites</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://omnipathdb.org/">liana</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/">tibble</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://omnipathdb.org/">liana</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 
 <span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span>
 <span class="va">testdata</span> <span class="op">&lt;-</span>
@@ -136,10 +141,10 @@
 <div id="omnipath-as-in-the-manuscript" class="section level2">
 <h2 class="hasAnchor">
 <a href="#omnipath-as-in-the-manuscript" class="anchor"></a>OmniPath as in the manuscript</h2>
-<p>We will first filter OmniPath as described in the LIANA paper: * we retained only interactions with literature references, * we kept interactions only where the receiver protein was plasma membrane transmembrane or peripheral according to at least 30% of the localisation annotations * we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).</p>
+<p>We will first filter OmniPath as described in the LIANA paper: * we retained only interactions with literature references, * we kept interactions only where the receiver protein was plasma membrane transmembrane or peripheral according to at least 51% of the localisation annotations * we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># generate_omni returns a tibble with CCC OmniPath</span>
-<span class="va">cust_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">30</span>,
+<span class="va">cust_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>,
                            consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
                            transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'secreted'</span>,
                                                     <span class="st">'plasma_membrane_transmembrane'</span>,
@@ -150,18 +155,13 @@
                            ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>,
                            remove_complexes <span class="op">=</span> <span class="cn">TRUE</span>,
                            simplify <span class="op">=</span> <span class="cn">FALSE</span>
-                           <span class="op">)</span>
-
-<span class="va">liana_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_resource.html">select_resource</a></span><span class="op">(</span><span class="st">"OmniPath"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
-
-<span class="co"># Check if the same</span>
-<span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/all_equal.html">all_equal</a></span><span class="op">(</span><span class="va">cust_omni</span>, <span class="va">liana_omni</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
+                           <span class="op">)</span></code></pre></div>
+<p>One could use stricter filtering options, such as only importing from certain CCC-dedicated resources, etc.</p>
 </div>
 <div id="surfacemembrane-bound-interactions-only" class="section level2">
 <h2 class="hasAnchor">
 <a href="#surfacemembrane-bound-interactions-only" class="anchor"></a>Surface/Membrane-bound Interactions only</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pm_omni</span> <span class="op">&lt;-</span> 
   <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>, <span class="co"># increase localisation consensus threshold</span>
                 consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
@@ -178,43 +178,44 @@
 
 
 <span class="co"># check categories of ligands (category_intercell_source)</span>
-<span class="va">pm_omni</span><span class="op">$</span><span class="va">category_intercell_source</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>##  [1] "activating_cofactor" "adhesion"            "cell_adhesion"      
-##  [4] "cell_surface_enzyme" "cell_surface_ligand" "ecm"                
-##  [7] "inhibitory_cofactor" "ligand"              "ligand_regulator"   
-## [10] "tight_junction"</code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span class="va">pm_omni</span><span class="op">$</span><span class="va">category_intercell_source</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "activating_cofactor" "adhesion"            "cell_adhesion"      
+## [4] "cell_surface_enzyme" "cell_surface_ligand" "ecm"                
+## [7] "inhibitory_cofactor" "ligand"</code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># and receptors (category_intercell_target)</span>
-<span class="va">pm_omni</span><span class="op">$</span><span class="va">category_intercell_target</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "receptor"          "adhesion"          "adherens_junction"
-## [4] "ion_channel"       "cell_adhesion"</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<span class="va">pm_omni</span><span class="op">$</span><span class="va">category_intercell_target</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "adhesion"          "receptor"          "adherens_junction"
+## [4] "cell_adhesion"     "ion_channel"</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># remove these categories</span>
-<span class="va">pm_omni</span> <span class="op">%&lt;&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">category_intercell_source</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"activating_cofactor"</span>,
-                                                       <span class="st">"ligand_regulator"</span>,
-                                                       <span class="st">"inhibitory_cofactor"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">pm_omni</span> <span class="op">%&lt;&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">category_intercell_source</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"activating_cofactor"</span>,
+                                            <span class="st">"ligand_regulator"</span>,
+                                            <span class="st">"inhibitory_cofactor"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co"># glimpse into the PM</span>
-<span class="va">pm_omni</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## Rows: 1,449
-## Columns: 18
-## $ source                    &lt;chr&gt; "COMPLEX:P05106_P06756", "COMPLEX:P05106_P06…
-## $ target                    &lt;chr&gt; "P16284", "Q14773", "Q14773", "P08571", "Q14…
-## $ source_genesymbol         &lt;chr&gt; "ITGAV_ITGB3", "ITGAV_ITGB3", "ITGA2B_ITGB3"…
-## $ target_genesymbol         &lt;chr&gt; "PECAM1", "ICAM4", "ICAM4", "CD14", "ICAM4",…
+<span class="va">pm_omni</span> <span class="op">%&gt;%</span> <span class="fu">glimpse</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## Rows: 2,165
+## Columns: 17
+## $ source                    &lt;chr&gt; "A6NDA9", "A6NI73", "A8K4G0", "A8K4G0", "A8K…
+## $ target                    &lt;chr&gt; "Q96LC7", "Q8IYV9", "O15389", "O43699", "O43…
+## $ source_genesymbol         &lt;chr&gt; "LRIT2", "LILRA5", "CD300LB", "CD300LB", "CD…
+## $ target_genesymbol         &lt;chr&gt; "SIGLEC10", "IZUMO1", "SIGLEC5", "SIGLEC6", …
 ## $ is_directed               &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-## $ is_stimulation            &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,…
-## $ is_inhibition             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,…
-## $ consensus_direction       &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,…
-## $ consensus_stimulation     &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,…
-## $ consensus_inhibition      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,…
-## $ dip_url                   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ sources                   &lt;chr&gt; "Baccin2019", "Baccin2019", "Baccin2019", "B…
-## $ references                &lt;chr&gt; "Baccin2019:7542249", "Baccin2019:16988024",…
-## $ curation_effort           &lt;dbl&gt; 1, 1, 1, 1, 1, 14, 11, 5, 15, 1, 1, 1, 1, 11…
-## $ n_references              &lt;chr&gt; "Baccin2019:7542249", "Baccin2019:16988024",…
-## $ n_resources               &lt;int&gt; 1, 1, 1, 1, 1, 17, 15, 11, 17, 1, 1, 1, 1, 6…
+## $ is_stimulation            &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,…
+## $ is_inhibition             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ consensus_direction       &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ consensus_stimulation     &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ consensus_inhibition      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ sources                   &lt;chr&gt; "Cellinker;Wojtowicz2020", "Cellinker;Wojtow…
+## $ references                &lt;chr&gt; "Cellinker:32822567", "Cellinker:32822567", …
+## $ curation_effort           &lt;dbl&gt; 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 4, 2,…
+## $ n_references              &lt;chr&gt; "Cellinker:32822567", "Cellinker:32822567", …
+## $ n_resources               &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1, 4, 3,…
 ## $ category_intercell_source &lt;chr&gt; "adhesion", "adhesion", "adhesion", "adhesio…
-## $ category_intercell_target &lt;chr&gt; "adhesion", "adhesion", "adhesion", "recepto…</code></pre>
+## $ category_intercell_target &lt;chr&gt; "adhesion", "adhesion", "adhesion", "adhesio…</code></pre>
 </div>
 <div id="run-liana-with-custom-ccc-resource" class="section level2">
 <h2 class="hasAnchor">
@@ -222,65 +223,49 @@
 <div id="run-liana" class="section level4">
 <h4 class="hasAnchor">
 <a href="#run-liana" class="anchor"></a>RUN liana</h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Run liana with the custom resource</span>
 <span class="co"># liana Wrap</span>
 <span class="va">liana_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span>seurat_object <span class="op">=</span> <span class="va">testdata</span>,
                          resource<span class="op">=</span><span class="st">'custom'</span>,
-                         external_resource <span class="op">=</span> <span class="va">pm_omni</span>,
-                         cellchat.params<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>.normalize<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## The cell groups used for CellChat analysis are  B CD8 T NK</code></pre>
-<pre><code>## Warning: Expected 5 pieces. Missing pieces filled with `NA` in 44 rows [1, 2, 3,
-## 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
-<pre><code>## Issue identified!! Please check the official Gene Symbol of the following genes:  
-##  CD97</code></pre>
-<pre><code>## Warning: Expected 4 pieces. Additional pieces discarded in 3 rows [699, 709,
-## 714].</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span></code></pre></div>
-<pre><code>## Rows: 4,221
-## Columns: 19
-## $ source                 &lt;chr&gt; "B", "B", "NK", "NK", "NK", "NK", "NK", "NK", "…
-## $ ligand                 &lt;chr&gt; "HLA-DMA", "HLA-DMB", "HLA-B", "TYROBP", "KLRD1…
-## $ target                 &lt;chr&gt; "B", "B", "CD8 T", "NK", "NK", "CD8 T", "CD8 T"…
-## $ receptor               &lt;chr&gt; "CD74", "CD74", "CD8A", "KLRD1", "HLA-E", "HLA-…
-## $ aggregate_rank         &lt;dbl&gt; 1.292173e-08, 1.416047e-08, 5.725620e-08, 9.173…
-## $ mean_rank              &lt;dbl&gt; 729.33333, 732.16667, 86.83333, 742.33333, 114.…
-## $ median_rank            &lt;dbl&gt; 9.0, 17.0, 17.0, 33.0, 37.0, 38.5, 81.5, 186.0,…
-## $ natmi.edge_specificity &lt;dbl&gt; 0.71858859, 0.70863853, 0.29466960, 0.68376068,…
-## $ natmi.rank             &lt;dbl&gt; 54, 55, 331, 59, 297, 315, 353, 355, 357, 146, …
-## $ connectome.weight_sc   &lt;dbl&gt; 0.9428100, 0.9518044, 0.5260422, 0.8521208, 0.4…
-## $ connectome.rank        &lt;dbl&gt; 2, 1, 13, 3, 28, 30, 8, 143, 72, 12, 41, 201, 8…
-## $ logfc.logfc_comb       &lt;dbl&gt; 1.41154404, 1.02484901, 0.31038403, 1.74541994,…
-## $ logfc.rank             &lt;dbl&gt; 16, 31, 154, 7, 37, 37, 154, 229, 229, 106, 154…
-## $ cellchat.pval          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NA, NA, NA, NA, 0…
-## $ cellchat.rank          &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4302, 4302, 4302,…
-## $ sca.LRscore            &lt;dbl&gt; 0.9667571, 0.9586312, 0.9115361, 0.8588166, 0.8…
-## $ sca.rank               &lt;dbl&gt; 1, 3, 21, 82, 37, 40, 9, 73, 42, 171, 125, 198,…
-## $ squidpy.pvalue         &lt;dbl&gt; NA, NA, 0.001, NA, 0.144, 0.156, NA, 0.206, 0.1…
-## $ squidpy.rank           &lt;dbl&gt; 4302, 4302, 1, 4302, 285, 299, 4302, 345, 295, …</code></pre>
+                         external_resource <span class="op">=</span> <span class="va">pm_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span></code></pre></div>
+<pre><code>## Rows: 1,243
+## Columns: 17
+## $ source                 &lt;chr&gt; "B", "B", "B", "B", "B", "B", "B", "B", "B", "B…
+## $ ligand                 &lt;chr&gt; "HLA-DRA", "HLA-DRA", "MS4A1", "HLA-DMA", "HLA-…
+## $ target                 &lt;chr&gt; "B", "NK", "B", "B", "B", "B", "CD8 T", "B", "N…
+## $ receptor               &lt;chr&gt; "CD37", "CD63", "CD82", "CD74", "CD74", "CD37",…
+## $ aggregate_rank         &lt;dbl&gt; 4.376176e-08, 3.138150e-07, 2.664625e-06, 3.755…
+## $ mean_rank              &lt;dbl&gt; 13.0, 7.8, 36.6, 16.4, 22.2, 21.0, 29.0, 35.4, …
+## $ median_rank            &lt;dbl&gt; 4, 1, 11, 16, 25, 11, 4, 17, 27, 12, 21, 21, 19…
+## $ natmi.edge_specificity &lt;dbl&gt; 0.3655873, 0.4806804, 0.6939669, 0.3961174, 0.3…
+## $ natmi.rank             &lt;dbl&gt; 54, 28, 11, 46, 47, 68, 4, 17, 56, 21, 19, 26, …
+## $ connectome.weight_sc   &lt;dbl&gt; 0.9928272, 1.0496186, 0.9125238, 1.0355778, 0.9…
+## $ connectome.rank        &lt;dbl&gt; 5, 1, 13, 2, 7, 11, 4, 18, 27, 12, 23, 21, 26, …
+## $ logfc.logfc_comb       &lt;dbl&gt; 1.1276659, 1.2889676, 1.0514962, 0.9301631, 0.8…
+## $ logfc.rank             &lt;dbl&gt; 4, 1, 8, 17, 25, 16, 3, 9, 22, 6, 21, 18, 19, 2…
+## $ sca.LRscore            &lt;dbl&gt; 0.9442782, 0.9348366, 0.8616937, 0.9293454, 0.9…
+## $ sca.rank               &lt;dbl&gt; 1, 8, 150, 16, 31, 9, 133, 132, 50, 77, 181, 11…
+## $ cellphonedb.pvalue     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ cellphonedb.rank       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</code></pre>
 </div>
 </div>
 <div id="under-the-hood" class="section level2">
 <h2 class="hasAnchor">
 <a href="#under-the-hood" class="anchor"></a>Under the hood</h2>
 <p>In reality, <code>generate_omni</code> is just a wrapper function that calls the appropriate <code>OmniPathR</code> functions and simplifies their filtering according to liana-appropriate format.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># reproduce cust_op as from above with OmniPathR alone</span>
 
 <span class="co"># import the OmniPathR intercell network component</span>
-<span class="va">ligrec</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html">import_intercell_network</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># filter out the complexes</span>
-<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">entity_type_intercell_source</span> <span class="op">==</span> <span class="st">"complex"</span> <span class="op">|</span>
-             <span class="va">entity_type_intercell_target</span> <span class="op">==</span> <span class="st">"complex"</span><span class="op">)</span><span class="op">)</span>
-
+<span class="va">ligrec</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html">import_intercell_network</a></span><span class="op">(</span>entity_types <span class="op">=</span> <span class="st">"protein"</span><span class="op">)</span>
 
 <span class="co"># apply filtering according to curation and localisation</span>
 <span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">30</span>,
+  <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>,
                                       consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
                                       transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'secreted'</span>,
                                                                <span class="st">'plasma_membrane_transmembrane'</span>,
@@ -292,19 +277,18 @@
 
 <span class="co"># remove duplicate LRs</span>
 <span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct_all.html">distinct_at</a></span><span class="op">(</span>.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source_genesymbol"</span>, 
-                              <span class="st">"target_genesymbol"</span><span class="op">)</span>,
+  <span class="fu">distinct_at</span><span class="op">(</span>.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source_genesymbol"</span>, 
+                        <span class="st">"target_genesymbol"</span><span class="op">)</span>,
                     .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/all_equal.html">all_equal</a></span><span class="op">(</span><span class="va">ligrec</span>, <span class="va">cust_omni</span><span class="op">)</span></code></pre></div>
+<span class="fu">all_equal</span><span class="op">(</span><span class="va">ligrec</span>, <span class="va">cust_omni</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>To make use of the full potential of <a href="https://github.com/saezlab/OmnipathR">OmniPathR</a> we kindly refer the user to it.</p>
-<p>It is worth noting that at this point, this tutorial only covers the intercellular component of OmniPathR, but future versions will aim to bridge this with its <a href="https://omnipathdb.org/#about">intracellular part</a>.</p>
 </div>
 <div id="session-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h2>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
 <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sessioninfo/man/session_info.html">session_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -317,7 +301,7 @@
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2021-08-06                  
+##  date     2021-12-03                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source                            
@@ -326,8 +310,8 @@
 ##  backports              1.2.1    2020-12-09 [2] CRAN (R 4.0.2)                    
 ##  beachmat               2.6.4    2020-12-20 [2] Bioconductor                      
 ##  beeswarm               0.2.3    2016-04-25 [2] CRAN (R 4.0.2)                    
-##  Biobase              * 2.50.0   2020-10-27 [2] Bioconductor                      
-##  BiocGenerics         * 0.36.0   2020-10-27 [2] Bioconductor                      
+##  Biobase                2.50.0   2020-10-27 [2] Bioconductor                      
+##  BiocGenerics           0.36.0   2020-10-27 [2] Bioconductor                      
 ##  BiocManager            1.30.10  2019-11-16 [2] CRAN (R 4.0.2)                    
 ##  BiocNeighbors          1.8.2    2020-12-07 [2] Bioconductor                      
 ##  BiocParallel           1.24.1   2020-11-06 [2] Bioconductor                      
@@ -338,41 +322,36 @@
 ##  bitops                 1.0-6    2013-08-17 [2] CRAN (R 4.0.2)                    
 ##  bluster                1.0.0    2020-10-27 [2] Bioconductor                      
 ##  bookdown               0.21     2020-10-13 [2] CRAN (R 4.0.2)                    
+##  broom                  0.7.8    2021-06-24 [2] CRAN (R 4.0.3)                    
 ##  bslib                  0.2.4    2021-01-25 [2] CRAN (R 4.0.3)                    
 ##  cachem                 1.0.4    2021-02-13 [2] CRAN (R 4.0.3)                    
-##  Cairo                  1.5-12.2 2020-07-07 [2] CRAN (R 4.0.3)                    
-##  CellChat               1.1.0    2021-05-02 [2] Github (sqjin/CellChat@b3ccf96)   
 ##  cellranger             1.1.0    2016-07-27 [2] CRAN (R 4.0.2)                    
 ##  checkmate              2.0.0    2020-02-06 [2] CRAN (R 4.0.3)                    
-##  circlize               0.4.12   2021-01-08 [2] CRAN (R 4.0.3)                    
 ##  cli                    2.5.0    2021-04-26 [2] CRAN (R 4.0.3)                    
-##  clue                   0.3-58   2020-12-03 [2] CRAN (R 4.0.3)                    
 ##  cluster                2.1.0    2019-06-19 [5] CRAN (R 4.0.0)                    
-##  coda                   0.19-4   2020-09-30 [2] CRAN (R 4.0.3)                    
 ##  codetools              0.2-16   2018-12-24 [5] CRAN (R 4.0.0)                    
 ##  colorspace             2.0-0    2020-11-11 [2] CRAN (R 4.0.2)                    
-##  ComplexHeatmap         2.6.2    2020-11-12 [2] Bioconductor                      
 ##  cowplot                1.1.1    2020-12-30 [2] CRAN (R 4.0.3)                    
 ##  crayon                 1.4.1    2021-02-08 [2] CRAN (R 4.0.3)                    
 ##  curl                   4.3      2019-12-02 [2] CRAN (R 4.0.2)                    
 ##  data.table             1.14.0   2021-02-21 [2] CRAN (R 4.0.3)                    
 ##  DBI                    1.1.1    2021-01-15 [2] CRAN (R 4.0.3)                    
+##  dbplyr                 2.1.0    2021-02-03 [2] CRAN (R 4.0.3)                    
 ##  DelayedArray           0.16.1   2021-01-22 [2] Bioconductor                      
 ##  DelayedMatrixStats     1.12.3   2021-02-03 [2] Bioconductor                      
 ##  deldir                 0.2-10   2021-02-16 [2] CRAN (R 4.0.3)                    
 ##  desc                   1.2.0    2018-05-01 [2] CRAN (R 4.0.2)                    
 ##  digest                 0.6.27   2020-10-24 [2] CRAN (R 4.0.2)                    
-##  doParallel             1.0.16   2020-10-16 [2] CRAN (R 4.0.2)                    
 ##  dplyr                * 1.0.7    2021-06-18 [2] CRAN (R 4.0.3)                    
 ##  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)                    
 ##  edgeR                  3.32.1   2021-01-14 [2] Bioconductor                      
 ##  ellipsis               0.3.2    2021-04-29 [2] CRAN (R 4.0.3)                    
+##  entropy                1.2.1    2014-11-14 [2] CRAN (R 4.0.3)                    
 ##  evaluate               0.14     2019-05-28 [2] CRAN (R 4.0.2)                    
 ##  fansi                  0.4.2    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  fastmap                1.1.0    2021-01-25 [2] CRAN (R 4.0.3)                    
 ##  fitdistrplus           1.1-3    2020-12-05 [2] CRAN (R 4.0.2)                    
-##  FNN                    1.1.3    2019-02-15 [2] CRAN (R 4.0.2)                    
-##  foreach                1.5.1    2020-10-15 [2] CRAN (R 4.0.2)                    
+##  forcats              * 0.5.1    2021-01-27 [2] CRAN (R 4.0.3)                    
 ##  fs                     1.5.0    2020-07-31 [2] CRAN (R 4.0.2)                    
 ##  future                 1.21.0   2020-12-10 [2] CRAN (R 4.0.3)                    
 ##  future.apply           1.7.0    2021-01-04 [2] CRAN (R 4.0.3)                    
@@ -380,20 +359,16 @@
 ##  GenomeInfoDb           1.26.2   2020-12-08 [2] Bioconductor                      
 ##  GenomeInfoDbData       1.2.4    2020-12-14 [2] Bioconductor                      
 ##  GenomicRanges          1.42.0   2020-10-27 [2] Bioconductor                      
-##  GetoptLong             1.0.5    2020-12-15 [2] CRAN (R 4.0.3)                    
-##  gg.gap                 1.3      2019-09-30 [2] CRAN (R 4.0.3)                    
-##  ggalluvial             0.12.3   2020-12-05 [2] CRAN (R 4.0.3)                    
 ##  ggbeeswarm             0.6.0    2017-08-07 [2] CRAN (R 4.0.2)                    
-##  ggplot2                3.3.3    2020-12-30 [2] CRAN (R 4.0.3)                    
+##  ggplot2              * 3.3.5    2021-06-25 [2] CRAN (R 4.0.3)                    
 ##  ggrepel                0.9.1    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  ggridges               0.5.3    2021-01-08 [2] CRAN (R 4.0.3)                    
-##  GlobalOptions          0.1.2    2020-06-10 [2] CRAN (R 4.0.3)                    
 ##  globals                0.14.0   2020-11-22 [2] CRAN (R 4.0.2)                    
 ##  glue                   1.4.2    2020-08-27 [2] CRAN (R 4.0.2)                    
 ##  goftest                1.2-2    2019-12-02 [2] CRAN (R 4.0.2)                    
-##  gridBase               0.4-7    2014-02-24 [2] CRAN (R 4.0.3)                    
 ##  gridExtra              2.3      2017-09-09 [2] CRAN (R 4.0.2)                    
 ##  gtable                 0.3.0    2019-03-25 [2] CRAN (R 4.0.2)                    
+##  haven                  2.3.1    2020-06-01 [2] CRAN (R 4.0.2)                    
 ##  hms                    1.0.0    2021-01-13 [2] CRAN (R 4.0.3)                    
 ##  htmltools              0.5.1.1  2021-01-22 [2] CRAN (R 4.0.3)                    
 ##  htmlwidgets            1.5.3    2020-12-10 [2] CRAN (R 4.0.2)                    
@@ -403,7 +378,6 @@
 ##  igraph                 1.2.6    2020-10-06 [2] CRAN (R 4.0.2)                    
 ##  IRanges                2.24.1   2020-12-12 [2] Bioconductor                      
 ##  irlba                  2.3.3    2019-02-05 [2] CRAN (R 4.0.2)                    
-##  iterators              1.0.13   2020-10-15 [2] CRAN (R 4.0.2)                    
 ##  jquerylib              0.1.3    2020-12-17 [2] CRAN (R 4.0.3)                    
 ##  jsonlite               1.7.2    2020-12-09 [2] CRAN (R 4.0.2)                    
 ##  KernSmooth             2.23-17  2020-04-26 [5] CRAN (R 4.0.0)                    
@@ -412,13 +386,14 @@
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-##  liana                * 0.0.1    2021-08-06 [1] local                             
+##  liana                * 0.0.4    2021-12-03 [1] local                             
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
 ##  lmtest                 0.9-38   2020-09-09 [2] CRAN (R 4.0.2)                    
 ##  locfit                 1.5-9.4  2020-03-25 [2] CRAN (R 4.0.2)                    
 ##  logger                 0.2.0    2021-03-04 [2] CRAN (R 4.0.3)                    
+##  lubridate              1.7.9.2  2020-11-13 [2] CRAN (R 4.0.2)                    
 ##  magrittr             * 2.0.1    2020-11-17 [2] CRAN (R 4.0.2)                    
 ##  MASS                   7.3-53   2020-09-09 [5] CRAN (R 4.0.2)                    
 ##  Matrix                 1.3-4    2021-06-01 [2] CRAN (R 4.0.3)                    
@@ -428,18 +403,16 @@
 ##  mgcv                   1.8-33   2020-08-27 [5] CRAN (R 4.0.2)                    
 ##  mime                   0.10     2021-02-13 [2] CRAN (R 4.0.3)                    
 ##  miniUI                 0.1.1.1  2018-05-18 [2] CRAN (R 4.0.2)                    
+##  modelr                 0.1.8    2020-05-19 [2] CRAN (R 4.0.2)                    
 ##  munsell                0.5.0    2018-06-12 [2] CRAN (R 4.0.2)                    
-##  network                1.16.1   2020-10-07 [2] CRAN (R 4.0.2)                    
 ##  nlme                   3.1-149  2020-08-23 [5] CRAN (R 4.0.2)                    
-##  NMF                    0.23.0   2020-08-01 [2] CRAN (R 4.0.3)                    
-##  OmnipathR              3.1.2    2021-08-05 [2] Github (saezlab/OmnipathR@ec33baa)
+##  OmnipathR              3.3.2    2021-11-14 [2] Github (saezlab/OmnipathR@a14da81)
 ##  parallelly             1.24.0   2021-03-14 [2] CRAN (R 4.0.3)                    
 ##  patchwork              1.1.1    2020-12-17 [2] CRAN (R 4.0.3)                    
 ##  pbapply                1.4-3    2020-08-18 [2] CRAN (R 4.0.2)                    
 ##  pillar                 1.6.1    2021-05-16 [2] CRAN (R 4.0.3)                    
 ##  pkgconfig              2.0.3    2019-09-22 [2] CRAN (R 4.0.2)                    
 ##  pkgdown                1.6.1    2020-09-12 [2] CRAN (R 4.0.3)                    
-##  pkgmaker               0.32.2   2020-10-20 [2] CRAN (R 4.0.3)                    
 ##  plotly                 4.9.3    2021-01-10 [2] CRAN (R 4.0.3)                    
 ##  plyr                   1.8.6    2020-03-03 [2] CRAN (R 4.0.2)                    
 ##  png                    0.1-7    2013-12-03 [2] CRAN (R 4.0.2)                    
@@ -456,24 +429,21 @@
 ##  Rcpp                   1.0.6    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  RcppAnnoy              0.0.18   2020-12-15 [2] CRAN (R 4.0.3)                    
 ##  RCurl                  1.98-1.3 2021-03-16 [2] CRAN (R 4.0.3)                    
-##  readr                  2.0.0    2021-07-20 [2] CRAN (R 4.0.3)                    
+##  readr                * 2.1.0    2021-11-11 [2] CRAN (R 4.0.3)                    
 ##  readxl                 1.3.1    2019-03-13 [2] CRAN (R 4.0.2)                    
-##  registry               0.5-1    2019-03-05 [2] CRAN (R 4.0.3)                    
+##  reprex                 1.0.0    2021-01-27 [2] CRAN (R 4.0.3)                    
 ##  reshape2               1.4.4    2020-04-09 [2] CRAN (R 4.0.2)                    
-##  reticulate             1.18     2020-10-25 [2] CRAN (R 4.0.2)                    
-##  rjson                  0.2.20   2018-06-08 [2] CRAN (R 4.0.3)                    
+##  reticulate             1.20     2021-05-03 [2] CRAN (R 4.0.3)                    
 ##  rlang                  0.4.11   2021-04-30 [2] CRAN (R 4.0.3)                    
-##  rle                    0.9.2    2020-09-25 [2] CRAN (R 4.0.3)                    
 ##  rmarkdown              2.7      2021-02-19 [2] CRAN (R 4.0.3)                    
-##  rngtools               1.5      2020-01-23 [2] CRAN (R 4.0.2)                    
 ##  RobustRankAggreg       1.1      2013-06-03 [2] CRAN (R 4.0.3)                    
 ##  ROCR                   1.0-11   2020-05-02 [2] CRAN (R 4.0.2)                    
 ##  rpart                  4.1-15   2019-04-12 [5] CRAN (R 4.0.0)                    
 ##  rprojroot              2.0.2    2020-11-15 [2] CRAN (R 4.0.2)                    
-##  RSpectra               0.16-0   2019-12-01 [2] CRAN (R 4.0.2)                    
 ##  rstudioapi             0.13     2020-11-12 [2] CRAN (R 4.0.2)                    
 ##  rsvd                   1.0.3    2020-02-17 [2] CRAN (R 4.0.2)                    
 ##  Rtsne                  0.15     2018-11-10 [2] CRAN (R 4.0.2)                    
+##  rvest                  0.3.6    2020-07-25 [2] CRAN (R 4.0.2)                    
 ##  S4Vectors              0.28.1   2020-12-09 [2] Bioconductor                      
 ##  sass                   0.3.1    2021-01-24 [2] CRAN (R 4.0.3)                    
 ##  scales                 1.1.1    2020-05-11 [2] CRAN (R 4.0.2)                    
@@ -485,10 +455,8 @@
 ##  sessioninfo            1.1.1    2018-11-05 [2] CRAN (R 4.0.2)                    
 ##  Seurat                 4.0.3    2021-06-10 [2] CRAN (R 4.0.3)                    
 ##  SeuratObject           4.0.2    2021-06-09 [2] CRAN (R 4.0.3)                    
-##  shape                  1.4.5    2020-09-13 [2] CRAN (R 4.0.3)                    
 ##  shiny                  1.6.0    2021-01-25 [2] CRAN (R 4.0.3)                    
 ##  SingleCellExperiment   1.12.0   2020-10-27 [2] Bioconductor                      
-##  sna                    2.6      2020-10-06 [2] CRAN (R 4.0.3)                    
 ##  sparseMatrixStats      1.2.1    2021-02-02 [2] Bioconductor                      
 ##  spatstat.core          2.0-0    2021-03-23 [2] CRAN (R 4.0.3)                    
 ##  spatstat.data          2.1-0    2021-03-21 [2] CRAN (R 4.0.3)                    
@@ -496,18 +464,17 @@
 ##  spatstat.sparse        2.0-0    2021-03-16 [2] CRAN (R 4.0.3)                    
 ##  spatstat.utils         2.1-0    2021-03-15 [2] CRAN (R 4.0.3)                    
 ##  statmod                1.4.35   2020-10-19 [2] CRAN (R 4.0.2)                    
-##  statnet.common         4.4.1    2020-10-03 [2] CRAN (R 4.0.3)                    
 ##  stringi                1.5.3    2020-09-09 [2] CRAN (R 4.0.2)                    
-##  stringr                1.4.0    2019-02-10 [2] CRAN (R 4.0.2)                    
+##  stringr              * 1.4.0    2019-02-10 [2] CRAN (R 4.0.2)                    
 ##  SummarizedExperiment   1.20.0   2020-10-27 [2] Bioconductor                      
 ##  survival               3.2-7    2020-09-28 [2] CRAN (R 4.0.2)                    
-##  svglite                2.0.0    2021-02-20 [2] CRAN (R 4.0.3)                    
 ##  systemfonts            1.0.1    2021-02-09 [2] CRAN (R 4.0.3)                    
 ##  tensor                 1.5      2012-05-05 [2] CRAN (R 4.0.2)                    
 ##  textshaping            0.3.0    2021-02-10 [2] CRAN (R 4.0.3)                    
 ##  tibble               * 3.1.2    2021-05-16 [2] CRAN (R 4.0.3)                    
-##  tidyr                  1.1.3    2021-03-03 [2] CRAN (R 4.0.3)                    
+##  tidyr                * 1.1.3    2021-03-03 [2] CRAN (R 4.0.3)                    
 ##  tidyselect             1.1.0    2020-05-11 [2] CRAN (R 4.0.2)                    
+##  tidyverse            * 1.3.0    2019-11-21 [2] CRAN (R 4.0.3)                    
 ##  tzdb                   0.1.2    2021-07-20 [2] CRAN (R 4.0.3)                    
 ##  utf8                   1.1.4    2018-05-24 [2] CRAN (R 4.0.2)                    
 ##  uwot                   0.1.10   2020-12-15 [2] CRAN (R 4.0.3)                    
@@ -515,7 +482,7 @@
 ##  vipor                  0.4.5    2017-03-22 [2] CRAN (R 4.0.2)                    
 ##  viridis                0.5.1    2018-03-29 [2] CRAN (R 4.0.2)                    
 ##  viridisLite            0.3.0    2018-02-01 [2] CRAN (R 4.0.2)                    
-##  vroom                  1.5.3    2021-07-14 [2] CRAN (R 4.0.3)                    
+##  vroom                  1.5.6    2021-11-10 [2] CRAN (R 4.0.3)                    
 ##  withr                  2.4.1    2021-01-26 [2] CRAN (R 4.0.3)                    
 ##  xfun                   0.21     2021-02-10 [2] CRAN (R 4.0.3)                    
 ##  xml2                   1.3.2    2020-04-23 [2] CRAN (R 4.0.2)                    
@@ -525,7 +492,7 @@
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 ## 
-## [1] /tmp/RtmpGG0Aze/temp_libpath4ab6714a62ffb
+## [1] /tmp/Rtmpc1XIAq/temp_libpathcad78673ab47d
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library
@@ -545,7 +512,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

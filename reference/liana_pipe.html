@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -154,10 +160,11 @@
   <span class='va'>seurat_object</span>,
   <span class='va'>op_resource</span>,
   decomplexify <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  test.type <span class='op'>=</span> <span class='st'>"t"</span>,
+  test.type <span class='op'>=</span> <span class='st'>"wilcox"</span>,
   pval.type <span class='op'>=</span> <span class='st'>"all"</span>,
-  expr_prop <span class='op'>=</span> <span class='fl'>0</span>,
-  trim <span class='op'>=</span> <span class='fl'>0.1</span>
+  trim <span class='op'>=</span> <span class='fl'>0</span>,
+  assay <span class='op'>=</span> <span class='st'>"RNA"</span>,
+  assay.type <span class='op'>=</span> <span class='st'>"logcounts"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -187,15 +194,24 @@ or a binomial test with <code>"binom"</code>.</p></td>
       <td><p>A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.</p></td>
     </tr>
     <tr>
-      <th>expr_prop</th>
-      <td><p>minimum proportion of gene expression per cell type (0 by default),
-yet one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.</p></td>
-    </tr>
-    <tr>
       <th>trim</th>
       <td><p>the fraction (0 to 0.5) of observations to be trimmed from each end
 of x before the `truncated mean` is computed (0.1 by default)</p></td>
+    </tr>
+    <tr>
+      <th>assay</th>
+      <td><p>assay to be used ("RNA" by default)</p></td>
+    </tr>
+    <tr>
+      <th>assay.type</th>
+      <td><p>- the type of data to be used to calculate the means
+(counts by default), available options are: "counts" and "logcounts"</p></td>
+    </tr>
+    <tr>
+      <th>expr_prop</th>
+      <td><p>minimum proportion of gene expression per cell type (0.2 by default),
+yet one should consider setting this to an appropriate value between 0 and 1,
+as an assumptions of these method is that communication is coordinated at the cluster level.</p></td>
     </tr>
     </table>
 
@@ -214,7 +230,7 @@ of x before the `truncated mean` is computed (0.1 by default)</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

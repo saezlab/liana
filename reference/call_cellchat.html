@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -162,6 +168,8 @@
   .do_parallel <span class='op'>=</span> <span class='cn'>FALSE</span>,
   .raw_use <span class='op'>=</span> <span class='cn'>TRUE</span>,
   expr_prop <span class='op'>=</span> <span class='fl'>0</span>,
+  organism <span class='op'>=</span> <span class='st'>"human"</span>,
+  thresh <span class='op'>=</span> <span class='fl'>1</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -194,14 +202,18 @@
     </tr>
     <tr>
       <th>.raw_use</th>
-      <td><p>whether use the raw data or gene expression data pojectected
-to a ppi</p></td>
+      <td><p>whether use the raw data or gene expression data projectected
+to a ppi (should be kept to TRUE)</p></td>
     </tr>
     <tr>
       <th>expr_prop</th>
       <td><p>minimum proportion of gene expression per cell type (0 by default),
 yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.</p></td>
+    </tr>
+    <tr>
+      <th>organism</th>
+      <td><p>Obtain CellChatDB for which organism ('mouse' or 'human')</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -233,7 +245,7 @@ as an assumptions of these method is that communication is coordinated at the cl
     <p>A DF of intercellular communication network</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>CellChat's objects are not documented/exported thus the
+    <p>CellChat's objects are not lazily documented/exported thus the
   whole package has to be imported.</p>
 
   </div>
@@ -247,7 +259,7 @@ as an assumptions of these method is that communication is coordinated at the cl
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

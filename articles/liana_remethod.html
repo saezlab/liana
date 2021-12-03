@@ -179,9 +179,12 @@
 <span class="va">natmi_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                          method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'call_natmi'</span>, <span class="st">'natmi'</span><span class="op">)</span>,
                          resource <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'OmniPath'</span><span class="op">)</span>,
-                         call_natmi.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>.use_raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># compare results</span>
+                         call_natmi.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>.use_raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in dir.create(file.path(.output_path), recursive = TRUE): '/tmp/
+## Rtmp9PNMBQ/temp_libpath5474b34a429f2/liana/NATMI//data/output/NATMI_test'
+## already exists</code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># compare results</span>
 <span class="va">natmi_test</span> <span class="op">%&lt;&gt;%</span> 
     <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
         <span class="va">res</span> <span class="op">%&gt;%</span>
@@ -204,7 +207,7 @@
 <div id="singlecellsignalr-lrscore" class="section level2">
 <h2 class="hasAnchor">
 <a href="#singlecellsignalr-lrscore" class="anchor"></a>SingleCellSignalR LRscore</h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Run liana /w re-implemented and original SCA</span>
 <span class="va">sca_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                        method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'call_sca'</span>, <span class="st">'sca'</span><span class="op">)</span>,
@@ -226,7 +229,7 @@
 ## Doing CD8 T and NK ... OK
 ## Doing NK and B ... OK
 ## Doing NK and CD8 T ... OK</code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compare results</span>
 <span class="va">sca_test</span> <span class="op">%&lt;&gt;%</span> 
     <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
@@ -255,7 +258,7 @@
 <div id="session-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
 <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sessioninfo/man/session_info.html">session_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -462,7 +465,7 @@
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                         
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                       
 ## 
-## [1] /tmp/RtmpGG0Aze/temp_libpath4ab6714a62ffb
+## [1] /tmp/Rtmp9PNMBQ/temp_libpath5474b34a429f2
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

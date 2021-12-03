@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   liana_custom_op: liana_custom_op.html
   liana_devel: liana_devel.html
-  liana_remethod: liana_remethod.html
+  liana_intracell: liana_intracell.html
+  liana_nichenet: liana_nichenet.html
   liana_tutorial: liana_tutorial.html
-last_built: 2021-08-06T14:12Z
+last_built: 2021-12-03T16:36Z
 

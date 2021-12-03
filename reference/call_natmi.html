@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -160,11 +166,12 @@
   assay <span class='op'>=</span> <span class='st'>"RNA"</span>,
   num_cor <span class='op'>=</span> <span class='fl'>4</span>,
   conda_env <span class='op'>=</span> <span class='cn'>NULL</span>,
+  assay.type <span class='op'>=</span> <span class='st'>"logcounts"</span>,
   .format <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  .write_data <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  .use_raw <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  .overwrite_data <span class='op'>=</span> <span class='cn'>TRUE</span>,
   .seed <span class='op'>=</span> <span class='fl'>1004</span>,
-  .natmi_path <span class='op'>=</span> <span class='cn'>NULL</span>
+  .natmi_path <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .delete_input_output <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -199,12 +206,9 @@
       <td><p>bool whether to format output</p></td>
     </tr>
     <tr>
-      <th>.write_data</th>
-      <td><p>bool whether Extract data from Seurat Object</p></td>
-    </tr>
-    <tr>
-      <th>.use_raw</th>
-      <td><p>bool whether to extract raw counts (False by Default - i.e. extracts 100*(x-1) logdata as in NATMI Github page</p></td>
+      <th>.overwrite_data</th>
+      <td><p>bool whether Extract and overwrite csv with
+data from Seurat Object</p></td>
     </tr>
     <tr>
       <th>.natmi_path</th>
@@ -250,8 +254,11 @@ NATMI Arguments:
 * a weight of 1 means both the ligand and receptor are only expressed
  in one cell type</p>
 <p>Note that `call_natmi` will write the expression matrix to CSV each time
-its called, unless .write_data is set to FALSE!
+its called, unless .overwrite_data is set to FALSE!
 This can be an extremely time consuming step when working with large datasets</p>
+<p>Also, NATMI will sometimes create duplicate files, so please consider
+ saving each run in a new folder. An easy fix would be to simply delete the
+ output, but I am reluctant to automatically delete files via an R script.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -264,7 +271,7 @@ This can be an extremely time consuming step when working with large datasets</p
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

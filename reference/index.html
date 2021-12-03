@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -100,12 +100,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -198,7 +204,7 @@
         <td>
           <p><code><a href="liana_wrap.html">liana_wrap()</a></code> </p>
         </td>
-        <td><p>Run LIANA Wrapper</p></td>
+        <td><p>LIANA wrapper function</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -264,9 +270,27 @@
       <tr>
         
         <td>
+          <p><code><a href="get_cellcall.html">get_cellcall()</a></code> </p>
+        </td>
+        <td><p>Function to Obtain the CellCall database</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_cellchat_missing.html">get_cellchat_missing()</a></code> </p>
+        </td>
+        <td><p>Helper Function to get Missing Interactions from OG CellChatDB</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_connectome.html">get_connectome()</a></code> </p>
         </td>
         <td><p>Function to obtain connectome-like weights</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_global_mean.html">get_global_mean()</a></code> </p>
+        </td>
+        <td><p>Helper function to obtain a global mean</p></td>
       </tr><tr>
         
         <td>
@@ -295,9 +319,27 @@ one ligand-receptor resource.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="get_permutations.html">get_permutations()</a></code> </p>
+        </td>
+        <td><p>Helper Function to generate shuffled means</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_sca.html">get_sca()</a></code> </p>
         </td>
         <td><p>Function to obtain SingleCellSignalR-like scores</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_scconnect.html">get_scconnect()</a></code> </p>
+        </td>
+        <td><p>Function to obtain scConnect-like interaction scores</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_up_dict.html">get_up_dict()</a></code> </p>
+        </td>
+        <td><p>Helper function to get UniProt dictionary</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -400,7 +442,7 @@ one ligand-receptor resource.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

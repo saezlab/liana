@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run LIANA Wrapper — liana_wrap • liana</title>
+<title>LIANA wrapper function — liana_wrap • liana</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Run LIANA Wrapper — liana_wrap" />
-<meta property="og:description" content="Run LIANA Wrapper" />
+<meta property="og:title" content="LIANA wrapper function — liana_wrap" />
+<meta property="og:description" content="LIANA wrapper function" />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -141,18 +147,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run LIANA Wrapper</h1>
+    <h1>LIANA wrapper function</h1>
     <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_wrapper.R'><code>R/liana_wrapper.R</code></a></small>
     <div class="hidden name"><code>liana_wrap.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Run LIANA Wrapper</p>
+    <p>LIANA wrapper function</p>
     </div>
 
     <pre class="usage"><span class='fu'>liana_wrap</span><span class='op'>(</span>
   <span class='va'>seurat_object</span>,
-  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"natmi"</span>, <span class='st'>"connectome"</span>, <span class='st'>"logfc"</span>, <span class='st'>"cellchat"</span>, <span class='st'>"sca"</span>, <span class='st'>"squidpy"</span><span class='op'>)</span>,
+  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"natmi"</span>, <span class='st'>"connectome"</span>, <span class='st'>"logfc"</span>, <span class='st'>"sca"</span>, <span class='st'>"cellphonedb"</span><span class='op'>)</span>,
   resource <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OmniPath"</span><span class='op'>)</span>,
   <span class='va'>external_resource</span>,
   .simplify <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -188,21 +194,26 @@ method-resource combinations</p></td>
     <tr>
       <th>...</th>
       <td><p>Arguments passed on to <code><a href='liana_defaults.html'>liana_defaults</a></code></p><dl>
+    <dt><code>liana_pipe.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='liana_pipe.html'>liana_pipe</a></code></p></dd>
+    <dt><code>liana_call.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='liana_call.html'>liana_call</a></code></p></dd>
     <dt><code>cellchat.params</code></dt><dd><p>list of Parameters passed to CellChat <code><a href='call_cellchat.html'>call_cellchat</a></code></p></dd>
-    <dt><code>sca.params</code></dt><dd><p>list of Parameters passed to SingleCellSignalR <code><a href='call_sca.html'>call_sca</a></code></p></dd>
     <dt><code>squidpy.params</code></dt><dd><p>list of Parameters passed to Squidpy <code><a href='call_squidpy.html'>call_squidpy</a></code></p></dd>
     <dt><code>call_connectome.params</code></dt><dd><p>list of Parameters passed to Connectome <code><a href='call_connectome.html'>call_connectome</a></code></p></dd>
     <dt><code>call_italk.params</code></dt><dd><p>list of Parameters passed to iTALK <code><a href='call_italk.html'>call_italk</a></code></p></dd>
     <dt><code>call_natmi.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='call_natmi.html'>call_natmi</a></code></p></dd>
-    <dt><code>liana_pipe.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='liana_pipe.html'>liana_pipe</a></code></p></dd>
-    <dt><code>liana_call.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='liana_call.html'>liana_call</a></code></p></dd>
+    <dt><code>call_sca.params</code></dt><dd><p>list of Parameters passed to SingleCellSignalR <code><a href='call_sca.html'>call_sca</a></code></p></dd>
     <dt><code>assay</code></dt><dd><p>Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 and `call_connectome`</p></dd>
-    <dt><code>decomplexify</code></dt><dd><p>specify whether complexes in the resource should be
-dissociated and taken into account</p></dd>
-    <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0 by default),
-yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.</p></dd>
+    <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0.1 by default).
+This is further applied at a method-specific level - it is not applied to
+ Connectome and Cytotalk, as these methods calculate/normalize the score (or
+ statistics used in their scores) across all cell types or cell type pairs.</p></dd>
+    <dt><code>seed</code></dt><dd><p>random seed integer</p></dd>
+    <dt><code>trim</code></dt><dd><p>the fraction (0 to 0.5) of observations to be trimmed from each
+end of x before the mean is computed. This is relevant only for the
+CellPhoneDB algorithm re-implementation in liana.</p></dd>
+    <dt><code>parallelize</code></dt><dd><p>whether to parallelize cellphonedb-like</p></dd>
+    <dt><code>workers</code></dt><dd><p>number of workers to be called</p></dd>
   
 </dl></td>
     </tr>
@@ -230,7 +241,7 @@ If only one resource is selected, a single tibble (with results for that
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">

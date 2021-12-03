@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -101,12 +101,18 @@
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
     </li>
     <li>
-      <a href="../articles/liana_remethod.html">LIANA Re-implemented Methods</a>
+      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
+    </li>
+    <li>
+      <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -157,6 +163,7 @@
   cap <span class='op'>=</span> <span class='cn'>NULL</span>,
   get_ranks <span class='op'>=</span> <span class='cn'>TRUE</span>,
   get_agrank <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  .score_mode <span class='op'>=</span> <span class='va'>.score_specs</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -198,6 +205,41 @@ returned and the ranking will be carried out solely on them</p></td>
       <td><p>boolean, whether to return aggregate rank using the
 `RobustRankAggreg` package.</p></td>
     </tr>
+    <tr>
+      <th>.score_mode</th>
+      <td><p>defines the way that the methods would be aggragate.
+By default, we use the score of each method which reflects specificity
+(if available), if not e.g. the case of SCA we use it's sole scoring function.
+This aggregation is by default done on the basis of the list returns by
+`.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
+aggragate of the housekeeping interactions of each `external` LIANA++ method.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/RobustRankAggreg/man/aggregateRanks.html'>RobustRankAggreg::aggregateRanks</a></code></p><dl>
+    <dt><code>glist</code></dt><dd><p>list of element vectors, the order of the
+  vectors is used as the ranking.</p></dd>
+    <dt><code>rmat</code></dt><dd><p>the rankings in matrix format. The glist is
+  by default converted to this format.</p></dd>
+    <dt><code>N</code></dt><dd><p>the number of ranked elements, important when
+  using only top-k ranks, by default it is calculated as
+  the number of unique elements in the input.</p></dd>
+    <dt><code>method</code></dt><dd><p>rank aggregation method, by defaylt
+  <code>'RRA'</code>, other options are <code>'min'</code>,
+  <code>'geom.mean'</code>, <code>'mean'</code>, <code>'median'</code> and
+  <code>'stuart'</code></p></dd>
+    <dt><code>full</code></dt><dd><p>indicates if the full rankings are given,
+  used if the the sets of ranked elements do not match
+  perfectly</p></dd>
+    <dt><code>exact</code></dt><dd><p>indicator showing if exact p-value will be
+  calculated based on rho score (Default: if number of
+  lists smaller than 10, exact is used)</p></dd>
+    <dt><code>topCutoff</code></dt><dd><p>a vector of cutoff values used to limit
+  the number of elements in the input lists elements do not
+  match perfectly</p></dd>
+  
+</dl></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -209,6 +251,8 @@ returned and the ranking will be carried out solely on them</p></td>
   on a vector representing the number of rows in the results for each method,
   by default this is set to base::max, but any other function that
   works with vectors could be passed - e.g. min, mean, etc.</p>
+<p>This function also decomplexifies any complex present in the CellChat results
+which returns complexes by default</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -221,7 +265,7 @@ returned and the ranking will be carried out solely on them</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Denes Turei, James Nagai.</p>
+  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">
