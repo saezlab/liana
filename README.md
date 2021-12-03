@@ -27,7 +27,7 @@ devtools::install_github("sqjin/CellChat")
 See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run up to 8 methods and 16 different resources!
 The tutorial with the test data takes minutes to complete!    
   
-Additional tutorials are available on:  
+Additional tutorials:  
 
 * [How to combine LIANA and NicheNet](https://saezlab.github.io/liana/articles/liana_nichenet.html)  
 
