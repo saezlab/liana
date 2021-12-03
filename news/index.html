@@ -160,6 +160,7 @@
 <li><p>I now filter the Crosstalk scores to include only those &gt; 0. Otherwise, LIANA would return all possible combinations of clusters and interactions, which would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (&gt;0).</p></li>
 <li><p><code>CellChat</code> and Crosstalk scores/<code>cytotalk</code> will no longer by called by default by liana_wrap. However, it both are available as an option to be passed to the <code>method</code> parameter.</p></li>
 <li><p>I now filter all methods by <code>expr_prop</code>. This is done in a slightly different manner for Connectome’s scaled weights and crosstalk scores, since they require all pairs/clusters to be present to appropriately calculate their scores. Thus, for them we filter after we calculate the scores, while for the others methods we pre-filter.</p></li>
+<li><p>We now provide a tutorial how to make use of <a href="https://saezlab.github.io/liana/articles/liana_intracell.html">intracellular OmniPath</a> as well as how to <a href="https://saezlab.github.io/liana/articles/liana_nichenet.html">combine LIANA with NicheNet</a></p></li>
 </ul>
 </div>
 </div>

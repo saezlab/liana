@@ -214,7 +214,11 @@
 <code class="sourceCode R"><span class="co"># Liana returns a list of results, each element of which corresponds to a method</span>
 <span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span>
 <span class="co">#&gt; List of 5</span>
-<span class="co">#&gt;  $ natmi      : tibble [996 × 11] (S3: tbl_df/tbl/data.frame)</span>
+<span class="co">#&gt;  $ natmi      :</span>
+<span class="co">#&gt; Registered S3 method overwritten by 'cli':</span>
+<span class="co">#&gt;   method     from         </span>
+<span class="co">#&gt;   print.boxx spatstat.geom</span>
+<span class="co">#&gt; tibble [996 × 11] (S3: tbl_df/tbl/data.frame)</span>
 <span class="co">#&gt;   ..$ source          : chr [1:996] "B" "B" "B" "B" ...</span>
 <span class="co">#&gt;   ..$ target          : chr [1:996] "B" "B" "B" "B" ...</span>
 <span class="co">#&gt;   ..$ ligand.complex  : chr [1:996] "ADAM10" "ITGB1BP1" "ITGB1BP1" "ITGB1BP1" ...</span>
@@ -272,6 +276,12 @@
 <span class="co"># We can aggregate these results into a tibble with consensus ranks</span>
 <span class="va">liana_test</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Now aggregating natmi</span>
+<span class="co">#&gt; Now aggregating connectome</span>
+<span class="co">#&gt; Now aggregating logfc</span>
+<span class="co">#&gt; Now aggregating sca</span>
+<span class="co">#&gt; Now aggregating cellphonedb</span>
+<span class="co">#&gt; Aggregating Ranks</span>
 <span class="co">#&gt; # A tibble: 996 x 17</span>
 <span class="co">#&gt;    source ligand   target receptor aggregate_rank mean_rank median_rank</span>
 <span class="co">#&gt;    &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;</span>
@@ -620,7 +630,7 @@
 #&gt;  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 #&gt;  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 #&gt; 
-#&gt; [1] /tmp/Rtmpc1XIAq/temp_libpathcad784cd3be0
+#&gt; [1] /tmp/Rtmpc1XIAq/temp_libpathcad783738f990
 #&gt; [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 #&gt; [3] /usr/local/lib/R/site-library
 #&gt; [4] /usr/lib/R/site-library
