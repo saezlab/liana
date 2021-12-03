@@ -13,6 +13,9 @@ scaled weights and crosstalk scores, since they require all pairs/clusters to be
 calculate their scores. Thus, for them we filter after we calculate the scores, while for the others methods
 we pre-filter.
 
+* We now provide a tutorial how to make use of [intracellular OmniPath](https://saezlab.github.io/liana/articles/liana_intracell.html) as well as
+how to [combine LIANA with NicheNet](https://saezlab.github.io/liana/articles/liana_nichenet.html)
+
 
 # LIANA 0.0.4
 

@@ -24,9 +24,19 @@ devtools::install_github("sqjin/CellChat")
 
   
 ## Tutorial
-See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run all methods and resource from above!
-The tutorial with the test data takes minutes to complete!  
-   
+See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run up to 8 methods and 16 different resources!
+The tutorial with the test data takes minutes to complete!    
+  
+Additional tutorials are available on:  
+
+* [How to combine LIANA and NicheNet](https://saezlab.github.io/liana/articles/liana_nichenet.html)  
+
+* [How to make use of OmniPathR's intracellular component](https://saezlab.github.io/liana/articles/liana_intracell.html)  
+
+* [How to customize OmniPath's intercellular resource](https://saezlab.github.io/liana/articles/liana_intracell.html)  
+
+* [LIANA for developers and benchmarks](https://saezlab.github.io/liana/articles/liana_devel.html)  
+  
   
 ## LIANA Framework
   
@@ -54,7 +64,6 @@ The tools implemented in this repository are:
 - [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR) (`LRscores`) (SCA) (*)
 - [iTALK](https://github.com/Coolgenome/iTALK)-inspired mean logFC score (`logfc`) (*)
 - [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
-- [scConnect](https://academic.oup.com/bioinformatics/article/37/20/3501/6273571#307516453)-inspired `importance` scores (*)
 - [RobustRank](https://pubmed.ncbi.nlm.nih.gov/22247279/)-aggregate (`aggregate_rank`) scores (*)
   
 *The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).

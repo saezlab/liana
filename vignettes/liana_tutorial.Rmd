@@ -98,7 +98,7 @@ For more information and validation with the original methods see [LIANA++](http
 `liana` also provides consensus ranks for the results obtained using different
 methods. By default, `liana` will provide mean, median, and aggregate* consensus
 ranks
-```{r liana_ranks, message = FALSE, print = FALSE}
+```{r liana_ranks, warning=FALSE}
 # Liana returns a list of results, each element of which corresponds to a method
 liana_test %>% glimpse
 
