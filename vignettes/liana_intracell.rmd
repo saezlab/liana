@@ -68,7 +68,7 @@ liana_res <- liana_wrap(seurat_object = testdata,
   liana_aggregate() # aggregate
 ```
 
-### A) Filter LIANA output to only RTK interactions
+### Filter LIANA output to only RTK interactions
 Here, we assume that we only are only interested in from the RTK pathway.
 ```{r filter_by_liana}
 liana_rtk <- liana_res %>% 
@@ -84,7 +84,7 @@ liana_rtk <- liana_res %>%
 liana_rtk
 ```
 
-### B) Run LIANA with only specific interactions
+### Run LIANA with only specific interactions
 One could also do the reverse - i.e. filter the resource in regards to a given
 functional annotation term, and then run LIANA
 ```{r filter_by_op}
@@ -109,7 +109,7 @@ liana_rtk_omni
 ```
 
 
-## B) Perform an over-representation representation (ORA) on ligands/receptors
+## Perform an over-representation representation analysis (ORA) on predicted LR interactions 
 Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB  
 gene sets in preferentially ranked ligand-receptor interactions from LIANA.
 
