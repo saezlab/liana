@@ -153,7 +153,8 @@ liana_defaults <- function(
         .normalize = FALSE,
         .do_parallel = FALSE,
         .raw_use = TRUE,
-        organism = "human"
+        organism = "human",
+        de_thresh = 0.05
     )
 
     # SingleCellSignalR Defaults

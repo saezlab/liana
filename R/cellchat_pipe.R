@@ -12,6 +12,8 @@
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param organism Obtain CellChatDB for which organism ('mouse' or 'human')
+#' @param de_thresh diff expression of genes p-value
+#'
 #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
@@ -40,6 +42,7 @@ call_cellchat <- function(op_resource,
                           expr_prop = 0,
                           organism = "human",
                           thresh = 1,
+                          de_thresh = 0.05,
                           ...
                           ){
     stringsAsFactors <- options('stringsAsFactors')[[1]]
@@ -96,7 +99,8 @@ call_cellchat <- function(op_resource,
     # Infer the cell state-specific communications
     cellchat.omni <-
         CellChat::identifyOverExpressedGenes(cellchat.omni,
-                                             thresh.pc = expr_prop)
+                                             thresh.pc = expr_prop,
+                                             thresh.p = de_thresh)
     cellchat.omni <- CellChat::identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
