@@ -112,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2021-12-03</h4>
+            <h4 class="date">2021-12-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_intracell.rmd"><code>vignettes/liana_intracell.rmd</code></a></small>
       <div class="hidden name"><code>liana_intracell.rmd</code></div>
@@ -163,9 +163,9 @@
                         resource<span class="op">=</span><span class="st">'custom'</span>,
                         external_resource <span class="op">=</span> <span class="va">liana_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># aggregate</span></code></pre></div>
-<div id="a-filter-liana-output-to-only-rtk-interactions" class="section level3">
+<div id="filter-liana-output-to-only-rtk-interactions" class="section level3">
 <h3 class="hasAnchor">
-<a href="#a-filter-liana-output-to-only-rtk-interactions" class="anchor"></a>A) Filter LIANA output to only RTK interactions</h3>
+<a href="#filter-liana-output-to-only-rtk-interactions" class="anchor"></a>Filter LIANA output to only RTK interactions</h3>
 <p>Here, we assume that we only are only interested in from the RTK pathway.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_rtk</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span> 
@@ -196,9 +196,9 @@
 ## #   cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;, ligand_pathway &lt;chr&gt;,
 ## #   receptor_pathway &lt;chr&gt;</code></pre>
 </div>
-<div id="b-run-liana-with-only-specific-interactions" class="section level3">
+<div id="run-liana-with-only-specific-interactions" class="section level3">
 <h3 class="hasAnchor">
-<a href="#b-run-liana-with-only-specific-interactions" class="anchor"></a>B) Run LIANA with only specific interactions</h3>
+<a href="#run-liana-with-only-specific-interactions" class="anchor"></a>Run LIANA with only specific interactions</h3>
 <p>One could also do the reverse - i.e. filter the resource in regards to a given functional annotation term, and then run LIANA</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We join the functional annotations to OmniPath</span>
@@ -252,9 +252,9 @@
 ## #   cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<div id="b-perform-an-over-representation-representation-ora-on-ligandsreceptors" class="section level2">
+<div id="perform-an-over-representation-representation-analysis-ora-on-predicted-lr-interactions" class="section level2">
 <h2 class="hasAnchor">
-<a href="#b-perform-an-over-representation-representation-ora-on-ligandsreceptors" class="anchor"></a>B) Perform an over-representation representation (ORA) on ligands/receptors</h2>
+<a href="#perform-an-over-representation-representation-analysis-ora-on-predicted-lr-interactions" class="anchor"></a>Perform an over-representation representation analysis (ORA) on predicted LR interactions</h2>
 <p>Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB<br>
 gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="first-format-lianas-output" class="section level3">
@@ -418,7 +418,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2021-12-03                  
+##  date     2021-12-05                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source                            
@@ -503,7 +503,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-##  liana                * 0.0.5    2021-12-03 [1] local                             
+##  liana                * 0.0.5    2021-12-05 [1] local                             
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -609,7 +609,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 ## 
-## [1] /tmp/Rtmpc1XIAq/temp_libpathcad783738f990
+## [1] /tmp/Rtmply9pjl/temp_libpath1310f4df36d7b
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library
