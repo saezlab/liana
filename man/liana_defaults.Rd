@@ -7,19 +7,24 @@
 liana_defaults(
   assay = "RNA",
   assay.type = "logcounts",
-  decomplexify = TRUE,
-  expr_prop = 0.2,
+  expr_prop = 0.1,
   seed = 1004,
   trim = 0,
   parallelize = FALSE,
   workers = 8,
-  cellchat.params = NULL,
-  squidpy.params = NULL,
-  call_sca.params = NULL,
-  cellphonedb.params = NULL,
   permutation.params = NULL,
   liana_pipe.params = NULL,
   liana_call.params = NULL,
+  cellphonedb.params = NULL,
+  natmi.params = NULL,
+  sca.params = NULL,
+  connectome.params = NULL,
+  cytotalk.params = NULL,
+  logfc.params = NULL,
+  scconnect.params = NULL,
+  cellchat.params = NULL,
+  squidpy.params = NULL,
+  call_sca.params = NULL,
   call_natmi.params = NULL,
   call_connectome.params = NULL,
   call_italk.params = NULL
@@ -29,12 +34,10 @@ liana_defaults(
 \item{assay}{Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 and `call_connectome`}
 
-\item{decomplexify}{specify whether complexes in the resource should be
-dissociated and taken into account}
-
-\item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default).
-One should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these methods is that communication is coordinated at the cluster level.}
+\item{expr_prop}{minimum proportion of gene expression per cell type (0.1 by default).
+This is further applied at a method-specific level - it is not applied to
+ Connectome and Cytotalk, as these methods calculate/normalize the score (or
+ statistics used in their scores) across all cell types or cell type pairs.}
 
 \item{seed}{random seed integer}
 
@@ -46,21 +49,24 @@ CellPhoneDB algorithm re-implementation in liana.}
 
 \item{workers}{number of workers to be called}
 
+\item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
+
+\item{liana_call.params}{list of Parameters passed to NATMI \code{\link{liana_call}}}
+
 \item{cellchat.params}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
 
 \item{squidpy.params}{list of Parameters passed to Squidpy \code{\link{call_squidpy}}}
 
 \item{call_sca.params}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
 
-\item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
-
-\item{liana_call.params}{list of Parameters passed to NATMI \code{\link{liana_call}}}
-
 \item{call_natmi.params}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
 
 \item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
 
 \item{call_italk.params}{list of Parameters passed to iTALK \code{\link{call_italk}}}
+
+\item{decomplexify}{specify whether complexes in the resource should be
+dissociated and taken into account}
 }
 \value{
 A list of the default parameters for each method

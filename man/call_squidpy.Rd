@@ -7,8 +7,9 @@
 call_squidpy(
   seurat_object,
   op_resource,
-  .seed = 1004,
+  seed = 1004,
   conda_env = NULL,
+  assay = "RNA",
   assay.type = "logcounts",
   ...
 )
@@ -19,9 +20,11 @@ call_squidpy(
 \item{op_resource}{Tibble or list of OmniPath resources, typically obtained via
 \code{\link{select_resource}}}
 
-\item{.seed}{used to python seed}
+\item{seed}{seed passed to squidpy's ligrec function}
 
 \item{conda_env}{python conda environment to run Squidpy; set to liana_env by default}
+
+\item{assay}{assay name}
 
 \item{...}{kwargs passed to Squidpy; For more information see:
 \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}

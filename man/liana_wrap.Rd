@@ -2,11 +2,11 @@
 % Please edit documentation in R/liana_wrapper.R
 \name{liana_wrap}
 \alias{liana_wrap}
-\title{Run LIANA Wrapper}
+\title{LIANA wrapper function}
 \usage{
 liana_wrap(
   seurat_object,
-  method = c("natmi", "connectome", "logfc", "cellchat", "sca", "squidpy"),
+  method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = c("OmniPath"),
   external_resource,
   .simplify = TRUE,
@@ -40,11 +40,10 @@ method-resource combinations}
     \item{\code{call_sca.params}}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
     \item{\code{assay}}{Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 and `call_connectome`}
-    \item{\code{decomplexify}}{specify whether complexes in the resource should be
-dissociated and taken into account}
-    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.2 by default).
-One should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these methods is that communication is coordinated at the cluster level.}
+    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
+This is further applied at a method-specific level - it is not applied to
+ Connectome and Cytotalk, as these methods calculate/normalize the score (or
+ statistics used in their scores) across all cell types or cell type pairs.}
     \item{\code{seed}}{random seed integer}
     \item{\code{trim}}{the fraction (0 to 0.5) of observations to be trimmed from each
 end of x before the mean is computed. This is relevant only for the
@@ -60,7 +59,7 @@ If only one resource is selected, a single tibble (with results for that
  resource) will be returned for each of the selected methods
 }
 \description{
-Run LIANA Wrapper
+LIANA wrapper function
 }
 \details{
 LIANA wrapper method that can be used to call each method with

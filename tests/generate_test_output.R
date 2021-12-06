@@ -13,22 +13,37 @@ saveRDS(pipe_out, file.path(liana_path, "testdata",
 
 
 # Scores Output ----
-conn_score <- get_connectome(pipe_out)
-saveRDS(conn_score, file.path(liana_path, "testdata",
+conn_out <- get_connectome(pipe_out)
+saveRDS(conn_out, file.path(liana_path, "testdata",
                             "output", "conn_score.RDS"))
 
-logfc_score <- get_logfc(pipe_out)
-saveRDS(logfc_score, file.path(liana_path, "testdata",
+logfc_out <- get_logfc(pipe_out)
+saveRDS(logfc_out, file.path(liana_path, "testdata",
                             "output", "logfc_score.RDS"))
 
-natmi_score <- get_natmi(pipe_out)
-saveRDS(natmi_score, file.path(liana_path, "testdata",
+natmi_out <- get_natmi(pipe_out)
+saveRDS(natmi_out, file.path(liana_path, "testdata",
                             "output", "natmi_score.RDS"))
 
-sca_score <- get_sca(pipe_out)
-saveRDS(sca_score, file.path(liana_path, "testdata",
-                              "output", "sca_score.RDS"))
+sca_out <- get_sca(pipe_out)
+saveRDS(sca_out, file.path(liana_path, "testdata",
+                           "output", "sca_score.RDS"))
 
+
+# liana permutations and cpdb output
+cpdb_out <- liana_wrap(seurat_object,
+                       method = c('cellphonedb'),
+                       resource = c('CellPhoneDB'),
+                       permutation.params = list(nperms=20))
+saveRDS(cpdb_out, file.path(liana_path, "testdata",
+                            "output", "liana_cpdb.RDS"))
+
+# cytotalk
+cytotalk_out <- liana_wrap(seurat_object,
+                           method = c('cytotalk'),
+                           resource = c('OmniPath'))
+saveRDS(cytotalk_out, file.path(liana_path, "testdata",
+                                "output", "liana_cytotalk.RDS"))
 
 
 # Recomplexify Output ----
@@ -45,26 +60,25 @@ saveRDS(recomplex, file.path(liana_path, "testdata",
 
 # liana Wrapper Output ----
 wrap_out <- liana_wrap(seurat_object,
-                       method = c('sca','squidpy'),
+                       method = c('logfc','natmi', 'connectome'),
                        resource = c('OmniPath'))
 saveRDS(wrap_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))
 
-# liana aggregate output ----
-liana_aggr <- readRDS(file.path(liana_path, "testdata",
-                          "output", "liana_res.RDS")) %>%
-    liana_aggregate()
-saveRDS(liana_aggr, file.path(liana_path, "testdata",
-                              "output", "liana_aggr.RDS"))
+# wrap_default
+wrap_def_out <- liana_wrap(seurat_object,
+                           method = c('sca','squidpy', "call_sca"),
+                           resource = "Default")
+saveRDS(wrap_def_out, file.path(liana_path, "testdata",
+                                "output", "liana_def_res.RDS"))
 
 
-# liana permutations and cpdb output
-cpdb_out <- liana_wrap(seurat_object,
-                       method = c('cellphonedb'),
-                       resource = c('CellPhoneDB'),
-                       permutation.params = list(nperms=20))
-saveRDS(cpdb_out, file.path(liana_path, "testdata",
-                            "output", "liana_cpdb.RDS"))
+# LIANA Defaults
+def_arg <- liana_defaults(expr_prop=0,
+                          squidpy.params=list(threshold = 0.1),
+                          cellchat.params=list(nboot=1000))
+saveRDS(def_arg, file.path(liana_path, "testdata",
+                           "output", "liana_def_args.RDS"))
 
 
 
@@ -131,10 +145,44 @@ saveRDS(sca_res, file.path(liana_path, "testdata",
 
 
 # Test CellChat ----
-cellchat_res <- call_cellchat(op_resource = NULL,
-                         seurat_object = seurat_object,
-                         .normalize = TRUE)
+cellchat_res <- call_cellchat(
+    op_resource = NULL,
+    seurat_object = seurat_object,
+    nboot = 2,
+    exclude_anns = NULL,
+    thresh = 1,
+    assay = "RNA",
+    .normalize = FALSE,
+    .do_parallel = FALSE,
+    .raw_use = TRUE)
 
 saveRDS(cellchat_res,
         file.path(liana_path, "testdata",
                   "output", "cc_res.RDS"))
+
+# liana aggregate output ----
+# Simplest scenario
+liana_aggr <- readRDS(file.path(liana_path, "testdata",
+                                "output", "liana_res.RDS")) %>%
+    liana_aggregate()
+saveRDS(liana_aggr, file.path(liana_path, "testdata",
+                              "output", "liana_aggr.RDS"))
+
+# External Methods + Housekeep scores
+liana_res <- readRDS(file.path(liana_path, "testdata",
+                               "output", "liana_res.RDS"))
+
+liana_res$call_natmi <- readRDS(file.path(liana_path, "testdata",
+                                          "output", "natmi_res.RDS"))
+
+liana_res$cellchat <- readRDS(file.path(liana_path, "testdata",
+                                        "output", "cc_res.RDS"))
+saveRDS(liana_res, file.path(liana_path, "testdata",
+                             "output", "liana_res_plus.RDS"))
+
+liana_agg_house <- liana_res %>%
+    liana_aggregate(.score_mode = .score_housekeep)
+saveRDS(liana_agg_house, file.path(liana_path, "testdata",
+                              "output", "liana_house_aggr.RDS"))
+
+

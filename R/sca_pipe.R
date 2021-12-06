@@ -44,8 +44,7 @@ call_sca <- function(op_resource,
   input_data <-
     Seurat::GetAssayData(seurat_object,
                          assay = assay,
-                         slot = assay.type) %>%
-    as.matrix()
+                         slot = assay.type)
   labels <- Seurat::Idents(seurat_object)
 
   # Compute interactions between cell clusters
@@ -58,7 +57,7 @@ call_sca <- function(op_resource,
                                     int.type="autocrine", # includes both para and auto...
                                     write = FALSE,
                                     verbose = FALSE,
-                                    # ...
+                                    ...
                                     )
 
   # Compute intercellular gene networks
@@ -94,10 +93,10 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
     pluck("full-network") %>%
     separate(ligand,
              into = c("source", "ligand"),
-             sep = "[.]") %>%
+             sep = "⊎") %>%
     separate(receptor,
              into = c("target", "receptor"),
-             sep = "[.]") %>%
+             sep = "⊎") %>%
     select(source, ligand, target, receptor, LRscore) %>%
     as_tibble()
   return(sca_res)

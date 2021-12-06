@@ -6,11 +6,14 @@
 #' @param nboot number of bootstraps to calculate p-value
 #' @param .format bool whether to format output
 #' @param .normalize # bool whether to normalize non-normalized data with
-#' @param .raw_use whether use the raw data or gene expression data pojectected
-#'    to a ppi
+#' @param .raw_use whether use the raw data or gene expression data projectected
+#'    to a ppi (should be kept to TRUE)
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param organism Obtain CellChatDB for which organism ('mouse' or 'human')
+#' @param de_thresh diff expression of genes p-value
+#'
 #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network
@@ -24,7 +27,7 @@
 #'
 #' @export
 #'
-#' @details CellChat's objects are not documented/exported thus the
+#' @details CellChat's objects are not lazily documented/exported thus the
 #'   whole package has to be imported.
 call_cellchat <- function(op_resource,
                           seurat_object,
@@ -36,7 +39,10 @@ call_cellchat <- function(op_resource,
                           .normalize = FALSE,
                           .do_parallel = FALSE,
                           .raw_use = TRUE,
-                          expr_prop = 0.2,
+                          expr_prop = 0,
+                          organism = "human",
+                          thresh = 1,
+                          de_thresh = 0.05,
                           ...
                           ){
     stringsAsFactors <- options('stringsAsFactors')[[1]]
@@ -68,7 +74,11 @@ call_cellchat <- function(op_resource,
     }
 
     # load CellChatDB
-    ccDB <- CellChat::CellChatDB.human
+    if(organism == "human"){
+        ccDB <- CellChat::CellChatDB.human
+    } else if(organism == "mouse") {
+        ccDB <- CellChat::CellChatDB.mouse
+    }
 
     if(!is.null(op_resource)){ # OmniPath resource conversion
         ccDB <- cellchat_formatDB(ccDB,
@@ -89,7 +99,8 @@ call_cellchat <- function(op_resource,
     # Infer the cell state-specific communications
     cellchat.omni <-
         CellChat::identifyOverExpressedGenes(cellchat.omni,
-                                             thresh.pc = expr_prop)
+                                             thresh.pc = expr_prop,
+                                             thresh.p = de_thresh)
     cellchat.omni <- CellChat::identifyOverExpressedInteractions(cellchat.omni)
 
     ## Compute the communication probability and infer cellular communication network
@@ -108,7 +119,7 @@ call_cellchat <- function(op_resource,
     cellchat.omni <- CellChat::filterCommunication(cellchat.omni, min.cells = 1)
 
     # Extract the inferred cellular communication network
-    df.omni <- CellChat::subsetCommunication(cellchat.omni, ...)
+    df.omni <- CellChat::subsetCommunication(cellchat.omni, thresh = thresh, ...)
 
     if(.format){
         df.omni <- df.omni %>%

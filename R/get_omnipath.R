@@ -6,20 +6,21 @@
 get_lr_resources <- function(){
     return(
         list(
-            'CellChatDB',
-            'CellPhoneDB',
-            'Ramilowski2015',
             'Baccin2019',
-            'LRdb',
-            'Kirouac2010',
+            'CellCall',
+            'CellChatDB',
+            'Cellinker',
+            'CellPhoneDB',
+            'CellTalkDB',
+            'connectomeDB2020',
+            'EMBRACE',
+            'Guide2Pharma',
+            'HPMR',
             'ICELLNET',
             'iTALK',
-            'EMBRACE',
-            'HPMR',
-            'Guide2Pharma',
-            'connectomeDB2020',
-            'talklr',
-            'CellTalkDB'
+            'Kirouac2010',
+            'LRdb',
+            'Ramilowski2015'
         )
     )
 }
@@ -27,7 +28,7 @@ get_lr_resources <- function(){
 # only the ones different from the current defaults:
 op_ic_quality_param <- list( # used for nodes
     resource = 'OmniPath', # this is just necessary in all the calls
-    loc_consensus_percentile = 30,
+    loc_consensus_percentile = 51,
     consensus_percentile = NULL
 )
 
@@ -84,20 +85,96 @@ compile_ligrec <- function(lr_pipeline = TRUE){
             )
         ))
 
-    # exclude complexes from OmniPath CCC
+    # Format OmniPath ----
     ligrec$OmniPath$interactions %<>%
         filter(!(entity_type_intercell_source == "complex" |
-                     entity_type_intercell_target == "complex"))
-    # Keep only nodes that are part of the interactions
-    ligrec$OmniPath$receivers %<>%
-        dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$target_genesymbol) %>%
-        distinct_at(.vars="genesymbol", .keep_all = TRUE)
-    ligrec$OmniPath$transmitters %<>%
-        dplyr::filter(genesymbol %in% ligrec$OmniPath$interactions$source_genesymbol) %>%
-        distinct_at(.vars="genesymbol", .keep_all = TRUE)
+                     entity_type_intercell_target == "complex"))  %>%
+        # filter any mediators
+        filter(!(str_detect(category_intercell_source, "cofactor")) &
+                   !(str_detect(category_intercell_target, "cofactor")) &
+                   !(str_detect(category_intercell_source, "ligand_regulator")))%>%
+        # remove ambiguous/non-membrane associated receptor-receptor interactions
+        # as well as others which seem to be misannotated (manually)
+        filter(!(source %in% c("O75462", "Q13261", "P00533", "O00220",
+                               "P06213", "P08254", "Q99835",
+                               "Q9ULT6", "P06213", "Q13467", "P09619")
+                 )) %>%
+        # Filter KEA if it's the only curation
+        filter(!(str_detect(sources, "KEA") & curation_effort==1)) %>%
+        # filter any ion_channel/adp-associated interactions
+        filter(parent_intercell_target != "ion_channel") %>%
+        # interactions need to be reversed
+        mutate(target_genesymbol_new = ifelse(target_genesymbol %in% c("FGF2", "FGF23", "ALOX5",
+                                                                       "CLEC2A", "CLEC2B", "CLEC2D"),
+                                              source_genesymbol,
+                                              target_genesymbol),
+               source_genesymbol_new = ifelse(target_genesymbol %in% c("FGF2", "FGF23", "ALOX5",
+                                                                       "CLEC2A", "CLEC2B", "CLEC2D"),
+                                              target_genesymbol,
+                                              source_genesymbol)) %>%
+        mutate(target_new = ifelse(target_genesymbol %in% c("FGF2", "FGF23", "ALOX5",
+                                                            "CLEC2A", "CLEC2B", "CLEC2D"),
+                                              source,
+                                              target),
+               source_new = ifelse(target_genesymbol %in% c("FGF2", "FGF23", "ALOX5",
+                                                            "CLEC2A", "CLEC2B", "CLEC2D"),
+                                   target,
+                                   source)) %>%
+        mutate(target = target_new,
+               target_genesymbol = target_genesymbol_new,
+               source = source_new,
+               source_genesymbol = source_genesymbol_new) %>%
+        dplyr::select(-ends_with("new")) %>%
+        distinct() %>%
+        select(-starts_with("plasma_membrane")) %>%
+        select(source_genesymbol, target_genesymbol,
+               source, target, everything())
 
 
-    ligrec %<>% { if(lr_pipeline) reform_omni(.) else . }
+    # Format CPDB ----
+    ligrec$CellPhoneDB$interactions %<>%
+        # check if any ambigous interactions (wrongly annotated ligands/receptors) exist
+        rowwise() %>%
+        unite(source, target, col = "interaction", remove = FALSE) %>%
+        unite(target, source, col = "interaction2", remove = FALSE) %>%
+        # identify duplicates
+        mutate(dups = if_else(interaction %in% interaction2 |
+                                  interaction2 %in% interaction,
+                              TRUE,
+                              FALSE)) %>%
+        # ligands which are targets in OmniPath
+        mutate(wrong_transitters = (source %in% ligrec$OmniPath$interactions$target)) %>%
+        # receptors which are ligands in OmniPath
+        mutate(wrong_receivers = (target %in% ligrec$OmniPath$interactions$source)) %>%
+        # filter duplicates which are wrongly annotated
+        filter(!(wrong_transitters & dups)) %>%
+        filter(!(wrong_receivers & dups)) %>%
+        # mismatched transmitters
+        filter(!(target %in% c("P09917"))) %>%
+        select(-starts_with("interaction"), -starts_with("wrong"), -dups)
+
+
+    # CellChatDB Fix (append missing) ----
+    ligrec$CellChatDB$interactions %<>%
+        # append missing OG CellChatDB interactions
+        bind_rows(get_cellchat_missing()) %>%
+        mutate(across(where(is_double), ~replace_na(.x, 1))) %>%
+        mutate(across(where(is_integer), ~replace_na(.x, 1))) %>%
+        mutate(across(where(is_character), ~replace_na(.x, "placeholder")))
+
+
+    # Obtain CellCall from source
+    ligrec$CellCall$interactions <- get_cellcall()
+
+    # Format to pipeline or not
+    ligrec %<>% { if(lr_pipeline) reform_omni(.) else ligrec %>%
+            map(function(ligrec_interactions){
+                ## NOTE!!!
+                # Obtain Transmitters and Receivers from the interactions
+                ligrec_interactions %<>%
+                    assign_ligrecs()
+                })
+        }
 
     return(ligrec)
 }
@@ -117,8 +194,7 @@ reform_omni <- function(ligrec){
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
                         .keep_all = TRUE)) %>%
-        append(list("Reshuffled" = shuffle_omnipath(.$connectomeDB2020),
-                    "Default" = NULL),
+        append(list("Default" = NULL),
                .)
 }
 
@@ -254,6 +330,7 @@ omnipath_partners <- function(side, ...){
 #' @return A shuffled omnipath-formatted resource
 #'
 #' @import tibble
+#' @noRd
 shuffle_omnipath <- function(op_resource,
                              .seed = 1004){
 
@@ -362,10 +439,179 @@ generate_omni <- function(remove_complexes=TRUE,
                        "source", "target", "source_genesymbol", "target_genesymbol",
                        "is_directed", "is_stimulation", "is_inhibition",
                        "consensus_direction","consensus_stimulation", "consensus_inhibition",
-                       "dip_url",    "sources","references", "curation_effort",
+                       "sources","references", "curation_effort",
                        "n_references", "n_resources",
                        "category_intercell_source", "category_intercell_target")
             else .
         }
 
+}
+
+
+
+#' Function to Obtain the CellCall database
+#'
+#' @returns cellcall db converted to LIANA/OP format
+get_cellcall <- function(){
+    # Get UniProt Query DB
+
+    cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
+        mutate(across(everything(), ~as.character(.x))) %>%
+        # we can also get extended interactions
+        # bind_rows(read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs_extended.txt"), header = TRUE) %>%
+        #               mutate(across(everything(), ~as.character(.x)))) %>%
+        dplyr::select(Ligand_ID,
+                      Receptor_ID) %>%
+        filter(Ligand_ID != Receptor_ID) %>%
+        mutate(across(everything(), ~gsub("\\,", "\\_", .x))) %>%
+        distinct()
+
+    up <- UniProt.ws::UniProt.ws(taxId=9606)
+    # Get Dict
+    up_dict <- get_up_dict(cellcall, up)
+
+    # convert to lists for recode
+    up_dict_uniprot <- up_dict %>%
+        dplyr::select(GENEID, uniprot) %>%
+        mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+        deframe() %>%
+        as.list()
+    up_dict_symbol <- up_dict %>%
+        dplyr::select(GENEID, genesymbol) %>%
+        mutate(genesymbol = gsub("*\\s..*" ,"" , genesymbol)) %>%
+        mutate(across(everything(), ~gsub("\\s", "", .x))) %>%
+        deframe() %>%
+        as.list()
+
+    # translate to Uniprot and format
+    cellcall %>%
+        rowwise() %>%
+        mutate(source = geneid_to_uniprot(Ligand_ID, up_dict_uniprot)) %>%
+        mutate(target = geneid_to_uniprot(Receptor_ID, up_dict_uniprot)) %>%
+        mutate(source_genesymbol = geneid_to_uniprot(Ligand_ID, up_dict_symbol)) %>%
+        mutate(target_genesymbol = geneid_to_uniprot(Receptor_ID, up_dict_symbol)) %>%
+        ungroup() %>%
+        select(-c(Ligand_ID, Receptor_ID)) %>%
+        mutate(is_directed = 1,
+               is_stimulation = 1,
+               is_inhibition = 1,
+               consensus_direction = 1,
+               consensus_stimulation = 1,
+               consensus_inhibition = 1,
+               dip_url = "placeholder",
+               sources = "placeholder",
+               references = "placeholder",
+               curation_effort = "placeholder",
+               n_references = 1,
+               n_resources = 1,
+               category_intercell_source = "placeholder",
+               category_intercell_target = "placeholder"
+        ) %>%
+        mutate(across(c("source", "target",
+                        "source_genesymbol",
+                        "target_genesymbol"),
+                      ~as.character(.x)))
+}
+
+
+#' Helper Function to translate to UniProt
+#' @param st any genesymbol string - to be separate by `_`
+genesymbol_to_uniprot <- function(st){
+    st.split <- as.vector(str_split(st, pattern = "_"))[[1]]
+    AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
+                          keys=st.split,
+                          keytype = "SYMBOL",
+                          columns = c("SYMBOL", "UNIPROT", "EVIDENCE")) %>%
+        arrange(desc(UNIPROT)) %>%
+        distinct_at(c("SYMBOL"), .keep_all = TRUE) %>%
+        pluck("UNIPROT") %>%
+        glue::collapse(sep = "_")
+}
+
+
+#' Helper function to get UniProt dictionary
+#'
+#' @param ligrec_res ligand_receptor resource to translate
+#' @param up uniprot db to be queried
+#' @param key_column1 name of the ligand  column
+#' @param key_column2 name of the receptor column
+get_up_dict <- function(ligrec_res,
+                        up,
+                        key_column1 = "Ligand_ID",
+                        key_column2 = "Receptor_ID"){
+
+    keys <- unlist(union(str_split(ligrec_res[[key_column1]], pattern = "_"),
+                         str_split(ligrec_res[[key_column2]], pattern = "_")))
+
+    up_dict <- UniProt.ws::select(up, keytype = c("GENEID"),
+                                  columns = c("UNIPROTKB", "GENES","REVIEWED"),
+                                  keys = keys) %>%
+        filter(REVIEWED == "reviewed") %>%
+        dplyr::select(GENEID,
+                      uniprot = UNIPROTKB,
+                      genesymbol = GENES) %>%
+        # Keep only first gene symbol (i.e. official one)
+        tibble() %>%
+        mutate(GENEID = gsub("\\s", "", GENEID))
+
+    return(up_dict)
+}
+
+#' Helper Function to translate to UniProt
+#' @param st any genesymbol string - to be separate by `_`
+#' @param dict dfgdfg
+geneid_to_uniprot <- function(st,
+                              dict){
+    st.split <- str_split(st, pattern = "_")[[1]]
+
+    tryCatch(
+        {
+            map(st.split, function(spl){
+                recode(as.character(gsub("\\s", "", spl)), !!!dict)
+            }) %>%
+                glue::glue_collapse(sep = "_")
+
+        },
+        error = function(cond){
+            message(str_glue("{st} had no match!"))
+            return(NA)
+        }
+    )
+}
+
+
+
+#' Helper Function to get Missing Interactions from OG CellChatDB
+get_cellchat_missing <- function(){
+    CellChat::CellChatDB.human %>%
+        pluck("interaction") %>%
+        select(source_genesymbol = ligand,
+               target_genesymbol = receptor) %>%
+        mutate(across(everything(), ~stringr::str_to_upper(.x))) %>%
+        mutate(across(everything(), ~gsub("*\\s..*" ,"" , .x))) %>%
+        mutate(across(everything(), ~gsub("\\:" ,"_" , .x))) %>%
+        # Obtain only ITGA1_ITGB1-interactions (they are missing from CellChatDB in Omni)
+        filter(str_detect(target_genesymbol, "ITGA1_ITGB1")) %>%
+        # translate to Uniprot
+        rowwise() %>%
+        mutate(target = genesymbol_to_uniprot(target_genesymbol)) %>%
+        mutate(source = genesymbol_to_uniprot(source_genesymbol)) %>%
+        ungroup()
+}
+
+#' Helper function to obtain distinct transmitter and receiver lists
+#' used in the resource comparison
+#'
+#' @param ligrec_list e.g. ligrec$OmniPath
+assign_ligrecs <- function(ligrec_list){
+    ligrec_list[["transmitters"]] <- ligrec_list$interactions %>%
+        select(genesymbol = source_genesymbol,
+               uniprot = source) %>%
+        distinct()
+    ligrec_list[["receivers"]] <- ligrec_list$interactions %>%
+        select(genesymbol = target_genesymbol,
+               uniprot = target) %>%
+        distinct()
+
+    return(ligrec_list)
 }

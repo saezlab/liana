@@ -25,10 +25,9 @@ liana_pipe <- function(seurat_object,
                        decomplexify = TRUE,
                        test.type = "wilcox",
                        pval.type = "all",
-                       expr_prop = 0.2,
-                       trim = 0.1,
+                       trim = 0,
                        assay = "RNA",
-                       assay.type = "counts"){
+                       assay.type = "logcounts"){
 
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
@@ -47,7 +46,8 @@ liana_pipe <- function(seurat_object,
 
     sce <- seurat_to_sce(seurat_object,
                          entity_genes = entity_genes,
-                         assay = assay)
+                         assay = assay) %>%
+        .[, colSums(counts(.)) > 0]
     rm(seurat_object); gc()
     ###
 
@@ -68,17 +68,22 @@ liana_pipe <- function(seurat_object,
                                              statistics = c("mean"))
     scaled <- scaled@assays@data$mean
 
-    # calculate truncated mean
+    # calculate truncated mean (need to remove this and keep the mean instead)
+    # used in CPDB - but not needed
     trunc_mean <- aggregate(t(as.matrix(sce@assays@data[[assay.type]])),
                             list(colLabels(sce)),
                             FUN=mean, trim=trim) %>%
         as_tibble() %>%
-        rename(celltype = Group.1) %>%
+        dplyr::rename(celltype = Group.1) %>%
         pivot_longer(-celltype, names_to = "gene") %>%
         tidyr::pivot_wider(names_from = celltype,
                            id_cols = gene,
                            values_from = value) %>%
         column_to_rownames("gene")
+
+    # calculate PEM scores
+    pem_scores <- compute_pem_scores(sce = sce,
+                                     assay.type = assay.type)
 
     # Get Log2FC
     logfc_df <- get_log2FC(sce, assay.type)
@@ -164,6 +169,15 @@ liana_pipe <- function(seurat_object,
                    source_target = "target",
                    entity = "receptor",
                    type = "trunc") %>%
+        # Join PEM scores
+        join_means(means = pem_scores,
+                   source_target = "target",
+                   entity = "receptor",
+                   type = "pem") %>%
+        join_means(means = pem_scores,
+                   source_target = "source",
+                   entity = "ligand",
+                   type = "pem") %>%
         # logFC
         join_log2FC(logfc_df,
                     source_target = "source",
@@ -174,10 +188,6 @@ liana_pipe <- function(seurat_object,
         # Global Mean
         mutate(global_mean = global_mean)
 
-    if(expr_prop > 0){
-        lr_res %<>%
-            filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
-    }
     message("LIANA: LR summary stats calculated!")
 
     if(decomplexify){
@@ -372,7 +382,7 @@ get_log2FC <- function(sce,
             # All other cells average
             loso_avg <-
                 scater::calculateAverage(subset(sce,
-                                                select = colLabels(sce)!=subject),
+                                                select = !(colLabels(sce) %in% subject)),
                                          assay.type = assay.type
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
@@ -472,7 +482,7 @@ seurat_to_sce <- function(seurat_object,
 
     sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay = assay)
     colLabels(sce) <- SeuratObject::Idents(seurat_object)
-    sce@assays@data$scaledata <- seurat_object@assays$RNA@scale.data
+    sce@assays@data$scaledata <- seurat_object@assays[[assay]]@scale.data
 
     return(sce)
 

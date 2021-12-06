@@ -5,7 +5,7 @@ author:
     affiliation:
         - Saezlab, Heidelberg University
     email: daniel.dimitrov@uni-heidelberg.de
-date: "04/08/2021"
+date: "`r Sys.Date()`"
 output: 
   BiocStyle::html_document:
       self_contained: true
@@ -70,11 +70,10 @@ for the downstream methods in LIANA.
 ## Loading prerequisites
 
 ```{r load_prereq, message=FALSE, warning=FALSE}
+require(tidyverse)
 require(liana)
-require(tibble)
 require(purrr)
 require(magrittr)
-require(dplyr)
 
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -121,6 +120,8 @@ liana_omni <- select_resource("OmniPath")[[1]]
 # Check if the same
 dplyr::all_equal(cust_omni, liana_omni)
 ```
+
+One could use stricter filtering options, such as only importing from certain CCC-dedicated resources, etc.
 
 ## Surface or Membrane-bound Interactions only
 

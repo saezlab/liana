@@ -55,6 +55,7 @@ recomplexify <- function(lr_res,
         select(source, target,
                ligand.complex, ligand,
                receptor.complex, receptor,
+               ends_with("prop"),
                !!columns)
 
     return(lr_cmplx)

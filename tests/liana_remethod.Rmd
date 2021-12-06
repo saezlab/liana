@@ -71,11 +71,14 @@ connectome_test %>%
 ## NATMI edges
 ```{r natmi_run, message = FALSE, print = FALSE}
 # Run liana /w re-implemented and original NATMI
+# Note that we use counts here, as using logfold-change with the recommended
+#  transformation for NATMI produces slightly different scores
 natmi_test <- liana_wrap(testdata,
                          method = c('call_natmi', 'natmi'),
                          resource = c('OmniPath'),
                          call_natmi.params = list(assay.type = "counts",
-                                                  .delete_output = TRUE))
+                                                  .delete_output = TRUE),
+                         assay.type = "counts")
 
 # compare results
 natmi_test %<>%
@@ -128,24 +131,29 @@ sca_test %>%
 
 ### Run liana re-implemented CellPhoneDB and Squidpy /w CellPhoneDB resource
 ```{r cellphonedb, message = FALSE, print = FALSE}
-# Run with non-log normalized counts
-# testdata %<>% Seurat::NormalizeData(normalization.method = "RC")
+# real dataset
+testdata <- readRDS("~/Repos/ligrec_decouple/data/input/citeseq/5k_pbmcs/5k_pbmcs_seurat.RDS")
+
 
 # run LIANA CPDB and Squidpy CPDB
 cpdb_reimplements <- liana_wrap(testdata,
-                                method = c('cellphonedb', 'squidpy'),
+                                method = c('squidpy', "cellphonedb"),
                                 resource = c('CellPhoneDB'),
                                 expr_prop = 0.1,
-                                trim = 0)
+                                trim = 0,
+                                assay.type = "logcounts",
+                                squidpy.params=list(cluster_key="seurat_clusters"))
 
 liana_cpdb <- cpdb_reimplements$cellphonedb
 squidpy_cpdb <- cpdb_reimplements$squidpy
+squidpy_cpdb %<>% na.omit() # remove non-expressed (i.e. < 0.1)
+
 ```
 
 ### RUN original cpdb algorithm
 ```{r, eval=FALSE}
 # save object
-write.csv(GetAssayData(testdata),
+write.csv(GetAssayData(testdata, slot = "counts"),
             "~/Repos/cpdb/input/test_em.csv")
 
 write.csv(Idents(testdata) %>%
@@ -154,9 +162,9 @@ write.csv(Idents(testdata) %>%
           row.names = FALSE)
 
 # we follow the installation procedure as on the CPDB GH page.
-conda activate cpdb
-pip install cellphonedb
-cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
+# conda activate cpdb
+# pip install cellphonedb
+# cellphonedb method statistical_analysis input/metadata.csv input/test_em.csv --counts-data hgnc_symbol --threshold 0.1
 ```
 
 Load and format results
@@ -194,11 +202,11 @@ og_cpdb %>%
 liana_cpdb %>%
   filter(pvalue <= 0.05) %>%
   nrow()
-squidpy_cpdb  %>%
+squidpy_cpdb %>%
   filter(pvalue <= 0.05) %>%
   nrow()
 
-# check specific interaction
+# check specific interaction -> identical
 og_cpdb %>%
   filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
@@ -211,6 +219,43 @@ liana_cpdb %>%
 squidpy_cpdb %>%
     filter(ligand == "CD58", receptor == "CD2",
          source == "NK", target == "CD8 T")
+
+
+liana_inter <- liana_cpdb %>% select(source, ligand, target, receptor)
+squidpy_inter <- squidpy_cpdb %>% select(source, ligand, target, receptor)
+
+
+cpdb_diff <-setdiff(liana_inter, squidpy_inter)
+
+```
+
+### Indepth Check
+```{r check_squidpy_vs_mine}
+
+liana_res <- liana_pipe(seurat_object = testdata,
+           op_resource = select_resource("CellPhoneDB")[[1]] %>% decomplexify(),
+           expr_prop = 0
+           )
+
+#
+liana_cpdb %<>%
+  # filter(pvalue <= 0.05) %>% 
+  na.omit() %>%
+  arrange(source, target, ligand, receptor) %>%
+  rename(means = lr.mean)
+
+# 
+squidpy_cpdb %<>%
+  # filter(pvalue <= 0.05) %>% 
+  na.omit() %>%
+  arrange(source, target, ligand, receptor)
+
+sq_li <- left_join(liana_cpdb, squidpy_cpdb, 
+                   by = c("source", "target", "ligand", "receptor")) %>%
+  mutate(meandiff = means.x - means.y) %>%
+  mutate(pdiff = pvalue.x - pvalue.y)
+
+# Squidpy does not appropriately assign a p-value of 0 when a subunit is not expressed?
 
 ```
 

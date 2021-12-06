@@ -1,7 +1,7 @@
 ---
 title: "LIANA++ for Benchmarks and Developers"
 author: "Daniel Dimitrov"
-date: "04/08/2021"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
@@ -32,21 +32,13 @@ testdata <-
 To facilitate method development, we provide a guide how to make use of the architecture already implemented in LIANA.
 
 First, we start with a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
-```{r lr_res, message=FALSE, warning=FALSE}
-# Obtain LR summary res with OmniPath 
-liana_pipe(seurat_object = testdata,
-           op_resource = select_resource("OmniPath")[[1]]
-           ) %>%
-    glimpse()
-
-```
-
-liana_pipe also takes complexes into account by dissociating them into subunits (see ?`decomplexify`).
+Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`).
 These are later re-assembled back into complexes using the `recomplexify` function.
 ```{r lr_cpdb, message=FALSE, warning=FALSE}
 # Obtain LR summary res with CellPhoneDB and dissociate complexes
 lr_res <- liana_pipe(seurat_object = testdata,
-                     op_resource = select_resource("CellPhoneDB")[[1]]
+                     op_resource = select_resource("CellPhoneDB")[[1]] %>% 
+                       liana:::decomplexify()
                      ) %>%
     glimpse()
 ```
@@ -86,15 +78,28 @@ devtools::install_github("sqjin/CellChat")
 devtools::install_github('msraredon/Connectome', ref = 'master')   
 devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
 # A modified version of SingleCellSignalR (SCA) that enables external resources
-devtools::install_github(repo = "CostaLab/SingleCellSignalR_v1", subdir = "SingleCellSignalR")
+devtools::install_github(repo = "saezlab/SingleCellSignalR_v1",
+                         subdir = "SingleCellSignalR")
 
 # Finally, install LIANA
 devtools::install_github('saezlab/liana')
 ```
 
-  
+
+
 Squidpy and NATMI are written in Python, as such a python environment with
 the prerequisites of these methods needs to be set up.
+
+If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up
+a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+environment by running the following lines in the terminal:
+```{bash, eval = FALSE}
+conda create -n liana_env
+conda activate liana_env
+conda install -c anaconda python=3.8.5
+pip install squidpy
+```
+
 
 Please use the [.yml](https://github.com/saezlab/liana/blob/master/liana_env.yml) file to set up a conda environment:
 ```

@@ -1,4 +1,4 @@
-#' Run LIANA Wrapper
+#' LIANA wrapper function
 #'
 #' @param seurat_object seurat object
 #' @param method method(s) to be run via liana
@@ -25,7 +25,7 @@
 #' @export
 liana_wrap <- function(seurat_object,
                        method = c('natmi', 'connectome', 'logfc',
-                                  'cellchat', 'sca', 'squidpy'),
+                                  'sca', 'cellphonedb'),
                        resource = c('OmniPath'),
                        external_resource,
                        .simplify = TRUE,
@@ -38,29 +38,28 @@ liana_wrap <- function(seurat_object,
   if(resource!='custom'){
     resource %<>% select_resource
   } else{
-    resource = list('custom_resource'=external_resource)
+    resource = list('custom_resource' = external_resource)
   }
 
+  if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
+                       "logfc", "sca",
+                       "cellphonedb", "cytotalk", "scconnect"))){
 
-  decmplx <- liana_defaults(...)[["liana_pipe"]] %>%
-    pluck("decomplexify")
-
-
-  if(any(method %in% c("natmi", "connectome", # change this
-                       "logfc", "sca", "cellphonedb"))){
-
+    # LIANA pipe map over resource
     lr_results <- resource %>%
       map(function(reso){
 
         if(is.null(reso)){
-          stop("Resource is NULL and LIANA PIPE methods have no default")
+          warning("Resource was NULL and LIANA PIPE methods were run with OmniPath")
+          reso <- select_resource("OmniPath")[[1]] # To be changed to OmniPath_complex
         }
 
         rlang::invoke(liana_pipe,
                       append(
                         list("seurat_object" = seurat_object,
-                             "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
-                        liana_defaults(...)[["liana_pipe"]])
+                             "op_resource" = reso %>% decomplexify()),
+                        liana_defaults(...)[["liana_pipe"]]
+                        )
                       )
         }) %>%
       setNames(names(resource))
@@ -85,43 +84,68 @@ liana_wrap <- function(seurat_object,
                # external calls (for methods who don't deal with complexes)
                args <- append(
                  list("seurat_object" = seurat_object,
-                      "op_resource" = reso %>% {if (decmplx) decomplexify(.) else .}),
+                      "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
                  liana_defaults(...)[[method_name]]
                )
                rlang::invoke(.method, args)
 
              } else if(method_name == "cellphonedb"){
-               # permutation-based approaches
-               lr_res <- lr_results[[reso_name]]
+               # get lr_res for this specific resource
+               lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
+                                          method_name,
+                                          ...)
 
+               # permutation-based approaches
                perm_means <-
-                 rlang::invoke(get_permutations,
-                               append(
-                                 list(lr_res = lr_res,
-                                      sce = seurat_to_sce(seurat_object,
-                                                          entity_genes = union(lr_res$ligand,
-                                                                               lr_res$receptor),
-                                                          assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                                            pluck("assay"))),
-                                 liana_defaults(...)[["permutation"]]))
+                 rlang::invoke(
+                   get_permutations,
+                   append(
+                     list(lr_res = lr_res,
+                          sce = seurat_to_sce(seurat_object,
+                                              entity_genes = union(lr_res$ligand,
+                                                                   lr_res$receptor),
+                                              assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                                pluck("assay"))
+                          ),
+                     liana_defaults(...)[["permutation"]]))
 
                args <- append(
                  list(lr_res = lr_res,
                       perm_means = perm_means),
                  liana_defaults(...)[[method_name]]
-                )
+                 )
 
                rlang::invoke(.method, args)
 
-             } else {
-               # re-implemented non-permutation approaches
+             } else if(method_name == "cytotalk"){
+               lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
+                                          method_name,
+                                          ...)
+
                args <- append(
-                 list("seurat_object" = seurat_object,
-                      lr_res = lr_results[[reso_name]]),
-                 liana_defaults(...)[["liana_call"]]
-                 )
-               rlang::invoke(.method,  args)
-               }
+                 list(lr_res = lr_res,
+                      sce = seurat_to_sce(seurat_object,
+                                          entity_genes = union(lr_res$ligand,
+                                                               lr_res$receptor),
+                                          assay = liana_defaults(...)[["liana_pipe"]] %>%
+                                            pluck("assay"))),
+                 liana_defaults(...)[[method_name]]
+               )
+
+               rlang::invoke(.method, args)
+
+            } else {
+              # re-implemented non-permutation approaches
+              args <- append(
+                list("seurat_object" = seurat_object,
+                     lr_res = .filt_liana_pipe(lr_results[[reso_name]],
+                                               method_name,
+                                               ...)
+                     ),
+                liana_defaults(...)[["liana_call"]]
+                )
+              rlang::invoke(.method, args)
+              }
              })
            }, quiet = FALSE)) %>%
     # format errors
@@ -176,8 +200,11 @@ select_resource <- function(resource){
             logfc = expr(get_logfc),
             natmi = expr(get_natmi),
             sca = expr(get_sca),
+            scconnect = expr(get_scconnect),
             # liana_permutes
             cellphonedb = expr(get_cellphonedb),
+            # cytotalk
+            cytotalk = expr(get_cytotalk),
             # pipes
             squidpy = expr(call_squidpy),
             cellchat = expr(call_cellchat),
@@ -245,3 +272,33 @@ show_resources <- function(){
         res %>% pluck(.x)
     } else{ res }
 }
+
+
+#' Helper Function to do prop filtering of liana_pipe output
+#' @param liana_res resutls from `liana_pipe`
+#' @param method current method
+#' @inheritDotParams liana_defaults
+.filt_liana_pipe <- function(liana_res,
+                             method,
+                             ...){
+
+  # Convert prop_filt logical to 0 or 1
+  #  (step not required, but should be explicit)
+  filt_or_not <- as.integer(liana_defaults(...)[[method]]$prop_filt)
+
+  # set to value of expr_prop from defaults, or 0 if not to filter
+  expr_prop <- liana_defaults(...)$expr_prop * filt_or_not
+
+  if(expr_prop > 0){
+    liana_res %>%
+      filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+  } else if(expr_prop == 0){
+    liana_res
+  } else{ # shouldn't happen (sanity check)
+    stop("Expression Proportion is Negative")
+  }
+
+}
+
+
+

@@ -15,7 +15,9 @@ call_cellchat(
   .normalize = FALSE,
   .do_parallel = FALSE,
   .raw_use = TRUE,
-  expr_prop = 0.2,
+  expr_prop = 0,
+  organism = "human",
+  thresh = 1,
   ...
 )
 }
@@ -32,12 +34,14 @@ call_cellchat(
 
 \item{.normalize}{# bool whether to normalize non-normalized data with}
 
-\item{.raw_use}{whether use the raw data or gene expression data pojectected
-to a ppi}
+\item{.raw_use}{whether use the raw data or gene expression data projectected
+to a ppi (should be kept to TRUE)}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
 yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
+
+\item{organism}{Obtain CellChatDB for which organism ('mouse' or 'human')}
 
 \item{...}{
   Arguments passed on to \code{\link[CellChat:subsetCommunication]{CellChat::subsetCommunication}}
@@ -100,6 +104,6 @@ A DF of intercellular communication network
 CellChat x Omni Pipe function
 }
 \details{
-CellChat's objects are not documented/exported thus the
+CellChat's objects are not lazily documented/exported thus the
   whole package has to be imported.
 }

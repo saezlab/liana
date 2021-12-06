@@ -4,20 +4,22 @@ seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 # Test
-test_that("Test CellChat", {
+test_that("Test CellChat with Default", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "cc_res.RDS"))
     res1 <- call_cellchat(
         op_resource = NULL,
         seurat_object = seurat_object,
-        nboot = 10,
+        nboot = 2,
         exclude_anns = NULL,
         thresh = 1,
         assay = "RNA",
-        .normalize = TRUE,
+        .normalize = FALSE,
         .do_parallel = FALSE,
         .raw_use = TRUE
     )
 
     expect_equal(exp1, res1)
+
 })
+

@@ -2,13 +2,14 @@
 #' @param seurat_object Seurat object as input
 #' @param op_resource Tibble or list of OmniPath resources, typically obtained via
 #'    \code{\link{select_resource}}
-#' @param .seed used to python seed
+#' @param seed seed passed to squidpy's ligrec function
 #' @param conda_env python conda environment to run Squidpy; set to liana_env by default
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
 #' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
 #'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
+#' @param assay assay name
 #'
 #' @import reticulate tibble
 #' @importFrom tidyr pivot_longer
@@ -25,8 +26,9 @@
 #' @export
 call_squidpy <- function(seurat_object,
                          op_resource,
-                         .seed = 1004,
+                         seed = 1004,
                          conda_env = NULL,
+                         assay = "RNA",
                          assay.type = "logcounts",
                          ...){
 
@@ -41,6 +43,7 @@ call_squidpy <- function(seurat_object,
 
     kwargs <- list(...)
     kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
+    kwargs$seed <- as.integer(seed)
 
     if(length(kwargs$cluster_key) == 0){
         stop("Squidpy: Cluster annotations missing! Please specificy a column")
@@ -50,7 +53,8 @@ call_squidpy <- function(seurat_object,
 
     if(!is.factor(seurat_object@meta.data[[kwargs$cluster_key]])){
         seurat_object@meta.data[[kwargs$cluster_key]] <-
-            seurat_object@meta.data %>% pull(kwargs$cluster_key) %>%
+            seurat_object@meta.data %>%
+            pull(kwargs$cluster_key) %>%
             as.factor()
         message(str_glue("Squidpy: {kwargs$cluster_key} was converted to factor"))
     }
@@ -78,13 +82,26 @@ call_squidpy <- function(seurat_object,
 
     # Call Squidpy
     reticulate::source_python(system.file(package = 'liana', "squidpy_pipe.py"))
-    py_set_seed(.seed)
+    py_set_seed(seed)
+
+    # Check if assay meta.features match object rownames
+    # if not assign a placeholder (Seurat-specific fix)
+    if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object) |
+       ncol(seurat_object@assays[[assay]]@meta.features)==0){
+        message("Meta features were reassigned to match object")
+
+        seurat_object@assays[[assay]]@meta.features <-
+            data.frame(row.names = rownames(seurat_object),
+                       placeholder = rownames(seurat_object))
+    }
 
     py$squidpy_results <- py$call_squidpy(op_resources,
                                           GetAssayData(seurat_object,
-                                                       slot=assay.type), # raw expr
+                                                       assay=assay,
+                                                       slot=assay.type), # expr
                                           seurat_object[[]], # meta
-                                          GetAssay(seurat_object)[[]], # feature_meta
+                                          GetAssay(seurat_object,
+                                                   assay=assay)[[]], # feature_meta
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
 
@@ -166,5 +183,7 @@ FormatSquidpy <- function(.name,
             }
 
             return()
-        }) %>% compact %>% as.character
+        }) %>% compact %>%
+        as.character %>%
+        pluck(1) # to handle scenario when there are two identical columns
 }

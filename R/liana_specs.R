@@ -18,7 +18,8 @@ setClass("ScoreSpecifics",
                     method_score = "character",
                     descending_order= "logical",
                     score_fun = "function",
-                    columns = "character")
+                    columns = "character"
+                    )
 )
 
 
@@ -29,7 +30,9 @@ setClass("ScoreSpecifics",
 #'
 #' @noRd
 #'
-#' @details to be explained better and to replace .rank_specs in liana_aggregate
+#' @details This function returns a list with objects per method in LIANA.
+#' These object are used in the liana aggragate function, as well as in
+#' liana_score and liana_call.
 .score_specs <- function(){
     list(
         "connectome" =
@@ -78,6 +81,27 @@ setClass("ScoreSpecifics",
                 score_fun = cellphonedb_score,
                 columns = c("ligand.trunc", "receptor.trunc")
             ),
+        "cytotalk" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cytotalk",
+                method_score = "crosstalk_score",
+                descending_order = TRUE,
+                score_fun = cytotalk_score,
+                columns = c("receptor.pem", "ligand.pem")
+            ),
+        "scconnect" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "scconnect",
+                method_score = "importance",
+                descending_order = TRUE,
+                score_fun = scconnect_score,
+                columns = c("ligand.expr", "receptor.expr",
+                            "ligand.pval", "receptor.pval")
+            ),
+
+        # External
         "squidpy" =
             methods::new(
                 "ScoreSpecifics",
@@ -139,19 +163,75 @@ setClass("ScoreSpecifics",
 
 
 
-#' S4 Class used to generate aggregate/consesus scores for the methods.
+
+
+#' Helper function to call aggregate housekeeping scores of external methods.
 #'
-#' @name RankSpecifics-class
-#'
-#' @field method_name name of the method (e.g. cellchat)
-#' @field method_score The interaction score provided by the method (typically
-#' the score that reflects the specificity of interaction)
-#' @field descending_order whether the score should be interpreted in
-#'  descending order (i.e. highest score for an interaction is most likely)
-#'
-#' @exportClass RankSpecifics
-setClass("RankSpecifics",
-         slots=list(method_name="character",
-                    method_score="character",
-                    descending_order="logical")
-)
+#' @details functions the same way as .score_specs, but is only used in
+#' liana_aggragate for the purpose of the manuscript.
+.score_housekeep <- function(){
+    list(
+        "squidpy" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "Squidpy",
+                method_score = "means",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "cellphonedb" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "Squidpy",
+                method_score = "lr.mean",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "cellchat" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "cellchat",
+                method_score = "prob",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_connectome" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "connectome",
+                method_score = "weight_norm",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "call_sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
+        "sca" = methods::new(
+            "ScoreSpecifics",
+            method_name = "sca",
+            method_score = "LRscore",
+            descending_order = TRUE,
+            score_fun = function(){},
+            columns = ""
+        ),
+        "call_natmi" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "natmi",
+                method_score = "edge_avg_expr",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            )
+    )
+}
+

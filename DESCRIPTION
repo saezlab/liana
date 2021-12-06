@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.0.1
+Version: 0.0.5
 Authors@R: c(
     person(
         given = "Daniel",
@@ -16,6 +16,13 @@ Authors@R: c(
         role = c("aut"),
         email = "mm228@stud.uni-heidelberg.de",
         comment = c(ORCID = "0000-0003-3955-5110")
+    ),
+    person(
+        given = "Martin",
+        family = "Garrido Rodríguez",
+        role = c("aut"),
+        email = "martin.garrido@uni-heidelberg.de",
+        comment = c(ORCID = "0000-0003-4125-5643")
     ),
     person(
         given = "Denes",
@@ -55,9 +62,11 @@ Imports:
     Seurat,
     SingleCellExperiment,
     scran,
+    scater,
     logger,
     OmnipathR,
-    RobustRankAggreg
+    RobustRankAggreg,
+    entropy
 Suggests:
     BiRewire,
     CellChat,
@@ -71,6 +80,7 @@ Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
     bioc::3.12/scran,
+    bioc::3.12/scater,
     saezlab/OmnipathR
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
