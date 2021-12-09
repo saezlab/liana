@@ -18,6 +18,7 @@ call_cellchat(
   expr_prop = 0,
   organism = "human",
   thresh = 1,
+  de_thresh = 0.05,
   ...
 )
 }
@@ -42,6 +43,8 @@ yet perhaps one should consider setting this to an appropriate value between 0 a
 as an assumptions of these method is that communication is coordinated at the cluster level.}
 
 \item{organism}{Obtain CellChatDB for which organism ('mouse' or 'human')}
+
+\item{de_thresh}{diff expression of genes p-value}
 
 \item{...}{
   Arguments passed on to \code{\link[CellChat:subsetCommunication]{CellChat::subsetCommunication}}
