@@ -1,0 +1,294 @@
+\documentclass[margin=5mm]{standalone}
+
+\usepackage{fontawesome5}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\usepackage{xltxtra}
+\usepackage{microtype}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes, positioning, arrows.meta}
+\usepackage{xcolor}
+
+% Paul Tol 9 colors
+\definecolor{skyblue}{RGB}{136,204,238}
+\definecolor{slateblue}{RGB}{51,34,136}
+\definecolor{surfiegreen}{RGB}{68,170,153}
+\definecolor{chateaugreen}{RGB}{17,119,51}
+\definecolor{trendygreen}{RGB}{153,153,51}
+\definecolor{picasso}{RGB}{221,204,119}
+\definecolor{blush}{RGB}{204,102,119}
+\definecolor{royalheath}{RGB}{136,34,85}
+\definecolor{orchid}{RGB}{170,68,153}
+
+% Paul Tol 7 colors, 3 tones each
+\definecolor{pink0}{RGB}{119,17,85}
+\definecolor{pink1}{RGB}{170,68,136}
+\definecolor{pink2}{RGB}{204,153,187}
+\definecolor{blue0}{RGB}{17,68,119}
+\definecolor{blue1}{RGB}{68,119,170}
+\definecolor{blue2}{RGB}{119,170,221}
+\definecolor{turquoise0}{RGB}{17,119,119}
+\definecolor{turquoise1}{RGB}{68,170,170}
+\definecolor{turquoise2}{RGB}{119,204,204}
+\definecolor{green0}{RGB}{17,119,68}
+\definecolor{green1}{RGB}{68,170,119}
+\definecolor{green2}{RGB}{136,204,170}
+\definecolor{olive0}{RGB}{119,119,17}
+\definecolor{olive1}{RGB}{170,170,68}
+\definecolor{olive2}{RGB}{221,221,119}
+\definecolor{brown0}{RGB}{119,68,17}
+\definecolor{brown1}{RGB}{170,119,68}
+\definecolor{brown2}{RGB}{221,170,119}
+\definecolor{salmon0}{RGB}{119,17,34}
+\definecolor{salmon1}{RGB}{170,68,85}
+\definecolor{salmon2}{RGB}{221,119,136}
+
+\setmainfont{HelveticaNeueLTStd-Cn.otf}[
+    Path = /home/denes/fonts/from_csilla/,
+    BoldFont = HelveticaNeueLTStd-MdCn.otf
+]
+
+\def\yr#1{\\\footnotesize#1}
+
+\def\cur#1{\hspace*{.5em}\faIcon{user-edit}\ #1\%}
+
+\pgfdeclarelayer{nodes}
+\pgfdeclarelayer{edges}
+\pgfsetlayers{edges, nodes}
+
+\tikzstyle{res} = [
+    rectangle,
+    rounded corners = 5,
+    text centered,
+    text = black,
+    minimum height = 2em,
+    inner sep = 7pt,
+    fill opacity = .8
+]
+\tikzstyle{icres} = [
+    res,
+    fill = pink2,
+    draw = pink0
+]
+\tikzstyle{ntres} = [
+    res,
+    fill = blue2,
+    draw = blue0
+]
+\tikzstyle{liter} = [
+    res,
+    fill = olive2,
+    draw = olive0
+]
+\tikzstyle{paper} = [
+    res,
+    fill = turquoise2,
+    draw = turquoise0
+]
+\tikzstyle{omnip} = [
+    res,
+    fill = green2,
+    draw = green0
+]
+
+\begin{document}
+
+    \begin{tikzpicture}[
+            every edge/.style={
+                ->,
+                draw = gray!90,
+                thick,
+                > = {Stealth[scale = 1.3]},
+                rounded corners = 10mm
+            },
+            auto,
+            node distance = 1cm,
+            every text node part/.style = {
+                align = center
+            },
+            every node/.style = {scale = 1.5},
+            anchor = west
+        ]
+
+        \begin{pgfonlayer}{nodes}
+
+            % generic PPI resources
+            \node (indb) [ntres] {InnateDB};
+            \node (i2dd) [ntres, left = of indb] {I2D};
+            \node (strg) [ntres, below left = 0mm and 10mm of i2dd] {STRING};
+            \node (mxdb) [ntres, below = of strg] {MatrixDB};
+            \node (inge) [ntres, below = of mxdb] {Ingenuity};
+            \node (inta) [ntres, below = of inge] {IntAct};
+            \node (kegg) [ntres, below = of inta] {KEGG};
+            \node (csig) [ntres, below = of kegg] {cellsignal.com};
+            \node (reac) [ntres, below = of csig] {Reactome};
+            \node (bgri) [ntres, below = of reac] {BioGRID};
+            \node (hprd) [ntres, below = of bgri] {HPRD};
+            \node (unip) [ntres, below right = 0cm and 1cm of hprd] {UniProt};
+
+            % cell-cell communication (ligand-receptor) resources
+            \node (dlrp) [icres, right = 3cm of inge] {DIP-DLRP};
+            \node (kiru) [icres, above = 1cm of dlrp] {
+                Kirouac \yr{2010\cur{100}}
+            };
+            \node (g2ph) [icres, below = of dlrp] {
+                Guide to Pharmacology \yr{2009\cur{44}}
+            };
+            \node (rami) [icres, below right = -2mm and 25mm of g2ph] {
+                Ramilowski \yr{2015\cur{14}}
+            };
+            \node (cpdb) [icres, above right = 12mm and 20mm of rami] {
+                CellPhoneDB \yr{2018\cur{33}}
+            };
+            \node (bacc) [icres, below right = 0cm and 2cm of cpdb] {
+                Baccin \yr{2019\cur{82}}
+            };
+            \node (embr) [icres, below = 3cm of bacc] {
+                EMBRACE \yr{2019\cur{0}}
+            };
+            \node (lrdb) [icres, below right = 10mm and 25mm of embr] {
+                LRdb \yr{2020\cur{62}}
+            };
+            \node (ccdb) [icres, above right = 30mm and 18mm of lrdb] {
+                CellChatDB \yr{2021\cur{30}}
+            };
+            \node (tklr) [icres, above = of ccdb] {
+                talklr \yr{2020\cur{11}}
+            };
+            \node (conn) [icres, above right = 20mm and -60mm of tklr] {
+                connectomeDB \yr{2020\cur{100}}
+            };
+            \node (ctdb) [icres, right = 15mm of conn] {
+                CellTalkDB \yr{2020\cur{91}}
+            };
+            \node (hpmr) [icres, below = of g2ph] {
+                HPMR \yr{2003\cur{92}}
+            };
+            \node (silk) [icres, below right = 10mm and -5mm of hpmr] {
+                SignaLink \yr{2010\cur{100}}
+            };
+            \node (itlk) [icres, below = 3cm of embr] {
+                iTALK \yr{2019\cur{0}}
+            };
+            \node (icel) [icres, above left = 15mm and -5mm of ctdb] {
+                ICELLNET \yr{2020\cur{100}}
+            };
+            \node (clnk) [icres, below = of ccdb] {
+                Cellinker \yr{2021\cur{26}}
+            };
+            \node (ccal) [icres, below = of clnk] {
+                CellCall \yr{2021\cur{0}}
+            };
+            \node (sccn) [icres, below = of ccal] {
+                scConnect \yr{2021\cur{61}}
+            };
+
+            % various other resources (OmniPath, literature)
+            \node (litr) [liter, above = 50mm of cpdb] {Literature};
+
+            \node (omni) [omnip, right = 15mm of tklr] {OmniPath};
+
+            \node (ausl) [paper, below left = of itlk] {Auslander 2018};
+            \node (zhou) [paper, left = of ausl] {Zhou 2017};
+            \node (grif) [paper, above = 13mm of zhou] {Griffith 2014};
+            \node (grae) [paper, above left = 15mm of grif] {Graeber 2001};
+            \node (came) [paper, above left = -5mm and 1cm of zhou] {
+                Cameron 2003
+            };
+
+        \end{pgfonlayer}
+
+        \begin{pgfonlayer}{edges}
+
+            \path
+                (rami) edge[pink0, ->] (bacc)
+                (kegg) edge[blue0, ->] (bacc)
+                (reac) edge[blue0, ->] (bacc)
+                (litr) edge[olive0, ->] (bacc)
+                (kegg) edge[blue0, ->] (ccdb)
+                (litr) edge[olive0, ->] (ccdb)
+                (litr) edge[olive0, ->] (clnk)
+                (dlrp) edge[pink0, ->] (clnk)
+                (hpmr) edge[pink0, ->] (clnk)
+                (cpdb) edge[pink0, ->] (clnk)
+                (g2ph) edge[pink0, ->] (clnk)
+                (g2ph) edge[pink0, ->] (cpdb)
+                (i2dd) edge[blue0, ->] (cpdb)
+                (indb) edge[blue0, ->] (cpdb)
+                (inta) edge[blue0, ->] (cpdb)
+                (mxdb) edge[blue0, ->] (cpdb)
+                (litr) edge[olive0, ->] (cpdb)
+                (strg) edge[blue0, ->] (ctdb)
+                (litr) edge[olive0, ->] (ctdb)
+                (rami) edge[pink0, ->] (conn)
+                (cpdb) edge[pink0, ->] (conn)
+                (litr) edge[olive0, ->] (conn)
+                (bacc) edge[pink0, ->] (conn)
+                (lrdb) edge[pink0, ->] (conn)
+                (icel) edge[pink0, ->] (conn)
+                (rami) edge[pink0, ->] (embr)
+                (litr) edge[olive0, ->] (g2ph)
+                (litr) edge[olive0, ->] (hpmr)
+                (inge) edge[blue0, ->] (icel)
+                (strg) edge[blue0, ->] (icel)
+                (bgri) edge[blue0, ->] (icel)
+                (reac) edge[blue0, ->] (icel)
+                (cpdb) edge[pink0, ->] (icel)
+                (litr) edge[olive0, ->] (icel)
+                (rami) edge[pink0, ->] (itlk)
+                (hpmr) edge[pink0, ->] (itlk)
+                (g2ph) edge[pink0, ->] (itlk)
+                (grae) edge[turquoise0, ->] (itlk)
+                (grif) edge[turquoise0, ->] (itlk)
+                (came) edge[turquoise0, ->] (itlk)
+                (zhou) edge[turquoise0, ->] (itlk)
+                (ausl) edge[turquoise0, ->] (itlk)
+                (litr) edge[olive0, ->] (kiru)
+                (unip) edge[blue0, ->] (lrdb)
+                (rami) edge[pink0, ->] (lrdb)
+                (litr) edge[olive0, ->] (lrdb)
+                (g2ph) edge[pink0, ->] (lrdb)
+                (reac) edge[blue0, ->] (lrdb)
+                (hpmr) edge[pink0, ->] (lrdb)
+                (hprd) edge[blue0, ->] (lrdb)
+                (csig) edge[blue0, ->] (lrdb)
+                (dlrp) edge[pink0, ->] (rami)
+                (hpmr) edge[pink0, ->] (rami)
+                (g2ph) edge[pink0, ->] (rami)
+                (hprd) edge[blue0, ->] (rami)
+                (strg) edge[blue0, ->] (rami)
+                (litr) edge[olive0, ->] (rami)
+                (rami) edge[pink0, ->] (tklr)
+                (conn) edge[pink0, ->] (ccal)
+                (clnk) edge[pink0, ->] (ccal)
+                (ctdb) edge[pink0, ->] (ccal)
+                (ccdb) edge[pink0, ->] (ccal)
+                (strg) edge[blue0, ->] (ccal)
+                (rami) edge[pink0, ->] (omni)
+                (bacc) edge[pink0, ->] (omni)
+                (ccdb) edge[pink0, ->] (omni)
+                (cpdb) edge[pink0, ->] (omni)
+                (ctdb) edge[pink0, ->] (omni)
+                (g2ph) edge[pink0, ->] (omni)
+                (conn) edge[pink0, ->] (omni)
+                (embr) edge[pink0, ->] (omni)
+                (itlk) edge[pink0, ->] (omni)
+                (kiru) edge[pink0, ->] (omni)
+                (tklr) edge[pink0, ->] (omni)
+                (lrdb) edge[pink0, ->] (omni)
+                (hpmr) edge[pink0, ->] (omni)
+                (icel) edge[pink0, ->] (omni)
+                (silk) edge[pink0, ->] (omni)
+                (ccal) edge[pink0, ->] (omni)
+                (clnk) edge[pink0, ->] (omni)
+                (sccn) edge[pink0, ->] (omni)
+                (litr) edge[olive0, ->] (silk);
+
+        \end{pgfonlayer}
+
+    \end{tikzpicture}
+
+\end{document}
