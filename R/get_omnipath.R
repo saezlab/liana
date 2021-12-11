@@ -454,7 +454,6 @@ generate_omni <- function(remove_complexes=TRUE,
 #' @returns cellcall db converted to LIANA/OP format
 get_cellcall <- function(){
     # Get UniProt Query DB
-
     cellcall <- read.delim(url("https://raw.githubusercontent.com/ShellyCoder/cellcall/master/inst/extdata/new_ligand_receptor_TFs.txt"), header = TRUE) %>%
         mutate(across(everything(), ~as.character(.x))) %>%
         # we can also get extended interactions
