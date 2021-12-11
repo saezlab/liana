@@ -101,6 +101,7 @@ according to the logarithm base (eg, "avg_log2FC"), or if using the scale.data
 slot "avg_diff".}
     \item{\code{base}}{The base with respect to which logarithms are computed.}
     \item{\code{return.thresh}}{Only return markers that have a p-value < return.thresh, or a power > return.thresh (if the test is ROC)}
+    \item{\code{densify}}{Convert the sparse matrix to a dense form before running the DE test. This can provide speedups but might require higher memory; default is FALSE}
   }}
 }
 \value{
