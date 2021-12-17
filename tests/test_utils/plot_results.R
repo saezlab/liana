@@ -22,7 +22,7 @@
 liana_dotplot <- function(liana_agg,
                           source_groups,
                           target_groups,
-                          specificity = "natmi.edge_specificity",
+                          specificity = "cellphonedb.pvalue",
                           magnitude = "sca.LRscore"){
 
     # Modify for the plot
@@ -45,8 +45,8 @@ liana_dotplot <- function(liana_agg,
         ggplot(liana_mod,
                aes(x = interaction,
                    y = target,
-                   colour = specificity,
-                   size = magnitude,
+                   colour = magnitude,
+                   size = specificity,
                    group = target
                )) +
             geom_point() +
@@ -276,8 +276,13 @@ liana_filt <- liana_res %>%
     filter(active_flag == 1)
 
 # plot
+liana_filt %<>%
+    # -log10 cellphonedb.pvalue
+    mutate(log10pvalue = -log10(cellphonedb.pvalue + 0.000001))
+
 liana_dotplot(liana_filt,
-              source_groups = c("B"),
-              target_groups = c("NK", "CD8 T"))
+              source_groups = c("B", "NK"),
+              target_groups = c("NK", "CD8 T"),
+              specificity = 'log10pvalue')
 # Note if a dot is missing, it simply means that the interaction is filtered out
 # i.e. the ligand or receptor are not expressed in at least 10% of the cells
