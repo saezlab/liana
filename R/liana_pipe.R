@@ -418,12 +418,19 @@ get_global_mean <- function(seurat_object,
         assay.type = "data"
     }
 
-    global_mean <- SeuratObject::GetAssayData(seurat_object,
-                                              assay = assay,
-                                              slot = assay.type) %>%
-        .[Matrix::rowSums(.)>0,]
-    global_mean <- sum(global_mean)/(nrow(global_mean)*ncol(global_mean))
+    # Check if any genes has expression of 0
+    unexpressed_genes <- Matrix::rowSums(
+        SeuratObject::GetAssayData(seurat_object,
+                                   assay = "RNA",
+                                   slot = "data")) > 0
 
+    # calculate global mean
+    global_mean <- Matrix::mean(
+        SeuratObject::GetAssayData(
+            seurat_object,
+            assay = assay,
+            slot = assay.type)[unexpressed_genes]
+        )
     return(global_mean)
 }
 
