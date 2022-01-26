@@ -13,7 +13,7 @@ saveRDS(pipe_out, file.path(liana_path, "testdata",
 
 
 # Scores Output ----
-conn_out <- get_connectome(pipe_out)
+conn_out <- get_connectome(pipe_out, expr_prop=0)
 saveRDS(conn_out, file.path(liana_path, "testdata",
                             "output", "conn_score.RDS"))
 

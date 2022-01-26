@@ -1,3 +1,20 @@
+# LIANA 0.0.6
+
+## New implementations
+
+- added `liana_dotplot` as a basic, but flexible, dotplot function for LIANA output.
+
+## Changes  
+
+- `global_mean` is now calculated in a more efficient manner.
+
+## Bug Fixes  
+
+- By mistake, `assay.type` in `liana_pipe` was passed to `get_logFC` would
+result in using the logcounts, rather than the raw counts for logFC calculation.
+Has now been appropriately changed.
+
+
 # LIANA 0.0.5
 
 ## Changes

@@ -86,7 +86,7 @@ liana_pipe <- function(seurat_object,
                                      assay.type = assay.type)
 
     # Get Log2FC
-    logfc_df <- get_log2FC(sce, assay.type)
+    logfc_df <- get_log2FC(sce, "counts")
 
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
@@ -406,31 +406,24 @@ get_log2FC <- function(sce,
 #'
 #' @return a single value for the whole dataset
 #'
-#' @details global mean is used in the SingleCellSignalR scores.
+#' @details global mean is used in the `SingleCellSignalR` scores.
 get_global_mean <- function(seurat_object,
                             assay,
                             assay.type){
-    # Global Mean (sca) - before subsetting (needs to change to sce + assay.type)
-    # global_mean <- sce@assays@data$logcounts %>%
-    #     .[Matrix::rowSums(.)>0,]
 
     if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
         assay.type = "data"
     }
 
-    # Check if any genes has expression of 0
-    unexpressed_genes <- Matrix::rowSums(
-        SeuratObject::GetAssayData(seurat_object,
-                                   assay = "RNA",
-                                   slot = "data")) > 0
+    if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
+        assay.type = "data"
+    }
 
+    seurat_object <- seurat_object[Matrix::rowSums(seurat_object) > 0,]
+                                   #Matrix::colSums(seurat_object) > 0 ]
     # calculate global mean
-    global_mean <- Matrix::mean(
-        SeuratObject::GetAssayData(
-            seurat_object,
-            assay = assay,
-            slot = assay.type)[unexpressed_genes]
-        )
+    global_mean <- Matrix::mean(seurat_object@assays[[assay]] %>%
+                                    pluck(assay.type))
     return(global_mean)
 }
 
