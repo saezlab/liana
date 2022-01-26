@@ -18,7 +18,7 @@
 #' by default we use SingleCellSignalR's dataset indepent LRscore (bound between 0 and 1).
 #' Yet, one could also use CellChat's probabilities or CellPhoneDB's means, etc.
 #'
-#' @import ggplot2
+#' @import ggplot2 dplyr
 liana_dotplot <- function(liana_agg,
                           source_groups,
                           target_groups,

@@ -38,9 +38,9 @@ corresponding resources.
 
 ## Load required packages
 ```{r load_pkgs, message=FALSE, warning=FALSE}
+require(tidyverse)
+require(magrittr)
 require(liana)
-require(tibble)
-require(purrr)
 ```
 
 ## CCC Resources
@@ -86,6 +86,9 @@ aforementioned ones (available via `show_resources()`) can be added to the `reso
 ```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
 liana_test <- liana_wrap(testdata)
+
+# Liana returns a list of results, each element of which corresponds to a method
+liana_test %>% glimpse
 ```
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
 By default, LIANA will call only the internal scoring function (or those that are re-implemented in LIANA).
@@ -99,12 +102,11 @@ For more information and validation with the original methods see [LIANA++](http
 methods. By default, `liana` will provide mean, median, and aggregate* consensus
 ranks
 ```{r liana_ranks, warning=FALSE}
-# Liana returns a list of results, each element of which corresponds to a method
-liana_test %>% glimpse
-
 # We can aggregate these results into a tibble with consensus ranks
-liana_test %>%
+liana_test <- liana_test %>%
   liana_aggregate()
+
+glimpse(liana_test)
 ```
 
 Voila! That's it. A very brief intro to LIANA and how to obtain the scoring functions†
@@ -114,10 +116,26 @@ for each method implemented in it, as well as an aggregate_rank* which serves as
 single sample system. Most of these, with the exception of SingleCellSignalR's LRscore, take
 the specificity of the cluster pair into account.
 
-(*) The aggregate consensus rank is obtained using the RobustRankAggreg package and its [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method.
+(*) The aggregate consensus rank (`aggregate_rank`) is obtained using the RobustRankAggreg package and its [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method.
 
 `RRA` scores can be interpreted as p-values and interactions which are
 ranked consistently higher than random are assigned low scores/p-values.
+
+## Simple DotPlot
+
+We will now plot the results. By default, we use the `LRscore` from `SingleCellSignalR`
+to represent the magnitude of expression of the ligand and receptor, and NATMI's specificity weights
+to show how specific a given interaction is to the `source`(L) and `target`(R) cell types.
+
+In this case, we plot the top 25 interactions with the lowest aggregate_rank scores, 
+and we plot interactions in which B cells are the `source` (express the ~ligands) and
+the other 3 cell types in this toy dataset are the `target` (express the ~receptors).
+```{r liana_dotplot, warning=FALSE, fig.width=10, fig.height=6}
+liana_test %>% 
+  top_n(25, desc(aggregate_rank)) %>%
+  liana_dotplot(source_groups = c("B"),
+                target_groups = c("NK", "CD8 T", "B"))
+```
 
 
 

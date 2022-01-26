@@ -21,5 +21,5 @@ a single value for the whole dataset
 Helper function to obtain a global mean
 }
 \details{
-global mean is used in the SingleCellSignalR scores.
+global mean is used in the `SingleCellSignalR` scores.
 }
