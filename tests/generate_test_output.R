@@ -185,4 +185,12 @@ liana_agg_house <- liana_res %>%
 saveRDS(liana_agg_house, file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))
 
-
+# liana dotplot ----
+liana_dotplot_out <- liana_dotplot(cpdb_out,
+                                   source_groups = "B",
+                                   target_groups = c("NK", "CD8 T"),
+                                   magnitude = "lr.mean",
+                                   specificity = "pvalue")
+saveRDS(liana_dotplot_out,
+        file.path(liana_path, "testdata",
+                  "output", "liana_dotplot_out.RDS"))
