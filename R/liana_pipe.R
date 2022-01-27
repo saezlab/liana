@@ -361,11 +361,16 @@ join_log2FC <- function(lr_res,
 #'
 #' @return A log2FC dataframe for a given cell identity
 #'
-#' @details log2FC is calculated using the raw count average + a pseudocount of 1
+#' @details log2FC is calculated using the raw count average + a pseudocount of 1.
+#' `assay.type` should be the raw counts
 #'
 #' @noRd
 get_log2FC <- function(sce,
                        assay.type){
+
+    # normalize counts across libraries
+    sce <- scater::logNormCounts(sce, log=FALSE,
+                                 assay.type=assay.type)
 
     # iterate over each possible cluster leaving one out
     levels(colLabels(sce)) %>%
@@ -374,7 +379,7 @@ get_log2FC <- function(sce,
             subject_avg <-
                 scater::calculateAverage(subset(sce,
                                                 select = colLabels(sce)==subject),
-                                         assay.type = assay.type
+                                         assay.type = "normcounts"
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(subject_avg = value)
@@ -383,7 +388,7 @@ get_log2FC <- function(sce,
             loso_avg <-
                 scater::calculateAverage(subset(sce,
                                                 select = !(colLabels(sce) %in% subject)),
-                                         assay.type = assay.type
+                                         assay.type = "normcounts"
                                          ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(loso_avg = value)
