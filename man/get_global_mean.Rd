@@ -7,8 +7,6 @@
 get_global_mean(seurat_object, assay, assay.type)
 }
 \arguments{
-\item{seurat_object}{Seurat object}
-
 \item{assay}{assay to be used ("RNA" by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means

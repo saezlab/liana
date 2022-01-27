@@ -1,5 +1,6 @@
-#' Call Squidpy Pipeline via reticulate with OmniPath and format results
-#' @param seurat_object Seurat object as input
+#' Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]
+#'
+#' @param sce SingleCellExperiment as input
 #' @param op_resource Tibble or list of OmniPath resources, typically obtained via
 #'    \code{\link{select_resource}}
 #' @param seed seed passed to squidpy's ligrec function
@@ -24,13 +25,18 @@
 #' @returns A list of Squidpy results for each resource
 #'
 #' @export
-call_squidpy <- function(seurat_object,
+call_squidpy <- function(sce,
                          op_resource,
                          seed = 1004,
                          conda_env = NULL,
                          assay = "RNA",
                          assay.type = "logcounts",
                          ...){
+
+    seurat_object <- SeuratObject::as.Seurat(sce)
+    rm(sce)
+    seurat_object@assays[[assay]] <- seurat_object@assays$originalexp
+    seurat_object@assays[[assay]] <- NULL
 
     # required until I make the interchaengeable Seurat/SCE
     if(assay.type=="logcounts"){

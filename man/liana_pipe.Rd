@@ -16,8 +16,6 @@ liana_pipe(
 )
 }
 \arguments{
-\item{seurat_object}{Seurat object}
-
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{decomplexify}{whether to dissociate complexes into subunits and hence
@@ -37,12 +35,14 @@ of x before the `truncated mean` is computed (0.1 by default)}
 \item{assay.type}{- the type of data to be used to calculate the means
 (counts by default), available options are: "counts" and "logcounts"}
 
+\item{sce}{SingleCellExperiment Object}
+
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default),
 yet one should consider setting this to an appropriate value between 0 and 1,
 as an assumptions of these method is that communication is coordinated at the cluster level.}
 }
 \value{
-Returns a tibble with information required for LR calc
+Returns a tibble with information required for LR calculations downstream
 }
 \description{
 Liana Pipe which runs DE analysis and merges needed information for LR inference

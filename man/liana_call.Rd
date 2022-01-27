@@ -15,8 +15,6 @@ liana_call(
 )
 }
 \arguments{
-\item{seurat_object}{Seurat object}
-
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}

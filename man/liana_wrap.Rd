@@ -5,7 +5,7 @@
 \title{LIANA wrapper function}
 \usage{
 liana_wrap(
-  seurat_object,
+  sce,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = c("OmniPath"),
   external_resource,
@@ -14,7 +14,7 @@ liana_wrap(
 )
 }
 \arguments{
-\item{seurat_object}{seurat object}
+\item{sce}{`SingleCellExperiment` object or `SeuratObject`}
 
 \item{method}{method(s) to be run via liana}
 

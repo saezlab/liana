@@ -1,6 +1,6 @@
 #' Liana Pipe which runs DE analysis and merges needed information for LR inference
 #'
-#' @param seurat_object Seurat object
+#' @param sce SingleCellExperiment Object
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
 #' @inheritParams scran::findMarkers
@@ -19,8 +19,8 @@
 #'
 #' @export
 #'
-#' @return Returns a tibble with information required for LR calc
-liana_pipe <- function(seurat_object,
+#' @return Returns a tibble with information required for LR calculations downstream
+liana_pipe <- function(sce,
                        op_resource,
                        decomplexify = TRUE,
                        test.type = "wilcox",
@@ -40,16 +40,18 @@ liana_pipe <- function(seurat_object,
     entity_genes = union(transmitters$gene,
                          receivers$gene)
 
-    global_mean <- get_global_mean(seurat_object,
-                                   assay,
-                                   assay.type)
+    # calculate global_mean required for SCA
+    global_mean <- Matrix::mean(
+        exec(assay.type, sce[Matrix::rowSums(counts(sce)) > 0,
+                             Matrix::colSums(counts(sce)) > 0])
+        )
 
-    sce <- seurat_to_sce(seurat_object,
-                         entity_genes = entity_genes,
-                         assay = assay) %>%
-        .[, colSums(counts(.)) > 0]
-    rm(seurat_object); gc()
-    ###
+    # Filter `sce` to only include ligand receptor genes
+    sce <- sce[rownames(sce) %in% entity_genes, ]
+    # Scale genes across cells
+    sce@assays@data[["scaledata"]] <- as.matrix(row_scale(exec(assay.type, sce)))
+    # To be removed once I filter out any cells with 0 reads
+    sce@assays@data[["scaledata"]][is.na(rowSums(sce@assays@data[["scaledata"]])),] = 0
 
 
     # Get Avg and  Prop. Expr Per Cluster
@@ -108,7 +110,6 @@ liana_pipe <- function(seurat_object,
     # Get all Possible Cluster pair combinations
     pairs <- expand_grid(source = unique(colLabels(sce)),
                          target = unique(colLabels(sce)))
-
     # Get DEGs to LR format
     lr_res <- pairs %>%
         pmap(function(source, target){
@@ -465,6 +466,20 @@ decomplexify <- function(resource,
                           ~str_replace(., "COMPLEX:", ""))
         })
     return(resource)
+}
+
+
+#' Helper Function to Get a rowwise scaled matrix
+#'
+#' @param mat a matrix, typically the logcounts matrix from an SCE object
+#'
+#' @noRd
+row_scale <- function(mat){
+    col_means = rowMeans(mat, na.rm = TRUE) # Get the column means
+    col_sd = MatrixGenerics::rowSds(mat, center = col_means) # Get the column sd
+
+    # return scaled mat
+    return((mat - col_means) / col_sd)
 }
 
 

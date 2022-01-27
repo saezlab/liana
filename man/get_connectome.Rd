@@ -12,7 +12,6 @@ get_connectome(lr_res, ...)
 \item{...}{
   Arguments passed on to \code{\link[=liana_call]{liana_call}}
   \describe{
-    \item{\code{seurat_object}}{Seurat object}
     \item{\code{op_resource}}{resource tibble obtained via \link{liana::select_resource}}
     \item{\code{decomplexify}}{whether to dissociate complexes into subunits and hence
 and hence take complexes into account (decomplexify) or not}

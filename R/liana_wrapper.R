@@ -1,6 +1,6 @@
 #' LIANA wrapper function
 #'
-#' @param seurat_object seurat object
+#' @param sce `SingleCellExperiment` object or `SeuratObject`
 #' @param method method(s) to be run via liana
 #' @param resource resource(s) to be used by the methods (Use `all` to run all resources in one go),
 #'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
@@ -23,13 +23,16 @@
 #'  a given set of intercellular resources from the OmniPath universe.
 #'
 #' @export
-liana_wrap <- function(seurat_object,
+liana_wrap <- function(sce,
                        method = c('natmi', 'connectome', 'logfc',
                                   'sca', 'cellphonedb'),
                        resource = c('OmniPath'),
                        external_resource,
                        .simplify = TRUE,
                        ...){
+
+  # Handle object
+  sce <- liana_prep(sce)
 
   if(resource!='custom' & length(setdiff(resource, c(show_resources(), "all"))) > 0){
     stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
@@ -56,8 +59,8 @@ liana_wrap <- function(seurat_object,
 
         rlang::invoke(liana_pipe,
                       append(
-                        list("seurat_object" = seurat_object,
-                             "op_resource" = reso %>% decomplexify()),
+                        list("sce" = sce,
+                             "op_resource" =  decomplexify(reso)),
                         liana_defaults(...)[["liana_pipe"]]
                         )
                       )
@@ -74,7 +77,7 @@ liana_wrap <- function(seurat_object,
              if(method_name %in% c("squidpy", "cellchat")){
                # external calls (for complex-informed methods)
                args <- append(
-                 list("seurat_object" = seurat_object,
+                 list("sce" = sce,
                       "op_resource" = reso),
                  liana_defaults(...)[[method_name]]
                  )
@@ -83,7 +86,7 @@ liana_wrap <- function(seurat_object,
              } else if(startsWith(method_name, "call_")){
                # external calls (for methods who don't deal with complexes)
                args <- append(
-                 list("seurat_object" = seurat_object,
+                 list(sce = sce,
                       "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
                  liana_defaults(...)[[method_name]]
                )
@@ -101,11 +104,8 @@ liana_wrap <- function(seurat_object,
                    get_permutations,
                    append(
                      list(lr_res = lr_res,
-                          sce = seurat_to_sce(seurat_object,
-                                              entity_genes = union(lr_res$ligand,
-                                                                   lr_res$receptor),
-                                              assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                                pluck("assay"))
+                          sce = sce[rownames(sce) %in% union(lr_res$ligand,
+                                                             lr_res$receptor), ]
                           ),
                      liana_defaults(...)[["permutation"]]))
 
@@ -123,12 +123,11 @@ liana_wrap <- function(seurat_object,
                                           ...)
 
                args <- append(
-                 list(lr_res = lr_res,
-                      sce = seurat_to_sce(seurat_object,
-                                          entity_genes = union(lr_res$ligand,
-                                                               lr_res$receptor),
-                                          assay = liana_defaults(...)[["liana_pipe"]] %>%
-                                            pluck("assay"))),
+                 list(
+                   lr_res = lr_res,
+                   sce = sce[rownames(sce) %in% union(lr_res$ligand,
+                                                      lr_res$receptor), ]
+                   ),
                  liana_defaults(...)[[method_name]]
                )
 
@@ -137,7 +136,7 @@ liana_wrap <- function(seurat_object,
             } else {
               # re-implemented non-permutation approaches
               args <- append(
-                list("seurat_object" = seurat_object,
+                list("sce" = sce,
                      lr_res = .filt_liana_pipe(lr_results[[reso_name]],
                                                method_name,
                                                ...)
