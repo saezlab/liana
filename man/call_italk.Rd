@@ -4,19 +4,12 @@
 \alias{call_italk}
 \title{Run iTALK with OmniPath data}
 \usage{
-call_italk(
-  op_resource,
-  seurat_object,
-  assay = "RNA",
-  .format = TRUE,
-  .DE = TRUE,
-  ...
-)
+call_italk(sce, op_resource, assay = "RNA", .format = TRUE, .DE = TRUE, ...)
 }
 \arguments{
-\item{op_resource}{OmniPath Intercell Resource DN}
+\item{sce}{Seurat object or SingleCellExperiment as input}
 
-\item{seurat_object}{Seurat object as input}
+\item{op_resource}{OmniPath Intercell Resource DN}
 
 \item{assay}{assay to use from Seurat object}
 

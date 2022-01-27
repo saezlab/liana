@@ -1,7 +1,7 @@
 #' Function to call connectome with databases from OmniPath
 #'
 #' @param op_resource OmniPath Intercell Resource DN
-#' @param seurat_object Seurat object as input
+#' @param sce Seurat object as input
 #' @param .format bool whether to format output
 #' @param ... dot params passed to connectome
 #'
@@ -21,10 +21,15 @@
 #' @importFrom dplyr arrange select mutate distinct
 #'
 #' @export
-call_connectome <- function(seurat_object,
+call_connectome <- function(sce,
                             op_resource = NULL,
                             .format = TRUE,
                             ...){
+
+    # Convert sce to seurat
+    if(class(sce) == "SingleCellExperiment"){
+        sce %<>% .liana_convert(., assay=assay)
+    }
 
     if(!is.null(op_resource)){
 
@@ -32,7 +37,7 @@ call_connectome <- function(seurat_object,
         lr_symbols <- union(lr_db$source_genesymbol,
                             lr_db$target_genesymbol)
 
-        conn <- .conn_create(seurat_object,
+        conn <- .conn_create(sce,
                              lr_symbols = lr_symbols,
                              lr_db,
                              ...
@@ -46,7 +51,7 @@ call_connectome <- function(seurat_object,
         lr_symbols = union(lr_db$Ligand.ApprovedSymbol,
                            lr_db$Receptor.ApprovedSymbol)
 
-        conn <- .conn_create(seurat_object,
+        conn <- .conn_create(sce,
                             lr_symbols = lr_symbols,
                             lr_db,
                             ...
@@ -105,16 +110,16 @@ conn_formatDB <- function(op_resource){
 #' @param ... arguments passed `CreateConnectome` from `Connectome`
 #'
 #' @noRd
-.conn_create <- function(seurat_object,
+.conn_create <- function(sce,
                         lr_symbols,
                         lr_db,
                         ...){
 
-    filt_genes <- lr_symbols[lr_symbols %in% rownames(seurat_object)]
-    seurat_object <- Seurat::ScaleData(object = seurat_object,
+    filt_genes <- lr_symbols[lr_symbols %in% rownames(sce)]
+    sce <- Seurat::ScaleData(object = sce,
                                        features = filt_genes)
 
-    conn <- Connectome::CreateConnectome(seurat_object,
+    conn <- Connectome::CreateConnectome(sce,
                                          LR.database = 'custom',
                                          custom.list = lr_db,
                                          ...

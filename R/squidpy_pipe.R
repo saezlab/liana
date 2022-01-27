@@ -1,6 +1,6 @@
 #' Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]
 #'
-#' @param sce SingleCellExperiment as input
+#' @param sce SingleCellExperiment or Seurat Object as input
 #' @param op_resource Tibble or list of OmniPath resources, typically obtained via
 #'    \code{\link{select_resource}}
 #' @param seed seed passed to squidpy's ligrec function
@@ -33,13 +33,12 @@ call_squidpy <- function(sce,
                          assay.type = "logcounts",
                          ...){
 
-    seurat_object <- SeuratObject::as.Seurat(sce)
-    rm(sce)
-    seurat_object@assays[[assay]] <- seurat_object@assays$originalexp
-    seurat_object@assays[[assay]] <- NULL
+    # Convert sce to seurat
+    if(class(sce) == "SingleCellExperiment"){
+        sce %<>% .liana_convert(., assay=assay)
+    }
 
-    # required until I make the interchaengeable Seurat/SCE
-    if(assay.type=="logcounts"){
+    if(class(sce) == "Seurat" & assay.type=="logcounts"){
         assay.type = "data"
     }
 
@@ -48,7 +47,7 @@ call_squidpy <- function(sce,
     }
 
     kwargs <- list(...)
-    kwargs$cluster_key %<>% `%||%`(.get_ident(seurat_object))
+    kwargs$cluster_key %<>% `%||%`(.get_ident(sce))
     kwargs$seed <- as.integer(seed)
 
     if(length(kwargs$cluster_key) == 0){
@@ -57,9 +56,9 @@ call_squidpy <- function(sce,
         message(str_glue("Squidpy: running with {kwargs$cluster_key} as cluster_key"))
     }
 
-    if(!is.factor(seurat_object@meta.data[[kwargs$cluster_key]])){
-        seurat_object@meta.data[[kwargs$cluster_key]] <-
-            seurat_object@meta.data %>%
+    if(!is.factor(sce@meta.data[[kwargs$cluster_key]])){
+        sce@meta.data[[kwargs$cluster_key]] <-
+            sce@meta.data %>%
             pull(kwargs$cluster_key) %>%
             as.factor()
         message(str_glue("Squidpy: {kwargs$cluster_key} was converted to factor"))
@@ -92,21 +91,21 @@ call_squidpy <- function(sce,
 
     # Check if assay meta.features match object rownames
     # if not assign a placeholder (Seurat-specific fix)
-    if(nrow(GetAssay(seurat_object)[[]]) != nrow(seurat_object) |
-       ncol(seurat_object@assays[[assay]]@meta.features)==0){
+    if(nrow(GetAssay(sce)[[]]) != nrow(sce) |
+       ncol(sce@assays[[assay]]@meta.features)==0){
         message("Meta features were reassigned to match object")
 
-        seurat_object@assays[[assay]]@meta.features <-
-            data.frame(row.names = rownames(seurat_object),
-                       placeholder = rownames(seurat_object))
+        sce@assays[[assay]]@meta.features <-
+            data.frame(row.names = rownames(sce),
+                       placeholder = rownames(sce))
     }
 
     py$squidpy_results <- py$call_squidpy(op_resources,
-                                          GetAssayData(seurat_object,
+                                          GetAssayData(sce,
                                                        assay=assay,
                                                        slot=assay.type), # expr
-                                          seurat_object[[]], # meta
-                                          GetAssay(seurat_object,
+                                          sce[[]], # meta
+                                          GetAssay(sce,
                                                    assay=assay)[[]], # feature_meta
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
@@ -173,18 +172,18 @@ FormatSquidpy <- function(.name,
 #' Helper Function to get active Ident (cluster annotation column) from the
 #'   Seurat object metadata
 #'
-#' @param seurat_object seurat object with metadata information
+#' @param sce seurat object with metadata information
 #'
 #' @noRd
-.get_ident <- function(seurat_object){
-    map(names(seurat_object@meta.data),
+.get_ident <- function(sce){
+    map(names(sce@meta.data),
         function(x){
-            p <- seurat_object@meta.data %>%
+            p <- sce@meta.data %>%
                 select(sym(x)) %>%
                 rownames_to_column("names") %>%
                 deframe()
 
-            if(identical(p, Seurat::Idents(seurat_object))){
+            if(identical(p, Seurat::Idents(sce))){
                 return(x)
             }
 

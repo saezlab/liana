@@ -1,7 +1,7 @@
 #' Run iTALK with OmniPath data
 #'
+#' @param sce Seurat object or SingleCellExperiment as input
 #' @param op_resource OmniPath Intercell Resource DN
-#' @param seurat_object Seurat object as input
 #' @param assay assay to use from Seurat object
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
@@ -24,26 +24,30 @@
 #'
 #' @export
 call_italk <- function(
-    op_resource,
-    seurat_object,
-    assay = "RNA",
-    .format = TRUE,
-    .DE = TRUE,
-    ...
-){
+  sce,
+  op_resource,
+  assay = "RNA",
+  .format = TRUE,
+  .DE = TRUE,
+  ...){
+
+  # Convert sce to seurat
+  if(class(sce) == "SingleCellExperiment"){
+    sce %<>% .liana_convert(., assay=assay)
+  }
 
   if(!is.null(op_resource)){
     op_resource %<>% italk_formatDB
   }
 
   # create a dataframe of the cell labels
-  cell_type <- Idents(seurat_object) %>%
+  cell_type <- Idents(sce) %>%
     data.frame(group = ., row.names = names(.)) %>%
     unname() %>%
     as.vector()
 
 
-  deg <- Seurat::FindAllMarkers(seurat_object,
+  deg <- Seurat::FindAllMarkers(sce,
                                 assay = assay,
                                 ...
                                 ) %>%
@@ -62,10 +66,10 @@ call_italk <- function(
                cell_type = 'cluster',
                gene = 'gene')
       }) %>%
-    setNames(levels(Idents(seurat_object)))
+    setNames(levels(Idents(sce)))
 
   # Iterate over cell type pairs and Find LR
-  idents <- as.character(unique(Idents(seurat_object)))
+  idents <- as.character(unique(Idents(sce)))
   comb <- expand_grid(source = idents, target = idents)
 
   res <- comb %>%

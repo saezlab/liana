@@ -5,7 +5,7 @@
 \title{Call NATMI Pipeline from R with Resources Querried from OmniPath}
 \usage{
 call_natmi(
-  seurat_object,
+  sce,
   op_resource,
   expr_file = "em.csv",
   meta_file = "metadata.csv",
@@ -23,7 +23,7 @@ call_natmi(
 )
 }
 \arguments{
-\item{seurat_object}{Seurat object}
+\item{sce}{Seurat or SingleCellExperiment object}
 
 \item{op_resource}{List of OmniPath resources}
 

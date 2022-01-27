@@ -2,10 +2,10 @@
 % Please edit documentation in R/squidpy_pipe.R
 \name{call_squidpy}
 \alias{call_squidpy}
-\title{Call Squidpy Pipeline via reticulate with OmniPath and format results}
+\title{Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]}
 \usage{
 call_squidpy(
-  seurat_object,
+  sce,
   op_resource,
   seed = 1004,
   conda_env = NULL,
@@ -15,7 +15,7 @@ call_squidpy(
 )
 }
 \arguments{
-\item{seurat_object}{Seurat object as input}
+\item{sce}{SingleCellExperiment or Seurat Object as input}
 
 \item{op_resource}{Tibble or list of OmniPath resources, typically obtained via
 \code{\link{select_resource}}}
@@ -37,7 +37,7 @@ as an assumptions of these method is that communication is coordinated at the cl
 A list of Squidpy results for each resource
 }
 \description{
-Call Squidpy Pipeline via reticulate with OmniPath and format results
+Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]
 }
 \details{
 CellPhoneDBv2 algorithm re-implementation in Python.

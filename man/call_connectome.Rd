@@ -4,10 +4,10 @@
 \alias{call_connectome}
 \title{Function to call connectome with databases from OmniPath}
 \usage{
-call_connectome(seurat_object, op_resource = NULL, .format = TRUE, ...)
+call_connectome(sce, op_resource = NULL, .format = TRUE, ...)
 }
 \arguments{
-\item{seurat_object}{Seurat object as input}
+\item{sce}{Seurat object as input}
 
 \item{op_resource}{OmniPath Intercell Resource DN}
 

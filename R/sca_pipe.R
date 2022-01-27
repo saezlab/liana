@@ -1,6 +1,7 @@
-#' Function to call SingleCellSignalR with databases from OmniPath
+#' Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]
+#'
+#' @param sce SingleCellExperiment or SeuratObject as input
 #' @param op_resource OmniPath Intercell Resource DN
-#' @param seurat_object Seurat object as input
 #' @param .format bool whether to format output
 #' @param assay Seurat assay data to use
 
@@ -17,14 +18,19 @@
 #' @export
 #'
 #' @return An unfiltered SCA tibble
-call_sca <- function(op_resource,
-                     seurat_object,
+call_sca <- function(sce,
+                     op_resource,
                      .format = TRUE,
                      assay = "RNA",
                      assay.type = "logcounts",
                      ...){
 
-  if(assay.type=="logcounts"){
+  # Convert sce to seurat
+  if(class(sce) == "SingleCellExperiment"){
+    sce %<>% .liana_convert(., assay=assay)
+  }
+
+  if(class(sce) == "Seurat" & assay.type=="logcounts"){
     assay.type = "data"
   }
 
@@ -42,16 +48,16 @@ call_sca <- function(op_resource,
 
   # Prepare data from Seurat object
   input_data <-
-    Seurat::GetAssayData(seurat_object,
+    Seurat::GetAssayData(sce,
                          assay = assay,
                          slot = assay.type)
-  labels <- Seurat::Idents(seurat_object)
+  labels <- Seurat::Idents(sce)
 
   # Compute interactions between cell clusters
   signal <- SCAomni::cell_signaling(data = input_data,
                                     genes = row.names(input_data),
                                     cluster = as.numeric(labels),
-                                    c.names = levels(Idents(seurat_object)),
+                                    c.names = levels(Idents(sce)),
                                     species = 'homo sapiens',
                                     LRdb = op_resource,
                                     int.type="autocrine", # includes both para and auto...
@@ -65,7 +71,7 @@ call_sca <- function(op_resource,
                                     signal = signal,
                                     genes = row.names(input_data),
                                     cluster = as.numeric(labels),
-                                    c.names = levels(Idents(seurat_object)),
+                                    c.names = levels(Idents(sce)),
                                     write = FALSE
                                     )
   if (.format) {

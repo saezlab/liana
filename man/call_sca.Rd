@@ -2,11 +2,11 @@
 % Please edit documentation in R/sca_pipe.R
 \name{call_sca}
 \alias{call_sca}
-\title{Function to call SingleCellSignalR with databases from OmniPath}
+\title{Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]}
 \usage{
 call_sca(
+  sce,
   op_resource,
-  seurat_object,
   .format = TRUE,
   assay = "RNA",
   assay.type = "logcounts",
@@ -14,9 +14,9 @@ call_sca(
 )
 }
 \arguments{
-\item{op_resource}{OmniPath Intercell Resource DN}
+\item{sce}{SingleCellExperiment or SeuratObject as input}
 
-\item{seurat_object}{Seurat object as input}
+\item{op_resource}{OmniPath Intercell Resource DN}
 
 \item{.format}{bool whether to format output}
 
@@ -26,7 +26,7 @@ call_sca(
 An unfiltered SCA tibble
 }
 \description{
-Function to call SingleCellSignalR with databases from OmniPath
+Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]
 }
 \details{
 Stats:

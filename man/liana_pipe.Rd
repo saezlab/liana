@@ -5,7 +5,7 @@
 \title{Liana Pipe which runs DE analysis and merges needed information for LR inference}
 \usage{
 liana_pipe(
-  seurat_object,
+  sce,
   op_resource,
   decomplexify = TRUE,
   test.type = "wilcox",
@@ -16,6 +16,8 @@ liana_pipe(
 )
 }
 \arguments{
+\item{sce}{SingleCellExperiment Object}
+
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{decomplexify}{whether to dissociate complexes into subunits and hence
@@ -34,8 +36,6 @@ of x before the `truncated mean` is computed (0.1 by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means
 (counts by default), available options are: "counts" and "logcounts"}
-
-\item{sce}{SingleCellExperiment Object}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default),
 yet one should consider setting this to an appropriate value between 0 and 1,

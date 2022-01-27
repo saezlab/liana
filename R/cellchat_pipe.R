@@ -29,8 +29,8 @@
 #'
 #' @details CellChat's objects are not lazily documented/exported thus the
 #'   whole package has to be imported.
-call_cellchat <- function(op_resource,
-                          seurat_object,
+call_cellchat <- function(seurat_object,
+                          op_resource,
                           .format = TRUE,
                           exclude_anns = c(),
                           nboot = 100,

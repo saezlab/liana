@@ -8,7 +8,7 @@ test_that("Test NATMI", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "natmi_res.RDS"))
     res1 <- call_natmi(op_resource = select_resource("OmniPath")[[1]],
-                       seurat_object = seurat_object,
+                       sce = seurat_object,
                        expr_file = "test_em.csv",
                        meta_file = "test_metadata.csv",
                        output_dir = "NATMI_test",

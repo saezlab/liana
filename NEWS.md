@@ -2,6 +2,11 @@
 
 ## New implementations
 
+- LIANA has now been optimized in terms of RAM, by swapping all internal function to rely solely on
+the BioConductor single-cell framework (for all internal methods).
+
+- LIANA now accepts both `SingleCellExperiment` and `Seurat` objects as input.
+
 - added `liana_dotplot` as a basic, but flexible, dotplot function for LIANA output. (+ tests)
 
 ## Changes  
@@ -13,6 +18,13 @@
 - `assay.type` in `liana_pipe` was passed to `get_logFC` would
 result in using the logcounts, rather than the library-normalized counts for logFC calculation.
 Now appropriately changed.
+
+## Deprecated
+
+- External LIANA methods (i.e. `call_`) are now deprecated. The pipelines will be maintained solely for power users,
+who intend to benchmark the original implementations, but will not be the focus of any downstream analyses.
+These will be solely developed for the internal (or re-implemented methods). These still rely on a `SeuratObject` as 
+interface, but will now accept both sce and seurat as input.
 
 
 # LIANA 0.0.5

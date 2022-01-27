@@ -1,7 +1,7 @@
 #' Call NATMI Pipeline from R with Resources Querried from OmniPath
 #'
 #' @param op_resource List of OmniPath resources
-#' @param seurat_object Seurat object
+#' @param sce Seurat or SingleCellExperiment object
 #' @param omnidbs_dir path of saved omnipath resources
 #' @param expr_file expression matrix file name
 #' @param meta_file annotations (i.e. clusters) file name
@@ -59,7 +59,7 @@
 #'
 #' @export
 call_natmi <- function(
-    seurat_object,
+    sce,
     op_resource,
     expr_file = "em.csv",
     meta_file = "metadata.csv",
@@ -74,6 +74,11 @@ call_natmi <- function(
     .seed = 1004,
     .natmi_path = NULL,
     .delete_input_output = FALSE){
+
+    # Convert sce to seurat
+    if(class(sce) == "SingleCellExperiment"){
+        sce %<>% .liana_convert(., assay=assay)
+    }
 
     # Get Reticulate path
     reticulate::use_condaenv(condaenv = conda_env %>% `%||%`("liana_env"),
@@ -101,14 +106,14 @@ call_natmi <- function(
     if(.overwrite_data || !file.exists(.csv_path)){
         log_info(str_glue("Writing EM to {.csv_path}"))
         if(assay.type=="counts"){
-            write.csv(GetAssayData(object = seurat_object,
+            write.csv(GetAssayData(object = sce,
                                    assay = "RNA",
                                    slot = "counts"),
                       file = .csv_path,
                       row.names = TRUE)
         } else{
             write.csv(100 * (exp(as.matrix(
-                GetAssayData(object = seurat_object,
+                GetAssayData(object = sce,
                              assay = assay,
                              slot = "data"))) - 1),
                 file = .csv_path,
@@ -117,7 +122,7 @@ call_natmi <- function(
     }
 
     log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
-    write.csv(Idents(seurat_object) %>%
+    write.csv(Idents(sce) %>%
                   enframe(name="barcode", value="annotation"),
               file = file.path(.input_path, meta_file),
               row.names = FALSE)
