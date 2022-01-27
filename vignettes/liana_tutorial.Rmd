@@ -67,7 +67,8 @@ Yet, the original method pipelines can be called via the `call_*` functions.
 
 ## `liana` wrapper function
 
-To run `liana`, we will use a toy PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data)
+To run `liana`, we will use a toy PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
+
 `liana` takes `Seurat` objects as input, containing processed counts and clustered cells
 ```{r load_data}
 liana_path <- system.file(package = "liana")
@@ -123,21 +124,47 @@ ranked consistently higher than random are assigned low scores/p-values.
 
 ## Simple DotPlot
 
-We will now plot the results. By default, we use the `LRscore` from `SingleCellSignalR`
-to represent the magnitude of expression of the ligand and receptor, and NATMI's specificity weights
+We will now plot the results. By default, we use the `LRscore` from SingleCellSignalR
+to represent the magnitude of expression of the ligand and receptor, and NATMI's `specificity weights`
 to show how specific a given interaction is to the `source`(L) and `target`(R) cell types.
 
 In this case, we plot the top 25 interactions with the lowest aggregate_rank scores, 
 and we plot interactions in which B cells are the `source` (express the ~ligands) and
 the other 3 cell types in this toy dataset are the `target` (express the ~receptors).
-```{r liana_dotplot, warning=FALSE, fig.width=10, fig.height=6}
+```{r liana_dotplot, warning=FALSE, fig.width=11, fig.height=8}
 liana_test %>% 
   top_n(25, desc(aggregate_rank)) %>%
   liana_dotplot(source_groups = c("B"),
                 target_groups = c("NK", "CD8 T", "B"))
 ```
+Note that missing dots are interactions which are not expressed in at least 10% of the cells (by default)
+in both cell clusters.
 
 
+## Run any method of choice.
+
+We will now run only the CellPhoneDB's permutation-based algorithm.
+We will also lower the number of permutations that we wish to perform for the sake of computational time.
+Note that one can also parallelize the CPDB algorithm implemented in LIANA (in this case we don't,
+as this would only make sense when working with large datasets).
+
+```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=8}
+# RUN CPDB alone
+cpdb_test <- liana_wrap(testdata,
+                        method = 'cellphonedb',
+                        resource = c('CellPhoneDB'),
+                        permutation.params = list(nperms=100,
+                                                  parallelize=FALSE,
+                                                  workers=4))
+
+# Plot results
+cpdb_test %>%
+  filter(pvalue <= 0.05) %>% # only keep interactions with p-val <= 0.05
+  liana_dotplot(source_groups = c("B"),
+                target_groups = c("NK", "CD8 T", "B"),
+                specificity = "pvalue",
+                magnitude = "lr.mean")
+```
 
 ## SingleCellSignalR, CytoTalk, NATMI, and Connectome scores /w Complexes
 The re-implementation of the aforementioned methods in LIANA enables us to make use of 
@@ -146,7 +173,7 @@ multimeric complex information as provided by the e.g. CellPhoneDB, CellChatDB, 
 ```{r complex_test, message = FALSE, print = FALSE}
 # Run liana re-implementations with the CellPhoneDB resource
 complex_test <- liana_wrap(testdata,
-                           method = c('natmi', 'sca', 'logfc', 'connectome'),
+                           method = c('natmi', 'sca', 'logfc'),
                            resource = c('CellPhoneDB'))
 
 complex_test %>% liana_aggregate()
@@ -184,6 +211,8 @@ which assigns these statistics for each complex to those closest to 0. Here
 we change it to mean, but any alternative function can be passed and other 
 perfectly viable approaches could also include e.g. the Trimean of CellChat.
   
+Please refer to the `?liana_wrap` documentation for more information on all the parameters that can be tuned in liana.
+Also, one can obtain a list with all default parameters by calling the `liana_defaults()` function.
   
   
 ###### Information about the parameters passed to each method can be obtained via `liana_call` and via

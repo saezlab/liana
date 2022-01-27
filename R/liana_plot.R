@@ -19,6 +19,10 @@
 #' Yet, one could also use CellChat's probabilities or CellPhoneDB's means, etc.
 #'
 #' @import ggplot2 dplyr
+#'
+#' @return a ggplot2 object
+#'
+#' @export
 liana_dotplot <- function(liana_agg,
                           source_groups,
                           target_groups,
@@ -45,8 +49,8 @@ liana_dotplot <- function(liana_agg,
         ggplot(liana_mod,
                aes(x = interaction,
                    y = target,
-                   colour = specificity,
-                   size = magnitude,
+                   colour = magnitude,
+                   size = specificity,
                    group = target
                    )) +
             geom_point() +

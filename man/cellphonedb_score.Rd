@@ -16,6 +16,8 @@ cellphonedb_score(
 \arguments{
 \item{lr_res}{liana pipe results}
 
+\item{perm_means}{permutations obtained via `get_permutations`}
+
 \item{parallelize}{whether to parallelize}
 
 \item{workers}{number of workers}

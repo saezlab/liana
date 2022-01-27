@@ -25,6 +25,9 @@ by some condition (e.g. preferential ranking, specific interactions, etc)}
 \item{magnitude}{column to represent the magnitude of interaction (by default
 'sca.LRscore')}
 }
+\value{
+a ggplot2 object
+}
 \description{
 Liana dotplot interactions by source and target cells
 }

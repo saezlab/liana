@@ -52,6 +52,7 @@ get_permutations <- function(lr_res,
 #'
 #' @inheritParams get_permutations
 #' @param lr_res liana pipe results
+#' @param perm_means permutations obtained via `get_permutations`
 #' @param score_col name of the score column
 #' @param parallelize whether to parallelize
 #' @param workers number of workers
