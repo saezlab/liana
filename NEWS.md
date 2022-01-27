@@ -2,7 +2,7 @@
 
 ## New implementations
 
-- added `liana_dotplot` as a basic, but flexible, dotplot function for LIANA output.
+- added `liana_dotplot` as a basic, but flexible, dotplot function for LIANA output. (+ tests)
 
 ## Changes  
 
