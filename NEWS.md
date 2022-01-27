@@ -10,9 +10,9 @@
 
 ## Bug Fixes  
 
-- By mistake, `assay.type` in `liana_pipe` was passed to `get_logFC` would
-result in using the logcounts, rather than the raw counts for logFC calculation.
-Has now been appropriately changed.
+- `assay.type` in `liana_pipe` was passed to `get_logFC` would
+result in using the logcounts, rather than the library-normalized counts for logFC calculation.
+Now appropriately changed.
 
 
 # LIANA 0.0.5
