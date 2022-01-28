@@ -4,7 +4,7 @@
 \alias{call_connectome}
 \title{Function to call connectome with databases from OmniPath}
 \usage{
-call_connectome(sce, op_resource = NULL, .format = TRUE, ...)
+call_connectome(sce, op_resource = NULL, .format = TRUE, assay, ...)
 }
 \arguments{
 \item{sce}{Seurat object as input}

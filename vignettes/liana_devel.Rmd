@@ -31,12 +31,15 @@ testdata <-
 ## `liana_pipe` and Contributions
 To facilitate method development, we provide a guide how to make use of the architecture already implemented in LIANA.
 
-First, we start with a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
+First, we start by converting the object to SCE (if Seurat) and basic checks via `liana_rep`. 
+Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
 Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`).
 These are later re-assembled back into complexes using the `recomplexify` function.
 ```{r lr_cpdb, message=FALSE, warning=FALSE}
+sce <- liana_prep(testdata)
+
 # Obtain LR summary res with CellPhoneDB and dissociate complexes
-lr_res <- liana_pipe(seurat_object = testdata,
+lr_res <- liana_pipe(sce,
                      op_resource = select_resource("CellPhoneDB")[[1]] %>% 
                        liana:::decomplexify()
                      ) %>%
@@ -126,10 +129,12 @@ It might be easier to just also clone the liana repo.
 
 #### `call_*` functions
 Use the *call_* functions to run the pipelines of the original methods, rather than their re-implementations.
+These functions work with Seurat objects and they are instead converted to SCE. These are largely getting **deprecated**
+and will be moved to a seperate repository in the future.
 ```{r liana_call, message=FALSE, warning=FALSE, print=FALSE}
 # RUN cellchat alone with OmniPath
 sca_res <- call_sca(
-  seurat_object = testdata,
+  testdata,
   op_resource = select_resource('OmniPath')[[1]]
   )
 

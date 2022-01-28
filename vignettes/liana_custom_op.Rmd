@@ -180,7 +180,7 @@ pm_omni %>% glimpse()
 # liana Wrap
 liana_test <-
     liana_wrap(
-        seurat_object = testdata,
+        testdata,
         resource='custom',
         external_resource = pm_omni,
         cellchat.params=list(.normalize=TRUE)

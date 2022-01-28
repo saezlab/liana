@@ -55,21 +55,6 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
     return(.filter_sce(sce))
 }
 
-#' Helper function to convert sce to seurat for EXTERNAL `call_` functions only
-#'
-#' @param sce SingleCellExperiment or Seurat Object
-#' @param assay name of the active assay
-#'
-#' @noRd
-.liana_convert <- function(sce, assay){
-    seurat_object <- SeuratObject::as.Seurat(sce)
-    Idents(seurat_object) <- SingleCellExperiment::colLabels(sce)
-    seurat_object@assays[[assay]] <- seurat_object@assays[[1]]
-    SeuratObject::DefaultAssay(seurat_object) <- assay
-
-    return(seurat_object)
-}
-
 #' Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA
 #'
 #' @param sce SingleCellExperiment Object
@@ -92,5 +77,21 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
     }
 
     return(sce[nonzero_genes, nonzero_cells])
+}
+
+
+#' Helper function to convert sce to seurat for EXTERNAL `call_` functions only
+#'
+#' @param sce SingleCellExperiment or Seurat Object
+#' @param assay name of the active assay
+#'
+#' @noRd
+.liana_convert <- function(sce, assay){
+    seurat_object <- SeuratObject::as.Seurat(sce)
+    Idents(seurat_object) <- SingleCellExperiment::colLabels(sce)
+    seurat_object@assays[[assay]] <- seurat_object@assays[[1]]
+    SeuratObject::DefaultAssay(seurat_object) <- assay
+
+    return(seurat_object)
 }
 

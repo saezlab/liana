@@ -62,7 +62,7 @@ liana_omni <- select_resource("OmniPath")[[1]] %>%
     liana:::decomplexify()
 
 # Run liana with our resource
-liana_res <- liana_wrap(seurat_object = testdata,
+liana_res <- liana_wrap(testdata,
                         resource='custom',
                         external_resource = liana_omni) %>%
   liana_aggregate() # aggregate
@@ -100,7 +100,7 @@ rkt_omni <- liana_omni %>%
   filter(target_geneset == "Receptor tyrosine kinase")
 
 # We can then again run LIANA with the RKT-associated interactions alone
-liana_rtk_omni <- liana_wrap(seurat_object = testdata,
+liana_rtk_omni <- liana_wrap(testdata,
                              resource='custom',
                              external_resource = rkt_omni) %>%
   liana_aggregate()

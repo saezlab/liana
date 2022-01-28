@@ -24,6 +24,7 @@
 call_connectome <- function(sce,
                             op_resource = NULL,
                             .format = TRUE,
+                            assay,
                             ...){
 
     # Convert sce to seurat
