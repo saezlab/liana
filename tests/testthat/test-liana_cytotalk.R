@@ -8,7 +8,7 @@ test_that("Test Cytotalk Wrap", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_cytotalk.RDS"))
 
-    res1 <- liana_wrap(seurat_object,
+    res1 <- liana_wrap(sce = seurat_object,
                        method = c('cytotalk'),
                        resource = c('OmniPath'))
 

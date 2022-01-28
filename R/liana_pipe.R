@@ -53,7 +53,6 @@ liana_pipe <- function(sce,
     # To be removed once I filter out any cells with 0 reads
     sce@assays@data[["scaledata"]][is.na(rowSums(sce@assays@data[["scaledata"]])),] = 0
 
-
     # Get Avg and  Prop. Expr Per Cluster
     mean_prop <-
         scuttle::summarizeAssayByGroup(sce,
@@ -406,33 +405,6 @@ get_log2FC <- function(sce,
 }
 
 
-#' Helper function to obtain a global mean
-#'
-#' @inheritParams liana_pipe
-#'
-#' @return a single value for the whole dataset
-#'
-#' @details global mean is used in the `SingleCellSignalR` scores.
-get_global_mean <- function(seurat_object,
-                            assay,
-                            assay.type){
-
-    if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
-        assay.type = "data"
-    }
-
-    if(assay.type=="logcounts"){ # Seurat object temporary fix - change to sce
-        assay.type = "data"
-    }
-
-    seurat_object <- seurat_object[Matrix::rowSums(seurat_object) > 0,]
-                                   #Matrix::colSums(seurat_object) > 0 ]
-    # calculate global mean
-    global_mean <- Matrix::mean(seurat_object@assays[[assay]] %>%
-                                    pluck(assay.type))
-    return(global_mean)
-}
-
 #' Helper Function to 'decomplexify' ligands and receptors into
 #'
 #' @param resource a ligrec resource
@@ -482,29 +454,4 @@ row_scale <- function(mat){
     return((mat - col_means) / col_sd)
 }
 
-
-#' Helper function to convert from Seurat to SCE.
-#'
-#' @param seurat_object seurat_obect
-#' @param entity_genes ligand and receptor genes (i.e. genes that are in the
-#' CCC resource)
-#' @param assay assay
-#'
-#' @details LIANA uses the SingleCellExperiment/Bioconductor architecture to
-#' generate the LR summary
-seurat_to_sce <- function(seurat_object,
-                          entity_genes,
-                          assay){
-
-    # Filter to LigRec and scale
-    seurat_object <- seurat_object[rownames(seurat_object) %in% entity_genes]
-    seurat_object <- Seurat::ScaleData(seurat_object, features = entity_genes)
-
-    sce <- Seurat::as.SingleCellExperiment(seurat_object,  assay = assay)
-    colLabels(sce) <- SeuratObject::Idents(seurat_object)
-    sce@assays@data$scaledata <- seurat_object@assays[[assay]]@scale.data
-
-    return(sce)
-
-}
 

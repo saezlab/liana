@@ -7,10 +7,22 @@ liana_prep <- function (sce, ...) {
 }
 
 #' @export
-liana_prep.SingleCellExperiment <- function(sce, identity = NULL, ...){
-    # Assign identity to default if not passed
-    identity %<>% `%||%`(SingleCellExperiment::colLabels(sce))
-    SingleCellExperiment::colLabels(sce) <- identity
+liana_prep.SingleCellExperiment <- function(sce, idents = NULL, ...){
+
+    if(!all(c("counts", "logcounts") %in% SummarizedExperiment::assayNames(sce))){
+        stop("liana expects `counts` and `logcounts` to be present in the SCE object")
+    }
+
+    idents %<>% `%||%` (SingleCellExperiment::colLabels(sce))
+    if(is.null(idents)){
+        stop("Please set the cell types of interest to `colLabels`")
+    } else if(is.null(levels(idents))){
+        idents %<>% as.factor()
+        message(str_glue("`colLabels` was converted to factor"))
+    }
+
+    # Assign idents to default if not passed
+    SingleCellExperiment::colLabels(sce) <- idents
 
     # EXTEND QUALITY CONTROL STEPS
 
@@ -18,13 +30,29 @@ liana_prep.SingleCellExperiment <- function(sce, identity = NULL, ...){
 }
 
 #' @export
-liana_prep.Seurat <- function(sce, identity = NULL, ...){
-    # Assign identity to default if not passed
-    identity %<>% `%||%`(Idents(sce))
+liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
+
+    assay %<>% `%||%`(SeuratObject::DefaultAssay(sce))
+    message(stringr::str_glue("Running LIANA with {assay} as default assay"))
+
+    # Assign idents to default if not passed
+    idents %<>% `%||%`(SeuratObject::Idents(sce))
+    if(is.null(idents)){
+        stop("Please set the cell types of interest to `Idents`")
+    } else if(is.null(levels(idents))){
+        idents %<>% as.factor()
+        message(str_glue("`Idents` were converted to factor"))
+    }
 
     # convert from seurat_object to sce
-    sce <- Seurat::as.SingleCellExperiment(sce)
-    SingleCellExperiment::colLabels(sce) <- identity
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        list(
+            counts = GetAssayData(object = sce, assay = assay, slot = "counts"),
+            logcounts = GetAssayData(object = sce, assay = assay, slot = "data")
+        ),
+        metadata = sce@meta.data)
+
+    SingleCellExperiment::colLabels(sce) <- idents
 
     # EXTEND QUALITY CONTROL STEPS
 
