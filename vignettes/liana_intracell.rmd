@@ -86,8 +86,10 @@ liana_rtk
 
 ### Run LIANA with only specific interactions
 One could also do the reverse - i.e. filter the resource in regards to a given
-functional annotation term, and then run LIANA
+functional annotation terms (e.g. JAK/STAT, WNT, and RTK), and then run LIANA
 ```{r filter_by_op}
+pathways_of_interest <- c("JAK/STAT", "Receptor tyrosine kinase", "WNT")
+
 # We join the functional annotations to OmniPath
 # and retain ONLY interactions in which BOTH the ligand and receptor 
 # are associated with RTK pathways
@@ -96,8 +98,8 @@ rkt_omni <- liana_omni %>%
   rename(source_geneset = pathway) %>%
   left_join(signalink_pathways, by=c("target_genesymbol"="genesymbol")) %>%
   rename(target_geneset = pathway) %>%
-  filter(source_geneset == "Receptor tyrosine kinase") %>%
-  filter(target_geneset == "Receptor tyrosine kinase")
+  filter(source_geneset %in% pathways_of_interest) %>%
+  filter(target_geneset %in% pathways_of_interest)
 
 # We can then again run LIANA with the RKT-associated interactions alone
 liana_rtk_omni <- liana_wrap(testdata,
