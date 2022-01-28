@@ -1,7 +1,7 @@
 #' Run CellChat with OmniPath function [[DEPRECATED]]
 #'
 #' @param op_resource OmniPath Intercell Resource DN
-#' @param seurat_object Seurat object as input
+#' @param sce Seurat object as input
 #' @param exclude_anns Annotation criteria to be excluded
 #' @param nboot number of bootstraps to calculate p-value
 #' @param .format bool whether to format output
@@ -29,7 +29,7 @@
 #'
 #' @details CellChat's objects are not lazily documented/exported thus the
 #'   whole package has to be imported.
-call_cellchat <- function(seurat_object,
+call_cellchat <- function(sce,
                           op_resource,
                           .format = TRUE,
                           exclude_anns = c(),
@@ -54,16 +54,16 @@ call_cellchat <- function(seurat_object,
     }
 
     # create a dataframe of the cell labels
-    labels <- Seurat::Idents(seurat_object)
+    labels <- Seurat::Idents(sce)
     meta <- data.frame(group = labels, row.names = names(labels))
 
     cellchat.omni <- CellChat::createCellChat(
         object = `if`(!.normalize,
-                      GetAssayData(seurat_object,
+                      GetAssayData(sce,
                                    assay = assay,
                                    slot = "data"), # works with lognorm data
                       CellChat::normalizeData(
-                          GetAssayData(seurat_object,
+                          GetAssayData(sce,
                                        assay = assay,
                                        slot = "data"))
                       ),

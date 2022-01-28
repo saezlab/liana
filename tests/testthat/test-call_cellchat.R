@@ -9,7 +9,7 @@ test_that("Test CellChat with Default", {
                               "output", "cc_res.RDS"))
     res1 <- call_cellchat(
         op_resource = NULL,
-        seurat_object = seurat_object,
+        sce = seurat_object,
         nboot = 2,
         exclude_anns = NULL,
         thresh = 1,
