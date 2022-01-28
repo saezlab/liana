@@ -5,8 +5,8 @@
 \title{CellChat x Omni Pipe function}
 \usage{
 call_cellchat(
-  op_resource,
   seurat_object,
+  op_resource,
   .format = TRUE,
   exclude_anns = c(),
   nboot = 100,
@@ -23,9 +23,9 @@ call_cellchat(
 )
 }
 \arguments{
-\item{op_resource}{OmniPath Intercell Resource DN}
-
 \item{seurat_object}{Seurat object as input}
+
+\item{op_resource}{OmniPath Intercell Resource DN}
 
 \item{.format}{bool whether to format output}
 

@@ -19,6 +19,9 @@ the BioConductor single-cell framework (for all internal methods).
 result in using the logcounts, rather than the library-normalized counts for logFC calculation.
 Now appropriately changed.
 
+- Fixed a bug where incorrectly passing method names in different cases results in an error.
+
+
 ## Deprecated
 
 - External LIANA methods (i.e. `call_`) are now deprecated. The pipelines will be maintained solely for power users,

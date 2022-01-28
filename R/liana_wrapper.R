@@ -34,19 +34,22 @@ liana_wrap <- function(sce,
   # Handle object
   sce <- liana_prep(sce)
 
+  # method to lower
+  method %<>% stringr::str_to_lower()
+
   if(resource!='custom' & length(setdiff(resource, c(show_resources(), "all"))) > 0){
     stop(str_glue("{setdiff(resource, show_resources())} not part of LIANA "))
     }
 
   if(resource!='custom'){
-    resource %<>% select_resource
+    resource %<>% select_resource # if null OmniPath
   } else{
     resource = list('custom_resource' = external_resource)
   }
 
   if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
-                       "logfc", "sca",
-                       "cellphonedb", "cytotalk", "scconnect"))){
+                                              "logfc", "sca",
+                                              "cellphonedb", "cytotalk", "scconnect"))){
 
     # LIANA pipe map over resource
     lr_results <- resource %>%
