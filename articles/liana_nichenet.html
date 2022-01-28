@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>LIANA - NicheNet</h1>
                         <h4 class="author">Martin Garrido Rodriguez-Cordoba</h4>
             
-            <h4 class="date">2021-12-05</h4>
+            <h4 class="date">2022-01-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_nichenet.Rmd"><code>vignettes/liana_nichenet.Rmd</code></a></small>
       <div class="hidden name"><code>liana_nichenet.Rmd</code></div>
@@ -218,8 +218,8 @@
 <span class="va">ligands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">top_n_caf_tumor</span><span class="op">$</span><span class="va">ligand</span><span class="op">)</span>
 <span class="va">ligands</span> <span class="op">&lt;-</span> <span class="va">ligands</span><span class="op">[</span><span class="va">ligands</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span>
 <span class="va">ligands</span></code></pre></div>
-<pre><code>## [1] "COL1A1" "FN1"    "LAMB1"  "LAMB2"  "THBS2"  "THBS1"  "THBS4"  "ADAM12"
-## [9] "LAMA2"</code></pre>
+<pre><code>## [1] "COL1A1" "FN1"    "LAMB1"  "LAMB2"  "THBS2"  "THBS1"  "THBS4"  "LAMA2" 
+## [9] "CXCL12"</code></pre>
 <p>Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">background_genes</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">]</span>, <span class="op">]</span> <span class="op">%&gt;%</span>
@@ -278,7 +278,7 @@
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p>In this vignette, we exemplify how to use LIANA’s predictions as NicheNet’s input. Although both methods are complementary, there is one final point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. It could be that another receptor is the one mediating the interaction with the ligand leading to the regulatory events controlling the expression of the target genes.</p>
+<p>In this vignette, we exemplify how to use LIANA’s predictions as NicheNet’s input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, <strong>the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.</strong></p>
 </div>
 <div id="r-session-information" class="section level2">
 <h2 class="hasAnchor">
@@ -287,7 +287,7 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.2 LTS
+## Running under: Ubuntu 20.04.3 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -306,7 +306,7 @@
 ## 
 ## other attached packages:
 ##  [1] cowplot_1.1.1      ggrepel_0.9.1      SeuratObject_4.0.2 Seurat_4.0.3      
-##  [5] nichenetr_1.0.0    liana_0.0.5        forcats_0.5.1      stringr_1.4.0     
+##  [5] nichenetr_1.0.0    liana_0.0.6        forcats_0.5.1      stringr_1.4.0     
 ##  [9] dplyr_1.0.7        purrr_0.3.4        readr_2.1.0        tidyr_1.1.3       
 ## [13] tibble_3.1.2       ggplot2_3.3.5      tidyverse_1.3.0    BiocStyle_2.18.1  
 ## 
@@ -393,7 +393,7 @@
 ## [159] tensor_1.5                  reticulate_1.20            
 ## [161] IRanges_2.24.1              splines_4.0.3              
 ## [163] uwot_0.1.10                 statmod_1.4.35             
-## [165] OmnipathR_3.3.2             spatstat.utils_2.1-0       
+## [165] OmnipathR_3.3.5             spatstat.utils_2.1-0       
 ## [167] scater_1.18.5               pkgdown_1.6.1              
 ## [169] plotly_4.9.3                systemfonts_1.0.1          
 ## [171] xtable_1.8-4                jsonlite_1.7.2             
@@ -406,7 +406,7 @@
 ## [185] codetools_0.2-16            utf8_1.1.4                 
 ## [187] lattice_0.20-41             bslib_0.2.4                
 ## [189] spatstat.sparse_2.0-0       logger_0.2.0               
-## [191] ggbeeswarm_0.6.0            curl_4.3                   
+## [191] ggbeeswarm_0.6.0            curl_4.3.2                 
 ## [193] leiden_0.3.7                survival_3.2-7             
 ## [195] limma_3.46.0                rmarkdown_2.7              
 ## [197] desc_1.2.0                  munsell_0.5.0              

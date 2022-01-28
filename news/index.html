@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -150,12 +150,48 @@
       <small>Source: <a href='https://github.com/saezlab/liana/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="liana-005" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.5">
-<a href="#liana-005" class="anchor"></a>LIANA 0.0.5</h1>
+    <div id="liana-006" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.6">
+<a href="#liana-006" class="anchor"></a>LIANA 0.0.6</h1>
+<div id="new-implementations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-implementations" class="anchor"></a>New implementations</h2>
+<ul>
+<li><p>LIANA has now been optimized in terms of RAM, by swapping all internal function to rely solely on the BioConductor single-cell framework (for all internal methods).</p></li>
+<li><p>LIANA now accepts both <code>SingleCellExperiment</code> and <code>Seurat</code> objects as input.</p></li>
+<li><p>added <code>liana_dotplot</code> as a basic, but flexible, dotplot function for LIANA output. (+ tests)</p></li>
+</ul>
+</div>
 <div id="changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#changes" class="anchor"></a>Changes</h2>
+<ul>
+<li><p>LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.</p></li>
+<li><p><code>global_mean</code> is now calculated in a more efficient manner.</p></li>
+</ul>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
+<ul>
+<li><p><code>assay.type</code> in <code>liana_pipe</code> was passed to <code>get_logFC</code> would result in using the logcounts, rather than the library-normalized counts for logFC calculation. Now appropriately changed.</p></li>
+<li><p>Fixed a bug where incorrectly passing method names in different cases results in an error.</p></li>
+</ul>
+</div>
+<div id="deprecated" class="section level2">
+<h2 class="hasAnchor">
+<a href="#deprecated" class="anchor"></a>Deprecated</h2>
+<ul>
+<li>External LIANA methods (i.e. <code>call_</code>) are now deprecated. The pipelines will be maintained solely for power users, who intend to benchmark the original implementations, but will not be the focus of any downstream analyses. These will be solely developed for the internal (or re-implemented methods). These still rely on a <code>SeuratObject</code> as interface, but will now accept both sce and seurat as input.</li>
+</ul>
+</div>
+</div>
+    <div id="liana-005" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.5">
+<a href="#liana-005" class="anchor"></a>LIANA 0.0.5</h1>
+<div id="changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-1" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>I now filter the Crosstalk scores to include only those &gt; 0. Otherwise, LIANA would return all possible combinations of clusters and interactions, which would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (&gt;0).</p></li>
 <li><p><code>CellChat</code> and Crosstalk scores/<code>cytotalk</code> will no longer by called by default by liana_wrap. However, it both are available as an option to be passed to the <code>method</code> parameter.</p></li>
@@ -183,9 +219,9 @@
 <li><p>Custom proportion filtering - Connectome and CytoTalk are now not filtered by expr_prop as this affects the way that their scores are calculated, since they require all clusters/cluster pairs to be present to appropriately scale or normalize their scores.</p></li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
+<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes</h2>
 <ul>
 <li>Fixed an issue where logFC was assigned only the value of the ligand</li>
 </ul>
@@ -202,9 +238,9 @@
 <code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
 </ul>
 </div>
-<div id="changes-1" class="section level2">
+<div id="changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-1" class="anchor"></a>Changes</h2>
+<a href="#changes-2" class="anchor"></a>Changes</h2>
 <ul>
 <li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br>
 </li>
@@ -254,9 +290,9 @@
 </ul>
 </div>
 </div>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
+<a href="#bug-fixes-2" class="anchor"></a>Bug fixes</h2>
 <p>A number of fixes were implemented thanks to the early stage users. Thanks you.</p>
 </div>
 </div>

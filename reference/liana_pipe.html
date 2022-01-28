@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -157,7 +157,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>liana_pipe</span><span class='op'>(</span>
-  <span class='va'>seurat_object</span>,
+  <span class='va'>sce</span>,
   <span class='va'>op_resource</span>,
   decomplexify <span class='op'>=</span> <span class='cn'>TRUE</span>,
   test.type <span class='op'>=</span> <span class='st'>"wilcox"</span>,
@@ -171,8 +171,8 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>seurat_object</th>
-      <td><p>Seurat object</p></td>
+      <th>sce</th>
+      <td><p>SingleCellExperiment Object</p></td>
     </tr>
     <tr>
       <th>op_resource</th>
@@ -194,11 +194,6 @@ or a binomial test with <code>"binom"</code>.</p></td>
       <td><p>A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.</p></td>
     </tr>
     <tr>
-      <th>trim</th>
-      <td><p>the fraction (0 to 0.5) of observations to be trimmed from each end
-of x before the `truncated mean` is computed (0.1 by default)</p></td>
-    </tr>
-    <tr>
       <th>assay</th>
       <td><p>assay to be used ("RNA" by default)</p></td>
     </tr>
@@ -217,7 +212,7 @@ as an assumptions of these method is that communication is coordinated at the cl
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns a tibble with information required for LR calc</p>
+    <p>Returns a tibble with information required for LR calculations downstream</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

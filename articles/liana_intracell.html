@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -112,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2021-12-05</h4>
+            <h4 class="date">2022-01-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_intracell.rmd"><code>vignettes/liana_intracell.rmd</code></a></small>
       <div class="hidden name"><code>liana_intracell.rmd</code></div>
@@ -159,15 +159,17 @@
     <span class="fu">liana</span><span class="fu">:::</span><span class="fu">decomplexify</span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Run liana with our resource</span>
-<span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span>seurat_object <span class="op">=</span> <span class="va">testdata</span>,
+<span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                         resource<span class="op">=</span><span class="st">'custom'</span>,
                         external_resource <span class="op">=</span> <span class="va">liana_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># aggregate</span></code></pre></div>
+<pre><code>## Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had
+## no counts!</code></pre>
 <div id="filter-liana-output-to-only-rtk-interactions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#filter-liana-output-to-only-rtk-interactions" class="anchor"></a>Filter LIANA output to only RTK interactions</h3>
 <p>Here, we assume that we only are only interested in from the RTK pathway.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_rtk</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span> 
   <span class="fu">left_join</span><span class="op">(</span><span class="va">signalink_pathways</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ligand"</span><span class="op">=</span><span class="st">"genesymbol"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">rename</span><span class="op">(</span>ligand_pathway <span class="op">=</span> <span class="va">pathway</span><span class="op">)</span> <span class="op">%&gt;%</span> 
@@ -182,14 +184,14 @@
 <pre><code>## # A tibble: 8 x 19
 ##   source ligand target receptor aggregate_rank mean_rank median_rank
 ##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
-## 1 NK     TGFB1  NK     TGFBR1          0.00593      188.         122
-## 2 NK     TGFB1  CD8 T  TGFBR2          0.0156       216          154
-## 3 NK     TGFBR1 CD8 T  TGFBR2          0.103        341.         253
-## 4 CD8 T  TGFBR2 NK     TGFBR1          0.104        341.         253
-## 5 B      TGFB1  NK     TGFBR1          1            524.         508
-## 6 B      TGFB1  CD8 T  TGFBR2          1            600          585
-## 7 CD8 T  TGFB1  NK     TGFBR1          1            668.         685
-## 8 CD8 T  TGFB1  CD8 T  TGFBR2          1            728.         726
+## 1 NK     TGFB1  NK     TGFBR1           0.0228      199.         122
+## 2 NK     TGFB1  CD8 T  TGFBR2           0.0328      225.         163
+## 3 NK     TGFBR1 CD8 T  TGFBR2           0.154       347.         253
+## 4 CD8 T  TGFBR2 NK     TGFBR1           0.156       347.         253
+## 5 B      TGFB1  NK     TGFBR1           1           515.         491
+## 6 B      TGFB1  CD8 T  TGFBR2           1           590          585
+## 7 CD8 T  TGFB1  NK     TGFBR1           1           659.         657
+## 8 CD8 T  TGFB1  CD8 T  TGFBR2           1           720.         692
 ## # … with 12 more variables: natmi.edge_specificity &lt;dbl&gt;, natmi.rank &lt;dbl&gt;,
 ## #   connectome.weight_sc &lt;dbl&gt;, connectome.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;,
 ## #   logfc.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;,
@@ -199,9 +201,11 @@
 <div id="run-liana-with-only-specific-interactions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-liana-with-only-specific-interactions" class="anchor"></a>Run LIANA with only specific interactions</h3>
-<p>One could also do the reverse - i.e. filter the resource in regards to a given functional annotation term, and then run LIANA</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># We join the functional annotations to OmniPath</span>
+<p>One could also do the reverse - i.e. filter the resource in regards to a given functional annotation terms (e.g. JAK/STAT, WNT, and RTK), and then run LIANA</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pathways_of_interest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"JAK/STAT"</span>, <span class="st">"Receptor tyrosine kinase"</span>, <span class="st">"WNT"</span><span class="op">)</span>
+
+<span class="co"># We join the functional annotations to OmniPath</span>
 <span class="co"># and retain ONLY interactions in which BOTH the ligand and receptor </span>
 <span class="co"># are associated with RTK pathways</span>
 <span class="va">rkt_omni</span> <span class="op">&lt;-</span> <span class="va">liana_omni</span> <span class="op">%&gt;%</span> 
@@ -209,47 +213,48 @@
   <span class="fu">rename</span><span class="op">(</span>source_geneset <span class="op">=</span> <span class="va">pathway</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">left_join</span><span class="op">(</span><span class="va">signalink_pathways</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"target_genesymbol"</span><span class="op">=</span><span class="st">"genesymbol"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">rename</span><span class="op">(</span>target_geneset <span class="op">=</span> <span class="va">pathway</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">source_geneset</span> <span class="op">==</span> <span class="st">"Receptor tyrosine kinase"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">target_geneset</span> <span class="op">==</span> <span class="st">"Receptor tyrosine kinase"</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">source_geneset</span> <span class="op">%in%</span> <span class="va">pathways_of_interest</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">target_geneset</span> <span class="op">%in%</span> <span class="va">pathways_of_interest</span><span class="op">)</span>
 
 <span class="co"># We can then again run LIANA with the RKT-associated interactions alone</span>
-<span class="va">liana_rtk_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span>seurat_object <span class="op">=</span> <span class="va">testdata</span>,
+<span class="va">liana_rtk_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                              resource<span class="op">=</span><span class="st">'custom'</span>,
                              external_resource <span class="op">=</span> <span class="va">rkt_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## Centering and scaling data matrix</code></pre>
+<pre><code>## Running LIANA with RNA as default assay</code></pre>
+<pre><code>## Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had
+## no counts!</code></pre>
 <pre><code>## LIANA: LR summary stats calculated!</code></pre>
 <pre><code>## Now Running: Natmi</code></pre>
 <pre><code>## Now Running: Connectome</code></pre>
 <pre><code>## Now Running: Logfc</code></pre>
 <pre><code>## Now Running: Sca</code></pre>
 <pre><code>## Now Running: Cellphonedb</code></pre>
-<pre><code>## Centering and scaling data matrix</code></pre>
 <pre><code>## Now aggregating natmi</code></pre>
 <pre><code>## Now aggregating connectome</code></pre>
 <pre><code>## Now aggregating logfc</code></pre>
 <pre><code>## Now aggregating sca</code></pre>
 <pre><code>## Now aggregating cellphonedb</code></pre>
 <pre><code>## Aggregating Ranks</code></pre>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_rtk_omni</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 17
+<pre><code>## # A tibble: 39 x 17
 ##    source ligand target receptor aggregate_rank mean_rank median_rank
 ##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
-##  1 NK     TGFB1  CD8 T  TGFBR2           0.0428       2             1
-##  2 NK     TGFB1  NK     TGFBR1           0.156        3.4           4
-##  3 NK     TGFBR1 CD8 T  TGFBR2           0.290        2.8           2
-##  4 CD8 T  TGFBR2 NK     TGFBR1           0.815        2.8           2
-##  5 NK     EFNA4  CD8 T  EPHA1            0.937        4.2           5
-##  6 B      EFNA4  CD8 T  EPHA1            1            5.8           6
-##  7 B      TGFB1  NK     TGFBR1           1            7.8           9
-##  8 B      TGFB1  CD8 T  TGFBR2           1            4.8           6
-##  9 CD8 T  TGFB1  NK     TGFBR1           1            8.8           9
-## 10 CD8 T  TGFB1  CD8 T  TGFBR2           1            6             7
-## # … with 10 more variables: natmi.edge_specificity &lt;dbl&gt;, natmi.rank &lt;dbl&gt;,
-## #   connectome.weight_sc &lt;dbl&gt;, connectome.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;,
-## #   logfc.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;,
-## #   cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;</code></pre>
+##  1 NK     TGFB1  NK     TGFBR1          0.00254       5.2           4
+##  2 CD8 T  IL23A  NK     IL12RB1         0.00327       4.4           3
+##  3 NK     IFNG   B      IFNGR2          0.00327       5             5
+##  4 NK     IFNG   CD8 T  IFNGR1          0.0123        5.8           6
+##  5 B      IL4R   CD8 T  IL2RG           0.0138        9            11
+##  6 NK     TGFB1  CD8 T  TGFBR2          0.0222        8.2           5
+##  7 B      IFNAR1 CD8 T  IFNGR1          0.0298       11            12
+##  8 NK     IL10RB CD8 T  IL10RA          0.0578       10             9
+##  9 NK     IFNG   NK     IFNGR1          0.0581       13.2          13
+## 10 NK     IL10RB B      IFNAR1          0.0859       10.6          10
+## # … with 29 more rows, and 10 more variables: natmi.edge_specificity &lt;dbl&gt;,
+## #   natmi.rank &lt;dbl&gt;, connectome.weight_sc &lt;dbl&gt;, connectome.rank &lt;dbl&gt;,
+## #   logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;,
+## #   sca.rank &lt;dbl&gt;, cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="perform-an-over-representation-representation-analysis-ora-on-predicted-lr-interactions" class="section level2">
@@ -260,7 +265,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="first-format-lianas-output" class="section level3">
 <h3 class="hasAnchor">
 <a href="#first-format-lianas-output" class="anchor"></a>First, format LIANA’s output</h3>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># we take liana from above and keep only the columns that we need</span>
 <span class="co"># in this case we will use the aggragate for all methods</span>
 <span class="va">liana_form</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span>
@@ -272,25 +277,25 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
   <span class="co"># but since we work with testdata - we don't</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">aggregate_rank</span> <span class="op">&lt;=</span> <span class="fl">0.05</span><span class="op">)</span>
 <span class="va">liana_form</span></code></pre></div>
-<pre><code>## # A tibble: 194 x 5
+<pre><code>## # A tibble: 185 x 5
 ##    source ligand   target receptor aggregate_rank
 ##    &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;
 ##  1 B      HLA-DRA  NK     CD63        0.000000460
 ##  2 B      HLA-DRA  B      CD37        0.000000522
-##  3 B      MS4A1    B      CD82        0.000000965
-##  4 B      HLA-DQA1 CD8 T  LAG3        0.00000322 
-##  5 B      HLA-DRA  B      CD19        0.00000326 
-##  6 B      HLA-DMA  B      CD74        0.00000397 
-##  7 B      HLA-DMB  B      CD74        0.00000467 
-##  8 B      HLA-DRB1 B      CD37        0.00000827 
-##  9 B      HLA-DRB1 B      CD19        0.00000972 
-## 10 B      HLA-DRA  B      CD82        0.0000114  
-## # … with 184 more rows</code></pre>
+##  3 B      HLA-DRA  B      CD19        0.00000326 
+##  4 B      HLA-DMA  B      CD74        0.00000397 
+##  5 B      HLA-DMB  B      CD74        0.00000467 
+##  6 B      HLA-DRB1 B      CD37        0.00000827 
+##  7 B      MS4A1    B      CD82        0.00000972 
+##  8 B      HLA-DRA  B      CD82        0.0000114  
+##  9 B      HLA-DRB1 B      CD19        0.0000153  
+## 10 B      MS4A1    NK     CD53        0.0000157  
+## # … with 175 more rows</code></pre>
 </div>
 <div id="obtain-msigdb-genesets-via-omnipathr---takes-a-while" class="section level3">
 <h3 class="hasAnchor">
 <a href="#obtain-msigdb-genesets-via-omnipathr---takes-a-while" class="anchor"></a>Obtain MSigDB Genesets via OmniPathR - takes a while :)</h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">msigdb</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_omnipath_annotations.html">import_omnipath_annotations</a></span><span class="op">(</span>resources <span class="op">=</span> <span class="st">"MSigDB"</span>,
                                                  wide <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">collection</span><span class="op">==</span><span class="st">"hallmark"</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -299,7 +304,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="establish-the-resource-as-the-backgrounduniverse" class="section level3">
 <h3 class="hasAnchor">
 <a href="#establish-the-resource-as-the-backgrounduniverse" class="anchor"></a>Establish the Resource as the background/universe</h3>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Here, we join pathways associated with ligand and receptors, separately</span>
 <span class="va">omni_universe</span> <span class="op">&lt;-</span> <span class="va">liana_omni</span> <span class="op">%&gt;%</span> 
   <span class="fu">select</span><span class="op">(</span><span class="va">source_genesymbol</span>, <span class="va">target_genesymbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -321,7 +326,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
   <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">hit</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">mutate</span><span class="op">(</span>truth_guess <span class="op">=</span> <span class="st">"truth"</span><span class="op">)</span></code></pre></div>
 <p>We need to first create a function with which we can perform ORA. It’s simply a wrapper for Fisher’s exact test.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#' Function to Run FET on Liana vs OP truth</span>
 <span class="co">#' @param gs geneset</span>
 <span class="co">#' @param lr_paths ligand-receptor with functional annotations</span>
@@ -348,7 +353,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="join-pathways-to-liana-results-and-perform-ora-" class="section level3">
 <h3 class="hasAnchor">
 <a href="#join-pathways-to-liana-results-and-perform-ora-" class="anchor"></a>Join pathways to LIANA results and perform ORA.</h3>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># we then split by celltype and join the functional annotation from OmniPath</span>
 <span class="va">liana_enrich</span> <span class="op">&lt;-</span> <span class="va">liana_form</span> <span class="op">%&gt;%</span>
   <span class="fu">group_by</span><span class="op">(</span><span class="va">source</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -383,42 +388,42 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
   <span class="fu">unnest</span><span class="op">(</span><span class="va">ligand_cont</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">odds_ratio</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Done! Check whether any categories are over-represented (by celltype) in our dataset. Kind reminder this is a toy dataset of PBMC (:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_enrich</span></code></pre></div>
-<pre><code>## # A tibble: 69 x 4
+<pre><code>## # A tibble: 67 x 4
 ##    source geneset                                       pval odds_ratio
 ##    &lt;chr&gt;  &lt;chr&gt;                                        &lt;dbl&gt;      &lt;dbl&gt;
-##  1 NK     HALLMARK_TNFA_SIGNALING_VIA_NFKB           0.00355       8.75
-##  2 B      HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION 0.00624       8.45
+##  1 NK     HALLMARK_COAGULATION                       0.00172       9.88
+##  2 B      HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION 0.00882       7.67
 ##  3 CD8 T  HALLMARK_COAGULATION                       0.0462        5.96
 ##  4 CD8 T  HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION 0.00181       5.84
-##  5 NK     HALLMARK_ANGIOGENESIS                      0.0696        5.51
-##  6 NK     HALLMARK_COAGULATION                       0.00452       5.20
-##  7 CD8 T  HALLMARK_APICAL_JUNCTION                   0.0956        5.08
-##  8 B      HALLMARK_APICAL_JUNCTION                   0.267         3.67
-##  9 CD8 T  HALLMARK_HYPOXIA                           0.385         3.35
-## 10 CD8 T  HALLMARK_ANGIOGENESIS                      0.377         3.16
-## # … with 59 more rows</code></pre>
+##  5 NK     HALLMARK_ANGIOGENESIS                      0.0665        5.24
+##  6 CD8 T  HALLMARK_APICAL_JUNCTION                   0.0956        5.08
+##  7 NK     HALLMARK_APICAL_JUNCTION                   0.0264        4.21
+##  8 CD8 T  HALLMARK_HYPOXIA                           0.385         3.35
+##  9 B      HALLMARK_APICAL_JUNCTION                   0.380         3.34
+## 10 NK     HALLMARK_COMPLEMENT                        0.0964        3.18
+## # … with 57 more rows</code></pre>
 <p>We also kindly refer the user to <a href="https://github.com/saezlab/OmnipathR">OmniPathR</a>, and the <a href="https://omnipathdb.org/#about">OmniPath website</a> for more information how to make full use of OmniPath!</p>
 </div>
 </div>
 <div id="session-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h2>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
 <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sessioninfo/man/session_info.html">session_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  setting  value                       
 ##  version  R version 4.0.3 (2020-10-10)
-##  os       Ubuntu 20.04.2 LTS          
+##  os       Ubuntu 20.04.3 LTS          
 ##  system   x86_64, linux-gnu           
 ##  ui       X11                         
 ##  language (EN)                        
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2021-12-05                  
+##  date     2022-01-28                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source                            
@@ -450,7 +455,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  colorspace             2.0-0    2020-11-11 [2] CRAN (R 4.0.2)                    
 ##  cowplot                1.1.1    2020-12-30 [2] CRAN (R 4.0.3)                    
 ##  crayon                 1.4.1    2021-02-08 [2] CRAN (R 4.0.3)                    
-##  curl                   4.3      2019-12-02 [2] CRAN (R 4.0.2)                    
+##  curl                   4.3.2    2021-06-23 [2] CRAN (R 4.0.3)                    
 ##  data.table             1.14.0   2021-02-21 [2] CRAN (R 4.0.3)                    
 ##  DBI                    1.1.1    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  dbplyr                 2.1.0    2021-02-03 [2] CRAN (R 4.0.3)                    
@@ -503,7 +508,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-##  liana                * 0.0.5    2021-12-05 [1] local                             
+##  liana                * 0.0.6    2022-01-28 [1] local                             
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -523,7 +528,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  modelr                 0.1.8    2020-05-19 [2] CRAN (R 4.0.2)                    
 ##  munsell                0.5.0    2018-06-12 [2] CRAN (R 4.0.2)                    
 ##  nlme                   3.1-149  2020-08-23 [5] CRAN (R 4.0.2)                    
-##  OmnipathR              3.3.2    2021-11-14 [2] Github (saezlab/OmnipathR@a14da81)
+##  OmnipathR              3.3.5    2021-12-12 [2] Github (saezlab/OmnipathR@30e0133)
 ##  parallelly             1.24.0   2021-03-14 [2] CRAN (R 4.0.3)                    
 ##  patchwork              1.1.1    2020-12-17 [2] CRAN (R 4.0.3)                    
 ##  pbapply                1.4-3    2020-08-18 [2] CRAN (R 4.0.2)                    
@@ -609,7 +614,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 ## 
-## [1] /tmp/Rtmply9pjl/temp_libpath1310f4df36d7b
+## [1] /tmp/RtmpNqrigQ/temp_libpath72c1e24826e21
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

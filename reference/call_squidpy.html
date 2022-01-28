@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Call Squidpy Pipeline via reticulate with OmniPath and format results — call_squidpy • liana</title>
+<title>Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]] — call_squidpy • liana</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Call Squidpy Pipeline via reticulate with OmniPath and format results — call_squidpy" />
-<meta property="og:description" content="Call Squidpy Pipeline via reticulate with OmniPath and format results" />
+<meta property="og:title" content="Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]] — call_squidpy" />
+<meta property="og:description" content="Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]" />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -147,17 +147,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Call Squidpy Pipeline via reticulate with OmniPath and format results</h1>
+    <h1>Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]</h1>
     <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/squidpy_pipe.R'><code>R/squidpy_pipe.R</code></a></small>
     <div class="hidden name"><code>call_squidpy.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Call Squidpy Pipeline via reticulate with OmniPath and format results</p>
+    <p>Call Squidpy Pipeline via reticulate with OmniPath and format results [[DEPRECATED]]</p>
     </div>
 
     <pre class="usage"><span class='fu'>call_squidpy</span><span class='op'>(</span>
-  <span class='va'>seurat_object</span>,
+  <span class='va'>sce</span>,
   <span class='va'>op_resource</span>,
   seed <span class='op'>=</span> <span class='fl'>1004</span>,
   conda_env <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -170,8 +170,8 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>seurat_object</th>
-      <td><p>Seurat object as input</p></td>
+      <th>sce</th>
+      <td><p>SingleCellExperiment or Seurat Object as input</p></td>
     </tr>
     <tr>
       <th>op_resource</th>

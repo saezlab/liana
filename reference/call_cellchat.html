@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CellChat x Omni Pipe function — call_cellchat • liana</title>
+<title>Run CellChat with OmniPath function [[DEPRECATED]] — call_cellchat • liana</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="CellChat x Omni Pipe function — call_cellchat" />
-<meta property="og:description" content="CellChat x Omni Pipe function" />
+<meta property="og:title" content="Run CellChat with OmniPath function [[DEPRECATED]] — call_cellchat" />
+<meta property="og:description" content="Run CellChat with OmniPath function [[DEPRECATED]]" />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -147,18 +147,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>CellChat x Omni Pipe function</h1>
+    <h1>Run CellChat with OmniPath function [[DEPRECATED]]</h1>
     <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/cellchat_pipe.R'><code>R/cellchat_pipe.R</code></a></small>
     <div class="hidden name"><code>call_cellchat.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>CellChat x Omni Pipe function</p>
+    <p>Run CellChat with OmniPath function [[DEPRECATED]]</p>
     </div>
 
     <pre class="usage"><span class='fu'>call_cellchat</span><span class='op'>(</span>
-  <span class='va'>op_resource</span>,
   <span class='va'>seurat_object</span>,
+  <span class='va'>op_resource</span>,
   .format <span class='op'>=</span> <span class='cn'>TRUE</span>,
   exclude_anns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span>,
   nboot <span class='op'>=</span> <span class='fl'>100</span>,
@@ -170,6 +170,7 @@
   expr_prop <span class='op'>=</span> <span class='fl'>0</span>,
   organism <span class='op'>=</span> <span class='st'>"human"</span>,
   thresh <span class='op'>=</span> <span class='fl'>1</span>,
+  de_thresh <span class='op'>=</span> <span class='fl'>0.05</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -177,12 +178,12 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>op_resource</th>
-      <td><p>OmniPath Intercell Resource DN</p></td>
-    </tr>
-    <tr>
       <th>seurat_object</th>
       <td><p>Seurat object as input</p></td>
+    </tr>
+    <tr>
+      <th>op_resource</th>
+      <td><p>OmniPath Intercell Resource DN</p></td>
     </tr>
     <tr>
       <th>.format</th>
@@ -214,6 +215,10 @@ as an assumptions of these method is that communication is coordinated at the cl
     <tr>
       <th>organism</th>
       <td><p>Obtain CellChatDB for which organism ('mouse' or 'human')</p></td>
+    </tr>
+    <tr>
+      <th>de_thresh</th>
+      <td><p>diff expression of genes p-value</p></td>
     </tr>
     <tr>
       <th>...</th>

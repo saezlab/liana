@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIANA Customize CCC OmniPath • liana</title>
+<title>LIANA Custome literature and database knowledge from OmniPath • liana</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="LIANA Customize CCC OmniPath">
+<script src="../pkgdown.js"></script><meta property="og:title" content="LIANA Custome literature and database knowledge from OmniPath">
 <meta property="og:description" content="liana">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -106,13 +106,13 @@
       </header><script src="liana_custom_op_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>LIANA Customize CCC OmniPath</h1>
+      <h1 data-toc-skip>LIANA Custome literature and database knowledge from OmniPath</h1>
                         <h4 class="author">Daniel Dimitrov</h4>
             <address class="author_afil">
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2021-12-05</h4>
+            <h4 class="date">2022-01-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_custom_op.Rmd"><code>vignettes/liana_custom_op.Rmd</code></a></small>
       <div class="hidden name"><code>liana_custom_op.Rmd</code></div>
@@ -121,13 +121,28 @@
 
     
     
-<div id="customize-ccc-omnipath" class="section level1">
+<div id="custome-literature-and-database-knowledge-from-omnipath" class="section level1">
 <h1 class="hasAnchor">
-<a href="#customize-ccc-omnipath" class="anchor"></a>Customize CCC OmniPath</h1>
-<p>This vignette showcases how to customize the OmniPath according to different inbuilt filter options and additional information from OmniPath, as well as how to use <code>liana</code> with the customized resource.</p>
-<div id="load-prerequisites" class="section level4">
-<h4 class="hasAnchor">
-<a href="#load-prerequisites" class="anchor"></a>Load Prerequisites</h4>
+<a href="#custome-literature-and-database-knowledge-from-omnipath" class="anchor"></a>Custome literature and database knowledge from OmniPath</h1>
+<p>All prediction methods in LIANA require literature and database knowledge about intercellular signaling interactions. LIANA provides facilities to obtain this prior knowledge from the <a href="https://omnipathdb.org/">OmniPath web service</a>. Here we show how to customize and quality filter the prior knowledge from OmniPath, and how to use LIANA with a custome database resource.</p>
+<div id="intercellular-communication-data-in-omnipath" class="section level2">
+<h2 class="hasAnchor">
+<a href="#intercellular-communication-data-in-omnipath" class="anchor"></a>Intercellular communication data in OmniPath</h2>
+<p>OmniPath combines data from more than 20 resources to depict the roles of proteins in intercellular communication, and it uses around 50 network resources to connect these proteins by signaling interactions. In its intercellular communication annotation (intercell) database, OmniPath aims to cover the broadest range of information, and contains numerous false positive records. Hence, for using in prediction methods, as we do in LIANA, quality filtering OmniPath is highly recommended. We do quality filtering based on 1) the amount of evidences (number of resources and references), 2) the consensus between resources for each annotation record, 3) the localization of proteins (e.g. secreted, plasma membrane). The design of the OmniPath database is described in <a href="https://www.embopress.org/doi/full/10.15252/msb.20209923">Turei et al. Mol Syst Biol (2021)17:e9923</a>, while you can read more about the quality filtering options <a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html">here</a>, <a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">here</a> and <a href="https://saezlab.github.io/OmnipathR/articles/bioc_workshop.html#intercellular-communication-roles">here</a>.</p>
+<div id="complexes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#complexes" class="anchor"></a>Complexes</h3>
+<p>A few resources in OmniPath, such as CellChatDB, CellPhoneDB and ICELLNET, provide information about protein complexes in intercellular communication. Besides these, most of the protein complex annotations in OmniPath are in silico inferred, based on the members of the complex. Network interactions of protein complexes are very sparse, as only few resources provide this kind of data.</p>
+</div>
+<div id="connecting-liana-and-omnipath" class="section level3">
+<h3 class="hasAnchor">
+<a href="#connecting-liana-and-omnipath" class="anchor"></a>Connecting LIANA and OmniPath</h3>
+<p>OmniPath data is distributed by the web service at <a href="https://omnipathdb.org/">OmniPath web service</a>, and the <a href="https://saezlab.github.io/OmnipathR/"><code>OmnipathR</code> R/Bioconductor package</a> offer a direct access in R. In <code>OmnipathR</code>, the <a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html"><code>import_intercell_network</code></a> and <a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a> functions represent the interface to the intercellular communication network. In <code>liana</code>, the <a href="https://saezlab.github.io/liana/reference/generate_omni.html"><code>generate_omni</code></a> function wraps the <code>Omnipath</code> functions and ensures the output is suitable for the downstream methods in LIANA.</p>
+</div>
+</div>
+<div id="loading-prerequisites" class="section level2">
+<h2 class="hasAnchor">
+<a href="#loading-prerequisites" class="anchor"></a>Loading prerequisites</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://omnipathdb.org/">liana</a></span><span class="op">)</span>
@@ -138,42 +153,59 @@
 <span class="va">testdata</span> <span class="op">&lt;-</span>
     <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="omnipath-as-in-the-manuscript" class="section level2">
+<div id="omnipath-data-as-it-is-in-the-manuscript" class="section level2">
 <h2 class="hasAnchor">
-<a href="#omnipath-as-in-the-manuscript" class="anchor"></a>OmniPath as in the manuscript</h2>
-<p>We will first filter OmniPath as described in the LIANA paper: * we retained only interactions with literature references, * we kept interactions only where the receiver protein was plasma membrane transmembrane or peripheral according to at least 51% of the localisation annotations * we considered only interactions between single proteins (interactions between complexes are also available in OmniPath).</p>
+<a href="#omnipath-data-as-it-is-in-the-manuscript" class="anchor"></a>OmniPath data as it is in the manuscript</h2>
+<p>In the first example, we filter OmniPath as described in the LIANA paper: * Only interactions with literature references * Interactions only where the receiver protein is plasma membrane transmembrane or peripheral, according to at least 30% of the localisation annotations * Only interactions between single proteins (interactions between complexes are also available in OmniPath).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># generate_omni returns a tibble with CCC OmniPath</span>
-<span class="va">cust_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>,
-                           consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
-                           transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'secreted'</span>,
-                                                    <span class="st">'plasma_membrane_transmembrane'</span>,
-                                                    <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                           receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'plasma_membrane_transmembrane'</span>,
-                                                 <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                           min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
-                           ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>,
-                           remove_complexes <span class="op">=</span> <span class="cn">TRUE</span>,
-                           simplify <span class="op">=</span> <span class="cn">FALSE</span>
-                           <span class="op">)</span></code></pre></div>
+<span class="va">cust_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>
+    loc_consensus_percentile <span class="op">=</span> <span class="fl">30</span>,
+    consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
+    transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+        <span class="st">'secreted'</span>,
+        <span class="st">'plasma_membrane_transmembrane'</span>,
+        <span class="st">'plasma_membrane_peripheral'</span>
+    <span class="op">)</span>,
+    receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+        <span class="st">'plasma_membrane_transmembrane'</span>,
+        <span class="st">'plasma_membrane_peripheral'</span>
+    <span class="op">)</span>,
+    min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
+    ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>,
+    remove_complexes <span class="op">=</span> <span class="cn">TRUE</span>,
+    simplify <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span></code></pre></div>
+<p>The resulted data is identical to the that used by LIANA without customization, provided by <code><a href="../reference/select_resource.html">select_resource("OmniPath")</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">liana_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_resource.html">select_resource</a></span><span class="op">(</span><span class="st">"OmniPath"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
+
+<span class="co"># Check if the same</span>
+<span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/all_equal.html">all_equal</a></span><span class="op">(</span><span class="va">cust_omni</span>, <span class="va">liana_omni</span><span class="op">)</span></code></pre></div>
+<pre><code>## - different number of columns: 47 vs 43</code></pre>
 <p>One could use stricter filtering options, such as only importing from certain CCC-dedicated resources, etc.</p>
 </div>
-<div id="surfacemembrane-bound-interactions-only" class="section level2">
+<div id="surface-or-membrane-bound-interactions-only" class="section level2">
 <h2 class="hasAnchor">
-<a href="#surfacemembrane-bound-interactions-only" class="anchor"></a>Surface/Membrane-bound Interactions only</h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pm_omni</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>, <span class="co"># increase localisation consensus threshold</span>
-                consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
-                <span class="co"># include only PM-bound proteins</span>
-                transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'plasma_membrane_transmembrane'</span>,
-                                         <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'plasma_membrane_transmembrane'</span>,
-                                      <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
-                ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>,
-                remove_complexes <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># keep complexes</span>
-                simplify <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># do simplify</span>
+<a href="#surface-or-membrane-bound-interactions-only" class="anchor"></a>Surface or Membrane-bound Interactions only</h2>
+<p>In the next example, we restrict our query to cell-surface (i.e. membrane bound) interactions, and also alter some further parameters: we set a more stringent threshold for consensus of resources on localization, we include also protein complexes, and we simplify the data frame to keep only the most relevant columns.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pm_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_omni.html">generate_omni</a></span><span class="op">(</span>
+    loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>, <span class="co"># increase localisation consensus threshold</span>
+    consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
+    <span class="co"># include only PM-bound proteins</span>
+    transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+        <span class="st">'plasma_membrane_transmembrane'</span>,
+        <span class="st">'plasma_membrane_peripheral'</span>
+    <span class="op">)</span>,
+    receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+        <span class="st">'plasma_membrane_transmembrane'</span>,
+        <span class="st">'plasma_membrane_peripheral'</span>
+    <span class="op">)</span>,
+    min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
+    ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>,
+    remove_complexes <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># keep complexes</span>
+    simplify <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># do simplify</span>
 <span class="op">)</span>
 
 
@@ -183,19 +215,22 @@
 <pre><code>## [1] "activating_cofactor" "adhesion"            "cell_adhesion"      
 ## [4] "cell_surface_enzyme" "cell_surface_ligand" "ecm"                
 ## [7] "inhibitory_cofactor" "ligand"</code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># and receptors (category_intercell_target)</span>
 <span class="va">pm_omni</span><span class="op">$</span><span class="va">category_intercell_target</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "adhesion"          "receptor"          "adherens_junction"
 ## [4] "cell_adhesion"     "ion_channel"</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># remove these categories</span>
-<span class="va">pm_omni</span> <span class="op">%&lt;&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">category_intercell_source</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"activating_cofactor"</span>,
-                                            <span class="st">"ligand_regulator"</span>,
-                                            <span class="st">"inhibitory_cofactor"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co"># glimpse into the PM</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># remove some categories</span>
+<span class="va">pm_omni</span> <span class="op">%&lt;&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span>
+    <span class="op">!</span><span class="va">category_intercell_source</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+        <span class="st">'activating_cofactor'</span>,
+        <span class="st">'ligand_regulator'</span>,
+        <span class="st">'inhibitory_cofactor'</span>
+    <span class="op">)</span>
+<span class="op">)</span>
+<span class="co"># an overview of the resulted data frame:</span>
 <span class="va">pm_omni</span> <span class="op">%&gt;%</span> <span class="fu">glimpse</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## Rows: 2,165
 ## Columns: 17
@@ -220,35 +255,41 @@
 <div id="run-liana-with-custom-ccc-resource" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-liana-with-custom-ccc-resource" class="anchor"></a>Run LIANA with custom CCC resource</h2>
-<div id="run-liana" class="section level4">
-<h4 class="hasAnchor">
-<a href="#run-liana" class="anchor"></a>RUN liana</h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div id="run-liana" class="section level3">
+<h3 class="hasAnchor">
+<a href="#run-liana" class="anchor"></a>RUN liana</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Run liana with the custom resource</span>
 <span class="co"># liana Wrap</span>
-<span class="va">liana_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span>seurat_object <span class="op">=</span> <span class="va">testdata</span>,
-                         resource<span class="op">=</span><span class="st">'custom'</span>,
-                         external_resource <span class="op">=</span> <span class="va">pm_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span></code></pre></div>
+<span class="va">liana_test</span> <span class="op">&lt;-</span>
+    <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span>
+        <span class="va">testdata</span>,
+        resource<span class="op">=</span><span class="st">'custom'</span>,
+        external_resource <span class="op">=</span> <span class="va">pm_omni</span>,
+        cellchat.params<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>.normalize<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had
+## no counts!</code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span></code></pre></div>
 <pre><code>## Rows: 1,243
 ## Columns: 17
 ## $ source                 &lt;chr&gt; "B", "B", "B", "B", "B", "B", "B", "B", "B", "B…
-## $ ligand                 &lt;chr&gt; "HLA-DRA", "HLA-DRA", "MS4A1", "HLA-DMA", "HLA-…
-## $ target                 &lt;chr&gt; "B", "NK", "B", "B", "B", "B", "CD8 T", "B", "N…
-## $ receptor               &lt;chr&gt; "CD37", "CD63", "CD82", "CD74", "CD74", "CD37",…
-## $ aggregate_rank         &lt;dbl&gt; 4.376176e-08, 3.138150e-07, 2.664625e-06, 3.755…
-## $ mean_rank              &lt;dbl&gt; 13.0, 7.8, 36.6, 16.4, 22.2, 21.0, 29.0, 35.4, …
-## $ median_rank            &lt;dbl&gt; 4, 1, 11, 16, 25, 11, 4, 17, 27, 12, 21, 21, 19…
-## $ natmi.edge_specificity &lt;dbl&gt; 0.3655873, 0.4806804, 0.6939669, 0.3961174, 0.3…
-## $ natmi.rank             &lt;dbl&gt; 54, 28, 11, 46, 47, 68, 4, 17, 56, 21, 19, 26, …
-## $ connectome.weight_sc   &lt;dbl&gt; 0.9928272, 1.0496186, 0.9125238, 1.0355778, 0.9…
-## $ connectome.rank        &lt;dbl&gt; 5, 1, 13, 2, 7, 11, 4, 18, 27, 12, 23, 21, 26, …
-## $ logfc.logfc_comb       &lt;dbl&gt; 1.1276659, 1.2889676, 1.0514962, 0.9301631, 0.8…
-## $ logfc.rank             &lt;dbl&gt; 4, 1, 8, 17, 25, 16, 3, 9, 22, 6, 21, 18, 19, 2…
-## $ sca.LRscore            &lt;dbl&gt; 0.9442782, 0.9348366, 0.8616937, 0.9293454, 0.9…
-## $ sca.rank               &lt;dbl&gt; 1, 8, 150, 16, 31, 9, 133, 132, 50, 77, 181, 11…
+## $ ligand                 &lt;chr&gt; "HLA-DRA", "HLA-DRA", "HLA-DRB1", "HLA-DMA", "H…
+## $ target                 &lt;chr&gt; "B", "NK", "B", "B", "B", "B", "NK", "B", "B", …
+## $ receptor               &lt;chr&gt; "CD37", "CD63", "CD37", "CD74", "CD74", "CD19",…
+## $ aggregate_rank         &lt;dbl&gt; 4.376176e-08, 3.138150e-07, 1.018738e-06, 3.755…
+## $ mean_rank              &lt;dbl&gt; 12.6, 7.8, 19.6, 14.2, 19.8, 34.6, 33.2, 23.0, …
+## $ median_rank            &lt;dbl&gt; 2, 1, 9, 6, 13, 17, 32, 12, 13, 12, 26, 3, 23, …
+## $ natmi.edge_specificity &lt;dbl&gt; 0.3655873, 0.4806804, 0.3380952, 0.3961174, 0.3…
+## $ natmi.rank             &lt;dbl&gt; 54, 28, 68, 46, 47, 17, 56, 21, 11, 97, 26, 9, …
+## $ connectome.weight_sc   &lt;dbl&gt; 0.9928272, 1.0496186, 0.9158637, 1.0355778, 0.9…
+## $ connectome.rank        &lt;dbl&gt; 5, 1, 11, 2, 7, 18, 27, 12, 13, 26, 21, 3, 23, …
+## $ logfc.logfc_comb       &lt;dbl&gt; 2.3224415, 2.4380411, 1.6318770, 1.8039284, 1.5…
+## $ logfc.rank             &lt;dbl&gt; 2, 1, 9, 6, 13, 5, 32, 4, 26, 7, 27, 3, 30, 20,…
+## $ sca.LRscore            &lt;dbl&gt; 0.9442782, 0.9348366, 0.9344024, 0.9293454, 0.9…
+## $ sca.rank               &lt;dbl&gt; 1, 8, 9, 16, 31, 132, 50, 77, 150, 12, 110, 73,…
 ## $ cellphonedb.pvalue     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 ## $ cellphonedb.rank       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</code></pre>
 </div>
@@ -256,52 +297,74 @@
 <div id="under-the-hood" class="section level2">
 <h2 class="hasAnchor">
 <a href="#under-the-hood" class="anchor"></a>Under the hood</h2>
-<p>In reality, <code>generate_omni</code> is just a wrapper function that calls the appropriate <code>OmniPathR</code> functions and simplifies their filtering according to liana-appropriate format.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>In reality, <code>generate_omni</code> is just a wrapper function that calls the appropriate <code>OmnipathR</code> functions, provide a convenient interface and ensures a liana-appropriate format. Here we give an insight into this process.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># reproduce cust_op as from above with OmniPathR alone</span>
 
 <span class="co"># import the OmniPathR intercell network component</span>
-<span class="va">ligrec</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html">import_intercell_network</a></span><span class="op">(</span>entity_types <span class="op">=</span> <span class="st">"protein"</span><span class="op">)</span>
+<span class="va">ligrec</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html">import_intercell_network</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="co"># filter out the complexes</span>
+<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span>
+    <span class="va">entity_type_intercell_source</span> <span class="op">!=</span> <span class="st">'complex'</span> <span class="op">&amp;</span>
+    <span class="va">entity_type_intercell_target</span> <span class="op">!=</span> <span class="st">'complex'</span>
+<span class="op">)</span>
+
 
 <span class="co"># apply filtering according to curation and localisation</span>
 <span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a></span><span class="op">(</span>loc_consensus_percentile <span class="op">=</span> <span class="fl">51</span>,
-                                      consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
-                                      transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'secreted'</span>,
-                                                               <span class="st">'plasma_membrane_transmembrane'</span>,
-                                                               <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                                      receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'plasma_membrane_transmembrane'</span>,
-                                                            <span class="st">'plasma_membrane_peripheral'</span><span class="op">)</span>,
-                                      min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
-                                      ligrecextra <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+    <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a></span><span class="op">(</span>
+        loc_consensus_percentile <span class="op">=</span> <span class="fl">30</span>,
+        consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
+        transmitter_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+            <span class="st">'secreted'</span>,
+            <span class="st">'plasma_membrane_transmembrane'</span>,
+            <span class="st">'plasma_membrane_peripheral'</span>
+        <span class="op">)</span>,
+        receiver_topology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+            <span class="st">'plasma_membrane_transmembrane'</span>,
+            <span class="st">'plasma_membrane_peripheral'</span>
+        <span class="op">)</span>,
+        min_curation_effort <span class="op">=</span> <span class="fl">1</span>,
+        ligrecextra <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span>
 
 <span class="co"># remove duplicate LRs</span>
 <span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="fu">distinct_at</span><span class="op">(</span>.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source_genesymbol"</span>, 
-                        <span class="st">"target_genesymbol"</span><span class="op">)</span>,
-                    .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    <span class="fu">distinct_at</span><span class="op">(</span>
+        .vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+            <span class="st">'source_genesymbol'</span>,
+            <span class="st">'target_genesymbol'</span>
+        <span class="op">)</span>,
+        .keep_all <span class="op">=</span> <span class="cn">TRUE</span>
+    <span class="op">)</span>
 
 <span class="fu">all_equal</span><span class="op">(</span><span class="va">ligrec</span>, <span class="va">cust_omni</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<p>To make use of the full potential of <a href="https://github.com/saezlab/OmnipathR">OmniPathR</a> we kindly refer the user to it.</p>
+</div>
+<div id="further-reading" class="section level2">
+<h2 class="hasAnchor">
+<a href="#further-reading" class="anchor"></a>Further reading</h2>
+<p>To make use of the full potential of <code>OmnipathR</code> we kindly refer the user to <a href="https://saezlab.github.io/OmnipathR">its documentation</a>.</p>
+<p>This tutorial only presents the intercellular component of OmniPath, in the future we will add more details about <a href="https://omnipathdb.org/#about">intracellular signaling and gene regulation</a>.</p>
 </div>
 <div id="session-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
 <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sessioninfo/man/session_info.html">session_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  setting  value                       
 ##  version  R version 4.0.3 (2020-10-10)
-##  os       Ubuntu 20.04.2 LTS          
+##  os       Ubuntu 20.04.3 LTS          
 ##  system   x86_64, linux-gnu           
 ##  ui       X11                         
 ##  language (EN)                        
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2021-12-05                  
+##  date     2022-01-28                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source                            
@@ -333,7 +396,7 @@
 ##  colorspace             2.0-0    2020-11-11 [2] CRAN (R 4.0.2)                    
 ##  cowplot                1.1.1    2020-12-30 [2] CRAN (R 4.0.3)                    
 ##  crayon                 1.4.1    2021-02-08 [2] CRAN (R 4.0.3)                    
-##  curl                   4.3      2019-12-02 [2] CRAN (R 4.0.2)                    
+##  curl                   4.3.2    2021-06-23 [2] CRAN (R 4.0.3)                    
 ##  data.table             1.14.0   2021-02-21 [2] CRAN (R 4.0.3)                    
 ##  DBI                    1.1.1    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  dbplyr                 2.1.0    2021-02-03 [2] CRAN (R 4.0.3)                    
@@ -386,7 +449,7 @@
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-##  liana                * 0.0.5    2021-12-05 [1] local                             
+##  liana                * 0.0.6    2022-01-28 [1] local                             
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -406,7 +469,7 @@
 ##  modelr                 0.1.8    2020-05-19 [2] CRAN (R 4.0.2)                    
 ##  munsell                0.5.0    2018-06-12 [2] CRAN (R 4.0.2)                    
 ##  nlme                   3.1-149  2020-08-23 [5] CRAN (R 4.0.2)                    
-##  OmnipathR              3.3.2    2021-11-14 [2] Github (saezlab/OmnipathR@a14da81)
+##  OmnipathR              3.3.5    2021-12-12 [2] Github (saezlab/OmnipathR@30e0133)
 ##  parallelly             1.24.0   2021-03-14 [2] CRAN (R 4.0.3)                    
 ##  patchwork              1.1.1    2020-12-17 [2] CRAN (R 4.0.3)                    
 ##  pbapply                1.4-3    2020-08-18 [2] CRAN (R 4.0.2)                    
@@ -492,7 +555,7 @@
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 ## 
-## [1] /tmp/Rtmply9pjl/temp_libpath1310f4df36d7b
+## [1] /tmp/RtmpNqrigQ/temp_libpath72c1e24826e21
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

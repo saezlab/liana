@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • liana</title>
+<title>Liana dotplot interactions by source and target cells — liana_dotplot • liana</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Liana dotplot interactions by source and target cells — liana_dotplot" />
+<meta property="og:description" content="Liana dotplot interactions by source and target cells" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -146,26 +147,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Liana dotplot interactions by source and target cells</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_plot.R'><code>R/liana_plot.R</code></a></small>
+    <div class="hidden name"><code>liana_dotplot.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a></dt>
-        <dd></dt>
-        <dt><a href="liana_devel.html">LIANA++ for Benchmarks and Developers</a></dt>
-        <dd></dt>
-        <dt><a href="liana_intracell.html">LIANA with Intracellular Omnipath</a></dt>
-        <dd></dt>
-        <dt><a href="liana_nichenet.html">LIANA - NicheNet</a></dt>
-        <dd></dt>
-        <dt><a href="liana_tutorial.html">LIANA Tutorial</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>Liana dotplot interactions by source and target cells</p>
     </div>
+
+    <pre class="usage"><span class='fu'>liana_dotplot</span><span class='op'>(</span>
+  <span class='va'>liana_agg</span>,
+  <span class='va'>source_groups</span>,
+  <span class='va'>target_groups</span>,
+  specificity <span class='op'>=</span> <span class='st'>"natmi.edge_specificity"</span>,
+  magnitude <span class='op'>=</span> <span class='st'>"sca.LRscore"</span>
+<span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>liana_agg</th>
+      <td><p>aggregated `liana_wrap` results -&gt; preferentially filtered
+by some condition (e.g. preferential ranking, specific interactions, etc)</p></td>
+    </tr>
+    <tr>
+      <th>source_groups</th>
+      <td><p>names of the source(sender) cell types</p></td>
+    </tr>
+    <tr>
+      <th>target_groups</th>
+      <td><p>names of the target cell types</p></td>
+    </tr>
+    <tr>
+      <th>specificity</th>
+      <td><p>column to represent the specificity of the interaction</p></td>
+    </tr>
+    <tr>
+      <th>magnitude</th>
+      <td><p>column to represent the magnitude of interaction (by default
+'sca.LRscore')</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a ggplot2 object</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Here, we refer to `specificity` as how specific this interaction is
+to a cell type pair regards to the rest of the cell type pairs (
+e.g. CellPhoneDB's p-values, NATMI's specificity edges, Connectome's scaled weights, etc)</p>
+<p>`magnitude` on the other hand is a direct measure of the expression alone,
+by default we use SingleCellSignalR's dataset indepent LRscore (bound between 0 and 1).
+Yet, one could also use CellChat's probabilities or CellPhoneDB's means, etc.</p>
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

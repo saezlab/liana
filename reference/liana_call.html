@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -170,10 +170,6 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>seurat_object</th>
-      <td><p>Seurat object</p></td>
-    </tr>
-    <tr>
       <th>op_resource</th>
       <td><p>resource tibble obtained via liana::select_resource</p></td>
     </tr>
@@ -198,8 +194,7 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
     <tr>
       <th>...</th>
       <td><p>Arguments passed on to <code><a href='liana_pipe.html'>liana_pipe</a></code></p><dl>
-    <dt><code>trim</code></dt><dd><p>the fraction (0 to 0.5) of observations to be trimmed from each end
-of x before the `truncated mean` is computed (0.1 by default)</p></dd>
+    <dt><code>sce</code></dt><dd><p>SingleCellExperiment Object</p></dd>
     <dt><code>assay</code></dt><dd><p>assay to be used ("RNA" by default)</p></dd>
     <dt><code>assay.type</code></dt><dd><p>- the type of data to be used to calculate the means
 (counts by default), available options are: "counts" and "logcounts"</p></dd>

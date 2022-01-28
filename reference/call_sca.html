@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function to call SingleCellSignalR with databases from OmniPath — call_sca • liana</title>
+<title>Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]] — call_sca • liana</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Function to call SingleCellSignalR with databases from OmniPath — call_sca" />
-<meta property="og:description" content="Function to call SingleCellSignalR with databases from OmniPath" />
+<meta property="og:title" content="Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]] — call_sca" />
+<meta property="og:description" content="Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]" />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Customize CCC OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -147,18 +147,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to call SingleCellSignalR with databases from OmniPath</h1>
+    <h1>Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]</h1>
     <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/sca_pipe.R'><code>R/sca_pipe.R</code></a></small>
     <div class="hidden name"><code>call_sca.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function to call SingleCellSignalR with databases from OmniPath</p>
+    <p>Function to call SingleCellSignalR with databases from OmniPath [[DEPRECATED]]</p>
     </div>
 
     <pre class="usage"><span class='fu'>call_sca</span><span class='op'>(</span>
+  <span class='va'>sce</span>,
   <span class='va'>op_resource</span>,
-  <span class='va'>seurat_object</span>,
   .format <span class='op'>=</span> <span class='cn'>TRUE</span>,
   assay <span class='op'>=</span> <span class='st'>"RNA"</span>,
   assay.type <span class='op'>=</span> <span class='st'>"logcounts"</span>,
@@ -169,12 +169,12 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>op_resource</th>
-      <td><p>OmniPath Intercell Resource DN</p></td>
+      <th>sce</th>
+      <td><p>SingleCellExperiment or SeuratObject as input</p></td>
     </tr>
     <tr>
-      <th>seurat_object</th>
-      <td><p>Seurat object as input</p></td>
+      <th>op_resource</th>
+      <td><p>OmniPath Intercell Resource DN</p></td>
     </tr>
     <tr>
       <th>.format</th>
