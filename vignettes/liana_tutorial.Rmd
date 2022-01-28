@@ -69,7 +69,7 @@ Yet, the original method pipelines can be called via the `call_*` functions.
 
 To run `liana`, we will use a toy PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
 
-`liana` takes `Seurat` objects as input, containing processed counts and clustered cells
+`liana` takes `Seurat` and `SingleCellExperiment` objects as input, containing processed counts and clustered cells
 ```{r load_data}
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -148,9 +148,14 @@ We will also lower the number of permutations that we wish to perform for the sa
 Note that one can also parallelize the CPDB algorithm implemented in LIANA (in this case we don't,
 as this would only make sense when working with large datasets).
 
+Also, here we will use a `SingleCellExperiment` object as input. In reality, LIANA converts `Seurat` objects
+to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.
+
 ```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=8}
+sce <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+
 # RUN CPDB alone
-cpdb_test <- liana_wrap(testdata,
+cpdb_test <- liana_wrap(sce,
                         method = 'cellphonedb',
                         resource = c('CellPhoneDB'),
                         permutation.params = list(nperms=100,
@@ -165,6 +170,7 @@ cpdb_test %>%
                 specificity = "pvalue",
                 magnitude = "lr.mean")
 ```
+
 
 ## SingleCellSignalR, CytoTalk, NATMI, and Connectome scores /w Complexes
 The re-implementation of the aforementioned methods in LIANA enables us to make use of 

@@ -87,7 +87,7 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 
         warning(
             stringr::str_glue("{nzero_genes} genes and/or {nzero_cells} ",
-                              "cells were removed as they contained 0 counts!")
+                              "cells were removed as they had no counts!")
         )
     }
 

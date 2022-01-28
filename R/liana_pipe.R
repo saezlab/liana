@@ -49,8 +49,6 @@ liana_pipe <- function(sce,
                Matrix::colSums(counts(sce)) > 0]
     # Scale genes across cells
     sce@assays@data[["scaledata"]] <- as.matrix(row_scale(exec(assay.type, sce)))
-    # To be removed once I filter out any cells with 0 reads
-    sce@assays@data[["scaledata"]][is.na(rowSums(sce@assays@data[["scaledata"]])),] = 0
 
     # Get Avg and  Prop. Expr Per Cluster
     mean_prop <-
@@ -347,7 +345,8 @@ get_log2FC <- function(sce,
                        assay.type){
 
     # normalize counts across libraries
-    sce <- scater::logNormCounts(sce, log=FALSE,
+    sce <- scater::logNormCounts(sce,
+                                 log=FALSE,
                                  assay.type=assay.type)
 
     # iterate over each possible cluster leaving one out
