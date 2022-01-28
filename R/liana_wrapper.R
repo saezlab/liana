@@ -48,8 +48,8 @@ liana_wrap <- function(sce,
   }
 
   if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
-                                              "logfc", "sca",
-                                              "cellphonedb", "cytotalk", "scconnect"))){
+                       "logfc", "sca",
+                       "cellphonedb", "cytotalk", "scconnect"))){
 
     # LIANA pipe map over resource
     lr_results <- resource %>%

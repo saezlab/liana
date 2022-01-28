@@ -11,6 +11,8 @@ the BioConductor single-cell framework (for all internal methods).
 
 ## Changes  
 
+- LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.
+
 - `global_mean` is now calculated in a more efficient manner.
 
 ## Bug Fixes  

@@ -1,7 +1,7 @@
 # Input
 liana_path <- system.file(package = "liana")
-seurat_object <-
-    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+seurat_object <- readRDS(file.path(liana_path , "testdata",
+                                   "input", "testdata.rds"))
 
 # Test
 test_that("Test liana cpdb", {

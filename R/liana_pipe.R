@@ -7,8 +7,6 @@
 #' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default),
 #'  yet one should consider setting this to an appropriate value between 0 and 1,
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
-#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each end
-#'  of x before the `truncated mean` is computed (0.1 by default)
 #' @param assay assay to be used ("RNA" by default)
 #' @param assay.type - the type of data to be used to calculate the means
 #'  (counts by default), available options are: "counts" and "logcounts"
@@ -42,12 +40,13 @@ liana_pipe <- function(sce,
 
     # calculate global_mean required for SCA
     global_mean <- Matrix::mean(
-        exec(assay.type, sce[Matrix::rowSums(counts(sce)) > 0,
-                             Matrix::colSums(counts(sce)) > 0])
+        exec(assay.type, sce)
         )
 
     # Filter `sce` to only include ligand receptor genes
-    sce <- sce[rownames(sce) %in% entity_genes, ]
+    # and any cells which don't contain any expressed LR genes
+    sce <- sce[rownames(sce) %in% entity_genes,
+               Matrix::colSums(counts(sce)) > 0]
     # Scale genes across cells
     sce@assays@data[["scaledata"]] <- as.matrix(row_scale(exec(assay.type, sce)))
     # To be removed once I filter out any cells with 0 reads
@@ -68,19 +67,6 @@ liana_pipe <- function(sce,
                                              assay.type = "scaledata",
                                              statistics = c("mean"))
     scaled <- scaled@assays@data$mean
-
-    # calculate truncated mean (need to remove this and keep the mean instead)
-    # used in CPDB - but not needed
-    trunc_mean <- aggregate(t(as.matrix(sce@assays@data[[assay.type]])),
-                            list(colLabels(sce)),
-                            FUN=mean, trim=trim) %>%
-        as_tibble() %>%
-        dplyr::rename(celltype = Group.1) %>%
-        pivot_longer(-celltype, names_to = "gene") %>%
-        tidyr::pivot_wider(names_from = celltype,
-                           id_cols = gene,
-                           values_from = value) %>%
-        column_to_rownames("gene")
 
     # calculate PEM scores
     pem_scores <- compute_pem_scores(sce = sce,
@@ -160,15 +146,7 @@ liana_pipe <- function(sce,
         join_sum_means(means = means,
                        entity = "ligand") %>%
         join_sum_means(means = means,
-                       entity = "receptor")  %>%
-        join_means(means = trunc_mean,
-                   source_target = "source",
-                   entity = "ligand",
-                   type = "trunc") %>%
-        join_means(means = trunc_mean,
-                   source_target = "target",
-                   entity = "receptor",
-                   type = "trunc") %>%
+                       entity = "receptor") %>%
         # Join PEM scores
         join_means(means = pem_scores,
                    source_target = "target",

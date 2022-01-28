@@ -1,11 +1,46 @@
 # input
 liana_path <- system.file(package = "liana")
-seurat_object <-
-    readRDS(file.path(liana_path , "testdata",
-                      "input", "testdata.rds"))
+seurat_object <- readRDS(file.path(liana_path , "testdata",
+                                   "input", "testdata.rds"))
+
+# # Generate SingleCellExperiment Object
+# counts <- matrix(rpois(100, lambda = 10), ncol=100, nrow=1000)
+#
+# pretend.cell.labels <- sample(letters, ncol(counts), replace=TRUE)
+# pretend.gene.lengths <- sample(10000, nrow(counts))
+#
+# sce <- SingleCellExperiment(list(counts=counts),
+#                             colData=data.frame(label=pretend.cell.labels),
+#                             rowData=data.frame(length=pretend.gene.lengths),
+#                             metadata=list(study="GSE111111")
+# )
+# rownames(sce) <- rownames(seurat_object)[1:nrow(counts)]
+# colnames(sce) <- pretend.cell.labels
+# sce <- scater::logNormCounts(sce)
+# colLabels(sce) <- factor(sample(letters[1:3], ncol(counts), replace=TRUE))
+# saveRDS(sce, file.path(liana_path , "testdata",
+#                        "input", "testsce.rds"))
+
+# liana PREP output ----
+# test sce as input
+sce <- readRDS(file.path(liana_path , "testdata",
+                         "input", "testsce.rds"))
+
+sce_conv <- liana_prep(sce)
+saveRDS(sce_conv, file.path(liana_path , "testdata",
+                            "input", "sce_conv.rds"))
+
+wrap_sce <- liana_wrap(sce, resource = "OmniPath", method = c("sca", "natmi"))
+saveRDS(wrap_sce, file.path(liana_path , "testdata",
+                            "input", "wrap_sce.rds"))
+
+# Save converted Seurat
+seurat_conv <- liana_prep(seurat_object)
+saveRDS(seurat_conv, file.path(liana_path , "testdata",
+                               "input", "seurat_conv.rds"))
 
 # liana Pipe Output ----
-pipe_out <- liana_pipe(seurat_object,
+pipe_out <- liana_pipe(seurat_conv,
                        op_resource = select_resource("OmniPath")[[1]] %>%
                            decomplexify())
 saveRDS(pipe_out, file.path(liana_path, "testdata",
@@ -47,7 +82,7 @@ saveRDS(cytotalk_out, file.path(liana_path, "testdata",
 
 
 # Recomplexify Output ----
-lr_cmplx <- liana_pipe(seurat_object,
+lr_cmplx <- liana_pipe(seurat_conv,
                        op_resource =
                            select_resource("CellPhoneDB")[[1]] %>%
                            decomplexify())
@@ -80,11 +115,23 @@ def_arg <- liana_defaults(expr_prop=0,
 saveRDS(def_arg, file.path(liana_path, "testdata",
                            "output", "liana_def_args.RDS"))
 
+# liana dotplot ----
+liana_dotplot_out <- liana_dotplot(cpdb_out,
+                                   source_groups = "B",
+                                   target_groups = c("NK", "CD8 T"),
+                                   magnitude = "lr.mean",
+                                   specificity = "pvalue")
+saveRDS(liana_dotplot_out,
+        file.path(liana_path, "testdata",
+                  "output", "liana_dotplot_out.RDS"))
 
 
+
+
+### EXTERNAL ----
 # Test Connectome ----
 conn_res <- call_connectome(
-    seurat_object = seurat_object,
+    sce = seurat_object,
     op_resource = select_resource("OmniPath")[[1]], # Default = No sig hits
     .spatial = FALSE,
     min.cells.per.ident = 1,
@@ -92,13 +139,12 @@ conn_res <- call_connectome(
     calculate.DOR = FALSE,
     assay = 'RNA',
     .format = TRUE
-    )
+)
 saveRDS(conn_res, file.path(liana_path, "testdata",
                             "output", "conn_res.RDS"))
 
-
 # Test Squidpy ----
-squidpy_res <- call_squidpy(seurat_object = seurat_object,
+squidpy_res <- call_squidpy(sce = seurat_object,
                             op_resource = select_resource("OmniPath"),
                             cluster_key="seurat_annotations",
                             n_perms=100,
@@ -110,14 +156,14 @@ saveRDS(squidpy_res, file.path(liana_path, "testdata",
 
 # Test NATMI ----
 natmi_res <- call_natmi(op_resource = select_resource("OmniPath")[[1]],
-                        seurat_object = seurat_object,
+                        sce = seurat_object,
                         expr_file = "test_em.csv",
                         meta_file = "test_metadata.csv",
                         output_dir = "NATMI_test",
                         assay = "RNA",
                         num_cor = 4,
                         .format = TRUE,
-                        .write_data = TRUE,
+                        .overwrite_data = TRUE,
                         .seed = 1004,
                         .natmi_path = NULL)
 saveRDS(natmi_res, file.path(liana_path, "testdata",
@@ -185,12 +231,4 @@ liana_agg_house <- liana_res %>%
 saveRDS(liana_agg_house, file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))
 
-# liana dotplot ----
-liana_dotplot_out <- liana_dotplot(cpdb_out,
-                                   source_groups = "B",
-                                   target_groups = c("NK", "CD8 T"),
-                                   magnitude = "lr.mean",
-                                   specificity = "pvalue")
-saveRDS(liana_dotplot_out,
-        file.path(liana_path, "testdata",
-                  "output", "liana_dotplot_out.RDS"))
+

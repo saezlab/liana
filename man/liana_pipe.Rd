@@ -29,9 +29,6 @@ or a binomial test with \code{"binom"}.}
 
 \item{pval.type}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
 
-\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each end
-of x before the `truncated mean` is computed (0.1 by default)}
-
 \item{assay}{assay to be used ("RNA" by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means

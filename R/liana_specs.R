@@ -79,7 +79,7 @@ setClass("ScoreSpecifics",
                 method_score = "pvalue",
                 descending_order = FALSE,
                 score_fun = cellphonedb_score,
-                columns = c("ligand.trunc", "receptor.trunc")
+                columns = c("ligand.expr", "receptor.expr")
             ),
         "cytotalk" =
             methods::new(

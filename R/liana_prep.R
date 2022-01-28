@@ -24,9 +24,7 @@ liana_prep.SingleCellExperiment <- function(sce, idents = NULL, ...){
     # Assign idents to default if not passed
     SingleCellExperiment::colLabels(sce) <- idents
 
-    # EXTEND QUALITY CONTROL STEPS
-
-    return(sce[, colSums(counts(sce)) > 0])
+    return(.filter_sce(sce))
 }
 
 #' @export
@@ -54,9 +52,7 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 
     SingleCellExperiment::colLabels(sce) <- idents
 
-    # EXTEND QUALITY CONTROL STEPS
-
-    return(sce[, colSums(counts(sce)) > 0])
+    return(.filter_sce(sce))
 }
 
 #' Helper function to convert sce to seurat for EXTERNAL `call_` functions only
@@ -72,5 +68,29 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
     SeuratObject::DefaultAssay(seurat_object) <- assay
 
     return(seurat_object)
+}
+
+#' Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA
+#'
+#' @param sce SingleCellExperiment Object
+#'
+#' @return SingleCellExperiment object
+#'
+.filter_sce <- function(sce){
+    # EXTEND QUALITY CONTROL STEPS
+    nonzero_cells <- colSums(counts(sce)) > 0
+    nonzero_genes <- rowSums(counts(sce)) > 0
+
+    if(!all(nonzero_cells) | !all(nonzero_genes)){
+        nzero_genes <- sum(map_dbl(nonzero_genes, function(x) rlang::is_false(x = x)))
+        nzero_cells <- sum(map_dbl(nonzero_cells, function(x) rlang::is_false(x = x)))
+
+        warning(
+            stringr::str_glue("{nzero_genes} genes and/or {nzero_cells} ",
+                              "cells were removed as they contained 0 counts!")
+        )
+    }
+
+    return(sce[nonzero_genes, nonzero_cells])
 }
 

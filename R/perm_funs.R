@@ -75,23 +75,23 @@ cellphonedb_score <- function(lr_res,
                 liana:::join_means(means = pmean,
                                    source_target = "source",
                                    entity = "ligand",
-                                   type = "trunc",
+                                   type = "expr",
                                    pb = progress_bar) %>%
                 liana:::join_means(means = pmean,
                                    source_target = "target",
                                    entity = "receptor",
-                                   type = "trunc",
+                                   type = "expr",
                                    pb = progress_bar) %>%
                 replace(is.na(.), 0) %>%
                 dplyr::rowwise() %>%
-                dplyr::mutate(lr_mean = mean(c(ligand.trunc, receptor.trunc)))
+                dplyr::mutate(lr_mean = mean(c(ligand.expr, receptor.expr)))
         }, parallelize = parallelize, workers = workers) %>%
         bind_rows()
 
     # calculate quantiles using ecdf null_dists
     quantiles <- lr_res %>%
         group_by(source, target, ligand.complex, receptor.complex) %>%
-        mutate(og_mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+        mutate(og_mean = mean(c(ligand.expr, receptor.expr))) %>%
         select(source, target,
                ligand.complex, ligand,
                receptor, receptor.complex,
@@ -112,12 +112,12 @@ cellphonedb_score <- function(lr_res,
 
     lr_res %<>%
         rowwise() %>%
-        mutate(lr.mean = mean(c(ligand.trunc, receptor.trunc))) %>%
+        mutate(lr.mean = mean(c(ligand.expr, receptor.expr))) %>%
         left_join(pvals_df,
                   by = c("ligand.complex", "receptor.complex",
                          "source", "target")) %>%
         mutate({{ score_col }} := # replace pval of non-expressed rec and ligs
-                   ifelse(ligand.trunc == 0 || receptor.trunc == 0,
+                   ifelse(ligand.expr == 0 || receptor.expr == 0,
                           1,
                           .data[[score_col]]))
 
