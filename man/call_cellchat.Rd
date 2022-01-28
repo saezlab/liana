@@ -2,7 +2,7 @@
 % Please edit documentation in R/cellchat_pipe.R
 \name{call_cellchat}
 \alias{call_cellchat}
-\title{CellChat x Omni Pipe function}
+\title{Run CellChat with OmniPath function [[DEPRECATED]]}
 \usage{
 call_cellchat(
   seurat_object,
@@ -104,7 +104,7 @@ ligand.pct.2: threshold for the percent of expressed genes in the cells except f
 A DF of intercellular communication network
 }
 \description{
-CellChat x Omni Pipe function
+Run CellChat with OmniPath function [[DEPRECATED]]
 }
 \details{
 CellChat's objects are not lazily documented/exported thus the

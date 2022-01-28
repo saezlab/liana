@@ -2,7 +2,7 @@
 % Please edit documentation in R/liana_prep.R
 \name{liana_prep}
 \alias{liana_prep}
-\title{Function to handle different types of object}
+\title{Function to handle different types of object as input and do basic quality checks}
 \usage{
 liana_prep(sce, ...)
 }
@@ -10,5 +10,5 @@ liana_prep(sce, ...)
 \item{sce}{Seurat or SingleCellExperiment object}
 }
 \description{
-Function to handle different types of object
+Function to handle different types of object as input and do basic quality checks
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/natmi_pipe.R
 \name{call_natmi}
 \alias{call_natmi}
-\title{Call NATMI Pipeline from R with Resources Querried from OmniPath}
+\title{Call NATMI Pipeline from R with Resources Querried from OmniPath [[DEPRECATED]]}
 \usage{
 call_natmi(
   sce,
@@ -50,7 +50,7 @@ data from Seurat Object}
 DF with NATMI results
 }
 \description{
-Call NATMI Pipeline from R with Resources Querried from OmniPath
+Call NATMI Pipeline from R with Resources Querried from OmniPath [[DEPRECATED]]
 }
 \details{
 This function will save NATMI dbs folder, then it will call the

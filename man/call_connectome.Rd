@@ -2,7 +2,7 @@
 % Please edit documentation in R/connectome_pipe.R
 \name{call_connectome}
 \alias{call_connectome}
-\title{Function to call connectome with databases from OmniPath}
+\title{Function to call connectome with databases from OmniPath [[DEPRECATED]]}
 \usage{
 call_connectome(sce, op_resource = NULL, .format = TRUE, assay, ...)
 }
@@ -19,7 +19,7 @@ call_connectome(sce, op_resource = NULL, .format = TRUE, assay, ...)
 An unfiltered connectome results df
 }
 \description{
-Function to call connectome with databases from OmniPath
+Function to call connectome with databases from OmniPath [[DEPRECATED]]
 }
 \details{
 Stats:

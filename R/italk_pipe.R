@@ -1,4 +1,4 @@
-#' Run iTALK with OmniPath data
+#' Run iTALK with OmniPath data [[DEPRECATED]]
 #'
 #' @param sce Seurat object or SingleCellExperiment as input
 #' @param op_resource OmniPath Intercell Resource DN

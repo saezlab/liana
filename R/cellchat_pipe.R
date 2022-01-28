@@ -1,4 +1,4 @@
-#' CellChat x Omni Pipe function
+#' Run CellChat with OmniPath function [[DEPRECATED]]
 #'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param seurat_object Seurat object as input
@@ -47,6 +47,11 @@ call_cellchat <- function(seurat_object,
                           ){
     stringsAsFactors <- options('stringsAsFactors')[[1]]
     options(stringsAsFactors = FALSE)
+
+    # Convert sce to seurat
+    if(class(sce) == "SingleCellExperiment"){
+        sce %<>% .liana_convert(., assay=assay)
+    }
 
     # create a dataframe of the cell labels
     labels <- Seurat::Idents(seurat_object)

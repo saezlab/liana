@@ -2,7 +2,7 @@
 % Please edit documentation in R/italk_pipe.R
 \name{call_italk}
 \alias{call_italk}
-\title{Run iTALK with OmniPath data}
+\title{Run iTALK with OmniPath data [[DEPRECATED]]}
 \usage{
 call_italk(sce, op_resource, assay = "RNA", .format = TRUE, .DE = TRUE, ...)
 }
@@ -100,7 +100,7 @@ slot "avg_diff".}
 An unfiltered iTALK df sorted by relevance
 }
 \description{
-Run iTALK with OmniPath data
+Run iTALK with OmniPath data [[DEPRECATED]]
 }
 \details{
 Stats:

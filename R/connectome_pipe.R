@@ -1,4 +1,4 @@
-#' Function to call connectome with databases from OmniPath
+#' Function to call connectome with databases from OmniPath [[DEPRECATED]]
 #'
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param sce Seurat object as input

@@ -1,4 +1,4 @@
-#' Call NATMI Pipeline from R with Resources Querried from OmniPath
+#' Call NATMI Pipeline from R with Resources Querried from OmniPath [[DEPRECATED]]
 #'
 #' @param op_resource List of OmniPath resources
 #' @param sce Seurat or SingleCellExperiment object

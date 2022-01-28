@@ -1,4 +1,5 @@
-#' Function to handle different types of object
+#' Function to handle different types of object as input and do basic quality checks
+#'
 #' @param sce Seurat or SingleCellExperiment object
 #'
 #' @export
