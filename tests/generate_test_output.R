@@ -4,9 +4,9 @@ seurat_object <- readRDS(file.path(liana_path , "testdata",
                                    "input", "testdata.rds"))
 
 # # Generate SingleCellExperiment Object
-# counts <- matrix(rpois(100, lambda = 10), ncol=100, nrow=1000)
-#
-# pretend.cell.labels <- sample(letters, ncol(counts), replace=TRUE)
+# set.seed(123)
+# counts <- matrix(replicate(90,rpois(100, lambda = 10)), ncol=90, nrow=1000)
+# pretend.cell.labels <- colnames(seurat_object)
 # pretend.gene.lengths <- sample(10000, nrow(counts))
 #
 # sce <- SingleCellExperiment(list(counts=counts),
@@ -18,8 +18,8 @@ seurat_object <- readRDS(file.path(liana_path , "testdata",
 # colnames(sce) <- pretend.cell.labels
 # sce <- scater::logNormCounts(sce)
 # colLabels(sce) <- factor(sample(letters[1:3], ncol(counts), replace=TRUE))
-# saveRDS(sce, file.path(liana_path , "testdata",
-#                        "input", "testsce.rds"))
+saveRDS(sce, file.path(liana_path , "testdata",
+                       "input", "testsce.rds"))
 
 # liana PREP output ----
 # test sce as input
@@ -171,7 +171,7 @@ saveRDS(natmi_res, file.path(liana_path, "testdata",
 
 # Test iTALK ----
 italk_res <- call_italk(op_resource = NULL,
-                        seurat_object = seurat_object,
+                        sce = seurat_object,
                         assay = 'RNA',
                         .format = TRUE,
                         .DE = TRUE)
@@ -181,7 +181,7 @@ saveRDS(italk_res, file.path(liana_path, "testdata",
 
 # Test SCA ----
 sca_res <- call_sca(op_resource = NULL,
-                    seurat_object = seurat_object,
+                    sce = seurat_object,
                     assay = 'RNA',
                     .format = TRUE,
                     s.score = 0,
@@ -193,7 +193,7 @@ saveRDS(sca_res, file.path(liana_path, "testdata",
 # Test CellChat ----
 cellchat_res <- call_cellchat(
     op_resource = NULL,
-    seurat_object = seurat_object,
+    sce = seurat_object,
     nboot = 2,
     exclude_anns = NULL,
     thresh = 1,

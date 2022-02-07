@@ -152,7 +152,8 @@ Also, here we will use a `SingleCellExperiment` object as input. In reality, LIA
 to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.
 
 ```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=8}
-sce <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+# Load Sce testdata
+sce <- readRDS(file.path(liana_path , "testdata", "input", "testsce.rds"))
 
 # RUN CPDB alone
 cpdb_test <- liana_wrap(sce,
@@ -162,11 +163,12 @@ cpdb_test <- liana_wrap(sce,
                                                   parallelize=FALSE,
                                                   workers=4))
 
-# Plot results
+# Plot toy results
 cpdb_test %>%
-  filter(pvalue <= 0.05) %>% # only keep interactions with p-val <= 0.05
-  liana_dotplot(source_groups = c("B"),
-                target_groups = c("NK", "CD8 T", "B"),
+  # filter(pvalue <= 0.05) %>% # only keep interactions with p-val <= 0.05
+  mutate(pvalue = -log10(pvalue)) %>% # invert size (low p-value/high specificity = larger dot size)
+  liana_dotplot(source_groups = c("c"),
+                target_groups = c("c", "a", "b"),
                 specificity = "pvalue",
                 magnitude = "lr.mean")
 ```

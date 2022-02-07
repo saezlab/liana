@@ -48,7 +48,7 @@ liana_pipe <- function(sce,
     sce <- sce[rownames(sce) %in% entity_genes,
                Matrix::colSums(counts(sce)) > 0]
     # Scale genes across cells
-    sce@assays@data[["scaledata"]] <- as.matrix(row_scale(exec(assay.type, sce)))
+    sce@assays@data[["scaledata"]] <- row_scale(exec(assay.type, sce))
 
     # Get Avg and  Prop. Expr Per Cluster
     mean_prop <-
@@ -422,13 +422,17 @@ decomplexify <- function(resource,
 #'
 #' @param mat a matrix, typically the logcounts matrix from an SCE object
 #'
+#'
 #' @noRd
 row_scale <- function(mat){
-    col_means = rowMeans(mat, na.rm = TRUE) # Get the column means
-    col_sd = MatrixGenerics::rowSds(mat, center = col_means) # Get the column sd
+    col_means = rowMeans(mat,
+                         na.rm = TRUE) # Get the column means
+    col_sd = MatrixGenerics::rowSds(mat,
+                                    center = col_means,
+                                    na.rm = TRUE) # Get the column sd
 
     # return scaled mat
-    return((mat - col_means) / col_sd)
+    return(as.matrix((mat - col_means) / col_sd))
 }
 
 
