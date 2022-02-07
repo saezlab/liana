@@ -89,7 +89,7 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 #' @noRd
 .liana_convert <- function(sce, assay){
     seurat_object <- SeuratObject::as.Seurat(sce)
-    Idents(seurat_object) <- SingleCellExperiment::colLabels(sce)
+    SeuratObject::Idents(seurat_object) <- SingleCellExperiment::colLabels(sce)
     seurat_object@assays[[assay]] <- seurat_object@assays[[1]]
     SeuratObject::DefaultAssay(seurat_object) <- assay
 

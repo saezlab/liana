@@ -5,7 +5,7 @@
 \title{Run CellChat with OmniPath function [[DEPRECATED]]}
 \usage{
 call_cellchat(
-  seurat_object,
+  sce,
   op_resource,
   .format = TRUE,
   exclude_anns = c(),
@@ -23,7 +23,7 @@ call_cellchat(
 )
 }
 \arguments{
-\item{seurat_object}{Seurat object as input}
+\item{sce}{Seurat object as input}
 
 \item{op_resource}{OmniPath Intercell Resource DN}
 
