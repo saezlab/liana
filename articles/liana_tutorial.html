@@ -112,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-01-28</h4>
+            <h4 class="date">2022-02-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_tutorial.Rmd"><code>vignettes/liana_tutorial.Rmd</code></a></small>
       <div class="hidden name"><code>liana_tutorial.Rmd</code></div>
@@ -270,7 +270,8 @@
 <p>We will now run only the CellPhoneDB’s permutation-based algorithm. We will also lower the number of permutations that we wish to perform for the sake of computational time. Note that one can also parallelize the CPDB algorithm implemented in LIANA (in this case we don’t, as this would only make sense when working with large datasets).</p>
 <p>Also, here we will use a <code>SingleCellExperiment</code> object as input. In reality, LIANA converts <code>Seurat</code> objects to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="co"># Load Sce testdata</span>
+<span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testsce.rds"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># RUN CPDB alone</span>
 <span class="va">cpdb_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">sce</span>,
@@ -280,11 +281,12 @@
                                                   parallelize<span class="op">=</span><span class="cn">FALSE</span>,
                                                   workers<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 
-<span class="co"># Plot results</span>
+<span class="co"># Plot toy results</span>
 <span class="va">cpdb_test</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">&lt;=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co"># only keep interactions with p-val &lt;= 0.05</span>
-  <span class="fu"><a href="../reference/liana_dotplot.html">liana_dotplot</a></span><span class="op">(</span>source_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span><span class="op">)</span>,
-                target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span>, <span class="st">"B"</span><span class="op">)</span>,
+  <span class="co"># filter(pvalue &lt;= 0.05) %&gt;% # only keep interactions with p-val &lt;= 0.05</span>
+  <span class="fu">mutate</span><span class="op">(</span>pvalue <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">pvalue</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co"># invert size (low p-value/high specificity = larger dot size)</span>
+  <span class="fu"><a href="../reference/liana_dotplot.html">liana_dotplot</a></span><span class="op">(</span>source_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span>,
+                target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>,
                 specificity <span class="op">=</span> <span class="st">"pvalue"</span>,
                 magnitude <span class="op">=</span> <span class="st">"lr.mean"</span><span class="op">)</span></code></pre></div>
 <p><img src="liana_tutorial_files/figure-html/cpdb_test-1.png" width="1056"></p>
@@ -343,14 +345,23 @@
                          <span class="op">)</span>
 <span class="co">#&gt; Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had</span>
 <span class="co">#&gt; no counts!</span>
+<span class="co">#&gt; The cell groups used for CellChat analysis are  B CD8 T NK</span>
+<span class="co">#&gt; Warning: Expected 5 pieces. Missing pieces filled with `NA` in 3 rows [1, 2, 3].</span>
+<span class="co">#&gt; Issue identified!! Please check the official Gene Symbol of the following genes:  </span>
+<span class="co">#&gt;  2 </span>
+<span class="co">#&gt; Issue identified!! Please check the official Gene Symbol of the following genes:  </span>
+<span class="co">#&gt;  HIDE1</span>
 
 <span class="co"># This returns a list of results for each method</span>
 <span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span>
 <span class="co">#&gt; List of 2</span>
-<span class="co">#&gt;  $ cellchat:List of 2</span>
-<span class="co">#&gt;   ..$ message: chr "argument \"seurat_object\" is missing, with no default"</span>
-<span class="co">#&gt;   ..$ call   : language Seurat::Idents(seurat_object)</span>
-<span class="co">#&gt;   ..- attr(*, "class")= chr [1:3] "simpleError" "error" "condition"</span>
+<span class="co">#&gt;  $ cellchat: tibble [245 × 6] (S3: tbl_df/tbl/data.frame)</span>
+<span class="co">#&gt;   ..$ source  : Factor w/ 3 levels "B","CD8 T","NK": 1 3 1 2 3 1 2 3 1 2 ...</span>
+<span class="co">#&gt;   ..$ target  : Factor w/ 3 levels "B","CD8 T","NK": 3 3 2 2 2 1 1 1 2 2 ...</span>
+<span class="co">#&gt;   ..$ ligand  : chr [1:245] "TYROBP" "TYROBP" "HLA-B" "HLA-B" ...</span>
+<span class="co">#&gt;   ..$ receptor: chr [1:245] "KLRD1" "KLRD1" "CD8A" "CD8A" ...</span>
+<span class="co">#&gt;   ..$ prob    : num [1:245] 0.0105 0.1442 0.1544 0.1694 0.1827 ...</span>
+<span class="co">#&gt;   ..$ pval    : num [1:245] 0.2 0 0 0 0 1 1 1 0 0 ...</span>
 <span class="co">#&gt;  $ sca     : tibble [996 × 10] (S3: tbl_df/tbl/data.frame)</span>
 <span class="co">#&gt;   ..$ source          : chr [1:996] "B" "B" "B" "B" ...</span>
 <span class="co">#&gt;   ..$ target          : chr [1:996] "B" "B" "B" "B" ...</span>
@@ -404,7 +415,7 @@
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       Europe/Berlin               
-#&gt;  date     2022-01-28                  
+#&gt;  date     2022-02-07                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package              * version  date       lib source                            
@@ -413,8 +424,8 @@
 #&gt;  backports              1.2.1    2020-12-09 [2] CRAN (R 4.0.2)                    
 #&gt;  beachmat               2.6.4    2020-12-20 [2] Bioconductor                      
 #&gt;  beeswarm               0.2.3    2016-04-25 [2] CRAN (R 4.0.2)                    
-#&gt;  Biobase                2.50.0   2020-10-27 [2] Bioconductor                      
-#&gt;  BiocGenerics           0.36.0   2020-10-27 [2] Bioconductor                      
+#&gt;  Biobase              * 2.50.0   2020-10-27 [2] Bioconductor                      
+#&gt;  BiocGenerics         * 0.36.0   2020-10-27 [2] Bioconductor                      
 #&gt;  BiocManager            1.30.10  2019-11-16 [2] CRAN (R 4.0.2)                    
 #&gt;  BiocNeighbors          1.8.2    2020-12-07 [2] Bioconductor                      
 #&gt;  BiocParallel           1.24.1   2020-11-06 [2] Bioconductor                      
@@ -426,12 +437,18 @@
 #&gt;  broom                  0.7.8    2021-06-24 [2] CRAN (R 4.0.3)                    
 #&gt;  bslib                  0.2.4    2021-01-25 [2] CRAN (R 4.0.3)                    
 #&gt;  cachem                 1.0.4    2021-02-13 [2] CRAN (R 4.0.3)                    
+#&gt;  Cairo                  1.5-12.2 2020-07-07 [2] CRAN (R 4.0.3)                    
+#&gt;  CellChat               1.1.0    2021-05-02 [2] Github (sqjin/CellChat@b3ccf96)   
 #&gt;  cellranger             1.1.0    2016-07-27 [2] CRAN (R 4.0.2)                    
 #&gt;  checkmate              2.0.0    2020-02-06 [2] CRAN (R 4.0.3)                    
+#&gt;  circlize               0.4.12   2021-01-08 [2] CRAN (R 4.0.3)                    
 #&gt;  cli                    2.5.0    2021-04-26 [2] CRAN (R 4.0.3)                    
+#&gt;  clue                   0.3-58   2020-12-03 [2] CRAN (R 4.0.3)                    
 #&gt;  cluster                2.1.0    2019-06-19 [5] CRAN (R 4.0.0)                    
+#&gt;  coda                   0.19-4   2020-09-30 [2] CRAN (R 4.0.3)                    
 #&gt;  codetools              0.2-16   2018-12-24 [5] CRAN (R 4.0.0)                    
 #&gt;  colorspace             2.0-0    2020-11-11 [2] CRAN (R 4.0.2)                    
+#&gt;  ComplexHeatmap         2.6.2    2020-11-12 [2] Bioconductor                      
 #&gt;  cowplot                1.1.1    2020-12-30 [2] CRAN (R 4.0.3)                    
 #&gt;  crayon                 1.4.1    2021-02-08 [2] CRAN (R 4.0.3)                    
 #&gt;  curl                   4.3.2    2021-06-23 [2] CRAN (R 4.0.3)                    
@@ -443,6 +460,7 @@
 #&gt;  deldir                 0.2-10   2021-02-16 [2] CRAN (R 4.0.3)                    
 #&gt;  desc                   1.2.0    2018-05-01 [2] CRAN (R 4.0.2)                    
 #&gt;  digest                 0.6.27   2020-10-24 [2] CRAN (R 4.0.2)                    
+#&gt;  doParallel             1.0.16   2020-10-16 [2] CRAN (R 4.0.2)                    
 #&gt;  dplyr                * 1.0.7    2021-06-18 [2] CRAN (R 4.0.3)                    
 #&gt;  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)                    
 #&gt;  edgeR                  3.32.1   2021-01-14 [2] Bioconductor                      
@@ -453,7 +471,9 @@
 #&gt;  farver                 2.0.3    2020-01-16 [2] CRAN (R 4.0.2)                    
 #&gt;  fastmap                1.1.0    2021-01-25 [2] CRAN (R 4.0.3)                    
 #&gt;  fitdistrplus           1.1-3    2020-12-05 [2] CRAN (R 4.0.2)                    
+#&gt;  FNN                    1.1.3    2019-02-15 [2] CRAN (R 4.0.2)                    
 #&gt;  forcats              * 0.5.1    2021-01-27 [2] CRAN (R 4.0.3)                    
+#&gt;  foreach                1.5.1    2020-10-15 [2] CRAN (R 4.0.2)                    
 #&gt;  fs                     1.5.0    2020-07-31 [2] CRAN (R 4.0.2)                    
 #&gt;  future                 1.21.0   2020-12-10 [2] CRAN (R 4.0.3)                    
 #&gt;  future.apply           1.7.0    2021-01-04 [2] CRAN (R 4.0.3)                    
@@ -461,13 +481,18 @@
 #&gt;  GenomeInfoDb           1.26.2   2020-12-08 [2] Bioconductor                      
 #&gt;  GenomeInfoDbData       1.2.4    2020-12-14 [2] Bioconductor                      
 #&gt;  GenomicRanges          1.42.0   2020-10-27 [2] Bioconductor                      
+#&gt;  GetoptLong             1.0.5    2020-12-15 [2] CRAN (R 4.0.3)                    
+#&gt;  gg.gap                 1.3      2019-09-30 [2] CRAN (R 4.0.3)                    
+#&gt;  ggalluvial             0.12.3   2020-12-05 [2] CRAN (R 4.0.3)                    
 #&gt;  ggbeeswarm             0.6.0    2017-08-07 [2] CRAN (R 4.0.2)                    
 #&gt;  ggplot2              * 3.3.5    2021-06-25 [2] CRAN (R 4.0.3)                    
 #&gt;  ggrepel                0.9.1    2021-01-15 [2] CRAN (R 4.0.3)                    
 #&gt;  ggridges               0.5.3    2021-01-08 [2] CRAN (R 4.0.3)                    
+#&gt;  GlobalOptions          0.1.2    2020-06-10 [2] CRAN (R 4.0.3)                    
 #&gt;  globals                0.14.0   2020-11-22 [2] CRAN (R 4.0.2)                    
 #&gt;  glue                   1.4.2    2020-08-27 [2] CRAN (R 4.0.2)                    
 #&gt;  goftest                1.2-2    2019-12-02 [2] CRAN (R 4.0.2)                    
+#&gt;  gridBase               0.4-7    2014-02-24 [2] CRAN (R 4.0.3)                    
 #&gt;  gridExtra              2.3      2017-09-09 [2] CRAN (R 4.0.2)                    
 #&gt;  gtable                 0.3.0    2019-03-25 [2] CRAN (R 4.0.2)                    
 #&gt;  haven                  2.3.1    2020-06-01 [2] CRAN (R 4.0.2)                    
@@ -481,6 +506,7 @@
 #&gt;  igraph                 1.2.6    2020-10-06 [2] CRAN (R 4.0.2)                    
 #&gt;  IRanges                2.24.1   2020-12-12 [2] Bioconductor                      
 #&gt;  irlba                  2.3.3    2019-02-05 [2] CRAN (R 4.0.2)                    
+#&gt;  iterators              1.0.13   2020-10-15 [2] CRAN (R 4.0.2)                    
 #&gt;  jquerylib              0.1.3    2020-12-17 [2] CRAN (R 4.0.3)                    
 #&gt;  jsonlite               1.7.2    2020-12-09 [2] CRAN (R 4.0.2)                    
 #&gt;  KernSmooth             2.23-17  2020-04-26 [5] CRAN (R 4.0.0)                    
@@ -490,7 +516,7 @@
 #&gt;  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 #&gt;  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 #&gt;  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-#&gt;  liana                * 0.0.6    2022-01-28 [1] local                             
+#&gt;  liana                * 0.0.6    2022-02-07 [1] local                             
 #&gt;  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 #&gt;  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 #&gt;  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -509,7 +535,9 @@
 #&gt;  miniUI                 0.1.1.1  2018-05-18 [2] CRAN (R 4.0.2)                    
 #&gt;  modelr                 0.1.8    2020-05-19 [2] CRAN (R 4.0.2)                    
 #&gt;  munsell                0.5.0    2018-06-12 [2] CRAN (R 4.0.2)                    
+#&gt;  network                1.16.1   2020-10-07 [2] CRAN (R 4.0.2)                    
 #&gt;  nlme                   3.1-149  2020-08-23 [5] CRAN (R 4.0.2)                    
+#&gt;  NMF                    0.23.0   2020-08-01 [2] CRAN (R 4.0.3)                    
 #&gt;  OmnipathR              3.3.5    2021-12-12 [2] Github (saezlab/OmnipathR@30e0133)
 #&gt;  parallelly             1.24.0   2021-03-14 [2] CRAN (R 4.0.3)                    
 #&gt;  patchwork              1.1.1    2020-12-17 [2] CRAN (R 4.0.3)                    
@@ -517,6 +545,7 @@
 #&gt;  pillar                 1.6.1    2021-05-16 [2] CRAN (R 4.0.3)                    
 #&gt;  pkgconfig              2.0.3    2019-09-22 [2] CRAN (R 4.0.2)                    
 #&gt;  pkgdown                1.6.1    2020-09-12 [2] CRAN (R 4.0.3)                    
+#&gt;  pkgmaker               0.32.2   2020-10-20 [2] CRAN (R 4.0.3)                    
 #&gt;  plotly                 4.9.3    2021-01-10 [2] CRAN (R 4.0.3)                    
 #&gt;  plyr                   1.8.6    2020-03-03 [2] CRAN (R 4.0.2)                    
 #&gt;  png                    0.1-7    2013-12-03 [2] CRAN (R 4.0.2)                    
@@ -535,15 +564,20 @@
 #&gt;  RCurl                  1.98-1.3 2021-03-16 [2] CRAN (R 4.0.3)                    
 #&gt;  readr                * 2.1.0    2021-11-11 [2] CRAN (R 4.0.3)                    
 #&gt;  readxl                 1.3.1    2019-03-13 [2] CRAN (R 4.0.2)                    
+#&gt;  registry               0.5-1    2019-03-05 [2] CRAN (R 4.0.3)                    
 #&gt;  reprex                 1.0.0    2021-01-27 [2] CRAN (R 4.0.3)                    
 #&gt;  reshape2               1.4.4    2020-04-09 [2] CRAN (R 4.0.2)                    
 #&gt;  reticulate             1.20     2021-05-03 [2] CRAN (R 4.0.3)                    
+#&gt;  rjson                  0.2.20   2018-06-08 [2] CRAN (R 4.0.3)                    
 #&gt;  rlang                  0.4.11   2021-04-30 [2] CRAN (R 4.0.3)                    
+#&gt;  rle                    0.9.2    2020-09-25 [2] CRAN (R 4.0.3)                    
 #&gt;  rmarkdown              2.7      2021-02-19 [2] CRAN (R 4.0.3)                    
+#&gt;  rngtools               1.5      2020-01-23 [2] CRAN (R 4.0.2)                    
 #&gt;  RobustRankAggreg       1.1      2013-06-03 [2] CRAN (R 4.0.3)                    
 #&gt;  ROCR                   1.0-11   2020-05-02 [2] CRAN (R 4.0.2)                    
 #&gt;  rpart                  4.1-15   2019-04-12 [5] CRAN (R 4.0.0)                    
 #&gt;  rprojroot              2.0.2    2020-11-15 [2] CRAN (R 4.0.2)                    
+#&gt;  RSpectra               0.16-0   2019-12-01 [2] CRAN (R 4.0.2)                    
 #&gt;  rstudioapi             0.13     2020-11-12 [2] CRAN (R 4.0.2)                    
 #&gt;  rsvd                   1.0.3    2020-02-17 [2] CRAN (R 4.0.2)                    
 #&gt;  Rtsne                  0.15     2018-11-10 [2] CRAN (R 4.0.2)                    
@@ -559,8 +593,10 @@
 #&gt;  sessioninfo            1.1.1    2018-11-05 [2] CRAN (R 4.0.2)                    
 #&gt;  Seurat                 4.0.3    2021-06-10 [2] CRAN (R 4.0.3)                    
 #&gt;  SeuratObject           4.0.2    2021-06-09 [2] CRAN (R 4.0.3)                    
+#&gt;  shape                  1.4.5    2020-09-13 [2] CRAN (R 4.0.3)                    
 #&gt;  shiny                  1.6.0    2021-01-25 [2] CRAN (R 4.0.3)                    
 #&gt;  SingleCellExperiment   1.12.0   2020-10-27 [2] Bioconductor                      
+#&gt;  sna                    2.6      2020-10-06 [2] CRAN (R 4.0.3)                    
 #&gt;  sparseMatrixStats      1.2.1    2021-02-02 [2] Bioconductor                      
 #&gt;  spatstat.core          2.0-0    2021-03-23 [2] CRAN (R 4.0.3)                    
 #&gt;  spatstat.data          2.1-0    2021-03-21 [2] CRAN (R 4.0.3)                    
@@ -568,10 +604,12 @@
 #&gt;  spatstat.sparse        2.0-0    2021-03-16 [2] CRAN (R 4.0.3)                    
 #&gt;  spatstat.utils         2.1-0    2021-03-15 [2] CRAN (R 4.0.3)                    
 #&gt;  statmod                1.4.35   2020-10-19 [2] CRAN (R 4.0.2)                    
+#&gt;  statnet.common         4.4.1    2020-10-03 [2] CRAN (R 4.0.3)                    
 #&gt;  stringi                1.5.3    2020-09-09 [2] CRAN (R 4.0.2)                    
 #&gt;  stringr              * 1.4.0    2019-02-10 [2] CRAN (R 4.0.2)                    
 #&gt;  SummarizedExperiment   1.20.0   2020-10-27 [2] Bioconductor                      
 #&gt;  survival               3.2-7    2020-09-28 [2] CRAN (R 4.0.2)                    
+#&gt;  svglite                2.0.0    2021-02-20 [2] CRAN (R 4.0.3)                    
 #&gt;  systemfonts            1.0.1    2021-02-09 [2] CRAN (R 4.0.3)                    
 #&gt;  tensor                 1.5      2012-05-05 [2] CRAN (R 4.0.2)                    
 #&gt;  textshaping            0.3.0    2021-02-10 [2] CRAN (R 4.0.3)                    
@@ -595,7 +633,7 @@
 #&gt;  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 #&gt;  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 #&gt; 
-#&gt; [1] /tmp/RtmpNqrigQ/temp_libpath72c1e24826e21
+#&gt; [1] /tmp/RtmpUYDfzk/temp_libpath32ca4bd7ccea
 #&gt; [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 #&gt; [3] /usr/local/lib/R/site-library
 #&gt; [4] /usr/lib/R/site-library
