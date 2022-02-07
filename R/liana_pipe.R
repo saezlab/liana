@@ -9,7 +9,7 @@
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param assay assay to be used ("RNA" by default)
 #' @param assay.type - the type of data to be used to calculate the means
-#'  (counts by default), available options are: "counts" and "logcounts"
+#'  (logcounts by default), available options are: "counts" and "logcounts"
 #'
 #' @import SingleCellExperiment SeuratObject
 #' @importFrom scran findMarkers

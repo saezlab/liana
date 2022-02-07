@@ -28,7 +28,7 @@ get_permutations(
 \item{workers}{Number of workers to be used in parallelization}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(counts by default), available options are: "counts" and "logcounts"}
+(logcounts by default), available options are: "counts" and "logcounts"}
 }
 \value{
 Returns a list of shuffled gene means by cluster

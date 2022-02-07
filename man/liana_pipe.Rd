@@ -32,7 +32,7 @@ or a binomial test with \code{"binom"}.}
 \item{assay}{assay to be used ("RNA" by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(counts by default), available options are: "counts" and "logcounts"}
+(logcounts by default), available options are: "counts" and "logcounts"}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default),
 yet one should consider setting this to an appropriate value between 0 and 1,
