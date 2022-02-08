@@ -124,14 +124,15 @@ liana_form <- liana_res %>%
   # one could treat the aggragate rank as 
   # the probability to observe an interaction
   # as preferentially highly ranked
-  # one could also p.adjust, 
-  # but since we work with testdata - we don't
+  # one could also p.adjust
+  # mutate(aggregate_rank = p.adjust(aggregate_rank)) %>%
   filter(aggregate_rank <= 0.05)
 liana_form
 
 ```
 
 ### Obtain MSigDB Genesets via OmniPathR - takes a while :)
+Here we focus on the [Hallmarks gene set](http://www.gsea-msigdb.org/gsea/msigdb/collection_details.jsp#H)
 ```{r load_msig}
 msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
                                                  wide = TRUE) %>%
@@ -142,6 +143,7 @@ msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
 ### Establish the Resource as the background/universe
 ```{r establish_universe}
 # Here, we join pathways associated with ligand and receptors, separately
+# Note that here we consider only matches to ligands and receptors from OmniPath as the background universe
 omni_universe <- liana_omni %>% 
   select(source_genesymbol, target_genesymbol) %>%
   left_join(msigdb, by=c("source_genesymbol"="genesymbol")) %>%
@@ -150,91 +152,60 @@ omni_universe <- liana_omni %>%
   rename(target_geneset = geneset)
 
 # Establish Ligand Universe
+entity_total <- length(unique(omni_universe$source_genesymbol))
 ligand_universe <- omni_universe %>%
-  select(source_genesymbol, geneset = source_geneset) %>%
+  select(ligand = source_genesymbol, geneset = source_geneset) %>%
   na.omit() %>%
-  mutate(total = n()) %>%
-  group_by(geneset) %>%
-  mutate(hit = n()) %>%
-  ungroup() %>%
-  select(-source_genesymbol) %>%
   distinct() %>%
-  arrange(desc(hit)) %>%
-  mutate(truth_guess = "truth")
+  group_by(geneset) %>%
+  mutate(geneset_n = n()) %>%
+  ungroup() %>%
+  arrange(desc(geneset_n)) %>%
+  mutate(background = entity_total)
+
+
+# Bind Distinct liana ligand hits to the universe
+# Get Distinct Ligands in top hits
+liana_ligands <- liana_form %>%
+  select(source, ligand) %>%
+  distinct() %>%
+  mutate(distinct_hits = n())
+
+# Perform hypergeometric test
+liana_hyperenrich <- ligand_universe %>%
+  left_join(liana_ligands, by=c("ligand")) %>%
+  na.omit() %>%
+  group_by(source, geneset) %>%
+  # count ligands in geneset
+  mutate(ligands_in_gs = n()) %>% # aka x/q
+  rowwise() %>%
+  mutate(pval = phyper(q = ligands_in_gs, 
+                       m = geneset_n,
+                       n = background-geneset_n,
+                       k = distinct_hits, lower.tail = FALSE)) %>%
+  ungroup() %>%
+  arrange(pval)
+
+# Note that the ligand coverage of some gene sets is simply too limited
+# So, one could consider not limiting the results to the ligands alone
+liana_hyperenrich
 ```
-
-
-We need to first create a function with which we can perform ORA.
-It's simply a wrapper for Fisher's exact test.
-```{r fet_fun}
-#' Function to Run FET on Liana vs OP truth
-#' @param gs geneset
-#' @param lr_paths ligand-receptor with functional annotations
-#' @param universe CCC resource with joined functional annotations
-geneset_fet <- function(gs, lr_funcs, universe){
-  # filter by geneset 
-  guess <- lr_funcs %>% filter(geneset==gs)
-  truth <- universe %>% filter(geneset==gs)
-  
-  # transform to contingency tables
-  cont_table <- bind_rows(guess, truth) %>%
-    select(-geneset) %>%
-    as.data.frame() %>%
-    column_to_rownames("truth_guess") %>% 
-    t()
-  
-  fet_result <- fisher.test(cont_table)
-  
-  tibble(geneset = gs,
-         pval = last(fet_result$p.value),
-         odds_ratio = fet_result$estimate)
-}
-```
-
-
-
-### Join pathways to LIANA results and perform ORA.
-```{r run_decoupleR}
-# we then split by celltype and join the functional annotation from OmniPath
-liana_enrich <- liana_form %>%
-  group_by(source) %>%
-  group_nest(.key = "ligand_data") %>%
-  mutate(ligand_data = map(ligand_data,
-                           function(res){
-                             res %>%
-                               select(ligand) %>%
-                               left_join(msigdb, by=c("ligand"="genesymbol")) %>%
-                               na.omit() # remove any ligands without annotations
-                           })
-         ) %>%
-      # we then obtain counts per cell type, per functional set
-  mutate(ligand_cont = map(ligand_data, function(enr){
-    counts_by_geneset <- enr %>%
-      mutate(total = n()) %>%
-      group_by(geneset) %>%
-      mutate(hit = n()) %>%
-      ungroup() %>%
-      select(-ligand) %>%
-      distinct() %>%
-      arrange(desc(hit)) %>%
-      mutate(truth_guess = "guess")
-     
-    # finally we perform FET
-    map(counts_by_geneset$geneset, function(gs){
-        geneset_fet(gs, counts_by_geneset, ligand_universe)
-      })
-  })) %>%
-  select(-ligand_data) %>% 
-  unnest(ligand_cont) %>%
-  unnest(ligand_cont) %>%
-  arrange(desc(odds_ratio))
-
-```
-Done! Check whether any categories are over-represented (by celltype) in our dataset.
-Kind reminder this is a toy dataset of PBMC (:
+### Format Hypergeometric test results
 ```{r ora_res}
-liana_enrich
+liana_hyperenrich %>%
+  select(geneset, source, pval) %>%
+  distinct() %>%
+  mutate(adj_pval = p.adjust(pval, method = "fdr")) %>%
+  arrange(adj_pval)
 ```
+
+Done! Check whether any categories are over-represented (by celltype) in our dataset.
+
+Kind reminder that this analysis is intended for representation purposes alone. 
+We usually favour the use of the whole genome for any enrichment and pathway analyses,
+and kindly refer to the user to the rest of [our tools](https://saezlab.org/?#tools), which can be highly complementary
+when interpretting the ligand-receptor predictions from LIANA.
+
 
 We also kindly refer the user to [OmniPathR](https://github.com/saezlab/OmnipathR), and the [OmniPath website](https://omnipathdb.org/#about) for
 more information how to make full use of OmniPath!
