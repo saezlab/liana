@@ -27,7 +27,14 @@ liana_dotplot <- function(liana_agg,
                           source_groups,
                           target_groups,
                           specificity = "natmi.edge_specificity",
+                          show_complex = FALSE,
                           magnitude = "sca.LRscore"){
+
+    if(show_complex){
+        entities <- c("ligand.complex", "receptor.complex")
+    } else{
+        entities <- c("ligand", "receptor")
+    }
 
     # Modify for the plot
     liana_mod <- liana_agg %>%
@@ -36,7 +43,7 @@ liana_dotplot <- function(liana_agg,
         filter(target %in% target_groups) %>%
         rename(magnitude = !!magnitude) %>%
         rename(specificity = !!specificity) %>%
-        unite(c("ligand", "receptor"), col = "interaction", sep = " -> ") %>%
+        unite(entities, col = "interaction", sep = " -> ") %>%
         unite(c("source", "target"), col = "source_target", remove = FALSE)
 
     # colour blind palette from http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/

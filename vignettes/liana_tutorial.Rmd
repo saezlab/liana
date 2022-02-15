@@ -133,6 +133,7 @@ and we plot interactions in which B cells are the `source` (express the ~ligands
 the other 3 cell types in this toy dataset are the `target` (express the ~receptors).
 ```{r liana_dotplot, warning=FALSE, fig.width=11, fig.height=8}
 liana_test %>% 
+  filter(source =="B") %>%
   top_n(25, desc(aggregate_rank)) %>%
   liana_dotplot(source_groups = c("B"),
                 target_groups = c("NK", "CD8 T", "B"))
@@ -151,6 +152,7 @@ as this would only make sense when working with large datasets).
 Also, here we will use a `SingleCellExperiment` object as input. In reality, LIANA converts `Seurat` objects
 to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.
 
+Finally, in this scenario we decide to show the names of the complexes, rather than the subunit with the lowest ~expression.
 ```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=8}
 # Load Sce testdata
 sce <- readRDS(file.path(liana_path , "testdata", "input", "testsce.rds"))
@@ -170,7 +172,8 @@ cpdb_test %>%
   liana_dotplot(source_groups = c("c"),
                 target_groups = c("c", "a", "b"),
                 specificity = "pvalue",
-                magnitude = "lr.mean")
+                magnitude = "lr.mean",
+                show_complex = TRUE)
 ```
 
 
