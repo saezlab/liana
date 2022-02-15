@@ -8,6 +8,14 @@ higher complex and curration content.
 
 - All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
 
+## Minor Changes
+
+- Added option to show complexes on dotplot
+
+- Documentation improvements
+
+- `decomplexify` function is now exported
+
 
 # LIANA 0.0.6
 
