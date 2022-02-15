@@ -1,3 +1,14 @@
+# LIANA 0.0.7
+
+## Changes
+
+- LIANA will now use the `Consensus` resource by default. This is a highly-literature supported resource, generated using similar
+filtering steps as the 'OmniPath' (old default) resource. This resource is similar in size (~4,700 interactions), but contains a 
+higher complex and curration content.
+
+- All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
+
+
 # LIANA 0.0.6
 
 ## New implementations
