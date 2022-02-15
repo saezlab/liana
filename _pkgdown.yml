@@ -20,15 +20,15 @@ reference:
     desc: "`liana`-wrapper and related functions"
     contents:
       - starts_with("liana_")
-  - title: (External) Method calling functions
+  - title: (External) Method calling functions [Deprecated]
     desc: >
     contents:
       - starts_with("call_")
-  - title: (Internal) Method calling functions
+  - title: (Internal) Method-calling and resource-generating functions
     desc: >
     contents:
       - starts_with("get_")
-  - title: Format Method Output
+  - title: Format (External) Method Output [Deprecated]
     desc: >
     contents:
       - starts_with("Format")

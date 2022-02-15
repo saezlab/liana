@@ -15,12 +15,14 @@ output:
       code_folding: show
 ---
 
-All prediction methods in LIANA require literature and database knowledge
-about intercellular signaling interactions. LIANA provides functionalities to
-obtain this prior knowledge from the
-[OmniPath web service](https://omnipathdb.org/).
+# Introduction
+
+All ligand-receptor interaction prediction methods in LIANA require a resource of
+literature and database knowledge about intercellular signaling. LIANA, together with [OmniPath web service](https://omnipathdb.org/),
+provide a number functionalities to obtain this prior knowledge.
+
 Here we show how to customize and quality filter the prior knowledge from
-OmniPath, and how to use LIANA with a custome database resource.
+OmniPath, and how to use LIANA with a custom database resource.
 
 ## Intercellular communication data in OmniPath
 
@@ -40,6 +42,10 @@ while you can read more about the quality filtering options
 [here](https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html),
 [here](https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html) and
 [here](https://saezlab.github.io/OmnipathR/articles/bioc_workshop.html#intercellular-communication-roles).
+
+We further provide a list of curated interactions, which we define as those which come from manually-curated resources
+in the context of CCC, and come with a corresponding Pubmed ID, available via
+[OmnipathR::curated_ligand_receptor_interactions](https://saezlab.github.io/OmnipathR/reference/curated_ligand_receptor_interactions.html).
 
 ### Complexes
 
@@ -64,11 +70,19 @@ network. In `liana`, the
 [`generate_omni`](https://saezlab.github.io/liana/reference/generate_omni.html)
 function wraps the `Omnipath` functions and ensures the output is suitable
 for the downstream methods in LIANA.
+[`get_curated_omni`](https://saezlab.github.io/liana/reference/get_curated_omni.html) function
+which is used to generate the curated consensus (default) resource that LIANA uses.
+
+We suggest using the latest OmnipathR version for any resource-generation purposes.
+```{r, eval = FALSE}
+require(devtools)
+install_github('saezlab/OmnipathR')
+```
 
 ## Loading prerequisites
-
 ```{r load_prereq, message=FALSE, warning=FALSE}
 require(tidyverse)
+require(OmnipathR) 
 require(liana)
 require(purrr)
 require(magrittr)
@@ -81,21 +95,58 @@ testdata <-
 
 ## Curated OmniPath Consensus
 
-By default, LIANA uses the `curated_omni` resource, which is composed solely from 
-interactions coming from the manually-curated (in the context of CCC) "CellPhoneDB",
-"CellChatDB", "ICELLNET", "connectomeDB2020", and "CellTalkDB" resources.
+By default, LIANA uses the `Consensus` resource, which is composed solely from the
+consensus interactions set coming from the manually-curated (in the context of CCC) "CellPhoneDB",
+"CellChatDB", "ICELLNET", "connectomeDB2020", and "CellTalkDB" resources. 
+These interactions are also filtered by localisation and curation. 
 
+For more information about how we generate this resource please refer to the `get_curated_omni` function.
+```{r curated_select, message=FALSE, warning=FALSE}
+consensus_omni <- select_resource("Consensus")[[1]] %>%
+  glimpse
+```
 
+One could also obtain a list with all manually-curated interactions with corresponding PubMed IDs in the context of CCC from OmnipathR.
+We will use this list to double-check the curation effort of our Consensus resource.
 
+```{r curation_effort, message=FALSE, warning=FALSE}
+# Obtain purely curated resources
+curated <- OmnipathR::curated_ligand_receptor_interactions(
+  cellphonedb = TRUE,
+  cellinker = TRUE,
+  talklr = TRUE,
+  signalink = TRUE) %>%
+  liana:::decomplexify() %>%
+  select(source_genesymbol, target_genesymbol) %>%
+  distinct() %>%
+  mutate(curated_flag = 1)
 
+consensus_omni %>%
+  liana:::decomplexify() %>% # dissociates complexes
+  select(source_genesymbol, target_genesymbol) %>%
+  distinct() %>%
+  left_join(curated, by = c("source_genesymbol", "target_genesymbol")) %>%
+  distinct() %>%
+  mutate(curated_flag = as.factor(replace_na(curated_flag, 0))) %>%
+  mutate(total = n()) %>%
+  group_by(curated_flag) %>%
+  mutate(num =  n()) %>%
+  ungroup() %>%
+  select(curated_flag, total, num) %>%
+  distinct() %>%
+  rowwise() %>%
+  mutate(perc = num/total * 100)
+```
+We see that our Consensus resource is highly (>90%) curated.
 
+It is, nevertheless, worth keeping in mind that this check obtains the information from the same resources, so please consider the
+percentages with a grain of salt :). Yet this approach provides us a reasonable quality reference, applicable to any custom-made resource.
 
-
-One could use stricter filtering options, such as only importing from certain CCC-dedicated resources, etc.
+**Note that we plan to continuously update this resource, and we welcome any feedback [here](https://forms.gle/LhTUZjNdiHz8RZZ86).**
 
 ## Surface or Membrane-bound Interactions only
 
-In the next example, we restrict our query to cell-surface (i.e. membrane
+We could also restrict our query to cell-surface (i.e. membrane
 bound) interactions, and also alter some further parameters: we set a more
 stringent threshold for consensus of resources on localization, we include
 also protein complexes, and we simplify the data frame to keep only the
@@ -141,7 +192,42 @@ pm_omni %<>% filter(
 pm_omni %>% glimpse()
 ```
 
+## OmniPath resource as it is in the Biorxiv
 
+In the first example, we filter OmniPath as described in the LIANA biorxiv:
+* Only interactions with literature curation
+* Interactions only where the receiver protein is plasma membrane
+transmembrane or peripheral, according to at least 30% of the localisation
+annotations
+* Only interactions between single proteins (interactions between complexes
+were included in that version of OmniPath).
+
+```{r liana_omni, message = FALSE, print = FALSE}
+# generate_omni returns a tibble with CCC OmniPath
+cust_omni <- generate_omni(
+    loc_consensus_percentile = 30,
+    consensus_percentile = NULL,
+    transmitter_topology = c(
+        'secreted',
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    receiver_topology = c(
+        'plasma_membrane_transmembrane',
+        'plasma_membrane_peripheral'
+    ),
+    min_curation_effort = 1,
+    ligrecextra = FALSE,
+    remove_complexes = TRUE,
+    simplify = FALSE
+)
+```
+
+Note that this resource was subsequently improved by manually excluding certain
+duplicated or ambiguous interactions, and later it was finally deprecated all together.
+LIANA currently uses the curated resource presented above.
+
+* Also, available via `select_resource("OmniPath")`
 
 ## Run LIANA with a custom CCC resource
 
@@ -211,42 +297,6 @@ ligrec %<>%
 
 all_equal(ligrec, cust_omni)
 ```
-
-
-## OmniPath data as it is in the Biorxiv
-
-In the first example, we filter OmniPath as described in the LIANA biorxiv:
-* Only interactions with literature curation
-* Interactions only where the receiver protein is plasma membrane
-transmembrane or peripheral, according to at least 30% of the localisation
-annotations
-* Only interactions between single proteins (interactions between complexes
-were included in that version of OmniPath).
-
-```{r liana_omni, message = FALSE, print = FALSE}
-# generate_omni returns a tibble with CCC OmniPath
-cust_omni <- generate_omni(
-    loc_consensus_percentile = 30,
-    consensus_percentile = NULL,
-    transmitter_topology = c(
-        'secreted',
-        'plasma_membrane_transmembrane',
-        'plasma_membrane_peripheral'
-    ),
-    receiver_topology = c(
-        'plasma_membrane_transmembrane',
-        'plasma_membrane_peripheral'
-    ),
-    min_curation_effort = 1,
-    ligrecextra = FALSE,
-    remove_complexes = TRUE,
-    simplify = FALSE
-)
-```
-
-Note that this resource was subsequently improved by manually excluding certain
-duplicated or ambiguous interactions, and later it was finally deprecated all together.
-LIANA currently uses the curated resource presented above.
 
 
 ## Further Info

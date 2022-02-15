@@ -382,14 +382,18 @@ get_log2FC <- function(sce,
 }
 
 
-#' Helper Function to 'decomplexify' ligands and receptors into
+#' Helper Function to 'decomplexify' ligands and receptors into individual subunits
 #'
 #' @param resource a ligrec resource
-#' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot)
+#'
+#' @param columns columns to separate and pivot long (e.g. genesymbol or uniprot),
+#' `source_genesymbol` and `target_genesymbol` by default
 #'
 #' @return returns a longer tibble with complex subunits on seperate rows
 #'
-#' @noRd
+#' @details takes any number of columns, and assumes `_` as sep.
+#'
+#' @export
 decomplexify <- function(resource,
                          columns = c("source_genesymbol",
                                      "target_genesymbol")){

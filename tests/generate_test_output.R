@@ -18,8 +18,8 @@ seurat_object <- readRDS(file.path(liana_path , "testdata",
 # colnames(sce) <- pretend.cell.labels
 # sce <- scater::logNormCounts(sce)
 # colLabels(sce) <- factor(sample(letters[1:3], ncol(counts), replace=TRUE))
-saveRDS(sce, file.path(liana_path , "testdata",
-                       "input", "testsce.rds"))
+# saveRDS(sce, file.path(liana_path , "testdata",
+#                        "input", "testsce.rds"))
 
 # liana PREP output ----
 # test sce as input
@@ -64,7 +64,6 @@ sca_out <- get_sca(pipe_out)
 saveRDS(sca_out, file.path(liana_path, "testdata",
                            "output", "sca_score.RDS"))
 
-
 # liana permutations and cpdb output
 cpdb_out <- liana_wrap(seurat_object,
                        method = c('cellphonedb'),
@@ -79,7 +78,6 @@ cytotalk_out <- liana_wrap(seurat_object,
                            resource = c('OmniPath'))
 saveRDS(cytotalk_out, file.path(liana_path, "testdata",
                                 "output", "liana_cytotalk.RDS"))
-
 
 # Recomplexify Output ----
 lr_cmplx <- liana_pipe(seurat_conv,
@@ -124,8 +122,6 @@ liana_dotplot_out <- liana_dotplot(cpdb_out,
 saveRDS(liana_dotplot_out,
         file.path(liana_path, "testdata",
                   "output", "liana_dotplot_out.RDS"))
-
-
 
 
 ### EXTERNAL ----

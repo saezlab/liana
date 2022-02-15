@@ -618,6 +618,44 @@ assign_ligrecs <- function(ligrec_list){
 
 
 
+#' Helper Function to check if there are dissociated entities which also exist as
+#' complexes.
+#'
+#' @details We count the times that a ligand (check_entity) exists in a combination
+#' with the same receptor (anchor_entity)
+#'
+#' @param complex_omni an OmniPath resource with complexes
+#' @param check_entity the entity to be check for duplicates
+#' @param anchor_entity the anchor entity with which we check for duplicates
+#'
+check_if_dissociated <- function(complex_omni, check_entity, anchor_entity){
+    check.complex <- str_glue("{check_entity}_complex")
+    anchor.complex <- str_glue("{anchor_entity}_complex")
+
+    complex_omni %>%
+        liana::decomplexify() %>%
+        select(-anchor_entity) %>%
+        distinct() %>%
+        group_by(.data[[check_entity]], .data[[anchor.complex]]) %>%
+        # count the number that the entity exists with the same target
+        mutate(counter = n()) %>%
+        select(check_entity,
+               check.complex, anchor.complex, counter) %>%
+        arrange(desc(counter)) %>%
+        # if exists more than once and is not a complex, then this
+        # check_entity and anchor_entity is duplicated
+        # hence we can remove any non-complex check_entity (since it already exists)
+        filter(counter > 1) %>%
+        filter(!str_detect(.data[[check.complex]], "_")) %>%
+        ungroup() %>%
+        # recomplexify
+        select(-check_entity) %>%
+        dplyr::rename({{check_entity}} := check.complex,
+                      {{anchor_entity}} := anchor.complex)
+}
+
+
+
 #' Function to Generate the Curated (Default) LIANA resource
 #'
 #' @param curated_resources the curated resources from which we wish to obtain interactions.
@@ -640,7 +678,8 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                                                    "CellChatDB",
                                                    "ICELLNET",
                                                    "connectomeDB2020",
-                                                   "CellTalkDB")){
+                                                   "CellTalkDB"),
+                             ...){
 
 
     # import the OmniPathR intercell network component
@@ -798,39 +837,3 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
     return(complex_omni)
 }
 
-
-#' Helper Function to check if there are dissociated entities which also exist as
-#' complexes.
-#'
-#' @details We count the times that a ligand (check_entity) exists in a combination
-#' with the same receptor (anchor_entity)
-#'
-#' @param complex_omni an OmniPath resource with complexes
-#' @param check_entity the entity to be check for duplicates
-#' @param anchor_entity the anchor entity with which we check for duplicates
-#'
-check_if_dissociated <- function(complex_omni, check_entity, anchor_entity){
-    check.complex <- str_glue("{check_entity}_complex")
-    anchor.complex <- str_glue("{anchor_entity}_complex")
-
-    complex_omni %>%
-        liana::decomplexify() %>%
-        select(-anchor_entity) %>%
-        distinct() %>%
-        group_by(.data[[check_entity]], .data[[anchor.complex]]) %>%
-        # count the number that the entity exists with the same target
-        mutate(counter = n()) %>%
-        select(check_entity,
-               check.complex, anchor.complex, counter) %>%
-        arrange(desc(counter)) %>%
-        # if exists more than once and is not a complex, then this
-        # check_entity and anchor_entity is duplicated
-        # hence we can remove any non-complex check_entity (since it already exists)
-        filter(counter > 1) %>%
-        filter(!str_detect(.data[[check.complex]], "_")) %>%
-        ungroup() %>%
-        # recomplexify
-        select(-check_entity) %>%
-        dplyr::rename({{check_entity}} := check.complex,
-                      {{anchor_entity}} := anchor.complex)
-}

@@ -2,7 +2,7 @@
 #'
 #' @param sce `SingleCellExperiment` object or `SeuratObject`
 #' @param method method(s) to be run via liana
-#' @param resource resource(s) to be used by the methods (Use `all` to run all resources in one go),
+#' @param resource resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 #'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
 #' @param external_resource external resource in OmniPath tibble format
 #' @param .simplify if methods are run with only 1 resource, return a list
@@ -26,7 +26,7 @@
 liana_wrap <- function(sce,
                        method = c('natmi', 'connectome', 'logfc',
                                   'sca', 'cellphonedb'),
-                       resource = c('OmniPath'),
+                       resource = c('Consensus'),
                        external_resource,
                        .simplify = TRUE,
                        ...){
@@ -56,8 +56,8 @@ liana_wrap <- function(sce,
       map(function(reso){
 
         if(is.null(reso)){
-          warning("Resource was NULL and LIANA PIPE methods were run with OmniPath")
-          reso <- select_resource("OmniPath")[[1]] # To be changed to OmniPath_complex
+          warning("Resource was NULL and LIANA PIPE methods were run with OmniPath Consensus")
+          reso <- select_resource("Consensus")[[1]]
         }
 
         rlang::invoke(liana_pipe,
@@ -161,6 +161,7 @@ liana_wrap <- function(sce,
 
 
 #' Helper Function to Handle resource choices
+#'
 #' @param resource names of the resources
 #'
 #' @details This function simply reads omni_resources.rds and returns the resources.

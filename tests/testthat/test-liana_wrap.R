@@ -26,7 +26,7 @@ test_that("Test liana wrapper", {
 })
 
 
-# Test Default Params
+# Test Default Params ----
 test_that("Test liana wrapper", {
     exp3 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_def_args.RDS"))
@@ -37,7 +37,7 @@ test_that("Test liana wrapper", {
     expect_equal(exp3, res3)
 })
 
-# Test Expression_prop filtering
+# Test Expression_prop filtering ----
 test_that("Test expr_prop filtering", {
     liana_pipe_res <- readRDS(file.path(liana_path, "testdata",
                                         "output", "liana_pipe.RDS"))

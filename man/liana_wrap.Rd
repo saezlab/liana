@@ -7,7 +7,7 @@
 liana_wrap(
   sce,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
-  resource = c("OmniPath"),
+  resource = c("Consensus"),
   external_resource,
   .simplify = TRUE,
   ...
@@ -18,7 +18,7 @@ liana_wrap(
 
 \item{method}{method(s) to be run via liana}
 
-\item{resource}{resource(s) to be used by the methods (Use `all` to run all resources in one go),
+\item{resource}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
 
 \item{external_resource}{external resource in OmniPath tibble format}
