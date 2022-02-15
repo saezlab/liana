@@ -194,7 +194,8 @@ reform_omni <- function(ligrec){
             distinct_at(.vars = c("source_genesymbol", # remove duplicate LRs
                                   "target_genesymbol"),
                         .keep_all = TRUE)) %>%
-        append(list("Default" = NULL),
+        append(list("Default" = NULL,
+                    "Consensus" = get_curated_omni()),
                .)
 }
 
@@ -613,4 +614,223 @@ assign_ligrecs <- function(ligrec_list){
         distinct()
 
     return(ligrec_list)
+}
+
+
+
+#' Function to Generate the Curated (Default) LIANA resource
+#'
+#' @param curated_resources the curated resources from which we wish to obtain interactions.
+#' By default, it includes interactions curated in the context of CCC from CellPhoneDB,
+#' CellChat, ICELLNET, connectomeDB, CellTalkDB, and SignaLink.
+#'
+#' @details Here, we define the curated resources as those that are defined as manually
+#' or expert curated in the context of cell-cell communication.
+#' Albeit, "Guide2Pharma", "HPMR", and "Kirouac2010" are also such resources the remainder
+#' of the resources used to generate Omnipath, use those as sources.
+#' Hence, we assume that the second round of manual curation done in subsequent, more recently published
+#' resources would already contain the high quality interactions of the aforementioned 3.
+#' We also omit Cellinker, as it results in a large mount of ambigous interactions, but
+#' one could consider adding it to the list of curated resources.
+#'
+#' @return a curated OmniPath resource formatted for LIANA
+#'
+#' @export
+get_curated_omni <- function(curated_resources = c("CellPhoneDB",
+                                                   "CellChatDB",
+                                                   "ICELLNET",
+                                                   "connectomeDB2020",
+                                                   "CellTalkDB")){
+
+
+    # import the OmniPathR intercell network component
+    ligrec <- OmnipathR::import_intercell_network(resources = curated_resources)
+
+    # 1. Distinct and remove odd ligands
+    complex_omni <- ligrec %>%
+        filter(!category_intercell_source %in% c("activating_cofactor",
+                                                 "ligand_antagonist")) %>%
+        # we keep only the distinct LRs
+        # (technically any combination of subunits can exist at this stage)
+        distinct_at(c("source_genesymbol", "target_genesymbol"), .keep_all = TRUE) %>%
+        # we then decomplexify (or split all complexes into subunits)
+        liana::decomplexify(columns = c("source_genesymbol", "target_genesymbol"))
+
+    # 2. Identify resulting duplicates from decomplexify
+    # (keep the false/duplicate interactions alone)
+    duplicated_lrs_only <- complex_omni %>%
+        group_by(source_genesymbol, target_genesymbol) %>%
+        # Iterative counter/ticker
+        mutate(number = 1) %>%
+        mutate(ticker = cumsum(number)) %>%
+        filter(ticker > 1) %>%
+        # which ones are complexes (they are unique)
+        mutate(complex_flag = str_detect(source, pattern = "COMPLEX") |
+                   str_detect(target, pattern = "COMPLEX")) %>%
+        # remove any that are duplicated and not complexes
+        filter(!complex_flag)
+
+    # We anti join the false interactions
+    complex_omni %<>%
+        anti_join(duplicated_lrs_only)
+
+    # 3. Remove duplicated complexes (introduced by expanding them via liana_decomplexify)
+    complex_omni %<>%
+        distinct_at(c("source_genesymbol_complex", "target_genesymbol_complex"), .keep_all = TRUE) %>%
+        select(-c("source_genesymbol", "target_genesymbol")) %>%
+        dplyr::rename(source_genesymbol = source_genesymbol_complex,
+                      target_genesymbol = target_genesymbol_complex)
+
+    # 4. Filter by localisation
+    complex_omni_temp <- complex_omni %>%
+        OmnipathR::filter_intercell_network(loc_consensus_percentile = 33,
+                                            consensus_percentile = NULL,
+                                            transmitter_topology = c('secreted',
+                                                                     'plasma_membrane_transmembrane',
+                                                                     'plasma_membrane_peripheral'),
+                                            receiver_topology = c('plasma_membrane_transmembrane',
+                                                                  'plasma_membrane_peripheral'),
+                                            min_curation_effort = 0,
+                                            min_resources = 1,
+                                            min_references = 0,
+                                            min_provenances = 0,
+                                            simplify = TRUE) %>%
+        select(-starts_with("is"))
+
+    # since complexes are *penalized in terms of loc_consensus due to the fact
+    # that they have multiple subunits the localisation annotations, hence
+    # we don't filter them based on locallisation alone
+    complex_omni_diff <- anti_join(complex_omni, complex_omni_temp) %>%
+        select(colnames(complex_omni_temp)) %>%
+        filter(!str_detect(source_genesymbol, "_") & !str_detect(target_genesymbol, "_"))
+
+    # Filter out interactions (between non-proteins) whose localisation is
+    # not appropriately assigned and/or are not referenced to a specific resource
+    complex_omni %<>%
+        select(colnames(complex_omni_temp)) %>%
+        anti_join(complex_omni_diff)
+
+
+    # 5. Get *curated interactions alone
+    # Here we collected the curated interactions from all resources which contained any.
+    # We defined curated interactions as those which contain a corresponding PubMed ID
+    # Note that  we check for PubMed ID interactions solely as another level of certainty
+    ligrec_curated <- OmnipathR::curated_ligand_receptor_interactions(
+        curated_resources = curated_resources,
+        cellphonedb = TRUE,
+        cellinker = TRUE,
+        talklr = FALSE,
+        signalink = TRUE) %>%
+        liana:::decomplexify(columns = c("source_genesymbol", "target_genesymbol"))
+
+    # Check which curated interactions are missing from OmniPath
+    curated_not_in_omni <- ligrec_curated %>%
+        anti_join(complex_omni %>%
+                      liana:::decomplexify(columns = c("source_genesymbol",
+                                                       "target_genesymbol")),
+                  by=c("source_genesymbol", "target_genesymbol")) %>%
+        distinct_at(c("source_genesymbol", "target_genesymbol"), .keep_all = TRUE) %>%
+        # Filter any ligands that are receptors in the localisation-filtered OmniPath
+        filter(!(source_genesymbol %in% complex_omni$target_genesymbol)) %>%
+        # and vice versa
+        filter(!(target_genesymbol %in% complex_omni$source_genesymbol)) %>%
+        # re-complexify
+        select(-c("source_genesymbol", "target_genesymbol")) %>%
+        dplyr::rename(source_genesymbol = source_genesymbol_complex,
+                      target_genesymbol = target_genesymbol_complex) %>%
+        # remove unneeded columns
+        select(source, target, source_genesymbol, target_genesymbol, sources, references)
+
+    # Bind the missing curated (Pubmed supported) and localisation-corrected interactions
+    complex_omni %<>%
+        bind_rows(curated_not_in_omni)
+
+    # Remove left-over Redundant Subunits from Complex Ligands
+    # (mostly the case when both the ligand and receptor are complexes)
+    complex_omni %<>%
+        # remove redundant ligands
+        anti_join(check_if_dissociated(complex_omni,
+                                       check_entity = "source_genesymbol",
+                                       anchor_entity = "target_genesymbol"),
+                  by = c("source_genesymbol", "target_genesymbol")) %>%
+        # remove redundant receptors
+        anti_join(check_if_dissociated(complex_omni,
+                                       check_entity = "target_genesymbol",
+                                       anchor_entity = "source_genesymbol"),
+                  by = c("source_genesymbol", "target_genesymbol")) %>%
+        mutate(across(everything(), ~replace_na(.x, "")))
+
+    # 6. Check for duplicated/ambigous interactions
+    # These include examples such as L1_R1 and R1_L1 -> in genral, we want to remove these,
+    # unless they are in the context of cell-cell adhesion.
+    duplicated_omni <- complex_omni %>%
+        # check if any ambiguous/duplicated interactions exist
+        rowwise() %>%
+        unite(source, target, col = "interaction", remove = FALSE) %>%
+        unite(target, source, col = "interaction2", remove = FALSE) %>%
+        # identify duplicated interactions
+        mutate(dups = if_else(interaction %in% interaction2 |
+                                  interaction2 %in% interaction,
+                              TRUE,
+                              FALSE)) %>%
+        # ligands which are targets in OmniPath
+        mutate(ambigous_transmitters = (source %in% target)) %>%
+        # filter to ambiguously annotated transmitters from duplicates interactions alone
+        filter((ambigous_transmitters & dups))
+
+    wrong_transmitters <- c("ADGRE5", "BTLA", "CD160",
+                            "CD226", "EGFR",
+                            "CLEC1B", "TNFRSF18", "CTLA4",
+                            "KLRB1", "KLRF1", "KLRF2",
+                            "PTPRC", "PVR", "SIGLEC1",
+                            "SIGLEC9", "TNFRSF14", "ITGAD_ITGB2",
+                            "ITGA4_ITGB1", "ITGA9_ITGB1", "ITGA4_ITGB7")
+
+    # Identify wrongly annotated interactions
+    duplicated_omni %<>%
+        filter(source_genesymbol %in% wrong_transmitters)
+
+    # Remove those from our curated omnipath
+    complex_omni %<>%
+        anti_join(duplicated_omni)
+
+    # Return the final Curated OmniPath Resource
+    return(complex_omni)
+}
+
+
+#' Helper Function to check if there are dissociated entities which also exist as
+#' complexes.
+#'
+#' @details We count the times that a ligand (check_entity) exists in a combination
+#' with the same receptor (anchor_entity)
+#'
+#' @param complex_omni an OmniPath resource with complexes
+#' @param check_entity the entity to be check for duplicates
+#' @param anchor_entity the anchor entity with which we check for duplicates
+#'
+check_if_dissociated <- function(complex_omni, check_entity, anchor_entity){
+    check.complex <- str_glue("{check_entity}_complex")
+    anchor.complex <- str_glue("{anchor_entity}_complex")
+
+    complex_omni %>%
+        liana::decomplexify() %>%
+        select(-anchor_entity) %>%
+        distinct() %>%
+        group_by(.data[[check_entity]], .data[[anchor.complex]]) %>%
+        # count the number that the entity exists with the same target
+        mutate(counter = n()) %>%
+        select(check_entity,
+               check.complex, anchor.complex, counter) %>%
+        arrange(desc(counter)) %>%
+        # if exists more than once and is not a complex, then this
+        # check_entity and anchor_entity is duplicated
+        # hence we can remove any non-complex check_entity (since it already exists)
+        filter(counter > 1) %>%
+        filter(!str_detect(.data[[check.complex]], "_")) %>%
+        ungroup() %>%
+        # recomplexify
+        select(-check_entity) %>%
+        dplyr::rename({{check_entity}} := check.complex,
+                      {{anchor_entity}} := anchor.complex)
 }
