@@ -1,4 +1,5 @@
 # input
+complex_policy='mean0'
 liana_path <- system.file(package = "liana")
 seurat_object <- readRDS(file.path(liana_path , "testdata",
                                    "input", "testdata.rds"))
@@ -40,7 +41,6 @@ saveRDS(wrap_sce, file.path(liana_path , "testdata",
                             "input", "wrap_sce.rds"))
 
 
-
 # liana Pipe Output ----
 pipe_out <- liana_pipe(seurat_conv,
                        op_resource = select_resource("OmniPath")[[1]] %>%
@@ -50,19 +50,19 @@ saveRDS(pipe_out, file.path(liana_path, "testdata",
 
 
 # Scores Output ----
-conn_out <- get_connectome(pipe_out, expr_prop=0)
+conn_out <- get_connectome(pipe_out, expr_prop=0, complex_policy=complex_policy)
 saveRDS(conn_out, file.path(liana_path, "testdata",
                             "output", "conn_score.RDS"))
 
-logfc_out <- get_logfc(pipe_out)
+logfc_out <- get_logfc(pipe_out, complex_policy=complex_policy)
 saveRDS(logfc_out, file.path(liana_path, "testdata",
                             "output", "logfc_score.RDS"))
 
-natmi_out <- get_natmi(pipe_out)
+natmi_out <- get_natmi(pipe_out, complex_policy=complex_policy)
 saveRDS(natmi_out, file.path(liana_path, "testdata",
                             "output", "natmi_score.RDS"))
 
-sca_out <- get_sca(pipe_out)
+sca_out <- get_sca(pipe_out, complex_policy=complex_policy)
 saveRDS(sca_out, file.path(liana_path, "testdata",
                            "output", "sca_score.RDS"))
 
@@ -89,7 +89,7 @@ lr_cmplx <- liana_pipe(seurat_conv,
 
 recomplex <- recomplexify(lr_cmplx,
                           .score_specs()[["sca"]]@columns,
-                          complex_policy ='min0')
+                          complex_policy =complex_policy)
 saveRDS(recomplex, file.path(liana_path, "testdata",
                              "output", "recomplex.RDS"))
 
@@ -116,11 +116,13 @@ saveRDS(def_arg, file.path(liana_path, "testdata",
                            "output", "liana_def_args.RDS"))
 
 # liana dotplot ----
-liana_dotplot_out <- liana_dotplot(cpdb_out,
+liana_dotplot_out <- liana_dotplot(cpdb_out %>%
+                                       mutate(pvalue = -log10(pvalue+0.00000001)), # invert pval
                                    source_groups = "B",
                                    target_groups = c("NK", "CD8 T"),
                                    magnitude = "lr.mean",
-                                   specificity = "pvalue")
+                                   specificity = "pvalue",
+                                   show_complex = TRUE)
 saveRDS(liana_dotplot_out,
         file.path(liana_path, "testdata",
                   "output", "liana_dotplot_out.RDS"))

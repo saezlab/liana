@@ -168,7 +168,9 @@ cpdb_test <- liana_wrap(sce,
 # Plot toy results
 cpdb_test %>%
   # filter(pvalue <= 0.05) %>% # only keep interactions with p-val <= 0.05
-  mutate(pvalue = -log10(pvalue)) %>% # invert size (low p-value/high specificity = larger dot size)
+  # invert size (low p-value/high specificity = larger dot size)
+  # + add a small value to avoid Infinity for 0s
+  mutate(pvalue = -log10(pvalue + 1e-10)) %>% 
   liana_dotplot(source_groups = c("c"),
                 target_groups = c("c", "a", "b"),
                 specificity = "pvalue",

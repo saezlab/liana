@@ -8,14 +8,19 @@ higher complex and curration content.
 
 - All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
 
+- LIANA now uses `mean0` to account for heteromeric complexes, i.e. the mean is computed, unless there is a value of 0, then 0 is returned.
+This means that any complex, the subunit of which is not expressed is filtered. LIANA now also appropriately accepts any custom function to
+account for complexes.
+
 
 ## Minor Changes
 
-- Added option to show complexes on dotplot
+- Added option to show complexes on dotplot and is now the default option
 
 - Documentation improvements
 
 - `decomplexify` function is now exported
+
 
 ## Bugs
 
@@ -25,6 +30,7 @@ higher complex and curration content.
   This stemmed from not properly passing the incorrect `complex_policy` to certain methods, i.e. they were getting a hard-coded value instead.
   
 - Remove `decomplexify` logical from `liana_call` and `liana_pipe` -> redundant.
+
 
 
 # LIANA 0.0.6

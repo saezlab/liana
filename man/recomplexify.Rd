@@ -31,6 +31,6 @@ to be passed before the relevant score_calc function;
  by this function
 
 Note that we call `account_missing` function to assign any complex with missing subunits's
-relevant columns, and expression proportion to 0. This then results in the whole
-complex being either filter or considered as non-expressed.
+relevant columns and expression proportion to 0. This then results in the whole
+complex being then being filtered (by default) or considered as non-expressed.
 }

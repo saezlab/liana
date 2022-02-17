@@ -24,7 +24,7 @@ test_that("Test liana pipe", {
                                        "output", "recomplex.RDS"))
     recomplex <- recomplexify(lr_cmplx,
                               .score_specs()[["sca"]]@columns,
-                              complex_policy ='min0')
+                              complex_policy ='mean0')
 
     expect_equal(recomplex, recomplex_exp)
 })
@@ -33,7 +33,7 @@ test_that("Test liana pipe", {
 
 # Test Get Scores
 test_that("Test LIANA Scores", {
-    complex_policy='min0'
+    complex_policy='mean0'
 
     conn_score <- get_connectome(pipe_out, expr_prop=0, complex_policy=complex_policy)
     conn_exp <- readRDS(file.path(liana_path, "testdata",

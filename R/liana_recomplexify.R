@@ -17,8 +17,8 @@
 #'  by this function
 #'
 #' Note that we call `account_missing` function to assign any complex with missing subunits's
-#' relevant columns, and expression proportion to 0. This then results in the whole
-#' complex being either filter or considered as non-expressed.
+#' relevant columns and expression proportion to 0. This then results in the whole
+#' complex being then being filtered (by default) or considered as non-expressed.
 #'
 #' @export
 #'
@@ -27,6 +27,7 @@ recomplexify <- function(lr_res,
                          columns,
                          ...){
 
+    # Get Complex policy from elipses
     complex_policy <- list(...)[["complex_policy"]]
 
     # Account for Missing Subunits
@@ -45,17 +46,21 @@ recomplexify <- function(lr_res,
 
             lr_res <<- lr_res %>%
                 group_by(across(all_of(grps))) %>%
-                mutate( {{ col.min }} := exec(complex_policy, (.data[[col]]))) %>%
+                mutate( {{ col.min }} := min0(.data[[col]]) ) %>%
                 mutate( {{ col.flag }} :=
                             ifelse(.data[[col]]==.data[[col.min]],
                                    TRUE,
-                                   FALSE))
+                                   FALSE)) %>%
+                mutate( {{ col }} := exec(complex_policy, .data[[col]]) )
         })
 
     lr_cmplx <- lr_res %>%
+        # Keep only the min-expressed subunits
         filter(if_all(ends_with("flag"))) %>%
+        # Group for the subsequent scoring functions
         group_by(across(all_of(c("source", "target",
                                  "ligand", "receptor")))) %>%
+        # Select only the relevant columns
         select(source, target,
                ligand.complex, ligand,
                receptor.complex, receptor,
@@ -126,7 +131,7 @@ missing_subunits_to0 <- function(lr_res, complex, entity, env){
                                lr_res[[entity]] %>% unique())
 
     # if there are absent subunits assign 0s and pvalues of 1
-    if(length(absent_subunits)>0){
+    if(length(absent_subunits) > 0){
         env$lr_res <- env$lr_res %>%
             # any numeric value to 0
             mutate(across(where(is.numeric) & starts_with(!!entity),
@@ -147,4 +152,19 @@ missing_subunits_to0 <- function(lr_res, complex, entity, env){
 #' @return value closest to 0
 min0 <- function(vec){
     vec[which.min(abs(vec))]
+}
+
+
+#' Helper Function which returns the mean, unless there is a 0 value then it returns 0
+#'
+#' @param vec numeric vector
+#'
+#' @return the mean of the vector unless 0 is present, then returns 0
+#'
+#' @export
+mean0 <- function(vec){
+    if(0 %in% vec){
+        return(0)
+    }
+    return(mean(x = vec))
 }

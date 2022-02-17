@@ -22,7 +22,7 @@ test_that("Test liana wrapper", {
                        method = c('sca','squidpy', "call_sca"),
                        resource = "Default")
 
-    expect_equal(exp2, res2)
+    expect_equal(res2, exp2)
 })
 
 
@@ -34,7 +34,7 @@ test_that("Test liana wrapper", {
                            squidpy.params=list(threshold = 0.1),
                            cellchat.params=list(nboot=1000))
 
-    expect_equal(exp3, res3)
+    expect_equal(res3, exp3)
 })
 
 # Test Expression_prop filtering ----

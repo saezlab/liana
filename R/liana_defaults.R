@@ -71,7 +71,7 @@ liana_defaults <- function(
 
     # liana_call.defaults
     liana_call.defaults <- list(
-        complex_policy = "min0",
+        complex_policy = "mean0",
         expr_prop = expr_prop
     )
 

@@ -10,6 +10,9 @@
 #' @param magnitude column to represent the magnitude of interaction (by default
 #' 'sca.LRscore')
 #'
+#' @param show_complex logical whether to show complexes (default - TRUE) or
+#'  only the subunit with minimum expression.
+#'
 #' @details Here, we refer to `specificity` as how specific this interaction is
 #' to a cell type pair regards to the rest of the cell type pairs (
 #' e.g. CellPhoneDB's p-values, NATMI's specificity edges, Connectome's scaled weights, etc)
@@ -27,8 +30,8 @@ liana_dotplot <- function(liana_agg,
                           source_groups,
                           target_groups,
                           specificity = "natmi.edge_specificity",
-                          show_complex = FALSE,
-                          magnitude = "sca.LRscore"){
+                          magnitude = "sca.LRscore",
+                          show_complex = TRUE){
 
     if(show_complex){
         entities <- c("ligand.complex", "receptor.complex")
