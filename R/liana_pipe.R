@@ -20,7 +20,6 @@
 #' @return Returns a tibble with information required for LR calculations downstream
 liana_pipe <- function(sce,
                        op_resource,
-                       decomplexify = TRUE,
                        test.type = "wilcox",
                        pval.type = "all",
                        trim = 0,
@@ -166,21 +165,19 @@ liana_pipe <- function(sce,
 
     message("LIANA: LR summary stats calculated!")
 
-    if(decomplexify){
-        # Join complexes (recomplexify) to lr_res
-        cmplx <- op_resource %>%
-            select(
-                ligand = source_genesymbol,
-                ligand.complex = source_genesymbol_complex,
-                receptor = target_genesymbol,
-                receptor.complex = target_genesymbol_complex
-                )
+    # Join complexes (recomplexify) to lr_res
+    cmplx <- op_resource %>%
+        select(
+            ligand = source_genesymbol,
+            ligand.complex = source_genesymbol_complex,
+            receptor = target_genesymbol,
+            receptor.complex = target_genesymbol_complex
+            )
 
-        lr_res %<>%
-            left_join(., cmplx,
-                      by=c("ligand", "receptor")) %>%
-            distinct()
-    }
+    lr_res %<>%
+        left_join(., cmplx,
+                  by=c("ligand", "receptor")) %>%
+        distinct()
 
     return(lr_res)
 }

@@ -4,22 +4,12 @@
 \alias{liana_scores}
 \title{Function to obtain different scoring schemes}
 \usage{
-liana_scores(score_object, lr_res, decomplexify, complex_policy, ...)
+liana_scores(score_object, lr_res, ...)
 }
 \arguments{
 \item{score_object}{score_object specific to the test obtained from score_specs}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
-
-\item{decomplexify}{whether to dissociate complexes into subunits and hence
-and hence take complexes into account (decomplexify) or not}
-
-\item{complex_policy}{policy how to account for the presence of complexes.
-Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
-`'min0'` (default): select the subunit with the change/expression closest to 0
- (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
-`'all'`: returns all possible subunits separately;
-Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)}
 
 \item{...}{dot params passed to `*_score` functions}
 }

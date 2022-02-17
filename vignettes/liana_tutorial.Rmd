@@ -206,7 +206,7 @@ liana_test <- liana_wrap(testdata,
                            list(
                              nperms = 10 # here we run cpdb it only with 10 permutations
                              ),
-                         liana_call.params=list(complex_policy = "mean")
+                         liana_call.params=list(complex_policy = "geometric_mean")
                          )
 
 # This returns a list of results for each method

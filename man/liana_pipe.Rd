@@ -7,7 +7,6 @@
 liana_pipe(
   sce,
   op_resource,
-  decomplexify = TRUE,
   test.type = "wilcox",
   pval.type = "all",
   trim = 0,
@@ -19,9 +18,6 @@ liana_pipe(
 \item{sce}{SingleCellExperiment Object}
 
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
-
-\item{decomplexify}{whether to dissociate complexes into subunits and hence
-and hence take complexes into account (decomplexify) or not}
 
 \item{test.type}{String specifying the type of pairwise test to perform -
 a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 

@@ -4,30 +4,12 @@
 \alias{liana_call}
 \title{Wrapper Function to obtain scores via liana_pipe}
 \usage{
-liana_call(
-  method,
-  seurat_object,
-  op_resource,
-  lr_res,
-  decomplexify = TRUE,
-  complex_policy = "min0",
-  ...
-)
+liana_call(method, seurat_object, op_resource, lr_res, ...)
 }
 \arguments{
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
-
-\item{decomplexify}{whether to dissociate complexes into subunits and hence
-and hence take complexes into account (decomplexify) or not}
-
-\item{complex_policy}{policy how to account for the presence of complexes.
-Following the example of \href{https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html}{Squidpy} valid options are:
-`'min0'` (default): select the subunit with the change/expression closest to 0
- (as in \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB} when working with expression)
-`'all'`: returns all possible subunits separately;
-Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}

@@ -21,6 +21,11 @@ higher complex and curration content.
 
 - Complexes with missing subunits are not correctly assigned as 'missing' and hence filtered/treated as non-expressed.
 
+- Fixed a bug where LIANA will return the minimum subunit expression, instead of the mean for some methods. 
+  This stemmed from not properly passing the incorrect `complex_policy` to certain methods, i.e. they were getting a hard-coded value instead.
+  
+- Remove `decomplexify` logical from `liana_call` and `liana_pipe` -> redundant.
+
 
 # LIANA 0.0.6
 

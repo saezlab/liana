@@ -56,7 +56,7 @@ liana_wrap <- function(sce,
       map(function(reso){
 
         if(is.null(reso)){
-          warning("Resource was NULL and LIANA PIPE methods were run with OmniPath Consensus")
+          warning("Resource was NULL and LIANA's internal methods were run with the `Consensus` resource")
           reso <- select_resource("Consensus")[[1]]
         }
 
@@ -110,13 +110,19 @@ liana_wrap <- function(sce,
                           sce = sce[rownames(sce) %in% union(lr_res$ligand,
                                                              lr_res$receptor), ]
                           ),
-                     liana_defaults(...)[["permutation"]]))
+                     liana_defaults(...)[["permutation"]]
+                     ))
 
-               args <- append(
-                 list(lr_res = lr_res,
-                      perm_means = perm_means),
-                 liana_defaults(...)[[method_name]]
-                 )
+               args <- pmap( # append multiple lists
+                 list(
+                   list(
+                     list(lr_res = lr_res,
+                          perm_means = perm_means),
+                     liana_defaults(...)[[method_name]],
+                     liana_defaults(...)[["liana_call"]]
+                     )
+                   ), c) %>%
+                 flatten
 
                rlang::invoke(.method, args)
 
@@ -125,25 +131,31 @@ liana_wrap <- function(sce,
                                           method_name,
                                           ...)
 
-               args <- append(
+               args <- pmap( # append multiple lists
                  list(
-                   lr_res = lr_res,
-                   sce = sce[rownames(sce) %in% union(lr_res$ligand,
-                                                      lr_res$receptor), ]
-                   ),
-                 liana_defaults(...)[[method_name]]
-               )
+                   list(
+                     list(
+                       lr_res = lr_res,
+                       sce = sce[rownames(sce) %in% union(lr_res$ligand,
+                                                          lr_res$receptor), ]
+                     ),
+                     liana_defaults(...)[[method_name]],
+                     liana_defaults(...)[["liana_call"]]
+                     )
+                 ), c) %>%
+                 flatten
 
                rlang::invoke(.method, args)
 
             } else {
               # re-implemented non-permutation approaches
               args <- append(
-                list("sce" = sce,
-                     lr_res = .filt_liana_pipe(lr_results[[reso_name]],
-                                               method_name,
-                                               ...)
-                     ),
+                list(
+                  "sce" = sce,
+                  lr_res = .filt_liana_pipe(lr_results[[reso_name]],
+                                            method_name,
+                                            ...)
+                  ),
                 liana_defaults(...)[["liana_call"]]
                 )
               rlang::invoke(.method, args)

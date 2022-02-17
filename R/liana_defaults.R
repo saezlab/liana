@@ -10,8 +10,6 @@
 #' @param call_sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
 #' @param assay Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 #'    and `call_connectome`
-#' @param decomplexify specify whether complexes in the resource should be
-#'   dissociated and taken into account
 #' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
 #'  This is further applied at a method-specific level - it is not applied to
 #'   Connectome and Cytotalk, as these methods calculate/normalize the score (or
@@ -64,7 +62,6 @@ liana_defaults <- function(
     # Internal ----
     # LIANA_pipe defaults
     liana_pipe.defaults <- list(
-        decomplexify = TRUE,
         test.type = "wilcox",
         pval.type = "all",
         trim = trim,
@@ -75,7 +72,6 @@ liana_defaults <- function(
     # liana_call.defaults
     liana_call.defaults <- list(
         complex_policy = "min0",
-        decomplexify = TRUE, # should always be true
         expr_prop = expr_prop
     )
 

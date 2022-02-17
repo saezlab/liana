@@ -151,14 +151,10 @@ liana_call <- function(method,
                        seurat_object,
                        op_resource,
                        lr_res,
-                       decomplexify = TRUE,
-                       complex_policy = 'min0',
                        ...){
 
     liana_scores(.score_specs()[[method]],
                  lr_res = lr_res,
-                 complex_policy = complex_policy,
-                 decomplexify = decomplexify,
                  ...)
 }
 
@@ -168,16 +164,11 @@ liana_call <- function(method,
 #'
 #' @param score_object score_object specific to the test obtained from score_specs
 #' @param lr_res ligand-receptor DE results and other stats between clusters
-#' @param decomplexify whether to dissociate complexes into subunits and hence
-#'    and hence take complexes into account (decomplexify) or not
-#' @inheritParams recomplexify
 #' @param ... dot params passed to `*_score` functions
 #'
 #' @return lr_res modified to be method-specific
 liana_scores <- function(score_object,
                          lr_res,
-                         decomplexify,
-                         complex_policy,
                          ...){
     lr_res %<>%
         select(ligand, receptor,
@@ -186,13 +177,11 @@ liana_scores <- function(score_object,
                ends_with("prop"),
                !!score_object@columns)
 
-    if(decomplexify){
-        lr_res %<>%
-            recomplexify(
-                lr_res = .,
-                columns = score_object@columns,
-                complex_policy = complex_policy)
-    }
+    lr_res %<>%
+        recomplexify(
+            lr_res = .,
+            columns = score_object@columns,
+            ...)
 
     args <-
         append(

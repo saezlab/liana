@@ -64,9 +64,6 @@ CellPhoneDB algorithm re-implementation in liana.}
 \item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
 
 \item{call_italk.params}{list of Parameters passed to iTALK \code{\link{call_italk}}}
-
-\item{decomplexify}{specify whether complexes in the resource should be
-dissociated and taken into account}
 }
 \value{
 A list of the default parameters for each method
