@@ -8,6 +8,7 @@ higher complex and curration content.
 
 - All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
 
+
 ## Minor Changes
 
 - Added option to show complexes on dotplot
@@ -15,6 +16,10 @@ higher complex and curration content.
 - Documentation improvements
 
 - `decomplexify` function is now exported
+
+## Bugs
+
+- Complexes with missing subunits are not correctly assigned as 'missing' and hence filtered/treated as non-expressed.
 
 
 # LIANA 0.0.6

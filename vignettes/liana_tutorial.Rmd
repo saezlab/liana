@@ -196,19 +196,15 @@ By default `liana` is run with the default for each method which can be obtained
 
 Alternatively, one can also overwrite the default settings by simply passing them to the liana wrapper function
 ```{r liana_params, message = FALSE, print = FALSE}
+geometric_mean <- function(vec){exp(mean(log(vec)))}
+
 # Overwrite CellChat default parameters by providing a list of parameters
 liana_test <- liana_wrap(testdata,
-                         method = c('cellchat', 'sca'),
+                         method = c('cellphonedb', 'sca'),
                          resource = 'OmniPath',
-                         cellchat.params = 
+                         permutation.params = 
                            list(
-                             nboot = 10,
-                             exclude_anns = NULL,
-                             thresh = 1,
-                             assay = "RNA",
-                             .normalize = FALSE,
-                             .do_parallel = FALSE,
-                             .raw_use = TRUE
+                             nperms = 10 # here we run cpdb it only with 10 permutations
                              ),
                          liana_call.params=list(complex_policy = "mean")
                          )
@@ -216,10 +212,11 @@ liana_test <- liana_wrap(testdata,
 # This returns a list of results for each method
 liana_test %>% glimpse
 ```
-Note that with `liana_call.params` we change the way that we account for complexes.
-By default this is set to min0/min (as done for expression in CellPhoneDB/Squidpy), 
-which assigns these statistics for each complex to those closest to 0. Here
-we change it to mean, but any alternative function can be passed and other 
+Note that with `liana_call.params` one can change the way that we account for complexes.
+By default this is set to the mean of the subunits in the complex (as done for expression in CellPhoneDB/Squidpy), 
+and it would return the subunit closest to the mean. 
+
+Here we change it to the geometric_mean, but any alternative function can be passed and other 
 perfectly viable approaches could also include e.g. the Trimean of CellChat.
   
 Please refer to the `?liana_wrap` documentation for more information on all the parameters that can be tuned in liana.

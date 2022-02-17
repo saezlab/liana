@@ -11,7 +11,7 @@ test_that("Test liana pipe", {
                        op_resource = select_resource("OmniPath")[[1]] %>%
                            decomplexify())
 
-    expect_equal(pipe_out, res1)
+    expect_equal(res1, pipe_out)
 })
 
 # Test De-/Re- Complexify
@@ -26,7 +26,7 @@ test_that("Test liana pipe", {
                               .score_specs()[["sca"]]@columns,
                               complex_policy ='min0')
 
-    expect_equal(recomplex_exp, recomplex)
+    expect_equal(recomplex, recomplex_exp)
 })
 
 

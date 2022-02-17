@@ -3,6 +3,11 @@ liana_path <- system.file(package = "liana")
 seurat_object <- readRDS(file.path(liana_path , "testdata",
                                    "input", "testdata.rds"))
 
+# convert and save the Seurat object
+seurat_conv <- liana_prep(seurat_object)
+# saveRDS(seurat_conv, file.path(liana_path , "testdata",
+#                                "input", "seurat_conv.rds"))
+
 # # Generate SingleCellExperiment Object
 # set.seed(123)
 # counts <- matrix(replicate(90,rpois(100, lambda = 10)), ncol=90, nrow=1000)
@@ -34,10 +39,7 @@ wrap_sce <- liana_wrap(sce, resource = "OmniPath", method = c("sca", "natmi"))
 saveRDS(wrap_sce, file.path(liana_path , "testdata",
                             "input", "wrap_sce.rds"))
 
-# Save converted Seurat
-seurat_conv <- liana_prep(seurat_object)
-saveRDS(seurat_conv, file.path(liana_path , "testdata",
-                               "input", "seurat_conv.rds"))
+
 
 # liana Pipe Output ----
 pipe_out <- liana_pipe(seurat_conv,

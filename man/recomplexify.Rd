@@ -29,4 +29,8 @@ to be passed before the relevant score_calc function;
 * decomplexified refers to complexes being broken into subunits which are then
  treated as seperate entities and re-assembled into complexes (or 'recomplexified')
  by this function
+
+Note that we call `account_missing` function to assign any complex with missing subunits's
+relevant columns, and expression proportion to 0. This then results in the whole
+complex being either filter or considered as non-expressed.
 }

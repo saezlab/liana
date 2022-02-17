@@ -125,4 +125,4 @@ Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai
 Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923.
 https://doi.org/10.15252/msb.20209923
   
-#### Similarly, please consider appropritaly citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!
+#### Similarly, please consider appropriately citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!

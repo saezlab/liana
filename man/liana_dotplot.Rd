@@ -9,6 +9,7 @@ liana_dotplot(
   source_groups,
   target_groups,
   specificity = "natmi.edge_specificity",
+  show_complex = FALSE,
   magnitude = "sca.LRscore"
 )
 }

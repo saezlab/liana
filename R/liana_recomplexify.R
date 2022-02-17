@@ -16,6 +16,10 @@
 #'  treated as seperate entities and re-assembled into complexes (or 'recomplexified')
 #'  by this function
 #'
+#' Note that we call `account_missing` function to assign any complex with missing subunits's
+#' relevant columns, and expression proportion to 0. This then results in the whole
+#' complex being either filter or considered as non-expressed.
+#'
 #' @export
 #'
 #' @importFrom stringr str_split
@@ -86,16 +90,16 @@ account_missing <- function(lr_res, env){
         pluck("receptor.complex") %>%
         unique()
 
-    map(receptor_complexes,
+    map(ligand_complexes,
         ~missing_subunits_to0(lr_res = lr_res,
                               complex = .x,
-                              entity = "receptor",
+                              entity = "ligand",
                               env = env))
 
     map(receptor_complexes,
         ~missing_subunits_to0(lr_res = lr_res,
                               complex = .x,
-                              entity = "ligand",
+                              entity = "receptor",
                               env = env))
 
     return(env$lr_res)
