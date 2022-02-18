@@ -9,8 +9,8 @@ liana_dotplot(
   source_groups,
   target_groups,
   specificity = "natmi.edge_specificity",
-  show_complex = FALSE,
-  magnitude = "sca.LRscore"
+  magnitude = "sca.LRscore",
+  show_complex = TRUE
 )
 }
 \arguments{
@@ -25,6 +25,9 @@ by some condition (e.g. preferential ranking, specific interactions, etc)}
 
 \item{magnitude}{column to represent the magnitude of interaction (by default
 'sca.LRscore')}
+
+\item{show_complex}{logical whether to show complexes (default - TRUE) or
+only the subunit with minimum expression.}
 }
 \value{
 a ggplot2 object

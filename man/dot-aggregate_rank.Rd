@@ -4,10 +4,12 @@
 \alias{.aggregate_rank}
 \title{Robust Aggregate ranks using `RobustRankAggreg`}
 \usage{
-.aggregate_rank(liana_mlist, ...)
+.aggregate_rank(liana_mlist, join_cols, ...)
 }
 \arguments{
 \item{liana_mlist}{liana list with method tibbles}
+
+\item{join_cols}{columns to be concatenated to create entity to be ranked}
 
 \item{...}{
   Arguments passed on to \code{\link[RobustRankAggreg:aggregateRanks]{RobustRankAggreg::aggregateRanks}}

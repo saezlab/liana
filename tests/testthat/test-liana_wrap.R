@@ -9,7 +9,7 @@ test_that("Test liana wrapper", {
                               "output", "liana_res.RDS"))
     res1 <- liana_wrap(seurat_object,
                        method = c('logfc','natmi', 'connectome'),
-                       resource = c('OmniPath'))
+                       resource = c('Consensus'))
 
     expect_equal(res1, exp1)
 })

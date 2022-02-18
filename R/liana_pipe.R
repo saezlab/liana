@@ -38,9 +38,7 @@ liana_pipe <- function(sce,
                          receivers$gene)
 
     # calculate global_mean required for SCA
-    global_mean <- Matrix::mean(
-        exec(assay.type, sce)
-        )
+    global_mean <- fast_mean(exec(assay.type, sce))
 
     # Filter `sce` to only include ligand receptor genes
     # and any cells which don't contain any expressed LR genes
@@ -437,3 +435,15 @@ row_scale <- function(mat){
 }
 
 
+#' Helper function to fix r mean
+#'
+#' @param mat a matrix
+#'
+#' @details r mean is slow and it overflows on memory.
+fast_mean <- function(mat){
+    if(class(mat)=="dgCMatrix"){
+        sum(mat@x)/(as.numeric(nrow(mat)) * as.numeric(ncol(mat)))
+    } else{
+        Matrix::mean(mat)
+    }
+}

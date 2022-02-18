@@ -98,6 +98,8 @@ setClass("ScoreSpecifics",
                 descending_order = TRUE,
                 score_fun = scconnect_score,
                 columns = c("ligand.expr", "receptor.expr",
+                            # need to move pvals to another holder
+                            # min(pval) != min(expr) in liana_aggregate
                             "ligand.pval", "receptor.pval")
             ),
 

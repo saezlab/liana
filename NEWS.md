@@ -4,13 +4,16 @@
 
 - LIANA will now use the `Consensus` resource by default. This is a highly-literature supported resource, generated using similar
 filtering steps as the 'OmniPath' (old default) resource. This resource is similar in size (~4,700 interactions), but contains a 
-higher complex and curration content.
+higher complex and curation content.
 
 - All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
 
 - LIANA now uses `mean0` to account for heteromeric complexes, i.e. the mean is computed, unless there is a value of 0, then 0 is returned.
 This means that any complex, the subunit of which is not expressed is filtered. LIANA now also appropriately accepts any custom function to
 account for complexes.
+
+- `liana_aggregate` now groups by ligand.complex and receptor.complex as well as the subunits,
+and hence returns a all of those columns
 
 
 ## Minor Changes
@@ -20,6 +23,10 @@ account for complexes.
 - Documentation improvements
 
 - `decomplexify` function is now exported
+
+- `liana_aggregate` will no longer return a median_rank, it's largely redundant.
+
+- re-arranged the column order of `liana_aggregate` due to the addition of .complex columns
 
 
 ## Bugs
@@ -31,6 +38,7 @@ account for complexes.
   
 - Remove `decomplexify` logical from `liana_call` and `liana_pipe` -> redundant.
 
+- edge case fix: liana_aggregate should now rank interactions with the same subunits, but coming from different complexes seperately
 
 
 # LIANA 0.0.6

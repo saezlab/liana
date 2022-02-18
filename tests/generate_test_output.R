@@ -96,7 +96,7 @@ saveRDS(recomplex, file.path(liana_path, "testdata",
 # liana Wrapper Output ----
 wrap_out <- liana_wrap(seurat_object,
                        method = c('logfc','natmi', 'connectome'),
-                       resource = c('OmniPath'))
+                       resource = c('Consensus'))
 saveRDS(wrap_out, file.path(liana_path, "testdata",
                              "output", "liana_res.RDS"))
 
@@ -206,7 +206,7 @@ saveRDS(cellchat_res,
         file.path(liana_path, "testdata",
                   "output", "cc_res.RDS"))
 
-# liana aggregate output ----
+# liana Aggregate output ----
 # Simplest scenario
 liana_aggr <- readRDS(file.path(liana_path, "testdata",
                                 "output", "liana_res.RDS")) %>%

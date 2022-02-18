@@ -153,7 +153,7 @@ Also, here we will use a `SingleCellExperiment` object as input. In reality, LIA
 to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.
 
 Finally, in this scenario we decide to show the names of the complexes, rather than the subunit with the lowest ~expression.
-```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=8}
+```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=9}
 # Load Sce testdata
 sce <- readRDS(file.path(liana_path , "testdata", "input", "testsce.rds"))
 
@@ -200,7 +200,7 @@ Alternatively, one can also overwrite the default settings by simply passing the
 ```{r liana_params, message = FALSE, print = FALSE}
 geometric_mean <- function(vec){exp(mean(log(vec)))}
 
-# Overwrite CellChat default parameters by providing a list of parameters
+# Overwrite default parameters by providing a list of parameters
 liana_test <- liana_wrap(testdata,
                          method = c('cellphonedb', 'sca'),
                          resource = 'OmniPath',

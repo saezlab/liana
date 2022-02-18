@@ -54,6 +54,20 @@ liana_aggregate <- function(liana_res,
         liana_res %<>% map(function(m_results) m_results %>% pluck(resource))
     }
 
+    # fix external methods which return only ligand/receptor, but not .complex
+    if(any(names(liana_res) %in% c('cellchat', 'call_natmi',
+                                   'call_connectome', 'call_sca',
+                                   'call_italk', 'squidpy'))){
+        join_cols <- c("source", "target",
+                       "ligand", "receptor")
+    } else{
+        # Default/internal-only liana runs
+        join_cols <- c("source", "target",
+                       "ligand", "receptor",
+                       "ligand.complex", "receptor.complex")
+    }
+
+
     cap %<>% `%||%`(.select_cap(liana_res, set_cap))
 
     liana_mlist <- liana_res %>%
@@ -73,7 +87,11 @@ liana_aggregate <- function(liana_res,
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))
 
             res %>%
-                {if(method_name=="cellchat") decomplexify(., columns = c("ligand", "receptor")) else .} %>%
+                # split ligand and receptors for cellchat
+                {if(method_name=="cellchat")
+                    decomplexify(., columns = c("ligand", "receptor")) %>%
+                        dplyr::rename(ligand.complex = ligand_complex,
+                                      receptor.complex = receptor_complex) else .} %>%
                 top_n(n=if_else(desc_order,
                                 cap,
                                 -cap),
@@ -81,24 +99,23 @@ liana_aggregate <- function(liana_res,
                 mutate( {{ .rank_col }} := .rank_enh(.data[[method_score]], desc_order)) %>%
                 arrange(!!.rank_col) %>%
                 rename( {{ .method }} := method_score) %>%
-                select(source, ligand, target, receptor, !!.method, !!.rank_col) %>%
+                select(!!join_cols,
+                       !!.method, !!.rank_col) %>%
                 mutate(across(c(source, target), as.character)) %>%
                 distinct() %>%
                 as_tibble()
         }) %>% compact()
 
     liana_aggr <- liana_mlist %>%
-        purrr::reduce(., full_join, by = c("source", "ligand", # Join all res
-                                           "target", "receptor")) %>%
+        purrr::reduce(., full_join, by = join_cols) %>%
         {`if`(get_ranks, .liana_consensus(., cap))}
 
     # Get Robust Ranks
     if(get_agrank){
         liana_aggr <- liana_mlist %>%
-            .aggregate_rank(., ...) %>%
+            .aggregate_rank(., join_cols = join_cols, ...) %>%
             right_join(., liana_aggr,
-                       by = c("source", "ligand",
-                              "target", "receptor"))
+                       by = join_cols)
     }
 
     return(liana_aggr)
@@ -133,12 +150,12 @@ liana_aggregate <- function(liana_res,
         mutate_at(vars(ends_with(".rank")),
               ~ replace(., is.na(.), cap)) %>% # assign .rank_cap to NA
         mutate(mean_rank = pmap_dbl(select(., ends_with(".rank")),
-                                    function(...) mean(c(...))),
-               median_rank = pmap_dbl(select(., ends_with(".rank")),
-                                      function(...) median(c(...))))  %>%
+                                    function(...) mean(c(...)))) %>%
         arrange(mean_rank) %>%
-        select(source, ligand, target, receptor,
-               ends_with("_rank"), everything())
+        select(source, target,
+               ligand, receptor,
+               ends_with("_rank"),
+               everything())
 }
 
 
@@ -160,16 +177,17 @@ liana_aggregate <- function(liana_res,
 #' Robust Aggregate ranks using `RobustRankAggreg`
 #'
 #' @param liana_mlist liana list with method tibbles
+#' @param join_cols columns to be concatenated to create entity to be ranked
+#'
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
-.aggregate_rank <- function(liana_mlist, ...){
+.aggregate_rank <- function(liana_mlist, join_cols, ...){
     message("Aggregating Ranks")
 
     liana_mlist %>%
         map(function(res){
             # bad practice, but almost unavoidable here...
             res %>%
-                unite(c("source", "ligand",
-                        "target", "receptor"),
+                unite(join_cols,
                       col = "interaction", sep = "⊎") %>%
                 pull("interaction")
         }) %>%
@@ -179,6 +197,6 @@ liana_aggregate <- function(liana_res,
         rename(aggregate_rank = Score,
                interaction = Name) %>%
         separate(col = "interaction", sep = "⊎",
-                 into = c("source", "ligand", "target", "receptor"))
+                 into = join_cols)
 }
 
