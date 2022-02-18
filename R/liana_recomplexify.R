@@ -46,7 +46,7 @@ recomplexify <- function(lr_res,
 
             lr_res <<- lr_res %>%
                 group_by(across(all_of(grps))) %>%
-                mutate( {{ col.min }} := min0(.data[[col]]) ) %>%
+                mutate( {{ col.min }} := min(.data[[col]]) ) %>%
                 mutate( {{ col.flag }} :=
                             ifelse(.data[[col]]==.data[[col.min]],
                                    TRUE,

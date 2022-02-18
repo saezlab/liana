@@ -69,7 +69,7 @@ saveRDS(sca_out, file.path(liana_path, "testdata",
 # liana permutations and cpdb output
 cpdb_out <- liana_wrap(seurat_object,
                        method = c('cellphonedb'),
-                       resource = c('CellPhoneDB'),
+                       resource = c('Consensus'),
                        permutation.params = list(nperms=20))
 saveRDS(cpdb_out, file.path(liana_path, "testdata",
                             "output", "liana_cpdb.RDS"))

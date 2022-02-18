@@ -9,7 +9,7 @@ test_that("Test liana cpdb", {
                               "output", "liana_cpdb.RDS"))
     res1 <- liana_wrap(seurat_object,
                        method = c('cellphonedb'),
-                       resource = c('CellPhoneDB'),
+                       resource = c('Consensus'),
                        permutation.params = list(nperms=20))
 
     expect_equal(exp1, res1)

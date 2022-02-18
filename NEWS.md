@@ -28,6 +28,7 @@ and hence returns a all of those columns
 
 - re-arranged the column order of `liana_aggregate` due to the addition of .complex columns
 
+- Replaced min0 (used to obtain closest to 0 value) to min -> relevant for z-scores used in Connectome.
 
 ## Bugs
 
