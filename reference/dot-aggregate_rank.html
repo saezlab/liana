@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -156,7 +156,7 @@
     <p>Robust Aggregate ranks using `RobustRankAggreg`</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.aggregate_rank</span><span class='op'>(</span><span class='va'>liana_mlist</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.aggregate_rank</span><span class='op'>(</span><span class='va'>liana_mlist</span>, <span class='va'>join_cols</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,6 +164,10 @@
     <tr>
       <th>liana_mlist</th>
       <td><p>liana list with method tibbles</p></td>
+    </tr>
+    <tr>
+      <th>join_cols</th>
+      <td><p>columns to be concatenated to create entity to be ranked</p></td>
     </tr>
     <tr>
       <th>...</th>

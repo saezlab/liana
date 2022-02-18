@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -156,27 +156,26 @@
     <p>Helper function to account for complexes in the resources</p>
     </div>
 
-    <pre class="usage"><span class='fu'>recomplexify</span><span class='op'>(</span><span class='va'>lr_res</span>, <span class='va'>columns</span>, <span class='va'>complex_policy</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>recomplexify</span><span class='op'>(</span><span class='va'>lr_res</span>, <span class='va'>columns</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>columns</th>
-      <td><p>columns to account for complexes for</p></td>
-    </tr>
-    <tr>
-      <th>complex_policy</th>
-      <td><p>policy how to account for the presence of complexes.
-Following the example of <a href='https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html'>Squidpy</a> valid options are:
-`'min0'` (default): select the subunit with the change/expression closest to 0
- (as in <a href='https://github.com/Teichlab/cellphonedb'>CellPhoneDB</a> when working with expression)
-`'all'`: returns all possible subunits separately;
-Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)</p></td>
+      <td><p>columns to account for complexes for (obtained via the `ScoreSpecifics` class)</p></td>
     </tr>
     <tr>
       <th>lr_cmplx</th>
       <td><p>decomplexified* lr_res</p></td>
+    </tr>
+    <tr>
+      <th>complex_policy</th>
+      <td><p>policy how to account for the presence of complexes.
+Following the example of <a href='https://github.com/Teichlab/cellphonedb'>CellPhoneDB</a>
+   valid options are: `'mean'` (default): mean of the subunits, and select
+   the subunit with the change/expression closest to 0 (when working with expression)</p>
+<p>One could choose to do any other type of mean: geometric, TriMean, etc.</p></td>
     </tr>
     </table>
 
@@ -189,6 +188,9 @@ Alternatively, pass any other base or user-defined function that reduces a vecto
 * decomplexified refers to complexes being broken into subunits which are then
  treated as seperate entities and re-assembled into complexes (or 'recomplexified')
  by this function</p>
+<p>Note that we call `account_missing` function to assign any complex with missing subunits's
+relevant columns and expression proportion to 0. This then results in the whole
+complex being then being filtered (by default) or considered as non-expressed.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

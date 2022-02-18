@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PEM from mean matrix — pems_from_means • liana</title>
+<title>Function to Generate the Curated (Default) LIANA resource — get_curated_omni • liana</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,8 @@
 
 
 
-<meta property="og:title" content="PEM from mean matrix — pems_from_means" />
-<meta property="og:description" content="Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix." />
+<meta property="og:title" content="Function to Generate the Curated (Default) LIANA resource — get_curated_omni" />
+<meta property="og:description" content="Function to Generate the Curated (Default) LIANA resource" />
 
 
 
@@ -150,32 +147,45 @@ from the exponential of the log-transformed count matrix." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>PEM from mean matrix</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/crosstalk_funs.R'><code>R/crosstalk_funs.R</code></a></small>
-    <div class="hidden name"><code>pems_from_means.Rd</code></div>
+    <h1>Function to Generate the Curated (Default) LIANA resource</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/get_omnipath.R'><code>R/get_omnipath.R</code></a></small>
+    <div class="hidden name"><code>get_curated_omni.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix.</p>
+    <p>Function to Generate the Curated (Default) LIANA resource</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pems_from_means</span><span class='op'>(</span><span class='va'>means_per_cell</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_curated_omni</span><span class='op'>(</span>
+  curated_resources <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CellPhoneDB"</span>, <span class='st'>"CellChatDB"</span>, <span class='st'>"ICELLNET"</span>, <span class='st'>"connectomeDB2020"</span>,
+    <span class='st'>"CellTalkDB"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>means_per_cell</th>
-      <td><p>A matrix containing the mean expression per cell type</p></td>
+      <th>curated_resources</th>
+      <td><p>the curated resources from which we wish to obtain interactions.
+By default, it includes interactions curated in the context of CCC from CellPhoneDB,
+CellChat, ICELLNET, connectomeDB, CellTalkDB, and SignaLink.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A matrix with the computed PEM scores</p>
+    <p>a curated OmniPath resource formatted for LIANA</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Here, we define the curated resources as those that are defined as manually
+or expert curated in the context of cell-cell communication.
+Albeit, "Guide2Pharma", "HPMR", and "Kirouac2010" are also such resources the remainder
+of the resources used to generate Omnipath, use those as sources.
+Hence, we assume that the second round of manual curation done in subsequent, more recently published
+resources would already contain the high quality interactions of the aforementioned 3.
+We also omit Cellinker, as it results in a large mount of ambigous interactions, but
+one could consider adding it to the list of curated resources.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

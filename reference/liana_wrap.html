@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -159,7 +159,7 @@
     <pre class="usage"><span class='fu'>liana_wrap</span><span class='op'>(</span>
   <span class='va'>sce</span>,
   method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"natmi"</span>, <span class='st'>"connectome"</span>, <span class='st'>"logfc"</span>, <span class='st'>"sca"</span>, <span class='st'>"cellphonedb"</span><span class='op'>)</span>,
-  resource <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"OmniPath"</span><span class='op'>)</span>,
+  resource <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Consensus"</span><span class='op'>)</span>,
   <span class='va'>external_resource</span>,
   .simplify <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
@@ -178,7 +178,7 @@
     </tr>
     <tr>
       <th>resource</th>
-      <td><p>resource(s) to be used by the methods (Use `all` to run all resources in one go),
+      <td><p>resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`</p></td>
     </tr>
     <tr>
@@ -209,9 +209,6 @@ This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
  statistics used in their scores) across all cell types or cell type pairs.</p></dd>
     <dt><code>seed</code></dt><dd><p>random seed integer</p></dd>
-    <dt><code>trim</code></dt><dd><p>the fraction (0 to 0.5) of observations to be trimmed from each
-end of x before the mean is computed. This is relevant only for the
-CellPhoneDB algorithm re-implementation in liana.</p></dd>
     <dt><code>parallelize</code></dt><dd><p>whether to parallelize cellphonedb-like</p></dd>
     <dt><code>workers</code></dt><dd><p>number of workers to be called</p></dd>
   

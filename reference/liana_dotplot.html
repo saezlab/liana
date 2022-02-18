@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -161,7 +161,8 @@
   <span class='va'>source_groups</span>,
   <span class='va'>target_groups</span>,
   specificity <span class='op'>=</span> <span class='st'>"natmi.edge_specificity"</span>,
-  magnitude <span class='op'>=</span> <span class='st'>"sca.LRscore"</span>
+  magnitude <span class='op'>=</span> <span class='st'>"sca.LRscore"</span>,
+  show_complex <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -188,6 +189,11 @@ by some condition (e.g. preferential ranking, specific interactions, etc)</p></t
       <th>magnitude</th>
       <td><p>column to represent the magnitude of interaction (by default
 'sca.LRscore')</p></td>
+    </tr>
+    <tr>
+      <th>show_complex</th>
+      <td><p>logical whether to show complexes (default - TRUE) or
+only the subunit with minimum expression.</p></td>
     </tr>
     </table>
 

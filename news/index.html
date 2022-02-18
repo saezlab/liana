@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -150,6 +150,42 @@
       <small>Source: <a href='https://github.com/saezlab/liana/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="liana-007" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.7">
+<a href="#liana-007" class="anchor"></a>LIANA 0.0.7</h1>
+<div id="changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes" class="anchor"></a>Changes</h2>
+<ul>
+<li><p>LIANA will now use the <code>Consensus</code> resource by default. This is a highly-literature supported resource, generated using similar filtering steps as the ‘OmniPath’ (old default) resource. This resource is similar in size (~4,700 interactions), but contains a higher complex and curation content.</p></li>
+<li><p>All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.</p></li>
+<li><p>LIANA now uses <code>mean0</code> to account for heteromeric complexes, i.e. the mean is computed, unless there is a value of 0, then 0 is returned. This means that any complex, the subunit of which is not expressed is filtered. LIANA now also appropriately accepts any custom function to account for complexes.</p></li>
+<li><p><code>liana_aggregate</code> now groups by ligand.complex and receptor.complex as well as the subunits, and hence returns a all of those columns</p></li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>Minor Changes</h2>
+<ul>
+<li><p>Added option to show complexes on dotplot and is now the default option</p></li>
+<li><p>Documentation improvements</p></li>
+<li><p><code>decomplexify</code> function is now exported</p></li>
+<li><p><code>liana_aggregate</code> will no longer return a median_rank, it’s largely redundant.</p></li>
+<li><p>re-arranged the column order of <code>liana_aggregate</code> due to the addition of .complex columns</p></li>
+<li><p>Replaced min0 (used to obtain closest to 0 value) to min -&gt; relevant for z-scores used in Connectome.</p></li>
+</ul>
+</div>
+<div id="bugs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bugs" class="anchor"></a>Bugs</h2>
+<ul>
+<li><p>Complexes with missing subunits are not correctly assigned as ‘missing’ and hence filtered/treated as non-expressed.</p></li>
+<li><p>Fixed a bug where LIANA will return the minimum subunit expression, instead of the mean for some methods. This stemmed from not properly passing the incorrect <code>complex_policy</code> to certain methods, i.e. they were getting a hard-coded value instead.</p></li>
+<li><p>Remove <code>decomplexify</code> logical from <code>liana_call</code> and <code>liana_pipe</code> -&gt; redundant.</p></li>
+<li><p>edge case fix: liana_aggregate should now rank interactions with the same subunits, but coming from different complexes seperately</p></li>
+</ul>
+</div>
+</div>
     <div id="liana-006" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.6">
 <a href="#liana-006" class="anchor"></a>LIANA 0.0.6</h1>
@@ -162,9 +198,9 @@
 <li><p>added <code>liana_dotplot</code> as a basic, but flexible, dotplot function for LIANA output. (+ tests)</p></li>
 </ul>
 </div>
-<div id="changes" class="section level2">
+<div id="changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes" class="anchor"></a>Changes</h2>
+<a href="#changes-1" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.</p></li>
 <li><p><code>global_mean</code> is now calculated in a more efficient manner.</p></li>
@@ -189,9 +225,9 @@
     <div id="liana-005" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.5">
 <a href="#liana-005" class="anchor"></a>LIANA 0.0.5</h1>
-<div id="changes-1" class="section level2">
+<div id="changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-1" class="anchor"></a>Changes</h2>
+<a href="#changes-2" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>I now filter the Crosstalk scores to include only those &gt; 0. Otherwise, LIANA would return all possible combinations of clusters and interactions, which would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (&gt;0).</p></li>
 <li><p><code>CellChat</code> and Crosstalk scores/<code>cytotalk</code> will no longer by called by default by liana_wrap. However, it both are available as an option to be passed to the <code>method</code> parameter.</p></li>
@@ -238,9 +274,9 @@
 <code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
 </ul>
 </div>
-<div id="changes-2" class="section level2">
+<div id="changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-2" class="anchor"></a>Changes</h2>
+<a href="#changes-3" class="anchor"></a>Changes</h2>
 <ul>
 <li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br>
 </li>

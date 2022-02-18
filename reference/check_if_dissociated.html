@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PEM from mean matrix — pems_from_means • liana</title>
+<title>Helper Function to check if there are dissociated entities which also exist as
+complexes. — check_if_dissociated • liana</title>
 
 
 <!-- jquery -->
@@ -39,11 +40,10 @@
 
 
 
-<meta property="og:title" content="PEM from mean matrix — pems_from_means" />
-<meta property="og:description" content="Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix." />
+<meta property="og:title" content="Helper Function to check if there are dissociated entities which also exist as
+complexes. — check_if_dissociated" />
+<meta property="og:description" content="Helper Function to check if there are dissociated entities which also exist as
+complexes." />
 
 
 
@@ -150,32 +150,40 @@ from the exponential of the log-transformed count matrix." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>PEM from mean matrix</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/crosstalk_funs.R'><code>R/crosstalk_funs.R</code></a></small>
-    <div class="hidden name"><code>pems_from_means.Rd</code></div>
+    <h1>Helper Function to check if there are dissociated entities which also exist as
+complexes.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/get_omnipath.R'><code>R/get_omnipath.R</code></a></small>
+    <div class="hidden name"><code>check_if_dissociated.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix.</p>
+    <p>Helper Function to check if there are dissociated entities which also exist as
+complexes.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pems_from_means</span><span class='op'>(</span><span class='va'>means_per_cell</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>check_if_dissociated</span><span class='op'>(</span><span class='va'>complex_omni</span>, <span class='va'>check_entity</span>, <span class='va'>anchor_entity</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>means_per_cell</th>
-      <td><p>A matrix containing the mean expression per cell type</p></td>
+      <th>complex_omni</th>
+      <td><p>an OmniPath resource with complexes</p></td>
+    </tr>
+    <tr>
+      <th>check_entity</th>
+      <td><p>the entity to be check for duplicates</p></td>
+    </tr>
+    <tr>
+      <th>anchor_entity</th>
+      <td><p>the anchor entity with which we check for duplicates</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>A matrix with the computed PEM scores</p>
+    <p>We count the times that a ligand (check_entity) exists in a combination
+with the same receptor (anchor_entity)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

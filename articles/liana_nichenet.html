@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>LIANA - NicheNet</h1>
                         <h4 class="author">Martin Garrido Rodriguez-Cordoba</h4>
             
-            <h4 class="date">2022-02-08</h4>
+            <h4 class="date">2022-02-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_nichenet.Rmd"><code>vignettes/liana_nichenet.Rmd</code></a></small>
       <div class="hidden name"><code>liana_nichenet.Rmd</code></div>
@@ -219,8 +219,8 @@
 <span class="va">ligands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">top_n_caf_tumor</span><span class="op">$</span><span class="va">ligand</span><span class="op">)</span>
 <span class="va">ligands</span> <span class="op">&lt;-</span> <span class="va">ligands</span><span class="op">[</span><span class="va">ligands</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span>
 <span class="va">ligands</span></code></pre></div>
-<pre><code>## [1] "COL1A1" "FN1"    "LAMB1"  "LAMB2"  "THBS2"  "THBS1"  "THBS4"  "LAMA2" 
-## [9] "CXCL12"</code></pre>
+<pre><code>##  [1] "COL1A1" "FN1"    "THBS2"  "CXCL12" "COL4A1" "IGF1"   "THBS1"  "THBS4" 
+##  [9] "TFPI"   "LAMB1"  "IGF2"   "LAMA2"  "COMP"   "LAMB2"  "HSPG2"</code></pre>
 <p>Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">background_genes</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">]</span>, <span class="op">]</span> <span class="op">%&gt;%</span>
@@ -307,7 +307,7 @@
 ## 
 ## other attached packages:
 ##  [1] cowplot_1.1.1      ggrepel_0.9.1      SeuratObject_4.0.2 Seurat_4.0.3      
-##  [5] nichenetr_1.0.0    liana_0.0.6        forcats_0.5.1      stringr_1.4.0     
+##  [5] nichenetr_1.0.0    liana_0.0.7        forcats_0.5.1      stringr_1.4.0     
 ##  [9] dplyr_1.0.7        purrr_0.3.4        readr_2.1.0        tidyr_1.1.3       
 ## [13] tibble_3.1.2       ggplot2_3.3.5      tidyverse_1.3.0    BiocStyle_2.18.1  
 ## 
@@ -394,7 +394,7 @@
 ## [159] tensor_1.5                  reticulate_1.20            
 ## [161] IRanges_2.24.1              splines_4.0.3              
 ## [163] uwot_0.1.10                 statmod_1.4.35             
-## [165] OmnipathR_3.3.5             spatstat.utils_2.1-0       
+## [165] OmnipathR_3.3.16            spatstat.utils_2.1-0       
 ## [167] scater_1.18.5               pkgdown_1.6.1              
 ## [169] plotly_4.9.3                systemfonts_1.0.1          
 ## [171] xtable_1.8-4                jsonlite_1.7.2             

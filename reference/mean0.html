@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PEM from mean matrix — pems_from_means • liana</title>
+<title>Helper Function which returns the mean, unless there is a 0 value then it returns 0 — mean0 • liana</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,8 @@
 
 
 
-<meta property="og:title" content="PEM from mean matrix — pems_from_means" />
-<meta property="og:description" content="Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix." />
+<meta property="og:title" content="Helper Function which returns the mean, unless there is a 0 value then it returns 0 — mean0" />
+<meta property="og:description" content="Helper Function which returns the mean, unless there is a 0 value then it returns 0" />
 
 
 
@@ -150,32 +147,29 @@ from the exponential of the log-transformed count matrix." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>PEM from mean matrix</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/crosstalk_funs.R'><code>R/crosstalk_funs.R</code></a></small>
-    <div class="hidden name"><code>pems_from_means.Rd</code></div>
+    <h1>Helper Function which returns the mean, unless there is a 0 value then it returns 0</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_recomplexify.R'><code>R/liana_recomplexify.R</code></a></small>
+    <div class="hidden name"><code>mean0.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Computes the Preferential Expression Measure (PEM) scores from a matrix containing
-genes as rows and cell types as samples. The values in the matrix are supposed
-to contain the average expression values of the count matrix per cell, obtained
-from the exponential of the log-transformed count matrix.</p>
+    <p>Helper Function which returns the mean, unless there is a 0 value then it returns 0</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pems_from_means</span><span class='op'>(</span><span class='va'>means_per_cell</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>mean0</span><span class='op'>(</span><span class='va'>vec</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>means_per_cell</th>
-      <td><p>A matrix containing the mean expression per cell type</p></td>
+      <th>vec</th>
+      <td><p>numeric vector</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A matrix with the computed PEM scores</p>
+    <p>the mean of the vector unless 0 is present, then returns 0</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

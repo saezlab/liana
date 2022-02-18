@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/liana_custom_op.html">LIANA Custome literature and database knowledge from OmniPath</a>
+      <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
@@ -156,15 +156,7 @@
     <p>Wrapper Function to obtain scores via liana_pipe</p>
     </div>
 
-    <pre class="usage"><span class='fu'>liana_call</span><span class='op'>(</span>
-  <span class='va'>method</span>,
-  <span class='va'>seurat_object</span>,
-  <span class='va'>op_resource</span>,
-  <span class='va'>lr_res</span>,
-  decomplexify <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  complex_policy <span class='op'>=</span> <span class='st'>"min0"</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>liana_call</span><span class='op'>(</span><span class='va'>method</span>, <span class='va'>seurat_object</span>, <span class='va'>op_resource</span>, <span class='va'>lr_res</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,20 +168,6 @@
     <tr>
       <th>lr_res</th>
       <td><p>ligand-receptor DE results and other stats between clusters</p></td>
-    </tr>
-    <tr>
-      <th>decomplexify</th>
-      <td><p>whether to dissociate complexes into subunits and hence
-and hence take complexes into account (decomplexify) or not</p></td>
-    </tr>
-    <tr>
-      <th>complex_policy</th>
-      <td><p>policy how to account for the presence of complexes.
-Following the example of <a href='https://squidpy.readthedocs.io/en/stable/api/squidpy.gr.ligrec.html'>Squidpy</a> valid options are:
-`'min0'` (default): select the subunit with the change/expression closest to 0
- (as in <a href='https://github.com/Teichlab/cellphonedb'>CellPhoneDB</a> when working with expression)
-`'all'`: returns all possible subunits separately;
-Alternatively, pass any other base or user-defined function that reduces a vector to a single number (e.g. mean, min, etc)</p></td>
     </tr>
     <tr>
       <th>...</th>
