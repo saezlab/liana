@@ -51,8 +51,10 @@ lr_res <- liana_pipe(sce,
 The LR result summary is then passed to the `get_*` functions then provide ways
 to summarize this information into a score (`LRscore` in this case) that can be
 used to the prioritize interactions.
+
+We also need to pass the function that we wish to use to account for heteromeric complexes
 ```{r lr_get, message=FALSE, warning=FALSE}
-get_sca(lr_res) %>% glimpse
+get_sca(lr_res, complex_policy="mean0") %>% glimpse
 ```
 `get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info.
 
@@ -132,10 +134,10 @@ Use the *call_* functions to run the pipelines of the original methods, rather t
 These functions work with Seurat objects and they are instead converted to SCE. These are largely getting **deprecated**
 and will be moved to a seperate repository in the future.
 ```{r liana_call, message=FALSE, warning=FALSE, print=FALSE}
-# RUN cellchat alone with OmniPath
+# RUN cellchat alone with OmniPath's Consensus
 sca_res <- call_sca(
   testdata,
-  op_resource = select_resource('OmniPath')[[1]]
+  op_resource = select_resource('Consensus')[[1]]
   )
 
 # Show CellChat Results
