@@ -22,7 +22,6 @@ liana_pipe <- function(sce,
                        op_resource,
                        test.type = "wilcox",
                        pval.type = "all",
-                       trim = 0,
                        assay = "RNA",
                        assay.type = "logcounts"){
 

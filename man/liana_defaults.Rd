@@ -9,7 +9,7 @@ liana_defaults(
   assay.type = "logcounts",
   expr_prop = 0.1,
   seed = 1004,
-  trim = 0,
+  complex_policy = "mean0",
   parallelize = FALSE,
   workers = 8,
   permutation.params = NULL,
@@ -41,10 +41,6 @@ This is further applied at a method-specific level - it is not applied to
 
 \item{seed}{random seed integer}
 
-\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each
-end of x before the mean is computed. This is relevant only for the
-CellPhoneDB algorithm re-implementation in liana.}
-
 \item{parallelize}{whether to parallelize cellphonedb-like}
 
 \item{workers}{number of workers to be called}
@@ -64,6 +60,10 @@ CellPhoneDB algorithm re-implementation in liana.}
 \item{call_connectome.params}{list of Parameters passed to Connectome \code{\link{call_connectome}}}
 
 \item{call_italk.params}{list of Parameters passed to iTALK \code{\link{call_italk}}}
+
+\item{trim}{the fraction (0 to 0.5) of observations to be trimmed from each
+end of x before the mean is computed. This is relevant only for the
+CellPhoneDB algorithm re-implementation in liana.}
 }
 \value{
 A list of the default parameters for each method

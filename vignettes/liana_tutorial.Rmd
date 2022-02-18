@@ -198,17 +198,18 @@ By default `liana` is run with the default for each method which can be obtained
 
 Alternatively, one can also overwrite the default settings by simply passing them to the liana wrapper function
 ```{r liana_params, message = FALSE, print = FALSE}
+# define geometric mean
 geometric_mean <- function(vec){exp(mean(log(vec)))}
 
 # Overwrite default parameters by providing a list of parameters
 liana_test <- liana_wrap(testdata,
                          method = c('cellphonedb', 'sca'),
-                         resource = 'OmniPath',
+                         resource = 'Consensus',
                          permutation.params = 
                            list(
                              nperms = 10 # here we run cpdb it only with 10 permutations
                              ),
-                         liana_call.params=list(complex_policy = "geometric_mean")
+                         complex_policy="geometric_mean"
                          )
 
 # This returns a list of results for each method

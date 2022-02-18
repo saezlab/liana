@@ -29,9 +29,6 @@ This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
  statistics used in their scores) across all cell types or cell type pairs.}
     \item{\code{seed}}{random seed integer}
-    \item{\code{trim}}{the fraction (0 to 0.5) of observations to be trimmed from each
-end of x before the mean is computed. This is relevant only for the
-CellPhoneDB algorithm re-implementation in liana.}
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
   }}

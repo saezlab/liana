@@ -39,7 +39,7 @@ liana_defaults <- function(
     assay.type = "logcounts",
     expr_prop = 0.1,
     seed = 1004,
-    trim = 0,
+    complex_policy = "mean0",
     parallelize = FALSE,
     workers = 8,
     permutation.params = NULL,
@@ -64,14 +64,13 @@ liana_defaults <- function(
     liana_pipe.defaults <- list(
         test.type = "wilcox",
         pval.type = "all",
-        trim = trim,
         assay = assay,
         assay.type = assay.type
     )
 
     # liana_call.defaults
     liana_call.defaults <- list(
-        complex_policy = "mean0",
+        complex_policy = complex_policy,
         expr_prop = expr_prop
     )
 

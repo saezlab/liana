@@ -108,7 +108,7 @@ saveRDS(wrap_def_out, file.path(liana_path, "testdata",
                                 "output", "liana_def_res.RDS"))
 
 
-# LIANA Defaults
+# LIANA Defaults ----
 def_arg <- liana_defaults(expr_prop=0,
                           squidpy.params=list(threshold = 0.1),
                           cellchat.params=list(nboot=1000))
