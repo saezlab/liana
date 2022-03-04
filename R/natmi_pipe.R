@@ -54,7 +54,7 @@
 #'
 #' @importFrom reticulate py_set_seed
 #' @importFrom stringr str_glue
-#' @importFrom Seurat GetAssayData Idents
+#' @importFrom SeuratObject GetAssayData Idents
 #' @import dplyr reticulate
 #'
 #' @export

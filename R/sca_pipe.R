@@ -5,7 +5,7 @@
 #' @param .format bool whether to format output
 #' @param assay Seurat assay data to use
 
-#' @importFrom Seurat GetAssayData Idents
+#' @importFrom SeuratObject GetAssayData Idents
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr distinct select
 #'
@@ -48,10 +48,10 @@ call_sca <- function(sce,
 
   # Prepare data from Seurat object
   input_data <-
-    Seurat::GetAssayData(sce,
+    SeuratObject::GetAssayData(sce,
                          assay = assay,
                          slot = assay.type)
-  labels <- Seurat::Idents(sce)
+  labels <- SeuratObject::Idents(sce)
 
   # Compute interactions between cell clusters
   signal <- SCAomni::cell_signaling(data = input_data,

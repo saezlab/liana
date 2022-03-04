@@ -5,7 +5,6 @@
 #' @param assay assay to use from Seurat object
 #' @param .format bool: whether to format output
 #' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
-#' @inheritDotParams Seurat::FindAllMarkers
 #'
 #' @return An unfiltered iTALK df sorted by relevance
 #'
@@ -17,7 +16,6 @@
 #' In this case, we use the product of the logFC rather than thresholding, as in
 #' the original implementation.
 #'
-#' @importFrom Seurat Idents FindAllMarkers GetAssayData
 #' @importFrom magrittr %>% %<>%
 #' @importFrom tidyr unite expand_grid
 #' @importFrom dplyr select rename mutate group_by group_split
@@ -115,7 +113,7 @@ FormatiTALK <- function(italk_res,
       'qval_from' = italk_res$cell_from_q.value,
       'qval_to' = italk_res$cell_to_q.value
       ) %>%
-      mutate(logfc_comb = (logFC_from * logFC_to))
+      mutate(logfc_comb = mean(c(logFC_from, logFC_to)))
 
   return(italk_res)
 }

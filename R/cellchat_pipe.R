@@ -18,7 +18,7 @@
 #'
 #' @return A DF of intercellular communication network
 #'
-#' @importFrom Seurat Idents GetAssayData
+#' @importFrom SeuratObject Idents GetAssayData
 #' @importFrom purrr pmap
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr select mutate mutate_at distinct_at filter

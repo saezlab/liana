@@ -20,12 +20,11 @@
 
 #' Dispatch log message to the OmnipathR logger
 #'
-#' @importFrom logger log_level
 #' @importFrom magrittr %<>%
 logg <- function(level, ...){
 
     level %<>% (OmnipathR:::ensure_loglevel)
-    log_level(level, ..., namespace = 'liana')
+    logger::log_level(level, ..., namespace = 'liana')
 
 }
 

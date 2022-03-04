@@ -16,7 +16,6 @@
 #'   are more specific to a given pair of cell types
 #' 3) DEG p-values for L and R
 #'
-#' @importFrom Seurat ScaleData
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr arrange select mutate distinct
 #'

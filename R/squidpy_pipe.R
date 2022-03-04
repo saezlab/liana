@@ -14,7 +14,6 @@
 #'
 #' @import reticulate tibble
 #' @importFrom tidyr pivot_longer
-#' @importFrom Seurat GetAssay GetAssayData
 #' @importFrom dplyr left_join
 #'
 #' @details CellPhoneDBv2 algorithm re-implementation in Python.
@@ -91,7 +90,7 @@ call_squidpy <- function(sce,
 
     # Check if assay meta.features match object rownames
     # if not assign a placeholder (Seurat-specific fix)
-    if(nrow(GetAssay(sce)[[]]) != nrow(sce) |
+    if(nrow(Seurat::GetAssay(sce)[[]]) != nrow(sce) |
        ncol(sce@assays[[assay]]@meta.features)==0){
         message("Meta features were reassigned to match object")
 
@@ -101,12 +100,12 @@ call_squidpy <- function(sce,
     }
 
     py$squidpy_results <- py$call_squidpy(op_resources,
-                                          GetAssayData(sce,
-                                                       assay=assay,
-                                                       slot=assay.type), # expr
+                                          SeuratObject::GetAssayData(sce,
+                                                                     assay=assay,
+                                                                     slot=assay.type), # expr
                                           sce[[]], # meta
-                                          GetAssay(sce,
-                                                   assay=assay)[[]], # feature_meta
+                                          Seurat::GetAssay(sce,
+                                                           assay=assay)[[]], # feature_meta
                                           kwargs # passed to squidpy.gr.ligrec
                                           )
 

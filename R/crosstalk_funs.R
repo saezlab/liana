@@ -167,7 +167,6 @@ compute_nst_from_matrix <- function(mat, ligand_receptor_df, seed) {
 #'
 #' @return The mututal information distance, also refered to as non-self atalk score
 #'
-#' @import entropy
 #'
 compute_mi_dist <- function(exp1, exp2, n_bins) {
 

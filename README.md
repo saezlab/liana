@@ -17,11 +17,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 devtools::install_github('saezlab/liana')
 ```
 
-If you wish to make use of the CellChat algorithm:
-```{r}
-devtools::install_github("sqjin/CellChat")
-```
-
   
 ## Tutorial
 See a [tutorial](https://saezlab.github.io/liana/articles/liana_tutorial.html) how to use LIANA to run any combination of 7 methods, plus their consensus, and 16 different resources!
@@ -57,17 +52,21 @@ LIANA also goes a step further as it provides:
 
 The tools implemented in this repository are:
 
-- [CellPhoneDBv2](https://github.com/Teichlab/cellphonedb) (*)
+- [CellPhoneDBv2](https://github.com/Teichlab/cellphonedb) (*, $)
 - [CellChat](https://github.com/sqjin/CellChat)
-- [NATMI](https://github.com/forrest-lab/NATMI) (*)
-- [Connectome](https://github.com/msraredon/Connectome) (`edge_weights`) (*)
-- [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR) (`LRscores`) (SCA) (*)
-- [iTALK](https://github.com/Coolgenome/iTALK)-inspired mean logFC score (`logfc`) (*)
+- [NATMI](https://github.com/forrest-lab/NATMI) (*, $)
+- [Connectome](https://github.com/msraredon/Connectome) (`edge_weights`) (*, $)
+- [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR) (`LRscores`) (SCA) (*, $)
+- [iTALK](https://github.com/Coolgenome/iTALK)-inspired *1-vs-rest* LogFC score (`logfc_comb`) (*, $)
 - [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
-- [RobustRank](https://pubmed.ncbi.nlm.nih.gov/22247279/)-aggregate (`aggregate_rank`) scores (*)
+  
+- `consensus_rank` of the predictions is also provied using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) package
+  
   
 *The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
+$ Default methods in LIANA.
+
   
 ## Resources
 
@@ -75,6 +74,9 @@ The tools implemented in this repository are:
 
 The following CCC resources are accessible via this pipeline:
 
+- *Consensus*
+
+- CellCall
 - CellChatDB
 - CellPhoneDB
 - Ramilowski2015
@@ -86,23 +88,29 @@ The following CCC resources are accessible via this pipeline:
 - EMBRACE
 - HPMR
 - Guide2Pharma
-- connectomeDB2020
+- ConnectomeDB2020
 - CellTalkDB
-- OmniPath
+- OmniPath [Deprecated]
   
+  
+### Consensus Resource
+LIANA's default resource was generated from the `Consensus` of several other expert-curated resources,
+filtered to additional quality control steps including literature support, complex re-union/consensus, and localisation.
+
   
 ### OmniPath
   
 All the resources above are retrieved from [OmniPath](https://omnipathdb.org/),
 and more specifically [OmnipathR](https://github.com/saezlab/OmnipathR).
-However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing imperfections.
+However, individual resources retrieved from the OmniPath web service are not to be affected by this,
+as each resource expected to be identical to its original form, apart from minor processing steps.
   
 `OmniPath` itself serves as a composite CCC resource combining all the ones listed
 above + [more](https://doi.org/10.15252/msb.20209923). `OmniPath` also collects
 further information about the roles and localisation of proteins in intercellular communication.
-We made use of this information regarding the and by default the `OmniPath`CCC
-resource in LIANA is filtered according to the consensus localisation and curation of
-ligand-receptor interactions. To obtain more information how we filtered the default CCC `OmniPath`,
+
+We made use of this information to generate the `Consensus` resource.
+To obtain more information how we filtered the default `Consensus` resource,
 as well as to explore custom filter options see [customizing OmniPath resources](https://saezlab.github.io/liana/articles/liana_custom_op.html).  
   
   

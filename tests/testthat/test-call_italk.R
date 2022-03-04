@@ -4,14 +4,17 @@ seurat_object <-
     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
 # Test
-test_that("Test iTALK", {
-    exp1 <- readRDS(file.path(liana_path, "testdata",
-                              "output", "italk_res.RDS"))
-    res1 <- suppressWarnings(call_italk(sce = seurat_object,
-                                        op_resource = NULL,
-                                        assay = 'RNA',
-                                        .format = TRUE,
-                                        .DE = TRUE))
-
-    expect_equal(exp1, res1)
-})
+if(exists("test_external")){
+    if(test_external){
+        test_that("Test iTALK", {
+            exp1 <- readRDS(file.path(liana_path, "testdata",
+                                      "output", "italk_res.RDS"))
+            res1 <- suppressWarnings(call_italk(sce = seurat_object,
+                                                op_resource = NULL,
+                                                assay = 'RNA',
+                                                .format = TRUE,
+                                                .DE = TRUE))
+            expect_equal(exp1, res1)
+    })
+    }
+}

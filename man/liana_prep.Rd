@@ -7,7 +7,7 @@
 liana_prep(sce, ...)
 }
 \arguments{
-\item{sce}{Seurat or SingleCellExperiment object}
+\item{sce}{SingleCellExperiment or Seurat object}
 }
 \description{
 Function to handle different types of object as input and do basic quality checks

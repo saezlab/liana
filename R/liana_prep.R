@@ -1,6 +1,6 @@
 #' Function to handle different types of object as input and do basic quality checks
 #'
-#' @param sce Seurat or SingleCellExperiment object
+#' @param sce SingleCellExperiment or Seurat object
 #'
 #' @export
 liana_prep <- function (sce, ...) {
@@ -46,8 +46,12 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
     # convert from seurat_object to sce
     sce <- SingleCellExperiment::SingleCellExperiment(
         list(
-            counts = GetAssayData(object = sce, assay = assay, slot = "counts"),
-            logcounts = GetAssayData(object = sce, assay = assay, slot = "data")
+            counts = SeuratObject::GetAssayData(object = sce,
+                                                assay = assay,
+                                                slot = "counts"),
+            logcounts = SeuratObject::GetAssayData(object = sce,
+                                                   assay = assay,
+                                                   slot = "data")
         ),
         metadata = sce@meta.data)
 

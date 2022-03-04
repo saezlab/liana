@@ -56,17 +56,14 @@ Imports:
     furrr (>= 0.2.0),
     tidyr,
     tibble,
+    dplyr,
     readr,
     rlang,
-    dplyr,
-    Seurat,
     SingleCellExperiment,
     scran,
     scater,
-    logger,
-    OmnipathR,
-    RobustRankAggreg,
-    entropy
+    SeuratObject,
+    RobustRankAggreg
 Suggests:
     BiRewire,
     CellChat,
@@ -76,7 +73,11 @@ Suggests:
     workflowr,
     testthat (>= 3.0.0),
     sessioninfo,
-    ggplot2
+    logger,
+    Seurat,
+    ggplot2,
+    OmnipathR,
+    entropy
 Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
