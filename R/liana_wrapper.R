@@ -1,13 +1,20 @@
 #' LIANA wrapper function
 #'
 #' @param sce `SingleCellExperiment` object or `SeuratObject`
+#'
 #' @param method method(s) to be run via liana
+#'
 #' @param resource resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 #'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
+#'
+#' @param idents the cell identities/labels to be used.
+#'
 #' @param external_resource external resource in OmniPath tibble format
+#'
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
 #'   method-resource combinations
+#'
 #' @inheritDotParams liana_defaults
 #'
 #' @import tibble
@@ -27,12 +34,14 @@ liana_wrap <- function(sce,
                        method = c('natmi', 'connectome', 'logfc',
                                   'sca', 'cellphonedb'),
                        resource = c('Consensus'),
+                       idents_col = NULL,
                        external_resource,
+                       verbose = TRUE,
                        .simplify = TRUE,
                        ...){
 
   # Handle object
-  sce <- liana_prep(sce)
+  sce <- liana_prep(sce, idents_col = idents_col, verbose = verbose)
 
   # method to lower
   method %<>% stringr::str_to_lower()
@@ -56,14 +65,17 @@ liana_wrap <- function(sce,
       map(function(reso){
 
         if(is.null(reso)){
-          warning("Resource was NULL and LIANA's internal methods were run with the `Consensus` resource")
+          liana_message("Resource was NULL and LIANA's internal methods were run with the `Consensus` resource",
+                        verbose = verbose,
+                        output = "warning")
           reso <- select_resource("Consensus")[[1]]
         }
 
         rlang::invoke(liana_pipe,
                       append(
                         list("sce" = sce,
-                             "op_resource" =  decomplexify(reso)),
+                             "op_resource" =  decomplexify(reso),
+                             verbose = verbose),
                         liana_defaults(...)[["liana_pipe"]]
                         )
                       )
@@ -74,7 +86,8 @@ liana_wrap <- function(sce,
   .select_method(method) %>%
     map2(names(.),
          safely(function(.method, method_name){
-           message(str_glue("Now Running: {stringr::str_to_title(method_name)}"))
+           liana_message(str_glue("Now Running: {stringr::str_to_title(method_name)}"),
+                         verbose = verbose)
 
            map2(resource, names(resource), function(reso, reso_name){
              if(method_name %in% c("squidpy", "cellchat")){
@@ -108,7 +121,8 @@ liana_wrap <- function(sce,
                    append(
                      list(lr_res = lr_res,
                           sce = sce[rownames(sce) %in% union(lr_res$ligand,
-                                                             lr_res$receptor), ]
+                                                             lr_res$receptor) ],
+                          verbose = verbose
                           ),
                      liana_defaults(...)[["permutation"]]
                      ))
@@ -117,7 +131,8 @@ liana_wrap <- function(sce,
                  list(
                    list(
                      list(lr_res = lr_res,
-                          perm_means = perm_means),
+                          perm_means = perm_means,
+                          verbose = verbose),
                      liana_defaults(...)[[method_name]],
                      liana_defaults(...)[["liana_call"]]
                      )

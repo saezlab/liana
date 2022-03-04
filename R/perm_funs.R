@@ -18,7 +18,8 @@ get_permutations <- function(lr_res,
                              seed = 1234,
                              parallelize = FALSE,
                              workers = 4,
-                             assay.type = "logcounts"){
+                             assay.type = "logcounts",
+                             verbose = TRUE){
     # remove genes absent in lr_res
     lr_genes <- union(lr_res$ligand, lr_res$receptor)
     sce <- sce[rownames(sce) %in% lr_genes, ]
@@ -33,7 +34,12 @@ get_permutations <- function(lr_res,
     })
 
     # progress_bar
-    progress_bar <- progress_estimated(nperms)
+    if(verbose){
+        progress_bar <- progress_estimated(nperms)
+    } else{
+        progress_bar <- NULL
+    }
+
 
     # generate mean permutations
     perm <- map_custom(.x = shuffled_clusts,
@@ -63,11 +69,17 @@ cellphonedb_score <- function(lr_res,
                               parallelize,
                               workers,
                               score_col = "pvalue",
+                              verbose = TRUE,
                               ...){
     og_res <- lr_res %>%
         select(ligand, receptor, source, target)
 
-    progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
+    if(verbose){
+        progress_bar <- dplyr::progress_estimated(length(perm_means) * 2)
+    } else{
+        progress_bar <- NULL
+    }
+
     perm_joined <- perm_means %>%
         map_custom(function(pmean){
             og_res %>%
@@ -143,7 +155,9 @@ mean_permute <- function(col_labels,
                          sce,
                          pb,
                          assay.type){
-    pb$tick()$print()
+    if(!is.null(pb)){
+        pb$tick()$print()
+    }
 
     scuttle::summarizeAssayByGroup(sce,
                                    ids=col_labels,

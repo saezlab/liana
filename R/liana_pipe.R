@@ -23,7 +23,8 @@ liana_pipe <- function(sce,
                        test.type = "wilcox",
                        pval.type = "all",
                        assay = "RNA",
-                       assay.type = "logcounts"){
+                       assay.type = "logcounts",
+                       verbose = TRUE){
 
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
@@ -160,7 +161,9 @@ liana_pipe <- function(sce,
         # Global Mean
         mutate(global_mean = global_mean)
 
-    message("LIANA: LR summary stats calculated!")
+    liana_message("LIANA: LR summary stats calculated!",
+                  verbose = verbose
+                  )
 
     # Join complexes (recomplexify) to lr_res
     cmplx <- op_resource %>%

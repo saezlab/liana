@@ -8,19 +8,19 @@ liana_prep <- function (sce, ...) {
 }
 
 #' @export
-liana_prep.SingleCellExperiment <- function(sce, idents = NULL, ...){
+liana_prep.SingleCellExperiment <- function(sce,
+                                            idents_col = NULL,
+                                            verbose = TRUE,
+                                            ...){
 
     if(!all(c("counts", "logcounts") %in% SummarizedExperiment::assayNames(sce))){
         stop("liana expects `counts` and `logcounts` to be present in the SCE object")
     }
 
-    idents %<>% `%||%` (SingleCellExperiment::colLabels(sce))
-    if(is.null(idents)){
-        stop("Please set the cell types of interest to `colLabels`")
-    } else if(is.null(levels(idents))){
-        idents %<>% as.factor()
-        message(str_glue("`colLabels` was converted to factor"))
-    }
+    # Assign idents to default if not passed
+    idents <- .format_idents(sce,
+                             idents_col,
+                             verbose)
 
     # Assign idents to default if not passed
     SingleCellExperiment::colLabels(sce) <- idents
@@ -29,19 +29,17 @@ liana_prep.SingleCellExperiment <- function(sce, idents = NULL, ...){
 }
 
 #' @export
-liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
+liana_prep.Seurat <- function(sce,
+                              idents_col = NULL,
+                              verbose = TRUE,
+                              assay = NULL,
+                              ...){
 
     assay %<>% `%||%`(SeuratObject::DefaultAssay(sce))
     message(stringr::str_glue("Running LIANA with {assay} as default assay"))
 
     # Assign idents to default if not passed
-    idents %<>% `%||%`(SeuratObject::Idents(sce))
-    if(is.null(idents)){
-        stop("Please set the cell types of interest to `Idents`")
-    } else if(is.null(levels(idents))){
-        idents %<>% as.factor()
-        message(str_glue("`Idents` were converted to factor"))
-    }
+    idents <- .format_idents(sce, idents_col, verbose)
 
     # convert from seurat_object to sce
     sce <- SingleCellExperiment::SingleCellExperiment(
@@ -59,6 +57,7 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 
     return(.filter_sce(sce))
 }
+
 
 #' Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA
 #'
@@ -85,6 +84,82 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 }
 
 
+
+#' Helper Function to get/format the required indentity if required
+.format_idents <- function (sce, idents_col, verbose){
+    if (is_null(idents_col)){
+        if(class(sce)=="SingleCellExperiment"){
+            metadata <- as.data.frame(SingleCellExperiment::colData(sce))
+            active_idents <- SingleCellExperiment::colLabels(sce)
+        } else if(class(sce) %in% c("Seurat", "SeuratObject")){
+            metadata <- sce@meta.data
+            active_idents <- SeuratObject::Idents(sce)
+        }
+
+        # get active ident col and assign
+        idents_col <- .get_ident(metadata,
+                                 active_idents,
+                                 object_class = class(sce) %>% pluck(1))
+    }
+    idents <- metadata[[idents_col]]
+
+    if(is_null(idents)){
+        stop("Please existing cell type identities")
+    } else if(is.null(levels(idents))){
+        idents %<>% as.factor()
+        message(str_glue("`Idents` were converted to factor"))
+
+    }
+
+    liana_message(str_glue("Running LIANA with `{idents_col}` as labels!"),
+                  verbose = verbose)
+
+    return(idents)
+}
+
+
+
+
+#' Helper Function to get the required identity (cluster annotation column)
+#'  from the sce/seurat object metadata
+#'
+#' @param metadata df/tibble with metadata information
+#'
+#' @noRd
+.get_ident <- function(metadata, idents, object_class){
+    map(names(metadata),
+        function(x){
+            p <- metadata %>%
+                select(sym(x)) %>%
+                {`if`(object_class=="SingleCellExperiment",
+                     .,
+                     rownames_to_column(., "names")
+                     )} %>%
+                deframe()
+
+            if(identical(p, idents)){
+                return(x)
+            }
+            return()
+        }) %>%
+        compact %>%
+        as.character %>%
+        pluck(1) # to handle scenario when there are two identical columns
+}
+
+
+
+#' LIANA message/warning helper function to allow for verbosity
+liana_message <- function(...,
+                          output = "message",
+                          verbose = TRUE){
+    if(verbose){
+        exec(output, ...)
+    }
+}
+
+
+
 #' Helper function to convert sce to seurat for EXTERNAL `call_` functions only
 #'
 #' @param sce SingleCellExperiment or Seurat Object
@@ -99,4 +174,3 @@ liana_prep.Seurat <- function(sce, idents = NULL, assay = NULL, ...){
 
     return(seurat_object)
 }
-

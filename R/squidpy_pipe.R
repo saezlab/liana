@@ -46,7 +46,9 @@ call_squidpy <- function(sce,
     }
 
     kwargs <- list(...)
-    kwargs$cluster_key %<>% `%||%`(.get_ident(sce))
+    kwargs$cluster_key %<>% `%||%`(.get_ident(sce@meta.data,
+                                              SeuratObject::Idents(sce),
+                                              class(sce)))
     kwargs$seed <- as.integer(seed)
 
     if(length(kwargs$cluster_key) == 0){
@@ -165,29 +167,4 @@ FormatSquidpy <- function(.name,
         left_join(x_meta, by = c("source", "target"))
 
     return(res_formatted)
-}
-
-
-#' Helper Function to get active Ident (cluster annotation column) from the
-#'   Seurat object metadata
-#'
-#' @param sce seurat object with metadata information
-#'
-#' @noRd
-.get_ident <- function(sce){
-    map(names(sce@meta.data),
-        function(x){
-            p <- sce@meta.data %>%
-                select(sym(x)) %>%
-                rownames_to_column("names") %>%
-                deframe()
-
-            if(identical(p, Seurat::Idents(sce))){
-                return(x)
-            }
-
-            return()
-        }) %>% compact %>%
-        as.character %>%
-        pluck(1) # to handle scenario when there are two identical columns
 }

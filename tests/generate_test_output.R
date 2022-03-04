@@ -4,7 +4,7 @@ liana_path <- system.file(package = "liana")
 seurat_object <- readRDS(file.path(liana_path , "testdata",
                                    "input", "testdata.rds"))
 
-test_external=FALSE # Set to true to test external pipes
+test_external=FALSE # Set to true in any R/ script to test external pipes
 
 # convert and save the Seurat object
 seurat_conv <- liana_prep(seurat_object)

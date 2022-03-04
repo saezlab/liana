@@ -5,6 +5,12 @@ seurat_object <-
 
 # Test
 test_that("Test SingleCellSignalR", {
+    if(!exists("test_external")){
+        skip("Not testing externals")
+    } else{
+        if(!test_external) skip("Not testing externals")
+    }
+
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "sca_res.RDS"))
     res1 <- call_sca(sce = seurat_object,

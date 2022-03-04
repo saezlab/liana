@@ -1,3 +1,20 @@
+# LIANA 0.0.8 (04.03.2022)
+
+## Changes
+- Reduced dependencies (specifically `Seurat` and `OmniPathR`)
+
+## Minor Changes
+- testthat tests external methods only if requested explicitly
+- Readme updated - clarified and accordingly describes the `Consensus` resource as default
+
+
+## New Features
+- `idents` is now explicitly requested by `liaa_wrap`, if not provided defaults to the active
+idents/colLabels for SCE and Seurat, respectively.
+- `verbose` param allows to omit any messages and warnings from LIANA
+
+
+
 # LIANA 0.0.7
 
 ## Changes
