@@ -18,9 +18,12 @@ liana_prep.SingleCellExperiment <- function(sce,
     }
 
     # Assign idents to default if not passed
-    idents <- .format_idents(sce,
-                             idents_col,
-                             verbose)
+    idents <-
+        .format_idents(metadata = as.data.frame(SingleCellExperiment::colData(sce)),
+                       active_idents = SingleCellExperiment::colLabels(sce),
+                       idents_col = idents_col,
+                       object_class = class(sce) %>% pluck(1),
+                       verbose = verbose)
 
     # Assign idents to default if not passed
     SingleCellExperiment::colLabels(sce) <- idents
@@ -39,7 +42,13 @@ liana_prep.Seurat <- function(sce,
     message(stringr::str_glue("Running LIANA with {assay} as default assay"))
 
     # Assign idents to default if not passed
-    idents <- .format_idents(sce, idents_col, verbose)
+    # Assign idents to default if not passed
+    idents <-
+        .format_idents(metadata = sce@meta.data,
+                       active_idents = SeuratObject::Idents(sce),
+                       idents_col = idents_col,
+                       object_class = class(sce) %>% pluck(1),
+                       verbose = verbose)
 
     # convert from seurat_object to sce
     sce <- SingleCellExperiment::SingleCellExperiment(
@@ -86,25 +95,21 @@ liana_prep.Seurat <- function(sce,
 
 
 #' Helper Function to get/format the required indentity if required
-.format_idents <- function (sce, idents_col, verbose){
+.format_idents <- function (metadata,
+                            active_idents,
+                            idents_col,
+                            object_class,
+                            verbose){
     if (is_null(idents_col)){
-        if(class(sce)=="SingleCellExperiment"){
-            metadata <- as.data.frame(SingleCellExperiment::colData(sce))
-            active_idents <- SingleCellExperiment::colLabels(sce)
-        } else if(class(sce) %in% c("Seurat", "SeuratObject")){
-            metadata <- sce@meta.data
-            active_idents <- SeuratObject::Idents(sce)
-        }
-
         # get active ident col and assign
         idents_col <- .get_ident(metadata,
                                  active_idents,
-                                 object_class = class(sce) %>% pluck(1))
+                                 object_class = object_class)
     }
-    idents <- metadata[[idents_col]]
 
+    idents <- metadata[[idents_col]]
     if(is_null(idents)){
-        stop("Please existing cell type identities")
+        stop("Please select existing cell type identities!")
     } else if(is.null(levels(idents))){
         idents %<>% as.factor()
         message(str_glue("`Idents` were converted to factor"))

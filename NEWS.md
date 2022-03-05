@@ -1,4 +1,4 @@
-# LIANA 0.0.8 (04.03.2022)
+# LIANA 0.0.8 (05.03.2022)
 
 ## Changes
 - Reduced dependencies (specifically `Seurat` and `OmniPathR`)
@@ -9,7 +9,7 @@
 
 
 ## New Features
-- `idents` is now explicitly requested by `liaa_wrap`, if not provided defaults to the active
+- `idents_col` is can now be explicitly passed to `liana_wrap`, if not provided defaults to the active
 idents/colLabels for SCE and Seurat, respectively.
 - `verbose` param allows to omit any messages and warnings from LIANA
 

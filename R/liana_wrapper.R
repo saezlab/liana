@@ -120,8 +120,7 @@ liana_wrap <- function(sce,
                    get_permutations,
                    append(
                      list(lr_res = lr_res,
-                          sce = sce[rownames(sce) %in% union(lr_res$ligand,
-                                                             lr_res$receptor) ],
+                          sce = sce,
                           verbose = verbose
                           ),
                      liana_defaults(...)[["permutation"]]
@@ -151,8 +150,7 @@ liana_wrap <- function(sce,
                    list(
                      list(
                        lr_res = lr_res,
-                       sce = sce[rownames(sce) %in% union(lr_res$ligand,
-                                                          lr_res$receptor), ]
+                       sce = sce
                      ),
                      liana_defaults(...)[[method_name]],
                      liana_defaults(...)[["liana_call"]]
@@ -329,6 +327,4 @@ show_resources <- function(){
   }
 
 }
-
-
 
