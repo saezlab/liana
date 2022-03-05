@@ -7,9 +7,14 @@
 #' @param resource resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 #'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
 #'
-#' @param idents the cell identities/labels to be used.
+#' @param idents_col the cell identities/labels to be used. By default set to NULL, and will used the active
+#' Idents or colLabels from the seurat_object or SCE, respectively.
 #'
 #' @param external_resource external resource in OmniPath tibble format
+#'
+#' @param verbose logical whether to output messages and warnings (`TRUE` by default)
+#'
+#' @param assay assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.
 #'
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
@@ -37,11 +42,15 @@ liana_wrap <- function(sce,
                        idents_col = NULL,
                        external_resource,
                        verbose = TRUE,
+                       assay = NULL,
                        .simplify = TRUE,
                        ...){
 
   # Handle object
-  sce <- liana_prep(sce, idents_col = idents_col, verbose = verbose)
+  sce <- liana_prep(sce,
+                    idents_col = idents_col,
+                    assay = assay,
+                    verbose = verbose)
 
   # method to lower
   method %<>% stringr::str_to_lower()
@@ -327,4 +336,3 @@ show_resources <- function(){
   }
 
 }
-

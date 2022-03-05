@@ -12,7 +12,7 @@
 - `idents_col` is can now be explicitly passed to `liana_wrap`, if not provided defaults to the active
 idents/colLabels for SCE and Seurat, respectively.
 - `verbose` param allows to omit any messages and warnings from LIANA
-
+- `assay` can now be passed explicitly when working with a Seurat object, defaults to the active one otherwise
 
 
 # LIANA 0.0.7

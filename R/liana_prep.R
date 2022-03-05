@@ -39,7 +39,7 @@ liana_prep.Seurat <- function(sce,
                               ...){
 
     assay %<>% `%||%`(SeuratObject::DefaultAssay(sce))
-    message(stringr::str_glue("Running LIANA with {assay} as default assay"))
+    message(stringr::str_glue("Expression from the `{assay}` assay will be used"))
 
     # Assign idents to default if not passed
     # Assign idents to default if not passed
@@ -107,17 +107,27 @@ liana_prep.Seurat <- function(sce,
                                  object_class = object_class)
     }
 
-    idents <- metadata[[idents_col]]
-    if(is_null(idents)){
-        stop("Please select existing cell type identities!")
-    } else if(is.null(levels(idents))){
+    if(!is_null(idents_col)){
+        # If idents_col is not null set it that one
+        idents <- metadata[[idents_col]]
+        liana_message(str_glue("Running LIANA with `{idents_col}` as labels!"),
+                      verbose = verbose)
+
+    } else if(!is_null(active_idents)){
+        idents <- active_idents
+        liana_message(str_glue("Running LIANA with `colLabels`/`Idents` as labels"),
+                      verbose = verbose)
+    } else{
+        stop("Please provide existing cell type identities!")
+    }
+
+    # Check if idents is a factor
+    if(is.null(levels(idents))){
         idents %<>% as.factor()
         message(str_glue("`Idents` were converted to factor"))
 
     }
 
-    liana_message(str_glue("Running LIANA with `{idents_col}` as labels!"),
-                  verbose = verbose)
 
     return(idents)
 }

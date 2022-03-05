@@ -8,8 +8,9 @@ liana_wrap(
   sce,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = c("Consensus"),
-  idents = NULL,
+  idents_col = NULL,
   external_resource,
+  verbose = TRUE,
   .simplify = TRUE,
   ...
 )
@@ -21,8 +22,6 @@ liana_wrap(
 
 \item{resource}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
-
-\item{idents}{the cell identities/labels to be used.}
 
 \item{external_resource}{external resource in OmniPath tibble format}
 
@@ -51,6 +50,8 @@ This is further applied at a method-specific level - it is not applied to
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
   }}
+
+\item{idents}{the cell identities/labels to be used.}
 }
 \value{
 A list of method-resource results - i.e. provided resources are run

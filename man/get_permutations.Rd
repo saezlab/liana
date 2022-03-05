@@ -11,7 +11,8 @@ get_permutations(
   seed = 1234,
   parallelize = FALSE,
   workers = 4,
-  assay.type = "logcounts"
+  assay.type = "logcounts",
+  verbose = TRUE
 )
 }
 \arguments{

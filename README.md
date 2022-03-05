@@ -94,7 +94,7 @@ The following CCC resources are accessible via this pipeline:
   
   
 ### Consensus Resource
-LIANA's default resource was generated from the `Consensus` of several other expert-curated resources,
+LIANA's default resource was generated from the `Consensus` of several expert-curated resources, then
 filtered to additional quality control steps including literature support, complex re-union/consensus, and localisation.
 
   

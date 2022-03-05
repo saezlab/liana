@@ -10,6 +10,7 @@ cellphonedb_score(
   parallelize,
   workers,
   score_col = "pvalue",
+  verbose = TRUE,
   ...
 )
 }

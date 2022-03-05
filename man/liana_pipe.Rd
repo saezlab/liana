@@ -10,7 +10,8 @@ liana_pipe(
   test.type = "wilcox",
   pval.type = "all",
   assay = "RNA",
-  assay.type = "logcounts"
+  assay.type = "logcounts",
+  verbose = TRUE
 )
 }
 \arguments{
