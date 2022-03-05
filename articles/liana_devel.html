@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>LIANA++ for Benchmarks and Developers</h1>
                         <h4 class="author">Daniel Dimitrov</h4>
             
-            <h4 class="date">2022-02-18</h4>
+            <h4 class="date">2022-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_devel.Rmd"><code>vignettes/liana_devel.Rmd</code></a></small>
       <div class="hidden name"><code>liana_devel.Rmd</code></div>
@@ -312,22 +312,22 @@
 ## Doing NK and B ... OK
 ## Doing NK and CD8 T ... OK
 ## Doing NK and NK ... OK
-## [1] "/tmp/Rtmp1Itfsx/temp_libpath1488579289b61/liana/NATMI//data/input/test_em.csv"</code></pre>
+## [1] "/tmp/RtmpRE6dqp/temp_libpath2a6c428dc74d9/liana/NATMI//data/input/test_em.csv"</code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_calls</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Connectome finds no significant hits here</span></code></pre></div>
 <pre><code>## # A tibble: 1,982 x 14
 ##    source target ligand receptor aggregate_rank mean_rank call_connectome.weigh…
 ##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;                  &lt;dbl&gt;
-##  1 NK     CD8 T  HLA-C  CD3D           0.000298      756                      NA
-##  2 NK     NK     SPON2  ITGB2          0.000630      402.                     NA
-##  3 NK     CD8 T  HLA-B  CD3D           0.000734      758.                     NA
-##  4 NK     CD8 T  B2M    CD3D           0.00136       757.                     NA
-##  5 NK     NK     B2M    KLRD1          0.00266       762.                     NA
-##  6 NK     NK     B2M    CD247          0.00291       760.                     NA
-##  7 NK     NK     CALM1  SELL           0.00375       766.                     NA
-##  8 NK     NK     HLA-B  KLRD1          0.00375       431.                     NA
-##  9 NK     NK     HLA-C  KIR2DL3        0.00490       454.                     NA
-## 10 NK     CD8 T  HLA-A  CD3D           0.00504       764                      NA
+##  1 NK     NK     SPON2  ITGB2          0.000630      402.                     NA
+##  2 B      NK     B2M    CD247          0.00119       754.                     NA
+##  3 NK     NK     HLA-C  KIR2DL3        0.00490       443.                     NA
+##  4 B      B      LTB    CD40           0.00545       427                      NA
+##  5 B      B      LY86   CD180          0.00575       490.                     NA
+##  6 NK     CD8 T  B2M    CD3D           0.00807       752.                     NA
+##  7 B      B      B2M    CD247          0.00807       779.                     NA
+##  8 CD8 T  B      ADAM9  ITGA3          0.00807      1128.                     NA
+##  9 NK     NK     HLA-B  KIR2DL3        0.00897       452.                     NA
+## 10 NK     B      B2M    CD3D           0.00951       762.                     NA
 ## # … with 1,972 more rows, and 7 more variables: call_connectome.rank &lt;dbl&gt;,
 ## #   call_sca.LRscore &lt;dbl&gt;, call_sca.rank &lt;dbl&gt;, call_italk.logfc_comb &lt;dbl&gt;,
 ## #   call_italk.rank &lt;dbl&gt;, call_natmi.edge_specificity &lt;dbl&gt;,
@@ -350,7 +350,7 @@
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2022-02-18                  
+##  date     2022-03-05                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version    date       lib source                                       
@@ -408,7 +408,6 @@
 ##  dqrng                  0.2.1      2019-05-17 [2] CRAN (R 4.0.2)                               
 ##  edgeR                  3.32.1     2021-01-14 [2] Bioconductor                                 
 ##  ellipsis               0.3.2      2021-04-29 [2] CRAN (R 4.0.3)                               
-##  entropy                1.2.1      2014-11-14 [2] CRAN (R 4.0.3)                               
 ##  evaluate               0.14       2019-05-28 [2] CRAN (R 4.0.2)                               
 ##  extRemes               2.1        2020-11-24 [2] CRAN (R 4.0.3)                               
 ##  fansi                  0.4.2      2021-01-15 [2] CRAN (R 4.0.3)                               
@@ -462,7 +461,7 @@
 ##  lattice                0.20-41    2020-04-02 [5] CRAN (R 4.0.0)                               
 ##  lazyeval               0.2.2      2019-03-15 [2] CRAN (R 4.0.2)                               
 ##  leiden                 0.3.7      2021-01-26 [2] CRAN (R 4.0.3)                               
-##  liana                * 0.0.7      2022-02-18 [1] local                                        
+##  liana                * 0.0.8      2022-03-05 [1] local                                        
 ##  lifecycle              1.0.0      2021-02-15 [2] CRAN (R 4.0.3)                               
 ##  limma                  3.46.0     2020-10-27 [2] Bioconductor                                 
 ##  listenv                0.8.0      2019-12-05 [2] CRAN (R 4.0.2)                               
@@ -599,7 +598,7 @@
 ##  zlibbioc               1.36.0     2020-10-27 [2] Bioconductor                                 
 ##  zoo                    1.8-8      2020-05-02 [2] CRAN (R 4.0.2)                               
 ## 
-## [1] /tmp/Rtmp1Itfsx/temp_libpath1488579289b61
+## [1] /tmp/RtmpRE6dqp/temp_libpath2a6c428dc74d9
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

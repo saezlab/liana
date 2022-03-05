@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -180,86 +180,6 @@
     <tr>
       <th>.DE</th>
       <td><p>bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://satijalab.org/seurat/reference/FindAllMarkers.html'>Seurat::FindAllMarkers</a></code></p><dl>
-    <dt><code>object</code></dt><dd><p>An object</p></dd>
-    <dt><code>features</code></dt><dd><p>Genes to test. Default is to use all genes</p></dd>
-    <dt><code>logfc.threshold</code></dt><dd><p>Limit testing to genes which show, on average, at least
-X-fold difference (log-scale) between the two groups of cells. Default is 0.25
-Increasing logfc.threshold speeds up the function, but can miss weaker signals.</p></dd>
-    <dt><code>test.use</code></dt><dd><p>Denotes which test to use. Available options are:
-<ul>
-<li><p>"wilcox" : Identifies differentially expressed genes between two
- groups of cells using a Wilcoxon Rank Sum test (default)</p></li>
-<li><p>"bimod" : Likelihood-ratio test for single cell gene expression,
- (McDavid et al., Bioinformatics, 2013)</p></li>
-<li><p>"roc" : Identifies 'markers' of gene expression using ROC analysis.
- For each gene, evaluates (using AUC) a classifier built on that gene alone,
- to classify between two groups of cells. An AUC value of 1 means that
- expression values for this gene alone can perfectly classify the two
- groupings (i.e. Each of the cells in cells.1 exhibit a higher level than
- each of the cells in cells.2). An AUC value of 0 also means there is perfect
- classification, but in the other direction. A value of 0.5 implies that
- the gene has no predictive power to classify the two groups. Returns a
- 'predictive power' (abs(AUC-0.5) * 2) ranked matrix of putative differentially
- expressed genes.</p></li>
-<li><p>"t" : Identify differentially expressed genes between two groups of
- cells using the Student's t-test.</p></li>
-<li><p>"negbinom" : Identifies differentially expressed genes between two
-  groups of cells using a negative binomial generalized linear model.
-  Use only for UMI-based datasets</p></li>
-<li><p>"poisson" : Identifies differentially expressed genes between two
-  groups of cells using a poisson generalized linear model.
-  Use only for UMI-based datasets</p></li>
-<li><p>"LR" : Uses a logistic regression framework to determine differentially
- expressed genes. Constructs a logistic regression model predicting group
- membership based on each feature individually and compares this to a null
- model with a likelihood ratio test.</p></li>
-<li><p>"MAST" : Identifies differentially expressed genes between two groups
- of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST
- package to run the DE testing.</p></li>
-<li><p>"DESeq2" : Identifies differentially expressed genes between two groups
- of cells based on a model using DESeq2 which uses a negative binomial
- distribution (Love et al, Genome Biology, 2014).This test does not support
- pre-filtering of genes based on average difference (or percent detection rate)
- between cell groups. However, genes may be pre-filtered based on their
- minimum detection rate (min.pct) across both cell groups. To use this method,
- please install DESeq2, using the instructions at
- https://bioconductor.org/packages/release/bioc/html/DESeq2.html</p></li>
-</ul></p></dd>
-    <dt><code>slot</code></dt><dd><p>Slot to pull data from; note that if <code>test.use</code> is "negbinom", "poisson", or "DESeq2",
-<code>slot</code> will be set to "counts"</p></dd>
-    <dt><code>min.pct</code></dt><dd><p>only test genes that are detected in a minimum fraction of
-min.pct cells in either of the two populations. Meant to speed up the function
-by not testing genes that are very infrequently expressed. Default is 0.1</p></dd>
-    <dt><code>min.diff.pct</code></dt><dd><p>only test genes that show a minimum difference in the
-fraction of detection between the two groups. Set to -Inf by default</p></dd>
-    <dt><code>node</code></dt><dd><p>A node to find markers for and all its children; requires
-<code><a href='https://satijalab.org/seurat/reference/BuildClusterTree.html'>BuildClusterTree</a></code> to have been run previously; replaces <code>FindAllMarkersNode</code></p></dd>
-    <dt><code>verbose</code></dt><dd><p>Print a progress bar once expression testing begins</p></dd>
-    <dt><code>only.pos</code></dt><dd><p>Only return positive markers (FALSE by default)</p></dd>
-    <dt><code>max.cells.per.ident</code></dt><dd><p>Down sample each identity class to a max number.
-Default is no downsampling. Not activated by default (set to Inf)</p></dd>
-    <dt><code>random.seed</code></dt><dd><p>Random seed for downsampling</p></dd>
-    <dt><code>latent.vars</code></dt><dd><p>Variables to test, used only when <code>test.use</code> is one of
-'LR', 'negbinom', 'poisson', or 'MAST'</p></dd>
-    <dt><code>min.cells.feature</code></dt><dd><p>Minimum number of cells expressing the feature in at least one
-of the two groups, currently only used for poisson and negative binomial tests</p></dd>
-    <dt><code>min.cells.group</code></dt><dd><p>Minimum number of cells in one of the groups</p></dd>
-    <dt><code>pseudocount.use</code></dt><dd><p>Pseudocount to add to averaged expression values when
-calculating logFC. 1 by default.</p></dd>
-    <dt><code>mean.fxn</code></dt><dd><p>Function to use for fold change or average difference calculation.
-If NULL, the appropriate function will be chose according to the slot used</p></dd>
-    <dt><code>fc.name</code></dt><dd><p>Name of the fold change, average difference, or custom function column
-in the output data.frame. If NULL, the fold change column will be named
-according to the logarithm base (eg, "avg_log2FC"), or if using the scale.data
-slot "avg_diff".</p></dd>
-    <dt><code>base</code></dt><dd><p>The base with respect to which logarithms are computed.</p></dd>
-    <dt><code>return.thresh</code></dt><dd><p>Only return markers that have a p-value &lt; return.thresh, or a power &gt; return.thresh (if the test is ROC)</p></dd>
-  
-</dl></td>
     </tr>
     </table>
 

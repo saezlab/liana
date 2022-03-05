@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-02-18</h4>
+            <h4 class="date">2022-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_tutorial.Rmd"><code>vignettes/liana_tutorial.Rmd</code></a></small>
       <div class="hidden name"><code>liana_tutorial.Rmd</code></div>
@@ -173,6 +173,9 @@
 <code class="sourceCode R"><span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span>
 <span class="va">testdata</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Registered S3 method overwritten by 'spatstat.geom':</span>
+<span class="co">#&gt;   method     from</span>
+<span class="co">#&gt;   print.boxx cli</span>
 
 <span class="va">testdata</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Formal class 'Seurat' [package "SeuratObject"] with 13 slots</span>
@@ -417,7 +420,7 @@
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       Europe/Berlin               
-#&gt;  date     2022-02-18                  
+#&gt;  date     2022-03-05                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package              * version  date       lib source                            
@@ -460,7 +463,6 @@
 #&gt;  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)                    
 #&gt;  edgeR                  3.32.1   2021-01-14 [2] Bioconductor                      
 #&gt;  ellipsis               0.3.2    2021-04-29 [2] CRAN (R 4.0.3)                    
-#&gt;  entropy                1.2.1    2014-11-14 [2] CRAN (R 4.0.3)                    
 #&gt;  evaluate               0.14     2019-05-28 [2] CRAN (R 4.0.2)                    
 #&gt;  fansi                  0.4.2    2021-01-15 [2] CRAN (R 4.0.3)                    
 #&gt;  farver                 2.0.3    2020-01-16 [2] CRAN (R 4.0.2)                    
@@ -503,7 +505,7 @@
 #&gt;  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 #&gt;  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 #&gt;  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-#&gt;  liana                * 0.0.7    2022-02-18 [1] local                             
+#&gt;  liana                * 0.0.8    2022-03-05 [1] local                             
 #&gt;  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 #&gt;  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 #&gt;  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -608,7 +610,7 @@
 #&gt;  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 #&gt;  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 #&gt; 
-#&gt; [1] /tmp/Rtmp1Itfsx/temp_libpath1488579289b61
+#&gt; [1] /tmp/RtmpRE6dqp/temp_libpath2a6c428dc74d9
 #&gt; [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 #&gt; [3] /usr/local/lib/R/site-library
 #&gt; [4] /usr/lib/R/site-library

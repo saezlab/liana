@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -150,12 +150,43 @@
       <small>Source: <a href='https://github.com/saezlab/liana/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="liana-007" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.7">
-<a href="#liana-007" class="anchor"></a>LIANA 0.0.7</h1>
+    <div id="liana-008-05032022" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.8">
+<a href="#liana-008-05032022" class="anchor"></a>LIANA 0.0.8 (05.03.2022)</h1>
 <div id="changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#changes" class="anchor"></a>Changes</h2>
+<ul>
+<li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>Minor Changes</h2>
+<ul>
+<li>testthat tests external methods only if requested explicitly</li>
+<li>Readme updated - clarified and accordingly describes the <code>Consensus</code> resource as default</li>
+</ul>
+</div>
+<div id="new-features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>New Features</h2>
+<ul>
+<li>
+<code>idents_col</code> is can now be explicitly passed to <code>liana_wrap</code>, if not provided defaults to the active idents/colLabels for SCE and Seurat, respectively.</li>
+<li>
+<code>verbose</code> param allows to omit any messages and warnings from LIANA</li>
+<li>
+<code>assay</code> can now be passed explicitly when working with a Seurat object, defaults to the active one otherwise</li>
+</ul>
+</div>
+</div>
+    <div id="liana-007" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.7">
+<a href="#liana-007" class="anchor"></a>LIANA 0.0.7</h1>
+<div id="changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-1" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>LIANA will now use the <code>Consensus</code> resource by default. This is a highly-literature supported resource, generated using similar filtering steps as the ‘OmniPath’ (old default) resource. This resource is similar in size (~4,700 interactions), but contains a higher complex and curation content.</p></li>
 <li><p>All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.</p></li>
@@ -163,9 +194,9 @@
 <li><p><code>liana_aggregate</code> now groups by ligand.complex and receptor.complex as well as the subunits, and hence returns a all of those columns</p></li>
 </ul>
 </div>
-<div id="minor-changes" class="section level2">
+<div id="minor-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes" class="anchor"></a>Minor Changes</h2>
+<a href="#minor-changes-1" class="anchor"></a>Minor Changes</h2>
 <ul>
 <li><p>Added option to show complexes on dotplot and is now the default option</p></li>
 <li><p>Documentation improvements</p></li>
@@ -198,9 +229,9 @@
 <li><p>added <code>liana_dotplot</code> as a basic, but flexible, dotplot function for LIANA output. (+ tests)</p></li>
 </ul>
 </div>
-<div id="changes-1" class="section level2">
+<div id="changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-1" class="anchor"></a>Changes</h2>
+<a href="#changes-2" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.</p></li>
 <li><p><code>global_mean</code> is now calculated in a more efficient manner.</p></li>
@@ -225,9 +256,9 @@
     <div id="liana-005" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.5">
 <a href="#liana-005" class="anchor"></a>LIANA 0.0.5</h1>
-<div id="changes-2" class="section level2">
+<div id="changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-2" class="anchor"></a>Changes</h2>
+<a href="#changes-3" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>I now filter the Crosstalk scores to include only those &gt; 0. Otherwise, LIANA would return all possible combinations of clusters and interactions, which would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (&gt;0).</p></li>
 <li><p><code>CellChat</code> and Crosstalk scores/<code>cytotalk</code> will no longer by called by default by liana_wrap. However, it both are available as an option to be passed to the <code>method</code> parameter.</p></li>
@@ -266,17 +297,17 @@
     <div id="liana-002" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.2">
 <a href="#liana-002" class="anchor"></a>LIANA 0.0.2</h1>
-<div id="new-features" class="section level2">
+<div id="new-features-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>New Features</h2>
+<a href="#new-features-1" class="anchor"></a>New Features</h2>
 <ul>
 <li>
 <code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
 </ul>
 </div>
-<div id="changes-3" class="section level2">
+<div id="changes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-3" class="anchor"></a>Changes</h2>
+<a href="#changes-4" class="anchor"></a>Changes</h2>
 <ul>
 <li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br>
 </li>
@@ -294,9 +325,9 @@
     <div id="liana-001" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.1">
 <a href="#liana-001" class="anchor"></a>LIANA 0.0.1</h1>
-<div id="new-features-1" class="section level2">
+<div id="new-features-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-1" class="anchor"></a>New Features</h2>
+<a href="#new-features-2" class="anchor"></a>New Features</h2>
 <p><code>liana_wrap</code> and <code>liana_aggragate</code> as the two highest level functions to run all the methods in liana and aggragate them, respectively.</p>
 <div id="re-implemented-the-following-scores-in-liana" class="section level3">
 <h3 class="hasAnchor">

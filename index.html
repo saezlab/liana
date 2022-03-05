@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -118,8 +118,6 @@
     install.packages("BiocManager")
     
 devtools::install_github('saezlab/liana')</code></pre>
-<p>If you wish to make use of the CellChat algorithm:</p>
-<pre class="{r}"><code><a href="https://devtools.r-lib.org/reference/remote-reexports.html">devtools::install_github("sqjin/CellChat")</a></code></pre>
 </div>
 <div id="tutorial" class="section level2">
 <h2 class="hasAnchor">
@@ -150,23 +148,17 @@ devtools::install_github('saezlab/liana')</code></pre>
 <a href="#tools" class="anchor"></a>Tools</h2>
 <p>The tools implemented in this repository are:</p>
 <ul>
-<li>
-<a href="https://github.com/Teichlab/cellphonedb">CellPhoneDBv2</a> (*)</li>
-<li><a href="https://github.com/sqjin/CellChat">CellChat</a></li>
-<li>
-<a href="https://github.com/forrest-lab/NATMI">NATMI</a> (*)</li>
-<li>
-<a href="https://github.com/msraredon/Connectome">Connectome</a> (<code>edge_weights</code>) (*)</li>
-<li>
-<a href="https://github.com/SCA-IRCM/SingleCellSignalR">SingleCellSignalR</a> (<code>LRscores</code>) (SCA) (*)</li>
-<li>
-<a href="https://github.com/Coolgenome/iTALK">iTALK</a>-inspired mean logFC score (<code>logfc</code>) (*)</li>
-<li>
-<a href="https://advances.sciencemag.org/content/7/16/eabf1356">CytoTalk</a>-inspired <code>cross-talk</code> scores (*)</li>
-<li>
-<a href="https://pubmed.ncbi.nlm.nih.gov/22247279/">RobustRank</a>-aggregate (<code>aggregate_rank</code>) scores (*)</li>
+<li><p><a href="https://github.com/Teichlab/cellphonedb">CellPhoneDBv2</a> (*, $)</p></li>
+<li><p><a href="https://github.com/sqjin/CellChat">CellChat</a></p></li>
+<li><p><a href="https://github.com/forrest-lab/NATMI">NATMI</a> (*, $)</p></li>
+<li><p><a href="https://github.com/msraredon/Connectome">Connectome</a> (<code>edge_weights</code>) (*, $)</p></li>
+<li><p><a href="https://github.com/SCA-IRCM/SingleCellSignalR">SingleCellSignalR</a> (<code>LRscores</code>) (SCA) (*, $)</p></li>
+<li><p><a href="https://github.com/Coolgenome/iTALK">iTALK</a>-inspired <em>1-vs-rest</em> LogFC score (<code>logfc_comb</code>) (*, $)</p></li>
+<li><p><a href="https://advances.sciencemag.org/content/7/16/eabf1356">CytoTalk</a>-inspired <code>cross-talk</code> scores (*)</p></li>
+<li><p><code>consensus_rank</code> of the predictions is also provied using the <a href="https://pubmed.ncbi.nlm.nih.gov/22247279/">RobustRankAggregate</a> package</p></li>
 </ul>
 <p>*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see <a href="https://saezlab.github.io/liana/articles/liana_devel.html">LIANA++</a>.</p>
+<p>$ Default methods in LIANA.</p>
 </div>
 <div id="resources" class="section level2">
 <h2 class="hasAnchor">
@@ -176,27 +168,35 @@ devtools::install_github('saezlab/liana')</code></pre>
 <a href="#cell-cell-communication-resources" class="anchor"></a>Cell-cell Communication resources</h3>
 <p>The following CCC resources are accessible via this pipeline:</p>
 <ul>
-<li>CellChatDB</li>
-<li>CellPhoneDB</li>
-<li>Ramilowski2015</li>
-<li>Baccin2019</li>
-<li>LRdb</li>
-<li>Kiroauc2010</li>
-<li>ICELLNET</li>
-<li>iTALK</li>
-<li>EMBRACE</li>
-<li>HPMR</li>
-<li>Guide2Pharma</li>
-<li>connectomeDB2020</li>
-<li>CellTalkDB</li>
-<li>OmniPath</li>
+<li><p><em>Consensus</em></p></li>
+<li><p>CellCall</p></li>
+<li><p>CellChatDB</p></li>
+<li><p>CellPhoneDB</p></li>
+<li><p>Ramilowski2015</p></li>
+<li><p>Baccin2019</p></li>
+<li><p>LRdb</p></li>
+<li><p>Kiroauc2010</p></li>
+<li><p>ICELLNET</p></li>
+<li><p>iTALK</p></li>
+<li><p>EMBRACE</p></li>
+<li><p>HPMR</p></li>
+<li><p>Guide2Pharma</p></li>
+<li><p>ConnectomeDB2020</p></li>
+<li><p>CellTalkDB</p></li>
+<li><p>OmniPath [Deprecated]</p></li>
 </ul>
+</div>
+<div id="consensus-resource" class="section level3">
+<h3 class="hasAnchor">
+<a href="#consensus-resource" class="anchor"></a>Consensus Resource</h3>
+<p>LIANA’s default resource was generated from the <code>Consensus</code> of several expert-curated resources, then filtered to additional quality control steps including literature support, complex re-union/consensus, and localisation.</p>
 </div>
 <div id="omnipath" class="section level3">
 <h3 class="hasAnchor">
 <a href="#omnipath" class="anchor"></a>OmniPath</h3>
-<p>All the resources above are retrieved from <a href="https://omnipathdb.org/">OmniPath</a>, and more specifically <a href="https://github.com/saezlab/OmnipathR">OmnipathR</a>. However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing imperfections.</p>
-<p><code>OmniPath</code> itself serves as a composite CCC resource combining all the ones listed above + <a href="https://doi.org/10.15252/msb.20209923">more</a>. <code>OmniPath</code> also collects further information about the roles and localisation of proteins in intercellular communication. We made use of this information regarding the and by default the <code>OmniPath</code>CCC resource in LIANA is filtered according to the consensus localisation and curation of ligand-receptor interactions. To obtain more information how we filtered the default CCC <code>OmniPath</code>, as well as to explore custom filter options see <a href="https://saezlab.github.io/liana/articles/liana_custom_op.html">customizing OmniPath resources</a>.</p>
+<p>All the resources above are retrieved from <a href="https://omnipathdb.org/">OmniPath</a>, and more specifically <a href="https://github.com/saezlab/OmnipathR">OmnipathR</a>. However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing steps.</p>
+<p><code>OmniPath</code> itself serves as a composite CCC resource combining all the ones listed above + <a href="https://doi.org/10.15252/msb.20209923">more</a>. <code>OmniPath</code> also collects further information about the roles and localisation of proteins in intercellular communication.</p>
+<p>We made use of this information to generate the <code>Consensus</code> resource. To obtain more information how we filtered the default <code>Consensus</code> resource, as well as to explore custom filter options see <a href="https://saezlab.github.io/liana/articles/liana_custom_op.html">customizing OmniPath resources</a>.</p>
 </div>
 </div>
 <div id="liana" class="section level2">

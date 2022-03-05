@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-02-18</h4>
+            <h4 class="date">2022-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_intracell.rmd"><code>vignettes/liana_intracell.rmd</code></a></small>
       <div class="hidden name"><code>liana_intracell.rmd</code></div>
@@ -221,7 +221,8 @@
                              resource<span class="op">=</span><span class="st">'custom'</span>,
                              external_resource <span class="op">=</span> <span class="va">rkt_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## Running LIANA with RNA as default assay</code></pre>
+<pre><code>## Expression from the `RNA` assay will be used</code></pre>
+<pre><code>## Running LIANA with `seurat_annotations` as labels!</code></pre>
 <pre><code>## Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had
 ## no counts!</code></pre>
 <pre><code>## LIANA: LR summary stats calculated!</code></pre>
@@ -236,7 +237,7 @@
 <pre><code>## Now aggregating sca</code></pre>
 <pre><code>## Now aggregating cellphonedb</code></pre>
 <pre><code>## Aggregating Ranks</code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_rtk_omni</span></code></pre></div>
 <pre><code>## # A tibble: 39 x 18
 ##    source target ligand receptor ligand.complex receptor.complex aggregate_rank
@@ -266,7 +267,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="first-format-lianas-output" class="section level3">
 <h3 class="hasAnchor">
 <a href="#first-format-lianas-output" class="anchor"></a>First, format LIANA’s output</h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># we take liana from above and keep only the columns that we need</span>
 <span class="co"># in this case we will use the aggragate for all methods</span>
 <span class="va">liana_form</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span>
@@ -297,7 +298,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <h3 class="hasAnchor">
 <a href="#obtain-msigdb-genesets-via-omnipathr---takes-a-while" class="anchor"></a>Obtain MSigDB Genesets via OmniPathR - takes a while :)</h3>
 <p>Here we focus on the <a href="http://www.gsea-msigdb.org/gsea/msigdb/collection_details.jsp#H">Hallmarks gene set</a></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">msigdb</span> <span class="op">&lt;-</span> <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/import_omnipath_annotations.html">import_omnipath_annotations</a></span><span class="op">(</span>resources <span class="op">=</span> <span class="st">"MSigDB"</span>,
                                                  wide <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">collection</span><span class="op">==</span><span class="st">"hallmark"</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -306,7 +307,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="establish-the-resource-as-the-backgrounduniverse" class="section level3">
 <h3 class="hasAnchor">
 <a href="#establish-the-resource-as-the-backgrounduniverse" class="anchor"></a>Establish the Resource as the background/universe</h3>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Here, we join pathways associated with ligand and receptors, separately</span>
 <span class="co"># Note that here we consider only matches to ligands and receptors from OmniPath as the background universe</span>
 <span class="va">omni_universe</span> <span class="op">&lt;-</span> <span class="va">liana_omni</span> <span class="op">%&gt;%</span> 
@@ -372,7 +373,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="format-hypergeometric-test-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#format-hypergeometric-test-results" class="anchor"></a>Format Hypergeometric test results</h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_hyperenrich</span> <span class="op">%&gt;%</span>
   <span class="fu">select</span><span class="op">(</span><span class="va">geneset</span>, <span class="va">source</span>, <span class="va">pval</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">distinct</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -400,7 +401,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <div id="session-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h2>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
 <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sessioninfo/man/session_info.html">session_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -413,7 +414,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Berlin               
-##  date     2022-02-18                  
+##  date     2022-03-05                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source                            
@@ -458,7 +459,6 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)                    
 ##  edgeR                  3.32.1   2021-01-14 [2] Bioconductor                      
 ##  ellipsis               0.3.2    2021-04-29 [2] CRAN (R 4.0.3)                    
-##  entropy                1.2.1    2014-11-14 [2] CRAN (R 4.0.3)                    
 ##  evaluate               0.14     2019-05-28 [2] CRAN (R 4.0.2)                    
 ##  fansi                  0.4.2    2021-01-15 [2] CRAN (R 4.0.3)                    
 ##  fastmap                1.1.0    2021-01-25 [2] CRAN (R 4.0.3)                    
@@ -498,7 +498,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)                    
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)                    
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)                    
-##  liana                * 0.0.7    2022-02-18 [1] local                             
+##  liana                * 0.0.8    2022-03-05 [1] local                             
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)                    
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor                      
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)                    
@@ -604,7 +604,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor                      
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)                    
 ## 
-## [1] /tmp/Rtmp1Itfsx/temp_libpath1488579289b61
+## [1] /tmp/RtmpRE6dqp/temp_libpath2a6c428dc74d9
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

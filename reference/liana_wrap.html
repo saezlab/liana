@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -160,7 +160,10 @@
   <span class='va'>sce</span>,
   method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"natmi"</span>, <span class='st'>"connectome"</span>, <span class='st'>"logfc"</span>, <span class='st'>"sca"</span>, <span class='st'>"cellphonedb"</span><span class='op'>)</span>,
   resource <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Consensus"</span><span class='op'>)</span>,
+  idents_col <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>external_resource</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  assay <span class='op'>=</span> <span class='cn'>NULL</span>,
   .simplify <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -182,8 +185,21 @@
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`</p></td>
     </tr>
     <tr>
+      <th>idents_col</th>
+      <td><p>the cell identities/labels to be used. By default set to NULL, and will used the active
+Idents or colLabels from the seurat_object or SCE, respectively.</p></td>
+    </tr>
+    <tr>
       <th>external_resource</th>
       <td><p>external resource in OmniPath tibble format</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>logical whether to output messages and warnings (`TRUE` by default)</p></td>
+    </tr>
+    <tr>
+      <th>assay</th>
+      <td><p>assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.</p></td>
     </tr>
     <tr>
       <th>.simplify</th>
@@ -202,8 +218,6 @@ method-resource combinations</p></td>
     <dt><code>call_italk.params</code></dt><dd><p>list of Parameters passed to iTALK <code><a href='call_italk.html'>call_italk</a></code></p></dd>
     <dt><code>call_natmi.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='call_natmi.html'>call_natmi</a></code></p></dd>
     <dt><code>call_sca.params</code></dt><dd><p>list of Parameters passed to SingleCellSignalR <code><a href='call_sca.html'>call_sca</a></code></p></dd>
-    <dt><code>assay</code></dt><dd><p>Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
-and `call_connectome`</p></dd>
     <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
