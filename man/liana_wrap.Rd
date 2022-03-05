@@ -11,6 +11,7 @@ liana_wrap(
   idents_col = NULL,
   external_resource,
   verbose = TRUE,
+  assay = NULL,
   .simplify = TRUE,
   ...
 )
@@ -23,7 +24,14 @@ liana_wrap(
 \item{resource}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
 
+\item{idents_col}{the cell identities/labels to be used. By default set to NULL, and will used the active
+Idents or colLabels from the seurat_object or SCE, respectively.}
+
 \item{external_resource}{external resource in OmniPath tibble format}
+
+\item{verbose}{logical whether to output messages and warnings (`TRUE` by default)}
+
+\item{assay}{assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.}
 
 \item{.simplify}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with
@@ -40,8 +48,6 @@ method-resource combinations}
     \item{\code{call_italk.params}}{list of Parameters passed to iTALK \code{\link{call_italk}}}
     \item{\code{call_natmi.params}}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
     \item{\code{call_sca.params}}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
-    \item{\code{assay}}{Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
-and `call_connectome`}
     \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
@@ -50,8 +56,6 @@ This is further applied at a method-specific level - it is not applied to
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
   }}
-
-\item{idents}{the cell identities/labels to be used.}
 }
 \value{
 A list of method-resource results - i.e. provided resources are run
