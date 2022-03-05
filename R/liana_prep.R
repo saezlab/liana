@@ -115,7 +115,9 @@ liana_prep.Seurat <- function(sce,
 
     } else if(!is_null(active_idents)){
         idents <- active_idents
-        liana_message(str_glue("Running LIANA with `colLabels`/`Idents` as labels"),
+        liana_message(str_glue("Running LIANA with `colLabels`/`Idents` as labels",
+                               "(matching column in metadata not found)",
+                               .sep = ""),
                       verbose = verbose)
     } else{
         stop("Please provide existing cell type identities!")
