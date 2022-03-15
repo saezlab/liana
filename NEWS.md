@@ -1,3 +1,16 @@
+# LIANA 0.0.9 (16.03.2022)
+
+## Minor Changes
+LIANA will now check if:
+- There is enough of a gene intesect between the resource and the data (i.e. if they are both for human)
+
+- There are negative counts
+
+- An assay with normalized counts was been provided (i.e. if the data/logcounts slot is scaled).
+
+- LIANA will now convert non-sparse matrices to sparse.
+
+
 # LIANA 0.0.8 (05.03.2022)
 
 ## Changes

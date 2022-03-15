@@ -48,4 +48,14 @@ sce <- sce[rowSums(counts(sce)) > 0,
 
 
 
+astro <- readRDS("~/Downloads/astro.data_cortex.rds")
+rownames(astro@assays$RNA@counts) <- toupper(rownames(astro))
+rownames(astro@assays$RNA@data) <- toupper(rownames(astro))
+
+astro@assays$RNA@counts <- astro@assays$RNA@counts
+astro <- astro %>% Seurat::NormalizeData()
+
+xd <- liana_wrap(astro, idents_col = "Type", method="sca")
+liana_wrap(astro, idents_col = "Type", method="sca")
+
 

@@ -67,7 +67,7 @@ Yet, the original method pipelines can be called via the `call_*` functions.
 
 ## `liana` wrapper function
 
-To run `liana`, we will use a toy PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
+To run `liana`, we will use a toy *HUMAN* PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
 
 `liana` takes `Seurat` and `SingleCellExperiment` objects as input, containing processed counts and clustered cells
 ```{r load_data}

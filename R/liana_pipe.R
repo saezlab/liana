@@ -44,6 +44,37 @@ liana_pipe <- function(sce,
     # and any cells which don't contain any expressed LR genes
     sce <- sce[rownames(sce) %in% entity_genes,
                Matrix::colSums(counts(sce)) > 0]
+
+
+    # Check organism/gene intersect
+    if(length(intersect(entity_genes, rownames(sce))) < 3){
+        liana_message(
+            "Low gene intersect (<3) detected! Please check if the rownames of the data match the gene identities in the resource (i.e. human genesymbols).",
+            output = "stop",
+            verbose = verbose
+        )
+    }
+
+    # Check counts (if negative -> Stop)
+    if(min(exec(assay.type, sce)) < 0){
+        liana_message(
+            "Negative counts are present in the Matrix!",
+            output = "stop",
+            verbose = verbose
+        )
+    }
+
+    # Check counts (if not log-transformed -> Stop)
+    if(all(round(exec(assay.type, sce)@x[1:100]) == exec(assay.type, sce)@x[1:100])){
+        liana_message(
+            "Please make sure an assay with normalized counts is present!",
+            output = "stop",
+            verbose = verbose
+        )
+    }
+
+
+
     # Scale genes across cells
     sce@assays@data[["scaledata"]] <- row_scale(exec(assay.type, sce))
 

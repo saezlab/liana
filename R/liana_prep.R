@@ -89,6 +89,13 @@ liana_prep.Seurat <- function(sce,
         )
     }
 
+    # Convert to sparse!
+    if(!is(counts(sce), "sparseMatrix")){
+        counts(sce) <- as(counts(sce), "sparseMatrix")
+        logcounts(sce) <- as(logcounts(sce), "sparseMatrix")
+    }
+
+
     return(sce[nonzero_genes, nonzero_cells])
 }
 
