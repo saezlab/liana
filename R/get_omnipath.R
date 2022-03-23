@@ -558,8 +558,11 @@ get_up_dict <- function(ligrec_res,
 }
 
 #' Helper Function to translate to UniProt
+#'
 #' @param st any genesymbol string - to be separate by `_`
-#' @param dict dfgdfg
+#' @param dict dictionary with genesymbols and uniprot IDs
+#'
+#' @noRd
 geneid_to_uniprot <- function(st,
                               dict){
     st.split <- str_split(st, pattern = "_")[[1]]

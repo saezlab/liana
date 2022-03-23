@@ -49,13 +49,29 @@ sce <- sce[rowSums(counts(sce)) > 0,
 
 
 astro <- readRDS("~/Downloads/astro.data_cortex.rds")
+astro <- astro %>% Seurat::NormalizeData()
+
+xd <- liana_wrap(astro,
+                 method = "sca",
+                 resource = "custom",
+                 external_resource = generate_orthologs(op_resource,
+                                                        symbols_dict),
+                 idents_col = "Type"
+           )
+
+
+
 rownames(astro@assays$RNA@counts) <- toupper(rownames(astro))
 rownames(astro@assays$RNA@data) <- toupper(rownames(astro))
 
-astro@assays$RNA@counts <- astro@assays$RNA@counts
-astro <- astro %>% Seurat::NormalizeData()
 
-xd <- liana_wrap(astro, idents_col = "Type", method="sca")
-liana_wrap(astro, idents_col = "Type", method="sca")
+xd2 <- liana_wrap(astro, idents_col = "Type", method="sca")
 
+
+
+
+require(GENIE3)
+GENIE3::GENIE3(exprMatrix = as.matrix(astro@assays$RNA@counts),
+               regulators = rownames(astro@assays$RNA@counts)
+               )
 
