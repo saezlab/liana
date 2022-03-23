@@ -96,7 +96,7 @@ head(symbols_dict)
 
 
 ## Convert to Orthologues and Example LIANA run
-```{r orthology, warning=FALSE, message=FALSE}
+```{r orthology, warning=FALSE, message=FALSE, fig.width=11, fig.height=8}
 # Here, we will convert LIANA's Consensus resource to murine symbols
 op_resource <- select_resource("Consensus")[[1]]
 
