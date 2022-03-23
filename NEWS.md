@@ -1,5 +1,9 @@
 # LIANA 0.0.9 (16.03.2022)
 
+## New Implementations
+
+- We now provide a tutorial dedicated to orthology conversion of the resources in LIANA
+
 ## Minor Changes
 LIANA will now check if:
 - There is enough of a gene intesect between the resource and the data (i.e. if they are both for human)
