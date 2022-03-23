@@ -2,7 +2,7 @@
 
 ## New Implementations
 
-- We now provide a tutorial dedicated to orthology conversion of the resources in LIANA
+- We now provide a tutorial dedicated to `orthology conversion` of the resources in LIANA
 
 ## Minor Changes
 LIANA will now check if:
