@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
       </span>
     </div>
 
@@ -64,6 +64,9 @@
     </li>
     <li>
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
+    </li>
+    <li>
+      <a href="../articles/liana_ortho.html">Orthology Conversion with LIANA</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
@@ -109,7 +112,7 @@
       <h1 data-toc-skip>LIANA - NicheNet</h1>
                         <h4 class="author">Martin Garrido Rodriguez-Cordoba</h4>
             
-            <h4 class="date">2022-03-05</h4>
+            <h4 class="date">2022-03-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_nichenet.Rmd"><code>vignettes/liana_nichenet.Rmd</code></a></small>
       <div class="hidden name"><code>liana_nichenet.Rmd</code></div>
@@ -141,7 +144,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/slowkow/ggrepel">ggrepel</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">180</span><span class="op">)</span> <span class="co"># required for downloading single-cell expression on slow connection</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">360</span><span class="op">)</span> <span class="co"># required for downloading single-cell expression on slow connection</span></code></pre></div>
 <p>Then, we load and prepare the single-cell data, NicheNet’s model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>. Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># single-cell expression matrix described in Puram et al. 2017</span>
@@ -307,7 +310,7 @@
 ## 
 ## other attached packages:
 ##  [1] cowplot_1.1.1      ggrepel_0.9.1      SeuratObject_4.0.2 Seurat_4.0.3      
-##  [5] nichenetr_1.0.0    liana_0.0.8        forcats_0.5.1      stringr_1.4.0     
+##  [5] nichenetr_1.0.0    liana_0.0.9        forcats_0.5.1      stringr_1.4.0     
 ##  [9] dplyr_1.0.7        purrr_0.3.4        readr_2.1.0        tidyr_1.1.3       
 ## [13] tibble_3.1.2       ggplot2_3.3.5      tidyverse_1.3.0    BiocStyle_2.18.1  
 ## 

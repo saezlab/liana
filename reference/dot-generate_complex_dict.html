@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource. — get_partners • liana</title>
+<title>Helper function to generate a dictionary also for the complexes — .generate_complex_dict • liana</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,8 @@ one ligand-receptor resource. — get_partners • liana</title>
 
 
 
-<meta property="og:title" content="Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource. — get_partners" />
-<meta property="og:description" content="Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource." />
+<meta property="og:title" content="Helper function to generate a dictionary also for the complexes — .generate_complex_dict" />
+<meta property="og:description" content="Helper function to generate a dictionary also for the complexes" />
 
 
 
@@ -153,34 +150,28 @@ one ligand-receptor resource." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/get_omnipath.R'><code>R/get_omnipath.R</code></a></small>
-    <div class="hidden name"><code>get_partners.Rd</code></div>
+    <h1>Helper function to generate a dictionary also for the complexes</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_utils.R'><code>R/liana_utils.R</code></a></small>
+    <div class="hidden name"><code>dot-generate_complex_dict.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource.</p>
+    <p>Helper function to generate a dictionary also for the complexes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_partners</span><span class='op'>(</span><span class='va'>side</span>, <span class='va'>resource</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.generate_complex_dict</span><span class='op'>(</span><span class='va'>translated_subunits</span>, entity <span class='op'>=</span> <span class='st'>"target"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>side</th>
-      <td><p>'ligand' (trans), 'receptor' (rec) or 'both' (both short or
-long notation can be used)</p></td>
+      <th>translated_subunits</th>
+      <td><p>decomplexified op_resource with already recoded
+subunits</p></td>
     </tr>
     <tr>
-      <th>resource</th>
-      <td><p>Name of current resource (taken from get_lr_resources)</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Inherit dot params from OmnipathR::omnipath_intercell</p></td>
+      <th>entity</th>
+      <td><p>column of interest (target or source)</p></td>
     </tr>
     </table>
 

@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource. — get_partners • liana</title>
+<title>Modified `dplyr::recode` function — recode.character2 • liana</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,8 @@ one ligand-receptor resource. — get_partners • liana</title>
 
 
 
-<meta property="og:title" content="Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource. — get_partners" />
-<meta property="og:description" content="Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource." />
+<meta property="og:title" content="Modified `dplyr::recode` function — recode.character2" />
+<meta property="og:description" content="Modified `dplyr::recode` function" />
 
 
 
@@ -153,37 +150,68 @@ one ligand-receptor resource." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/get_omnipath.R'><code>R/get_omnipath.R</code></a></small>
-    <div class="hidden name"><code>get_partners.Rd</code></div>
+    <h1>Modified `dplyr::recode` function</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_utils.R'><code>R/liana_utils.R</code></a></small>
+    <div class="hidden name"><code>recode.character2.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Retrieves intercellular communication partners (ligands or receptors) from
-one ligand-receptor resource.</p>
+    <p>Modified `dplyr::recode` function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_partners</span><span class='op'>(</span><span class='va'>side</span>, <span class='va'>resource</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for character2</span>
+<span class='fu'>recode</span><span class='op'>(</span>
+  <span class='va'>.x</span>,
+  <span class='va'>...</span>,
+  .default <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .missing <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .default_fun <span class='op'>=</span> <span class='st'>"str_to_title"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>side</th>
-      <td><p>'ligand' (trans), 'receptor' (rec) or 'both' (both short or
-long notation can be used)</p></td>
-    </tr>
-    <tr>
-      <th>resource</th>
-      <td><p>Name of current resource (taken from get_lr_resources)</p></td>
+      <th>.x</th>
+      <td><p>A vector to modify</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Inherit dot params from OmnipathR::omnipath_intercell</p></td>
+      <td><p>&lt;<code><a href='https://rlang.r-lib.org/reference/dyn-dots.html'>dynamic-dots</a></code>&gt; Replacements. For character and factor <code>.x</code>, these should be named
+and replacement is based only on their name. For numeric <code>.x</code>, these can be
+named or not. If not named, the replacement is done based on position i.e.
+<code>.x</code> represents positions to look for in replacements. See examples.</p>
+<p>When named, the argument names should be the current values to be replaced, and the
+argument values should be the new (replacement) values.</p>
+<p>All replacements must be the same type, and must have either
+length one or the same length as <code>.x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>.default</th>
+      <td><p>If supplied, all values not otherwise matched will
+be given this value. If not supplied and if the replacements are
+the same type as the original values in <code>.x</code>, unmatched
+values are not changed. If not supplied and if the replacements
+are not compatible, unmatched values are replaced with <code>NA</code>.</p>
+<p><code>.default</code> must be either length 1 or the same length as
+<code>.x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>.missing</th>
+      <td><p>If supplied, any missing values in <code>.x</code> will be
+replaced by this value. Must be either length 1 or the same length as
+<code>.x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>.default_fun</th>
+      <td><p>Function to modify the default (mismatched) strings
+(`str_to_title` by default - i.e. for mice)</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>enables to modify unmatched genesymbols</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
