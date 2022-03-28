@@ -40,6 +40,16 @@ liana_pipe <- function(sce,
     # calculate global_mean required for SCA
     global_mean <- fast_mean(exec(assay.type, sce))
 
+    # Get Log2FC (note we do it before any filtering)
+    logfc_df <- get_log2FC(
+        # here we scale the libraries
+        # then filter to only the relevant genes
+        sce = scater::logNormCounts(sce,
+                                    log=FALSE,
+                                    assay.type="counts")[rownames(sce) %in% entity_genes]
+
+    )
+
     # Filter `sce` to only include ligand receptor genes
     # and any cells which don't contain any expressed LR genes
     sce <- sce[rownames(sce) %in% entity_genes,
@@ -98,9 +108,6 @@ liana_pipe <- function(sce,
     pem_scores <- compute_pem_scores(sce = sce,
                                      assay.type = assay.type)
 
-    # Get Log2FC
-    logfc_df <- get_log2FC(sce, "counts")
-
     # Find Markers and Format
     cluster_markers <- scran::findMarkers(sce,
                                           groups = colLabels(sce),
@@ -116,7 +123,7 @@ liana_pipe <- function(sce,
                 rownames_to_column("gene") %>%
                 as_tibble() %>%
                 select(gene, p.value, FDR, stat = summary.stats)
-            })
+        })
 
     # Get all Possible Cluster pair combinations
     pairs <- expand_grid(source = unique(colLabels(sce)),
@@ -194,7 +201,7 @@ liana_pipe <- function(sce,
 
     liana_message("LIANA: LR summary stats calculated!",
                   verbose = verbose
-                  )
+    )
 
     # Join complexes (recomplexify) to lr_res
     cmplx <- op_resource %>%
@@ -203,7 +210,7 @@ liana_pipe <- function(sce,
             ligand.complex = source_genesymbol_complex,
             receptor = target_genesymbol,
             receptor.complex = target_genesymbol_complex
-            )
+        )
 
     lr_res %<>%
         left_join(., cmplx,
@@ -369,13 +376,7 @@ join_log2FC <- function(lr_res,
 #' `assay.type` should be the raw counts
 #'
 #' @noRd
-get_log2FC <- function(sce,
-                       assay.type){
-
-    # normalize counts across libraries
-    sce <- scater::logNormCounts(sce,
-                                 log=FALSE,
-                                 assay.type=assay.type)
+get_log2FC <- function(sce){
 
     # iterate over each possible cluster leaving one out
     levels(colLabels(sce)) %>%
@@ -385,7 +386,7 @@ get_log2FC <- function(sce,
                 scater::calculateAverage(subset(sce,
                                                 select = colLabels(sce)==subject),
                                          assay.type = "normcounts"
-                                         ) %>%
+                ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(subject_avg = value)
 
@@ -394,7 +395,7 @@ get_log2FC <- function(sce,
                 scater::calculateAverage(subset(sce,
                                                 select = !(colLabels(sce) %in% subject)),
                                          assay.type = "normcounts"
-                                         ) %>%
+                ) %>%
                 as_tibble(rownames = "gene") %>%
                 dplyr::rename(loso_avg = value)
 

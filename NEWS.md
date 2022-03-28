@@ -1,3 +1,12 @@
+# LIANA 1.0.0
+
+## Changes
+
+- I now perform library-normalization for logFC, prior to any filtering ->
+previously this was noted to result in a number of exceptions being thrown
+after filtering by the LR universe.
+
+
 # LIANA 0.0.9 (23.03.2022)
 
 ## New Implementations
