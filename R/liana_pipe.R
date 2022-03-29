@@ -40,16 +40,6 @@ liana_pipe <- function(sce,
     # calculate global_mean required for SCA
     global_mean <- fast_mean(exec(assay.type, sce))
 
-    # Get Log2FC (note we do it before any filtering)
-    logfc_df <- get_log2FC(
-        # here we scale the libraries
-        # then filter to only the relevant genes
-        sce = scater::logNormCounts(sce,
-                                    log=FALSE,
-                                    assay.type="counts")[rownames(sce) %in% entity_genes]
-
-    )
-
     # Filter `sce` to only include ligand receptor genes
     # and any cells which don't contain any expressed LR genes
     sce <- sce[rownames(sce) %in% entity_genes,
@@ -83,6 +73,11 @@ liana_pipe <- function(sce,
         )
     }
 
+    # Get Log2FC (note we do it before any filtering)
+    logfc_df <- get_log2FC(
+        sce,
+        assay.type = assay.type
+    )
 
 
     # Scale genes across cells
@@ -376,7 +371,10 @@ join_log2FC <- function(lr_res,
 #' `assay.type` should be the raw counts
 #'
 #' @noRd
-get_log2FC <- function(sce){
+get_log2FC <- function(sce, assay.type){
+
+    # Get anti-logged normalized counts
+    sce@assays@data[["normcounts"]] <- .get_invcounts(sce, assay.type)
 
     # iterate over each possible cluster leaving one out
     levels(colLabels(sce)) %>%
@@ -466,6 +464,31 @@ row_scale <- function(mat){
 
     # return scaled mat
     return(as.matrix((mat - col_means) / col_sd))
+}
+
+#' Helper function to inverse logged counts
+#'
+#' @param x mat or array
+#' @param base base for conversion
+.antilog1m <- function(x, base=2){base ^ (x) - 1}
+
+
+#' Helper function to generate inversed counts (i.e. normalized but not logged)
+#'
+#' @param sce SingleCellExperiment object
+#' @param assay.type counts slot
+.get_invcounts <- function(sce, assay.type){
+    antilogged <- .antilog1m(slot(exec(assay.type, sce), "x"))
+
+    methods::new(
+        "dgCMatrix",
+        i = slot(exec(assay.type, sce), "i"),
+        p = slot(exec(assay.type, sce), "p"),
+        Dim = slot(exec(assay.type, sce), "Dim"),
+        Dimnames = slot(exec(assay.type, sce), "Dimnames"),
+        x = antilogged,
+        factors = slot(exec(assay.type, sce), "factors")
+    )
 }
 
 

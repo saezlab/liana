@@ -2,9 +2,9 @@
 
 ## Changes
 
-- I now perform library-normalization for logFC, prior to any filtering ->
-previously this was noted to result in a number of exceptions being thrown
-after filtering by the LR universe.
+- For `logFC_mean`, rather than normalizing the counts by library size, I instead
+I inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts,
+i.e. mainly for consistency with the rest of the methods.
 
 
 # LIANA 0.0.9 (23.03.2022)
