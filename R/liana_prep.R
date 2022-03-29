@@ -95,6 +95,16 @@ liana_prep.Seurat <- function(sce,
         logcounts(sce) <- as(logcounts(sce), "sparseMatrix")
     }
 
+    # Check counts (if negative -> Stop)
+    if(min(exec("logcounts", sce)) < 0){
+        stop("Negative counts are present in the Matrix!")
+    }
+
+    # Check counts (if not log-transformed -> Stop)
+    if(all(round(exec("logcounts", sce)@x[1:100]) == exec("logcounts", sce)@x[1:100])){
+        stop("Please make sure an assay with normalized counts is present!")
+    }
+
 
     return(sce[nonzero_genes, nonzero_cells])
 }
