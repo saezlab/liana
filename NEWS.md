@@ -6,6 +6,10 @@
 I inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts,
 i.e. mainly for consistency with the rest of the methods.
 
+## Minor Changes
+
+- Flipped `x` and `y` axes dotplot according to feedback.
+
 
 # LIANA 0.0.9 (23.03.2022)
 

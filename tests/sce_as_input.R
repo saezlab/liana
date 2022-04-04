@@ -140,3 +140,85 @@ xx <- rbinom(100, 100, 0.1)
 xx
 
 antilog1m(log2(xx + 1))
+
+
+###
+source_groups = c("B", "NK")
+target_groups = c("NK", "CD8 T")
+magnitude = "lr.mean"
+specificity = "pvalue"
+show_complex = TRUE
+
+liana_agg <- cpdb_out %>%
+    mutate(pvalue = -log10(pvalue+1e-10)) %>%
+    top_n(n = 100, wt = lr.mean)
+
+liana_dotplot(liana_agg,
+              source_groups = c("B", "NK"),
+              target_groups = c("NK", "CD8 T"),
+              magnitude = "lr.mean",
+              specificity = "pvalue")
+
+if(show_complex){
+    entities <- c("ligand.complex", "receptor.complex")
+} else{
+    entities <- c("ligand", "receptor")
+}
+
+
+# Modify for the plot
+liana_mod <- liana_agg %>%
+# Filter to only the cells of interest
+    filter(source %in% source_groups) %>%
+    filter(target %in% target_groups) %>%
+    rename(magnitude = !!magnitude) %>%
+    rename(specificity = !!specificity) %>%
+    unite(entities, col = "interaction", sep = " -> ") %>%
+    unite(c("source", "target"), col = "source_target", remove = FALSE)
+
+# colour blind palette from http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+cbPalette <- c("#E69F00", "#56B4E9",
+               "#009E73", "#F0E442", "#0072B2",
+               "#D55E00", "#CC79A7")
+
+# plot
+suppressWarnings(
+    ggplot(liana_mod,
+           aes(x = target,
+               y = interaction,
+               colour = magnitude,
+               size = specificity,
+               group = target
+           )) +
+        geom_point() +
+        scale_color_gradientn(colours = viridis::viridis(20)) +
+        scale_size_continuous(range = c(5, 9)) +
+        facet_grid(. ~ source,
+                   space = "free",
+                   scales ="free",
+                   switch="y") +
+        theme_bw(base_size = 20) +
+        theme(
+            legend.text = element_text(size = 16),
+            axis.text.x = element_text(colour =
+                                           cbPalette[1:length(
+                                               unique(liana_mod$source)
+                                           )],
+                                       face = "bold",
+                                       size = 23),
+            axis.text.y = element_text(size = 18,
+                                       vjust = 0.5),
+            legend.title = element_text(size = 18),
+            panel.spacing = unit(0.1, "lines"),
+            strip.background = element_rect(fill = NA),
+            strip.text = element_text(size = 24, colour = "gray6") #,
+            # strip.text.y.left = element_text(angle = 0)
+        ) +
+        # scale_x_discrete(position = "right") +
+        labs(y = "Interactions (Ligand -> Receptor)",
+             colour = "Expression\nMagnitude",
+             size = "Interaction\nSpecificity",
+             x = NULL
+        )
+)
+

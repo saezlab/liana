@@ -1,4 +1,4 @@
-# input
+# input ----
 complex_policy='mean0'
 liana_path <- system.file(package = "liana")
 seurat_object <- readRDS(file.path(liana_path , "testdata",
@@ -119,7 +119,7 @@ saveRDS(def_arg, file.path(liana_path, "testdata",
 
 # liana dotplot ----
 liana_dotplot_out <- liana_dotplot(cpdb_out %>%
-                                       mutate(pvalue = -log10(pvalue+0.00000001)), # invert pval
+                                       mutate(pvalue = -log10(pvalue+1e10)), # invert pval
                                    source_groups = "B",
                                    target_groups = c("NK", "CD8 T"),
                                    magnitude = "lr.mean",

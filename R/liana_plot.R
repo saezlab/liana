@@ -57,30 +57,29 @@ liana_dotplot <- function(liana_agg,
     # plot
     suppressWarnings(
         ggplot(liana_mod,
-               aes(x = interaction,
-                   y = target,
+               aes(x = target,
+                   y = interaction,
                    colour = magnitude,
                    size = specificity,
                    group = target
-                   )) +
+               )) +
             geom_point() +
             scale_color_gradientn(colours = viridis::viridis(20)) +
             scale_size_continuous(range = c(5, 9)) +
-            facet_grid(source ~ .,
+            facet_grid(. ~ source,
                        space = "free",
                        scales ="free",
                        switch="y") +
             theme_bw(base_size = 20) +
             theme(
                 legend.text = element_text(size = 16),
-                axis.text.y = element_text(colour =
+                axis.text.x = element_text(colour =
                                                cbPalette[1:length(
                                                    unique(liana_mod$source)
-                                                        )],
+                                               )],
                                            face = "bold",
                                            size = 23),
-                axis.text.x = element_text(size = 18,
-                                           angle = 90,
+                axis.text.y = element_text(size = 18,
                                            vjust = 0.5),
                 legend.title = element_text(size = 18),
                 panel.spacing = unit(0.1, "lines"),
@@ -88,11 +87,11 @@ liana_dotplot <- function(liana_agg,
                 strip.text = element_text(size = 24, colour = "gray6") #,
                 # strip.text.y.left = element_text(angle = 0)
             ) +
-            scale_y_discrete(position = "right") +
-            labs(x = "Interactions (Ligand -> Receptor)",
+            # scale_x_discrete(position = "right") +
+            labs(y = "Interactions (Ligand -> Receptor)",
                  colour = "Expression\nMagnitude",
                  size = "Interaction\nSpecificity",
-                 y = NULL
-                 )
+                 x = NULL
+            )
     )
 }
