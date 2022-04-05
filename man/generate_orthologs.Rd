@@ -5,8 +5,6 @@
 \title{Function to translate Human genes to organism X orthologues}
 \usage{
 generate_orthologs(op_resource, symbols_dict)
-
-generate_orthologs(op_resource, symbols_dict)
 }
 \arguments{
 \item{op_resource}{resource in the format of OmniPath/LIANA}
@@ -15,7 +13,5 @@ generate_orthologs(op_resource, symbols_dict)
 in a second species}
 }
 \description{
-Function to translate Human genes to organism X orthologues
-
 Function to translate Human genes to organism X orthologues
 }

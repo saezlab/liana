@@ -43,50 +43,6 @@ generate_orthologs <- function(op_resource, symbols_dict){
 }
 
 
-#' Function to translate Human genes to organism X orthologues
-#'
-#' @param op_resource resource in the format of OmniPath/LIANA
-#'
-#' @param symbols_dict dictionary (named list) with human genesymbols and ortholog
-#'  in a second species
-#'
-generate_orthologs <- function(op_resource, symbols_dict){
-    # decomplexify
-    op_resource_decomplex <- op_resource %>%
-        liana::decomplexify()
-
-    # translate subunits
-    translated_subunits <- op_resource_decomplex %>%
-        mutate(across(ends_with("genesymbol"), ~recode.character2(.x, !!!symbols_dict)))
-
-    # Generate Dictionaries for complexes
-    target_complex_dict <- .generate_complex_dict(translated_subunits,
-                                                  entity="target") %>%
-        deframe()
-    source_complex_dict <- .generate_complex_dict(translated_subunits,
-                                                  entity="source") %>%
-        deframe()
-
-    # Bind all dictionaries
-    dict <- pmap( # append multiple lists
-        list(
-            list(
-                symbols_dict,
-                target_complex_dict,
-                source_complex_dict
-            )
-        ), c) %>%
-        flatten %>%
-        flatten()
-
-    # get orthologous resource
-    op_ortholog <- op_resource %>%
-        mutate(across(ends_with("genesymbol"), ~recode.character2(.x, !!!dict)))
-
-    return(op_ortholog)
-}
-
-
 #' Modified `dplyr::recode` function
 #'
 #' @inheritParams dplyr::recode
