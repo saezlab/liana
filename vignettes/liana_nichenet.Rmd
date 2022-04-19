@@ -34,7 +34,7 @@ library(nichenetr)
 library(Seurat)
 library(ggrepel)
 library(cowplot)
-options(timeout=360) # required for downloading single-cell expression on slow connection
+options(timeout=720) # required for downloading single-cell expression on slow connection
 ``` 
 
 Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md). Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.

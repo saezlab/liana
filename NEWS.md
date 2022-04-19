@@ -10,6 +10,10 @@ i.e. mainly for consistency with the rest of the methods.
 
 - Flipped `x` and `y` axes dotplot according to feedback.
 
+- Added `.default_fun` parameter to `generate_orthologues`
+
+- Minor code clean up
+
 
 # LIANA 0.0.9 (23.03.2022)
 
