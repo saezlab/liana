@@ -77,7 +77,8 @@ Suggests:
     Seurat,
     ggplot2,
     OmnipathR,
-    entropy
+    entropy,
+    covr
 Remotes: sqjin/CellChat,
     bioc::3.12/BiRewire,
     bioc::3.12/SingleCellExperiment,
