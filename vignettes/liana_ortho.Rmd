@@ -25,7 +25,7 @@ LIANA works with human symbols by default.
 Nevertheless, one could run LIANA with any other organism, provided a dictionary
 is available to map human genesymbols to those of species X.
 
-In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA's `generate_orthologs`.
+In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA's `generate_orthologs`. A mouse dictionary is also included with LIANA (see below).
 
 ## Loading prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
@@ -88,7 +88,7 @@ symbols_dict <- biomaRt::getLDS(attributes = c("hgnc_symbol"),
   deframe()
 ```
 
-A dictionary for murine symbols is also included in liana
+## A dictionary for murine symbols is also included in liana
 ```{r hidden_load, warning=FALSE, message=FALSE}
 symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
 head(symbols_dict)

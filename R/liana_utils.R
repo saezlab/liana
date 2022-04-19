@@ -5,15 +5,22 @@
 #' @param symbols_dict dictionary (named list) with human genesymbols and ortholog
 #'  in a second species
 #'
+#' @param .default_fun default function to be applied to any missing/unmapped
+#' genesymbols (`str_to_title` by default)
+#'
 #' @export
-generate_orthologs <- function(op_resource, symbols_dict){
+generate_orthologs <- function(op_resource,
+                               symbols_dict,
+                               .default_fun = "str_to_title"){
     # decomplexify
     op_resource_decomplex <- op_resource %>%
         liana::decomplexify()
 
     # translate subunits
     translated_subunits <- op_resource_decomplex %>%
-        mutate(across(ends_with("genesymbol"), ~recode.character2(.x, !!!symbols_dict)))
+        mutate(across(ends_with("genesymbol"),
+                      ~recode.character2(.x, !!!symbols_dict,
+                                         .default_fun = .default_fun)))
 
     # Generate Dictionaries for complexes
     target_complex_dict <- .generate_complex_dict(translated_subunits,
@@ -37,7 +44,9 @@ generate_orthologs <- function(op_resource, symbols_dict){
 
     # get orthologous resource
     op_ortholog <- op_resource %>%
-        mutate(across(ends_with("genesymbol"), ~recode.character2(.x, !!!dict)))
+        mutate(across(ends_with("genesymbol"),
+                      ~recode.character2(.x, !!!dict,
+                                         .default_fun = .default_fun)))
 
     return(op_ortholog)
 }
@@ -55,7 +64,7 @@ generate_orthologs <- function(op_resource, symbols_dict){
 recode.character2 <- function(.x, ...,
                               .default = NULL,
                               .missing = NULL,
-                              .default_fun = "str_to_title") {
+                              .default_fun) {
     .x <- as.character(.x)
     values <- rlang::list2(...)
     if (!all(rlang::have_name(values))) {

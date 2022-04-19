@@ -4,13 +4,7 @@
 \alias{recode.character2}
 \title{Modified `dplyr::recode` function}
 \usage{
-\method{recode}{character2}(
-  .x,
-  ...,
-  .default = NULL,
-  .missing = NULL,
-  .default_fun = "str_to_title"
-)
+\method{recode}{character2}(.x, ..., .default = NULL, .missing = NULL, .default_fun)
 }
 \arguments{
 \item{.x}{A vector to modify}

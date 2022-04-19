@@ -4,13 +4,16 @@
 \alias{generate_orthologs}
 \title{Function to translate Human genes to organism X orthologues}
 \usage{
-generate_orthologs(op_resource, symbols_dict)
+generate_orthologs(op_resource, symbols_dict, .default_fun = "str_to_title")
 }
 \arguments{
 \item{op_resource}{resource in the format of OmniPath/LIANA}
 
 \item{symbols_dict}{dictionary (named list) with human genesymbols and ortholog
 in a second species}
+
+\item{.default_fun}{default function to be applied to any missing/unmapped
+genesymbols (`str_to_title` by default)}
 }
 \description{
 Function to translate Human genes to organism X orthologues
