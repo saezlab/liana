@@ -65,9 +65,8 @@ liana_wrap <- function(sce,
     resource = list('custom_resource' = external_resource)
   }
 
-  if(any(method %in% c("natmi", "connectome", # change this (logical for internal)
-                       "logfc", "sca",
-                       "cellphonedb", "cytotalk", "scconnect"))){
+  # Check if any method is internal (i.e. call liana_pipe)
+  if(any(map_lgl(method, function(m) !str_detect(m, "call_")))){
 
     # LIANA pipe map over resource
     lr_results <- resource %>%
@@ -99,7 +98,7 @@ liana_wrap <- function(sce,
                          verbose = verbose)
 
            map2(resource, names(resource), function(reso, reso_name){
-             if(method_name %in% c("squidpy", "cellchat")){
+             if(method_name %in% c("call_squidpy", "call_cellchat")){
                # external calls (for complex-informed methods)
                args <- append(
                  list("sce" = sce,
@@ -108,8 +107,9 @@ liana_wrap <- function(sce,
                  )
                rlang::invoke(.method, args)
 
-             } else if(startsWith(method_name, "call_")){
-               # external calls (for methods who don't deal with complexes)
+             } else if(method_name %in% c("call_connectome", "call_sca",
+                                          "call_natmi", "call_italk")){
+               # external calls (for methods which don't deal with complexes)
                args <- append(
                  list(sce = sce,
                       "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
@@ -242,10 +242,9 @@ select_resource <- function(resource){
             cellphonedb = expr(get_cellphonedb),
             # cytotalk
             cytotalk = expr(get_cytotalk),
-            # pipes
-            squidpy = expr(call_squidpy),
-            cellchat = expr(call_cellchat),
-            # deprecated
+            # pipes (deprecated)
+            call_squidpy = expr(call_squidpy),
+            call_cellchat = expr(call_cellchat),
             call_sca = expr(call_sca),
             call_connectome = expr(call_connectome),
             call_natmi = expr(call_natmi),
@@ -270,18 +269,7 @@ select_resource <- function(resource){
 #'
 #' @export
 show_methods <- function(){
-    c("logfc",
-      "natmi",
-      "connectome",
-      "sca",
-      "squidpy",
-      "cellchat",
-      "call_sca",
-      'call_natmi',
-      'call_italk',
-      'call_connectome',
-      "cellphonedb"
-      )
+  names(.score_specs())
 }
 
 #' Helper Function to return the Resources in LIANA

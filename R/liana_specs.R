@@ -90,21 +90,21 @@ setClass("ScoreSpecifics",
                 score_fun = cytotalk_score,
                 columns = c("receptor.pem", "ligand.pem")
             ),
-        "scconnect" =
-            methods::new(
-                "ScoreSpecifics",
-                method_name = "scconnect",
-                method_score = "importance",
-                descending_order = TRUE,
-                score_fun = scconnect_score,
-                columns = c("ligand.expr", "receptor.expr",
-                            # need to move pvals to another holder
-                            # min(pval) != min(expr) in liana_aggregate
-                            "ligand.pval", "receptor.pval")
-            ),
+        # "scconnect" =
+        #     methods::new(
+        #         "ScoreSpecifics",
+        #         method_name = "scconnect",
+        #         method_score = "importance",
+        #         descending_order = TRUE,
+        #         score_fun = scconnect_score,
+        #         columns = c("ligand.expr", "receptor.expr",
+        #                     # need to move pvals to another holder
+        #                     # min(pval) != min(expr) in liana_aggregate
+        #                     "ligand.pval", "receptor.pval")
+        #     ),
 
         # External
-        "squidpy" =
+        "call_squidpy" =
             methods::new(
                 "ScoreSpecifics",
                 method_name = "Squidpy",
@@ -113,7 +113,7 @@ setClass("ScoreSpecifics",
                 score_fun = function(){},
                 columns = ""
             ),
-        "cellchat" =
+        "call_cellchat" =
             methods::new(
                 "ScoreSpecifics",
                 method_name = "cellchat",
@@ -123,7 +123,6 @@ setClass("ScoreSpecifics",
                 columns = ""
             ),
 
-        # deprecated
         "call_connectome" =
             methods::new(
                 "ScoreSpecifics",

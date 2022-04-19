@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.0.10
+Version: 0.1.0
 Authors@R: c(
     person(
         given = "Daniel",

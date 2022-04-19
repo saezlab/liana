@@ -19,7 +19,7 @@ test_that("Test liana wrapper", {
     exp2 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_def_res.RDS"))
     res2 <- liana_wrap(seurat_object,
-                       method = c('sca','squidpy', "call_sca"),
+                       method = c('sca','call_squidpy', "call_sca"),
                        resource = "Default")
 
     expect_equal(res2, exp2)
