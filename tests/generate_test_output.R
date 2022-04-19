@@ -1,3 +1,5 @@
+devtools::load_all(".")
+
 # input ----
 complex_policy='mean0'
 liana_path <- system.file(package = "liana")
@@ -233,4 +235,9 @@ liana_agg_house <- liana_res %>%
 saveRDS(liana_agg_house, file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))
 
+
+# Generate Ortho ----
+op_ortho <- generate_orthologs(op_resource = op_resource,
+                               symbols_dict = symbols_dict)
+saveRDS(op_ortho, file.path(liana_path, "testdata", "output", "op_ortho.RDS"))
 

@@ -832,9 +832,25 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
     duplicated_omni %<>%
         filter(source_genesymbol %in% wrong_transmitters)
 
+    # Blocklist certain transmitters and receivers
+    block_transmitters <- c("TYK2", "SYK")
+    block_receivers <- c("IFNG_IFNGR1", # include a ligand in the complex
+                         "CNTN2_CNTNAP2",
+                         "IL2_IL2RA_IL2RB_IL2RG")
+
+
     # Remove those from our curated omnipath
     complex_omni %<>%
-        anti_join(duplicated_omni)
+        anti_join(duplicated_omni) %>%
+        filter(!source_genesymbol %in% block_transmitters,
+               !target_genesymbol %in% block_receivers) %>%
+        # # Recomplexify CD8 complex?
+        # mutate(target_genesymbol = if_else(target_genesymbol=="CD8A" |
+        #                                        target_genesymbol=="CD8B",
+        #                                    "CD8A_CD8B",
+        #                                    target_genesymbol)) %>%
+        distinct_at(.vars=c("source_genesymbol", "target_genesymbol"),
+                    .keep_all=TRUE)
 
     # Return the final Curated OmniPath Resource
     return(complex_omni)
