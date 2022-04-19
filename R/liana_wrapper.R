@@ -276,9 +276,15 @@ show_methods <- function(){
 #'
 #' @export
 show_resources <- function(){
-    as.character(names(
-        readRDS(system.file(package = 'liana', "omni_resources.rds"))
-        ))
+    as.character(
+      names(
+        readRDS(
+          system.file(
+            package = 'liana', "omni_resources.rds"
+            )
+          )
+        )
+      )
 }
 
 

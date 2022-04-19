@@ -13,8 +13,11 @@ combined with any method.
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-    
-devtools::install_github('saezlab/liana')
+
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
+
+remotes::install_github('saezlab/liana')
 ```
 
   
