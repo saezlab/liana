@@ -1,9 +1,8 @@
-# LIANA 1.0.0
+# LIANA 0.1.0
 
 ## Changes
 
-- For `logFC_mean`, rather than normalizing the counts by library size, I instead
-I inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts,
+- For `logFC_mean`, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts,
 i.e. mainly for consistency with the rest of the methods.
 
 ## Minor Changes
