@@ -34,14 +34,20 @@ library(nichenetr)
 library(Seurat)
 library(ggrepel)
 library(cowplot)
-options(timeout=720) # required for downloading single-cell expression on slow connection
+options(timeout=300) # required for downloading single-cell expression on slow connection
 ``` 
 
-Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md). Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.
+Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md).
 
-```{r, warning=FALSE, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 # single-cell expression matrix described in Puram et al. 2017
 hnscc_expression <-  readRDS(url("https://zenodo.org/record/3260758/files/hnscc_expression.rds"))
+# model weights
+ligand_target_matrix <- readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"))
+```
+
+ Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.
+```{r, warning=FALSE, message=FALSE}
 expression <- hnscc_expression$expression
 sample_info <- hnscc_expression$sample_info
 colnames(sample_info) <- make.names(colnames(sample_info))
@@ -59,9 +65,6 @@ rownames(sample_info) <- sample_info$cell
 
 # subset expression to selected cells
 expression <- expression[sample_info$cell, ]
-
-# model weights
-ligand_target_matrix <- readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"))
 
 # gene set of interest
 geneset_oi <- read_tsv(url("https://zenodo.org/record/3260758/files/pemt_signature.txt"), col_types = cols(), col_names = "gene") %>%
