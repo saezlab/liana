@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-03-23</h4>
+            <h4 class="date">2022-04-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_ortho.Rmd"><code>vignettes/liana_ortho.Rmd</code></a></small>
       <div class="hidden name"><code>liana_ortho.Rmd</code></div>
@@ -126,7 +126,7 @@
     
 <p>LIANA’s OmniPath resource was largely compiled from CCC databases with a human focus, as such LIANA works with human symbols by default.</p>
 <p>Nevertheless, one could run LIANA with any other organism, provided a dictionary is available to map human genesymbols to those of species X.</p>
-<p>In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA’s <code>generate_orthologs</code>.</p>
+<p>In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA’s <code>generate_orthologs</code>. A mouse dictionary is also included with LIANA (see below).</p>
 <div id="loading-prerequisites" class="section level2">
 <h2 class="hasAnchor">
 <a href="#loading-prerequisites" class="anchor"></a>Loading prerequisites</h2>
@@ -184,7 +184,10 @@
   <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">human_symbol</span>, <span class="va">murine_symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tibble.tidyverse.org/reference/enframe.html">deframe</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>A dictionary for murine symbols is also included in liana</p>
+</div>
+<div id="a-dictionary-for-murine-symbols-is-also-included-in-liana" class="section level2">
+<h2 class="hasAnchor">
+<a href="#a-dictionary-for-murine-symbols-is-also-included-in-liana" class="anchor"></a>A dictionary for murine symbols is also included in liana</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"human_mouse_orthologues.RDS"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">symbols_dict</span><span class="op">)</span></code></pre></div>

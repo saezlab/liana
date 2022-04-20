@@ -12,8 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="LIANA: a LIgand-receptor ANalysis frAmework">
-<meta property="og:description" content="Comparative analysis of cell-cell communication resources and
-    cell-cell communication inference tools.">
+<meta property="og:description" content="LIANA provides a number of methods and resource for ligand-receptor interaction inference from scRNA-seq data">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -32,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -119,8 +118,11 @@
 <a href="#install-liana" class="anchor"></a>Install LIANA</h2>
 <pre class="{r}"><code>if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-    
-devtools::install_github('saezlab/liana')</code></pre>
+
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
+
+remotes::install_github('saezlab/liana')</code></pre>
 </div>
 <div id="tutorial" class="section level2">
 <h2 class="hasAnchor">
@@ -131,6 +133,7 @@ devtools::install_github('saezlab/liana')</code></pre>
 <li><p><a href="https://saezlab.github.io/liana/articles/liana_nichenet.html">How to combine LIANA and NicheNet</a></p></li>
 <li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html">How to make use of OmniPathR’s intracellular component</a></p></li>
 <li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html">How to customize OmniPath’s intercellular resource</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_ortho.html">How to convert the resources in LIANA to orthologs from other species</a></p></li>
 <li><p><a href="https://saezlab.github.io/liana/articles/liana_devel.html">LIANA for developers and benchmarks</a></p></li>
 </ul>
 </div>
@@ -243,7 +246,7 @@ devtools::install_github('saezlab/liana')</code></pre>
 <h2>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>

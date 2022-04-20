@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
       <h1 data-toc-skip>LIANA++ for Benchmarks and Developers</h1>
                         <h4 class="author">Daniel Dimitrov</h4>
             
-            <h4 class="date">2022-03-23</h4>
+            <h4 class="date">2022-04-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_devel.Rmd"><code>vignettes/liana_devel.Rmd</code></a></small>
       <div class="hidden name"><code>liana_devel.Rmd</code></div>
@@ -174,8 +174,8 @@
 ## $ receptor.sum     &lt;dbl&gt; 0.23999457, 0.14310802, 0.14310802, 0.09812520, 0.780…
 ## $ receptor.pem     &lt;dbl&gt; 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.490…
 ## $ ligand.pem       &lt;dbl&gt; 0.000000000, 0.000000000, 0.000000000, 0.006821435, 0…
-## $ ligand.log2FC    &lt;dbl&gt; -0.031941768, -3.083897499, -1.541760192, -0.01729108…
-## $ receptor.log2FC  &lt;dbl&gt; 0.0476986902, -0.0003606887, -0.0003606887, -0.061091…
+## $ ligand.log2FC    &lt;dbl&gt; -0.069373789, -2.821591350, -1.658395607, -0.00505862…
+## $ receptor.log2FC  &lt;dbl&gt; -0.04296459, -0.02062227, -0.02062227, -0.09193806, 0…
 ## $ global_mean      &lt;dbl&gt; 0.1990563, 0.1990563, 0.1990563, 0.1990563, 0.1990563…
 ## $ ligand.complex   &lt;chr&gt; "DLL1", "CCL5", "CCL4", "TNFSF14", "CD40LG", "LTA", "…
 ## $ receptor.complex &lt;chr&gt; "NOTCH1", "CCR5", "CCR5", "LTBR", "CD40", "TNFRSF1A",…</code></pre>
@@ -275,7 +275,7 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Show CellChat Results</span>
 <span class="va">sca_res</span></code></pre></div>
-<pre><code>## # A tibble: 983 x 5
+<pre><code>## # A tibble: 971 x 5
 ##    source ligand target receptor LRscore
 ##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;
 ##  1 B      B2M    B      CD1C       0.900
@@ -288,7 +288,7 @@
 ##  8 B      B2M    B      CD247      0.855
 ##  9 B      VIM    B      CD44       0.853
 ## 10 B      B2M    B      CD3G       0.841
-## # … with 973 more rows</code></pre>
+## # … with 961 more rows</code></pre>
 <p>Similarly one could call all <code>call_*</code> functions via <code>liana_wrap</code></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_calls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
@@ -315,7 +315,7 @@
 ## Doing NK and B ... OK
 ## Doing NK and CD8 T ... OK
 ## Doing NK and NK ... OK
-## [1] "/tmp/RtmpfSOcgl/temp_libpath1e551e161e4b/liana/NATMI//data/input/test_em.csv"</code></pre>
+## [1] "/tmp/Rtmp6wiz7a/temp_libpath2335966af1479/liana/NATMI//data/input/test_em.csv"</code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_calls</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Connectome finds no significant hits here</span></code></pre></div>
 <pre><code>## # A tibble: 1,982 x 14
@@ -352,8 +352,8 @@
 ##  language en_US                       
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
-##  tz       Europe/Berlin               
-##  date     2022-03-23                  
+##  tz       Europe/Brussels             
+##  date     2022-04-20                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version    date       lib source                                       
@@ -451,7 +451,7 @@
 ##  httpuv                 1.5.5      2021-01-13 [2] CRAN (R 4.0.3)                               
 ##  httr                   1.4.2      2020-07-20 [2] CRAN (R 4.0.2)                               
 ##  ica                    1.0-2      2018-05-24 [2] CRAN (R 4.0.2)                               
-##  igraph                 1.2.6      2020-10-06 [2] CRAN (R 4.0.2)                               
+##  igraph                 1.3.0      2022-04-01 [2] CRAN (R 4.0.3)                               
 ##  IRanges                2.24.1     2020-12-12 [2] Bioconductor                                 
 ##  irlba                  2.3.3      2019-02-05 [2] CRAN (R 4.0.2)                               
 ##  iTALK                  0.1.0      2021-02-21 [2] Github (Coolgenome/iTALK@6d9b390)            
@@ -464,7 +464,7 @@
 ##  lattice                0.20-41    2020-04-02 [5] CRAN (R 4.0.0)                               
 ##  lazyeval               0.2.2      2019-03-15 [2] CRAN (R 4.0.2)                               
 ##  leiden                 0.3.7      2021-01-26 [2] CRAN (R 4.0.3)                               
-##  liana                * 0.0.9      2022-03-23 [1] local                                        
+##  liana                * 0.1.0      2022-04-20 [1] local                                        
 ##  lifecycle              1.0.0      2021-02-15 [2] CRAN (R 4.0.3)                               
 ##  limma                  3.46.0     2020-10-27 [2] Bioconductor                                 
 ##  listenv                0.8.0      2019-12-05 [2] CRAN (R 4.0.2)                               
@@ -475,7 +475,7 @@
 ##  magrittr             * 2.0.1      2020-11-17 [2] CRAN (R 4.0.2)                               
 ##  MASS                   7.3-53     2020-09-09 [5] CRAN (R 4.0.2)                               
 ##  MAST                   1.16.0     2020-10-27 [2] Bioconductor                                 
-##  Matrix                 1.3-4      2021-06-01 [2] CRAN (R 4.0.3)                               
+##  Matrix                 1.4-1      2022-03-23 [2] CRAN (R 4.0.3)                               
 ##  MatrixGenerics         1.2.1      2021-01-30 [2] Bioconductor                                 
 ##  MatrixModels           0.4-1      2015-08-22 [2] CRAN (R 4.0.2)                               
 ##  matrixStats            0.58.0     2021-01-29 [2] CRAN (R 4.0.3)                               
@@ -494,7 +494,7 @@
 ##  nlme                   3.1-149    2020-08-23 [5] CRAN (R 4.0.2)                               
 ##  nnet                   7.3-14     2020-04-26 [5] CRAN (R 4.0.0)                               
 ##  numDeriv               2016.8-1.1 2019-06-06 [2] CRAN (R 4.0.3)                               
-##  OmnipathR              3.3.16     2022-02-15 [2] Github (saezlab/OmnipathR@56352fe)           
+##  OmnipathR              3.3.21     2022-04-07 [2] Bioconductor                                 
 ##  parallelly             1.24.0     2021-03-14 [2] CRAN (R 4.0.3)                               
 ##  patchwork              1.1.1      2020-12-17 [2] CRAN (R 4.0.3)                               
 ##  pbapply                1.4-3      2020-08-18 [2] CRAN (R 4.0.2)                               
@@ -601,7 +601,7 @@
 ##  zlibbioc               1.36.0     2020-10-27 [2] Bioconductor                                 
 ##  zoo                    1.8-8      2020-05-02 [2] CRAN (R 4.0.2)                               
 ## 
-## [1] /tmp/RtmpfSOcgl/temp_libpath1e551e161e4b
+## [1] /tmp/Rtmp6wiz7a/temp_libpath2335966af1479
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

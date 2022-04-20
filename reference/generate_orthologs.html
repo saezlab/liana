@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Function to translate Human genes to organism X orthologues — generate_orthologs" />
-<meta property="og:description" content="Function to translate Human genes to organism X orthologues
-Function to translate Human genes to organism X orthologues" />
+<meta property="og:description" content="Function to translate Human genes to organism X orthologues" />
 
 
 
@@ -73,7 +72,7 @@ Function to translate Human genes to organism X orthologues" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -158,12 +157,9 @@ Function to translate Human genes to organism X orthologues" />
 
     <div class="ref-description">
     <p>Function to translate Human genes to organism X orthologues</p>
-<p>Function to translate Human genes to organism X orthologues</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generate_orthologs</span><span class='op'>(</span><span class='va'>op_resource</span>, <span class='va'>symbols_dict</span><span class='op'>)</span>
-
-<span class='fu'>generate_orthologs</span><span class='op'>(</span><span class='va'>op_resource</span>, <span class='va'>symbols_dict</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>generate_orthologs</span><span class='op'>(</span><span class='va'>op_resource</span>, <span class='va'>symbols_dict</span>, .default_fun <span class='op'>=</span> <span class='st'>"str_to_title"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,6 +172,11 @@ Function to translate Human genes to organism X orthologues" />
       <th>symbols_dict</th>
       <td><p>dictionary (named list) with human genesymbols and ortholog
 in a second species</p></td>
+    </tr>
+    <tr>
+      <th>.default_fun</th>
+      <td><p>default function to be applied to any missing/unmapped
+genesymbols (`str_to_title` by default)</p></td>
     </tr>
     </table>
 
