@@ -86,3 +86,12 @@ set_cap is the name of the name of a function that is to be executed
 This function also decomplexifies any complex present in the CellChat results
 which returns complexes by default
 }
+\examples{
+liana_path <- system.file(package = "liana")
+# load testdata
+testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+# run liana
+liana_res <- liana_wrap(testdata)
+# aggregate results from multiple methods
+liana_res <- liana_aggregate(liana_res)
+}

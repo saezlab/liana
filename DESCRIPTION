@@ -38,9 +38,8 @@ Authors@R: c(
         email = "jshinitinaga@ukaachen.de",
         comment = c(ORCID = "0000-0002-7655-7206")
     ))
-Description: Comparative analysis of cell-cell communication resources and
-    cell-cell communication inference tools.
-License: MIT + file LICENSE
+Description: LIANA provides a number of methods and resource for ligand-receptor interaction inference from scRNA-seq data
+License: GPL-3 + file LICENSE
 URL: https://omnipathdb.org/
 BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
@@ -62,10 +61,13 @@ Imports:
     SingleCellExperiment,
     scran,
     scater,
+    scuttle,
     SeuratObject,
-    RobustRankAggreg
+    RobustRankAggreg,
+    tidyselect,
+    ggplot2
 Suggests:
-    BiRewire,
+    OmnipathR,
     CellChat,
     knitr,
     BiocStyle,
@@ -75,8 +77,6 @@ Suggests:
     sessioninfo,
     logger,
     Seurat,
-    ggplot2,
-    OmnipathR,
     entropy,
     covr
 Remotes: sqjin/CellChat,

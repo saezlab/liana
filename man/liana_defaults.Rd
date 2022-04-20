@@ -80,3 +80,12 @@ Further, each `get_*` method will by default obtain the default params passed
    via \code{\link{liana_pipe}} and \code{\link{liana_call}}. This is done so that most steps
    required for the calculation of these methods are undertaken only once.
 }
+\examples{
+# get a `named` list with all default parameters passed to liana.
+def_params <- liana_defaults()
+# any of these can then be overwritten and passed to `...` in `liana_wrap`
+# with the `.params` suffix to the parameter name type. For example,
+liana_res <- liana_wrap(testdata,
+                        permutation.params = list(parms=2),
+                        liana_pipe.params = list(test.type='wilcox'))
+}

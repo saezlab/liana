@@ -38,6 +38,15 @@
 #' which returns complexes by default
 #'
 #' @export
+#'
+#' @examples
+#' liana_path <- system.file(package = "liana")
+#' # load testdata
+#' testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+#' # run liana
+#' liana_res <- liana_wrap(testdata)
+#' # aggregate results from multiple methods
+#' liana_res <- liana_aggregate(liana_res)
 liana_aggregate <- function(liana_res,
                             resource = NULL,
                             set_cap = "max",

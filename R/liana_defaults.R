@@ -34,6 +34,15 @@
 #' @return A list of the default parameters for each method
 #'
 #' @export
+#'
+#' @examples
+#' # get a `named` list with all default parameters passed to liana.
+#' def_params <- liana_defaults()
+#' # any of these can then be overwritten and passed to `...` in `liana_wrap`
+#' # with the `.params` suffix to the parameter name type. For example,
+#' liana_res <- liana_wrap(testdata,
+#'                         permutation.params = list(parms=2),
+#'                         liana_pipe.params = list(test.type='wilcox'))
 liana_defaults <- function(
     assay = "RNA",
     assay.type = "logcounts",

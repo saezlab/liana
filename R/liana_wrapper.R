@@ -33,8 +33,21 @@
 #'
 #' @details LIANA wrapper method that can be used to call each method with
 #'  a given set of intercellular resources from the OmniPath universe.
+#'  Please see `liana_defaults()` for more information about the
+#'  default parameters passed used by `liana_wrap`, if you wish to modify them.
+#'
 #'
 #' @export
+#'
+#' @examples
+#' liana_path <- system.file(package = "liana")
+#' # load testdata
+#' testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+#' # run only 2 methods from liana
+#' liana_res <- liana_wrap(testdata, method = c('cellphonedb', 'sca'),
+#'                         resource = 'Consensus', # default resource
+#'                         # example run with *only* 2 permutations for cpdb
+#'                         permutation.params = list(nperms = 2))
 liana_wrap <- function(sce,
                        method = c('natmi', 'connectome', 'logfc',
                                   'sca', 'cellphonedb'),

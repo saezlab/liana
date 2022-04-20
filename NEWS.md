@@ -13,6 +13,8 @@ i.e. mainly for consistency with the rest of the methods.
 
 - Minor code clean up
 
+- Added Examples to main exported functions
+
 
 # LIANA 0.0.9 (23.03.2022)
 
