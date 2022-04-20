@@ -1,4 +1,4 @@
-# LIANA 0.1.0
+# LIANA 0.1.0 (20.04.22)
 
 ## Changes
 
@@ -13,7 +13,9 @@ i.e. mainly for consistency with the rest of the methods.
 
 - Minor code clean up
 
-- Added Examples to main exported functions
+- Added `examples` to main exported functions docs
+
+- Removed several low quality interactions from the `Consensus` resource
 
 
 # LIANA 0.0.9 (23.03.2022)
