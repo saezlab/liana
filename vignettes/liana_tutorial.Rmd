@@ -67,7 +67,7 @@ Yet, the original method pipelines can be called via the `call_*` functions.
 
 ## `liana` wrapper function
 
-To run `liana`, we will use a toy *HUMAN* PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
+To run `liana`, we will use a down-sampled toy *HUMAN* PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
 
 `liana` takes `Seurat` and `SingleCellExperiment` objects as input, containing processed counts and clustered cells
 ```{r load_data}
@@ -82,7 +82,7 @@ testdata %>% glimpse()
 
 We will now call all methods that are currently available in liana.
 
-Here we use only the "OmniPath" CCC resource, but any of the 
+Here we use only the `Consensus` (Default) CCC resource, but any of the 
 aforementioned ones (available via `show_resources()`) can be added to the `resource` parameter
 ```{r liana_run, message = FALSE, print = FALSE, results='hide'}
 # Run liana
@@ -92,10 +92,10 @@ liana_test <- liana_wrap(testdata)
 liana_test %>% glimpse
 ```
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
-By default, LIANA will call only the internal scoring function (or those that are re-implemented in LIANA).
+By default, LIANA will call *only the internal scoring function*, i.e. those that are re-implemented in LIANA.
 
-However, one can use LIANA to also run the original methods.
-For more information and validation with the original methods see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html) and [validate scores](https://saezlab.github.io/liana/articles/liana_remethod.html), respectively.
+One can use LIANA to also run the original methods.
+For more about the original methods see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
 
 
 ## Aggregate and Obiain Consensus Ranks
@@ -222,14 +222,8 @@ and it would return the subunit closest to the mean.
 Here we change it to the geometric_mean, but any alternative function can be passed and other 
 perfectly viable approaches could also include e.g. the Trimean of CellChat.
   
-Please refer to the `?liana_wrap` documentation for more information on all the parameters that can be tuned in liana.
-Also, one can obtain a list with all default parameters by calling the `liana_defaults()` function.
+Please refer to the `?liana_wrap` documentation for more information on all the parameters that can be tuned in liana. Also, one can obtain a list with all default parameters by calling the `liana_defaults()` function.
   
-  
-###### Information about the parameters passed to each method can be obtained via `liana_call` and via
-`call_*` functions - e.g. ?call_cellchat or ?call_squidpy.
-A list with the default parameters themselves can be obtained via `liana_defaults()`
-
 
 ## Citation
 ```{r liana citation, message = FALSE, echo=FALSE}
