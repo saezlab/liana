@@ -1,3 +1,0 @@
-# Classify R Markdown files as R code for GitHub language statistics
-# https://github.com/github/linguist#overrides
-*.[Rr]md linguist-language=R

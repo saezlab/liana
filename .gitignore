@@ -12,4 +12,7 @@ vignettes/omnipathr-log/*
 omnipathr-log/*
 test_utils/*
 inst/cytosig_signature_centroid.csv
+.Rhistory
+LIANA.Rproj
+.gitattributes
 
