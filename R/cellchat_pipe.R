@@ -159,6 +159,19 @@ call_cellchat <- function(sce,
 #'
 #' @export
 cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
+
+    # Check if op_resource contains all required columns:
+    # if not add them
+    if(any(!colnames(op_resource) %in% reqcols)){
+        op_resource %<>%
+            # add cols
+            add_column(., !!! reqcols, .name_repair="universal") %>%
+            # fix names
+            `colnames<-`(map_chr(colnames(.), function(x) gsub("\\.", "", x))) %>%
+            # assign nums to cols
+            mutate(across(all_of(reqcols), ~ 1))
+    }
+
     # get complexes and interactions from omnipath
     complex_interactions <- op_resource %>%
         select(

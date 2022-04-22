@@ -17,6 +17,10 @@ i.e. mainly for consistency with the rest of the methods.
 
 - Removed several low quality interactions from the `Consensus` resource
 
+- CellChat will now work with the simplified format of intercell (i.e. Consensus resource).
+
+- CellChat and Squidpy should now be called using `call_cellchat` and `call_squidpy`, respectively.
+
 
 # LIANA 0.0.9 (23.03.2022)
 
