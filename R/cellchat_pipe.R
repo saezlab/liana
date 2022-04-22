@@ -161,6 +161,9 @@ call_cellchat <- function(sce,
 cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
 
     # Check if op_resource contains all required columns:
+    reqcols <- c("is_directed", "is_stimulation",
+                 "is_inhibition", "co_A_receptor",
+                 "co_I_receptor")
     # if not add them
     if(any(!colnames(op_resource) %in% reqcols)){
         op_resource %<>%
