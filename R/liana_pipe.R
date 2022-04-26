@@ -34,25 +34,16 @@ liana_pipe <- function(sce,
     receivers <- op_resource$target_genesymbol %>%
         as_tibble() %>%
         select(gene = value)
-    entity_genes = union(transmitters$gene,
-                         receivers$gene)
 
     # calculate global_mean required for SCA
     global_mean <- fast_mean(exec(assay.type, sce))
 
     # Filter `sce` to only include ligand receptor genes
-    # and any cells which don't contain any expressed LR genes
-    sce <- sce[rownames(sce) %in% entity_genes,
-               Matrix::colSums(counts(sce)) > 0]
-
-    # Check organism/gene intersect
-    if(length(intersect(entity_genes, rownames(sce))) < 3){
-        liana_message(
-            "Low gene intersect (<3) detected! Please check if the rownames of the data match the gene identities in the resource (i.e. human genesymbols).",
-            output = "stop",
-            verbose = verbose
-        )
-    }
+    # and exclude any cells with 0 counts of LR genes
+    sce <- .prep_universe(sce,
+                          entity_genes = union(transmitters$gene,
+                                               receivers$gene),
+                          verbose)
 
     # Get Log2FC (note we do it before any filtering)
     logfc_df <- get_log2FC(
@@ -484,4 +475,40 @@ fast_mean <- function(mat){
     } else{
         Matrix::mean(mat)
     }
+}
+
+#' Helper function to format SCE to the LR universe
+#' @param sce SingleCellExperiment object
+#' @param entity_genes union of ligand-receptor genes
+#' @param verbose verbose - True/Flase
+.prep_universe <- function(sce, entity_genes, verbose){
+
+    # Keep only LR universe
+    sce <- sce[rownames(sce) %in% entity_genes, ]
+
+    # Check organism/gene intersect
+    if(nrow(sce) < 3){
+        liana_message(
+            "Low gene intersect (<3) detected!",
+            "Please check if the rownames of the data match the gene identities in the resource (i.e. human genesymbols).",
+            output = "stop",
+            verbose = verbose
+        )
+    }
+
+    # Check for non-zero cells
+    nonzero_cells <- colSums(counts(sce)) > 0
+
+    if(!all(nonzero_cells)){
+        nzero_cells <- sum(map_dbl(nonzero_cells, function(x) rlang::is_false(x = x)))
+
+        liana_message(
+            stringr::str_glue("{nzero_cells} cells were excluded as they",
+                              "did not express any ligand-receptor genes!"),
+            output="warning",
+            verbose=verbose
+        )
+    }
+
+    return(sce[,nonzero_cells])
 }

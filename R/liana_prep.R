@@ -28,7 +28,7 @@ liana_prep.SingleCellExperiment <- function(sce,
     # Assign idents to default if not passed
     SingleCellExperiment::colLabels(sce) <- idents
 
-    return(.filter_sce(sce))
+    return(.filter_sce(sce, verbose))
 }
 
 #' @export
@@ -64,7 +64,7 @@ liana_prep.Seurat <- function(sce,
 
     SingleCellExperiment::colLabels(sce) <- idents
 
-    return(.filter_sce(sce))
+    return(.filter_sce(sce, verbose))
 }
 
 
@@ -74,18 +74,20 @@ liana_prep.Seurat <- function(sce,
 #'
 #' @return SingleCellExperiment object
 #'
-.filter_sce <- function(sce){
+.filter_sce <- function(sce, verbose){
     # EXTEND QUALITY CONTROL STEPS
-    nonzero_cells <- colSums(counts(sce)) > 0
     nonzero_genes <- rowSums(counts(sce)) > 0
+    nonzero_cells <- colSums(counts(sce)) > 0
 
     if(!all(nonzero_cells) | !all(nonzero_genes)){
         nzero_genes <- sum(map_dbl(nonzero_genes, function(x) rlang::is_false(x = x)))
         nzero_cells <- sum(map_dbl(nonzero_cells, function(x) rlang::is_false(x = x)))
 
-        warning(
+        liana_message(
             stringr::str_glue("{nzero_genes} genes and/or {nzero_cells} ",
-                              "cells were removed as they had no counts!")
+                              "cells were removed as they had no counts!"),
+            output="warning",
+            verbose=verbose
         )
     }
 

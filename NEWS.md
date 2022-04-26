@@ -1,3 +1,13 @@
+# LIANA 0.1.1 (26.04.22)
+
+## Minor changes
+- Change the order of  non-expressed genes and empty droplet filtering. 
+I now appropriately filter cells in the `sce` object *after* limiting the gene
+universe to ligands and receptors in the resource.
+
+- Appropriately pass `verbose` to `.filter_sce`
+
+
 # LIANA 0.1.0 (20.04.22)
 
 ## Changes
