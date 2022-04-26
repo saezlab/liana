@@ -5,8 +5,6 @@
 I now appropriately filter cells in the `sce` object *after* limiting the gene
 universe to ligands and receptors in the resource.
 
-
-
 ## Minor changes
 - Appropriately pass `verbose` to `.filter_sce`
 
