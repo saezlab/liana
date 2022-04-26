@@ -504,7 +504,7 @@ fast_mean <- function(mat){
 
         liana_message(
             stringr::str_glue("{nzero_cells} cells were excluded as they",
-                              "did not express any ligand-receptor genes!"),
+                              " did not express any ligand-receptor genes!"),
             output="warning",
             verbose=verbose
         )

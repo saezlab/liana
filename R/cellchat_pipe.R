@@ -272,7 +272,8 @@ cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
         enframe() %>%
         separate(col=value, sep="_",
                  into = c("subunit_1", "subunit_2",
-                          "subunit_3", "subunit_4", "subunit_5"), remove=FALSE) %>%
+                          "subunit_3", "subunit_4", "subunit_5"),
+                 remove=FALSE, extra = "drop", fill="right") %>%
         mutate_at(vars(everything()), ~ replace(., is.na(.), "")) %>%
         select(-name) %>%
         column_to_rownames("value")
