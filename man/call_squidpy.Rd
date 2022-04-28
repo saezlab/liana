@@ -28,10 +28,6 @@ call_squidpy(
 
 \item{...}{kwargs passed to Squidpy; For more information see:
 \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}
-
-\item{expr_prop}{minimum proportion of gene expression per cell type (0 by default),
-yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.}
 }
 \value{
 A list of Squidpy results for each resource

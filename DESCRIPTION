@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person(
         given = "Daniel",
@@ -58,6 +58,7 @@ Imports:
     dplyr,
     readr,
     rlang,
+    OmnipathR,
     SingleCellExperiment,
     scran,
     scater,
@@ -67,11 +68,11 @@ Imports:
     tidyselect,
     ggplot2
 Suggests:
-    OmnipathR,
     CellChat,
     knitr,
     BiocStyle,
     rmarkdown,
+    markdown,
     workflowr,
     testthat (>= 3.0.0),
     sessioninfo,
@@ -85,5 +86,5 @@ Remotes: sqjin/CellChat,
     bioc::3.12/scran,
     bioc::3.12/scater,
     saezlab/OmnipathR
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Config/testthat/edition: 3

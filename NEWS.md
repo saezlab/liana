@@ -1,3 +1,12 @@
+# LIANA 0.1.2 (29.04.22)
+
+## Changes
+-
+
+## Minor changes
+-
+
+
 # LIANA 0.1.1 (26.04.22)
 
 ## Changes
@@ -130,11 +139,10 @@ the BioConductor single-cell framework (for all internal methods).
 
 - `global_mean` is now calculated in a more efficient manner.
 
-## Bug Fixes  
-
 - `assay.type` in `liana_pipe` was passed to `get_logFC` would
-result in using the logcounts, rather than the library-normalized counts for logFC calculation.
-Now appropriately changed.
+result in using the logcounts, rather than the library-normalized counts.
+
+## Bug Fixes  
 
 - Fixed a bug where incorrectly passing method names in different cases results in an error.
 

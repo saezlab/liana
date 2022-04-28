@@ -44,7 +44,7 @@
 #' # load testdata
 #' testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 #' # run liana
-#' liana_res <- liana_wrap(testdata)
+#' liana_res <- liana_wrap(testdata, method=c("sca", "natmi"))
 #' # aggregate results from multiple methods
 #' liana_res <- liana_aggregate(liana_res)
 liana_aggregate <- function(liana_res,
@@ -133,8 +133,8 @@ liana_aggregate <- function(liana_res,
 #' Helper function to execute a function on the vector representing the number
 #'  of rows in the results for each method
 #'
-#'  @inheritParams liana::liana_aggregate
-#'  @param fun function to execute
+#' @param fun function to execute
+#' @inheritParams liana::liana_scores
 #'
 .select_cap <- function(liana_res, fun){
     nums <- liana_res %>% map(function(res) nrow(res)) %>% as.numeric

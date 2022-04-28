@@ -4,7 +4,7 @@
 \alias{.filter_sce}
 \title{Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA}
 \usage{
-.filter_sce(sce)
+.filter_sce(sce, verbose)
 }
 \arguments{
 \item{sce}{SingleCellExperiment Object}

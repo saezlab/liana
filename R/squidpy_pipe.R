@@ -7,9 +7,6 @@
 #' @param conda_env python conda environment to run Squidpy; set to liana_env by default
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
-#' @param expr_prop minimum proportion of gene expression per cell type (0 by default),
-#'  yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-#'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param assay assay name
 #'
 #' @import reticulate tibble

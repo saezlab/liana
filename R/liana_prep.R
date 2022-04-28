@@ -71,6 +71,7 @@ liana_prep.Seurat <- function(sce,
 #' Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA
 #'
 #' @param sce SingleCellExperiment Object
+#' @param verbose logical for verbosity
 #'
 #' @return SingleCellExperiment object
 #'
@@ -114,6 +115,12 @@ liana_prep.Seurat <- function(sce,
 
 
 #' Helper Function to get/format the required indentity if required
+#'
+#' @param metadata metadata obtained from the sce object
+#' @param active_idents active idents (e.g. Seurat::Idents, or sce colLabels)
+#' @param object_class class of the sce object (SingleCellExperiment or Seurat)
+#'
+#' @inheritParams liana_wrap
 .format_idents <- function (metadata,
                             active_idents,
                             idents_col,
@@ -186,6 +193,9 @@ liana_prep.Seurat <- function(sce,
 
 
 #' LIANA message/warning helper function to allow for verbosity
+#' @inheritParams base::stop
+#' @param output type of output - message, warning, or stop
+#' @param verbose logical for verbosity
 liana_message <- function(...,
                           output = "message",
                           verbose = TRUE){

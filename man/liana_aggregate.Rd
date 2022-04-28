@@ -91,7 +91,7 @@ liana_path <- system.file(package = "liana")
 # load testdata
 testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 # run liana
-liana_res <- liana_wrap(testdata)
+liana_res <- liana_wrap(testdata, method=c("sca", "natmi"))
 # aggregate results from multiple methods
 liana_res <- liana_aggregate(liana_res)
 }

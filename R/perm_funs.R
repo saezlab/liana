@@ -6,6 +6,7 @@
 #' @param seed number used to set random seed
 #' @inheritParams liana_pipe
 #' @inheritParams map_custom
+#' @param verbose logical for verbosity
 #'
 #' @return Returns a list of shuffled gene means by cluster
 #'
@@ -60,8 +61,7 @@ get_permutations <- function(lr_res,
 #' @param lr_res liana pipe results
 #' @param perm_means permutations obtained via `get_permutations`
 #' @param score_col name of the score column
-#' @param parallelize whether to parallelize
-#' @param workers number of workers
+#' @param ... placeholder
 #'
 #' @returns lr_res + pvalue and lr.mean
 cellphonedb_score <- function(lr_res,
@@ -171,7 +171,7 @@ mean_permute <- function(col_labels,
 #' Helper custom map function
 #'
 #' @inheritParams purrr::map
-#' @param parallelize whether to parallelize
+#' @param parallelize logical whether to parallelize
 #' @param workers Number of workers to be used in parallelization
 #' @param ... params passed to the called function and to map functions
 map_custom <- function(.x, .f, parallelize, workers, ...){

@@ -13,6 +13,10 @@ output:
       toc_float: true
       toc_depth: 3
       code_folding: show
+vignette: >
+  %\VignetteIndexEntry{LIANA Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r chunk_setup, include = FALSE}

@@ -1,7 +1,13 @@
 #' Compute cross-talk score from a Seurat Object
 #'
 #' This function executes all the required functions to extract and compute the
-#' cross-talk scores as defined by the Cytotalk authors. .
+#' cross-talk scores as defined by the Cytotalk authors.
+#'
+#' @param lr_res liana_pipe results
+#' @param sce SingleCellExperiment object
+#' @param score_col name of the score column
+#' @param assay.type data slot to be used
+#' @param ... placeholder
 #'
 #'
 #' @import SingleCellExperiment tibble tidyr dplyr
@@ -73,6 +79,7 @@ cytotalk_score <- function(lr_res,
 #' and 'receptor' containing the ligand-receptor pairs to evaluate
 #' @param assay.type The name of the data slot containing the log-normalized expression
 #' values in the SingleCellExperiment object
+#' @param seed random seed
 #'
 #' @return A data frame with the computed non-self-talk score for each ligand-receptor
 #' pair on each cell-type.
@@ -114,12 +121,15 @@ compute_nst_scores <- function(sce,
 #' @param mat A matrix containing the log-transformed normalized expression values.
 #' @param ligand_receptor_df A data frame with, at least, two columns named 'ligand'
 #' and 'receptor' containing the ligand-receptor pairs to evaluate
+#' @param seed random seed
 #'
 #' @return A data frame with the non-self-talk score for each pair of genes (ligand-receptors).
 #'
 #' @import dplyr
 #'
-compute_nst_from_matrix <- function(mat, ligand_receptor_df, seed) {
+compute_nst_from_matrix <- function(mat,
+                                    ligand_receptor_df,
+                                    seed) {
   # extract number of columns and bins from the gene expression matrix
   n_cols <- ncol(mat)
   n_bins <- sqrt(n_cols)

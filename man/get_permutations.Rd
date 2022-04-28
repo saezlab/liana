@@ -24,7 +24,7 @@ get_permutations(
 
 \item{seed}{number used to set random seed}
 
-\item{parallelize}{whether to parallelize}
+\item{parallelize}{logical whether to parallelize}
 
 \item{workers}{Number of workers to be used in parallelization}
 

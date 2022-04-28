@@ -9,6 +9,10 @@ output:
       toc_float: true
       toc_depth: 3
       code_folding: show
+vignette: >
+  %\VignetteIndexEntry{LIANA - NicheNet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ## Before you start
@@ -35,7 +39,7 @@ library(Seurat)
 library(ggrepel)
 library(cowplot)
 options(timeout=300) # required for downloading single-cell expression on slow connection
-``` 
+```
 
 Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md).
 

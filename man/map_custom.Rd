@@ -29,7 +29,7 @@ name and numeric vectors index by position; use a list to index
 by position and name at different levels. If a component is not
 present, the value of \code{.default} will be returned.}
 
-\item{parallelize}{whether to parallelize}
+\item{parallelize}{logical whether to parallelize}
 
 \item{workers}{Number of workers to be used in parallelization}
 

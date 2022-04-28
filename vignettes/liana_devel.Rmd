@@ -3,6 +3,10 @@ title: "LIANA++ for Benchmarks and Developers"
 author: "Daniel Dimitrov"
 date: "`r Sys.Date()`"
 output: html_document
+vignette: >
+  %\VignetteIndexEntry{LIANA++ for Benchmarks and Developers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -54,7 +58,7 @@ used to the prioritize interactions.
 
 We also need to pass the function that we wish to use to account for heteromeric complexes
 ```{r lr_get, message=FALSE, warning=FALSE}
-get_sca(lr_res, complex_policy="mean0") %>% glimpse
+get_sca(lr_res, complex_policy="mean") %>% glimpse
 ```
 `get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info.
 

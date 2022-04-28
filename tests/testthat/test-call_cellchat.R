@@ -18,13 +18,13 @@ test_that("Test CellChat with Default", {
         sce = seurat_object,
         nboot = 2,
         exclude_anns = NULL,
-        thresh = 1,
+        thresh = 1.1, # cellchat filtering changed as of 1.1.3, I assume to <
         assay = "RNA",
         .normalize = FALSE,
         .do_parallel = FALSE,
         .raw_use = TRUE
     )
 
-    expect_equal(exp1, res1)
+    expect_equal(res1, exp1)
 
 })

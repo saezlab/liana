@@ -51,8 +51,6 @@ op_ia_quality_param <- list(
 #' @details calls on omnipath_intercell, intercell_connections, get_partners,
 #' and intercell_connections
 #'
-#' @param omni_variants bool whether to get different OmniPath variants (e.g.
-#' _full, based on ligrec resource quality quartile, or if only lig_rec)
 #' @param lr_pipeline bool whether to format for lr_pipeline and remove
 #'
 #' duplicate LRs (mainly from composite OmniDB due to category (adhesion vs lr))
@@ -681,8 +679,7 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                                                    "CellChatDB",
                                                    "ICELLNET",
                                                    "connectomeDB2020",
-                                                   "CellTalkDB"),
-                             ...){
+                                                   "CellTalkDB")){
 
 
     # import the OmniPathR intercell network component
@@ -826,14 +823,14 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                             "KLRB1", "KLRF1", "KLRF2",
                             "PTPRC", "PVR", "SIGLEC1",
                             "SIGLEC9", "TNFRSF14", "ITGAD_ITGB2",
-                            "ITGA4_ITGB1", "ITGA9_ITGB1", "ITGA4_ITGB7")
+                            "ITGA4_ITGB1", "ITGA9_ITGB1", "ITGA4_ITGB7",
+                            "TYK2", "SYK")
 
     # Identify wrongly annotated interactions
     duplicated_omni %<>%
         filter(source_genesymbol %in% wrong_transmitters)
 
-    # Blocklist certain transmitters and receivers
-    block_transmitters <- c("TYK2", "SYK")
+    # Blocklist certain receivers
     block_receivers <- c("IFNG_IFNGR1", # include a ligand in the complex
                          "CNTN2_CNTNAP2",
                          "IL2_IL2RA_IL2RB_IL2RG")
@@ -842,8 +839,7 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
     # Remove those from our curated omnipath
     complex_omni %<>%
         anti_join(duplicated_omni) %>%
-        filter(!source_genesymbol %in% block_transmitters,
-               !target_genesymbol %in% block_receivers) %>%
+        filter(!target_genesymbol %in% block_receivers) %>%
         # # Recomplexify CD8 complex?
         # mutate(target_genesymbol = if_else(target_genesymbol=="CD8A" |
         #                                        target_genesymbol=="CD8B",

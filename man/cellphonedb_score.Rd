@@ -19,11 +19,13 @@ cellphonedb_score(
 
 \item{perm_means}{permutations obtained via `get_permutations`}
 
-\item{parallelize}{whether to parallelize}
+\item{parallelize}{logical whether to parallelize}
 
-\item{workers}{number of workers}
+\item{workers}{Number of workers to be used in parallelization}
 
 \item{score_col}{name of the score column}
+
+\item{...}{placeholder}
 }
 \value{
 lr_res + pvalue and lr.mean

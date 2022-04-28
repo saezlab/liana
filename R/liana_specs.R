@@ -23,7 +23,6 @@ setClass("ScoreSpecifics",
 )
 
 
-
 #' Score Specs Holder
 #'
 #' @return list of ScoreSpecifics objects for each method
