@@ -6,9 +6,15 @@
 #' @param source_groups names of the source(sender) cell types
 #' @param target_groups names of the target cell types
 #'
-#' @param specificity column to represent the specificity of the interaction
-#' @param magnitude column to represent the magnitude of interaction (by default
-#' 'sca.LRscore')
+#' @param magnitude column to represent interactions expression magnitude
+#' (by default `sca.LRscore`)
+#'
+#' @param specificity column to represent the dot-size of the interaction
+#' (by default `natmi.edge_specificity`)
+#'
+#' @param y.label y label name
+#' @param size.label size (~specificty) label name
+#' @param colour.label colour (~magnitude) label name
 #'
 #' @param show_complex logical whether to show complexes (default - TRUE) or
 #'  only the subunit with minimum expression.
@@ -31,6 +37,9 @@ liana_dotplot <- function(liana_agg,
                           target_groups,
                           specificity = "natmi.edge_specificity",
                           magnitude = "sca.LRscore",
+                          y.label = "Interactions (Ligand -> Receptor)",
+                          size.label = "Interaction\nSpecificity",
+                          colour.label = "Expression\nMagnitude",
                           show_complex = TRUE){
 
     if(show_complex){
@@ -88,9 +97,9 @@ liana_dotplot <- function(liana_agg,
                 # strip.text.y.left = element_text(angle = 0)
             ) +
             # scale_x_discrete(position = "right") +
-            labs(y = "Interactions (Ligand -> Receptor)",
-                 colour = "Expression\nMagnitude",
-                 size = "Interaction\nSpecificity",
+            labs(y = y.label,
+                 colour = colour.label,
+                 size = size.label,
                  x = NULL
             )
     )

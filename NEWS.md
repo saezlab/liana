@@ -3,7 +3,7 @@
 ## Changes
 
 ## Minor changes
--
+- Enable labels to be passed to `liana_dotplot`
 
 ## Minor Improvements
 - Cleaned up docs, dependencies, examples, and warnings

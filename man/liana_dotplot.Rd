@@ -10,6 +10,9 @@ liana_dotplot(
   target_groups,
   specificity = "natmi.edge_specificity",
   magnitude = "sca.LRscore",
+  y.label = "Interactions (Ligand -> Receptor)",
+  size.label = "Interaction\\nSpecificity",
+  colour.label = "Expression\\nMagnitude",
   show_complex = TRUE
 )
 }
@@ -21,10 +24,17 @@ by some condition (e.g. preferential ranking, specific interactions, etc)}
 
 \item{target_groups}{names of the target cell types}
 
-\item{specificity}{column to represent the specificity of the interaction}
+\item{specificity}{column to represent the dot-size of the interaction
+(by default `natmi.edge_specificity`)}
 
-\item{magnitude}{column to represent the magnitude of interaction (by default
-'sca.LRscore')}
+\item{magnitude}{column to represent interactions expression magnitude
+(by default `sca.LRscore`)}
+
+\item{y.label}{y label name}
+
+\item{size.label}{size (~specificty) label name}
+
+\item{colour.label}{colour (~magnitude) label name}
 
 \item{show_complex}{logical whether to show complexes (default - TRUE) or
 only the subunit with minimum expression.}
