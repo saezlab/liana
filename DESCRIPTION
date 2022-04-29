@@ -85,5 +85,3 @@ Remotes: sqjin/CellChat,
     bioc::3.12/scran,
     bioc::3.12/scater,
     saezlab/OmnipathR
-RoxygenNote: 7.1.1
-Config/testthat/edition: 3
