@@ -21,6 +21,8 @@ call_sca(
 \item{.format}{bool whether to format output}
 
 \item{assay}{Seurat assay data to use}
+
+\item{assay.type}{count slot (logcounts by default)}
 }
 \value{
 An unfiltered SCA tibble

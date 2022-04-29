@@ -48,13 +48,28 @@ method-resource combinations}
     \item{\code{call_italk.params}}{list of Parameters passed to iTALK \code{\link{call_italk}}}
     \item{\code{call_natmi.params}}{list of Parameters passed to NATMI \code{\link{call_natmi}}}
     \item{\code{call_sca.params}}{list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}}
+    \item{\code{cellphonedb.params}}{list of Parameters passed to liana's internal
+cellphonedb implementation \code{\link{cellphonedb_score}}}
+    \item{\code{natmi.params}}{list of Parameters passed to liana's internal
+edge_specificity implementation \code{\link{natmi_score}}}
+    \item{\code{sca.params}}{list of Parameters passed to liana's internal
+LRScore implementation \code{\link{sca_score}}}
+    \item{\code{connectome.params}}{list of Parameters passed to liana's internal
+connectome's weight_sc implementation \code{\link{connectome_score}}}
+    \item{\code{cytotalk.params}}{list of Parameters passed to liana's internal
+crosstalk scores implementation \code{\link{cytotalk_score}}}
+    \item{\code{logfc.params}}{list of Parameters passed to liana's internal
+logFC implementation \code{\link{logfc_score}}}
     \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
  statistics used in their scores) across all cell types or cell type pairs.}
+    \item{\code{complex_policy}}{policy how to account for the presence of complexes.}
     \item{\code{seed}}{random seed integer}
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
+    \item{\code{assay.type}}{- the type of data to be used to calculate the means
+(logcounts by default), available options are: "counts" and "logcounts"}
   }}
 }
 \value{

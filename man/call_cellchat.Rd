@@ -33,7 +33,13 @@ call_cellchat(
 
 \item{nboot}{number of bootstraps to calculate p-value}
 
+\item{assay}{assay name (RNA by default)}
+
+\item{.seed}{random seed}
+
 \item{.normalize}{# bool whether to normalize non-normalized data with}
+
+\item{.do_parallel}{whether to parallelize or not}
 
 \item{.raw_use}{whether use the raw data or gene expression data projectected
 to a ppi (should be kept to TRUE)}
@@ -43,6 +49,8 @@ yet perhaps one should consider setting this to an appropriate value between 0 a
 as an assumptions of these method is that communication is coordinated at the cluster level.}
 
 \item{organism}{Obtain CellChatDB for which organism ('mouse' or 'human')}
+
+\item{thresh}{p-value threshold (1 by default)}
 
 \item{de_thresh}{diff expression of genes p-value}
 
@@ -56,7 +64,6 @@ as an assumptions of these method is that communication is coordinated at the cl
     \item{\code{targets.use}}{a vector giving the index or the name of target cell groups.}
     \item{\code{signaling}}{a character vector giving the name of signaling pathways of interest}
     \item{\code{pairLR.use}}{a data frame consisting of one column named either "interaction_name" or "pathway_name", defining the interactions of interest}
-    \item{\code{thresh}}{threshold of the p-value for determining significant interaction}
     \item{\code{datasets}}{select the inferred cell-cell communications from a particular `datasets` when inputing a data frame `net`}
     \item{\code{ligand.pvalues}}{set threshold for ligand genes
 

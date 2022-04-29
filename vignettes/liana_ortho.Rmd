@@ -31,103 +31,103 @@ is available to map human genesymbols to those of species X.
 
 In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA's `generate_orthologs`. A mouse dictionary is also included with LIANA (see below).
 
-<!-- ## Loading prerequisites -->
-<!-- ```{r load_prereq, message=FALSE, warning=FALSE} -->
-<!-- require(tidyverse) -->
-<!-- require(OmnipathR)  -->
-<!-- require(liana) -->
-<!-- require(magrittr) -->
+## Loading prerequisites
+```{r load_prereq, message=FALSE, warning=FALSE}
+require(tidyverse)
+require(OmnipathR)
+require(liana)
+require(magrittr)
 
-<!-- liana_path <- system.file(package = "liana") -->
-<!-- testdata <- -->
-<!--     readRDS(file.path(liana_path, "testdata", "input", "testdata.rds")) -->
+liana_path <- system.file(package = "liana")
+testdata <-
+    readRDS(file.path(liana_path, "testdata", "input", "testdata.rds"))
 
-<!-- # Convert testdata to putative mouse symbols -->
-<!-- # Note that we explicitly provide this tutorial to avoid any such conversions when working with real data -->
-<!-- # We simply do this here to provide an example -->
-<!-- rownames(testdata@assays$RNA@counts) <- stringr::str_to_title(rownames(testdata@assays$RNA@counts))  -->
-<!-- rownames(testdata@assays$RNA@data) <- stringr::str_to_title(rownames(testdata@assays$RNA@data)) -->
-<!-- ``` -->
+# Convert testdata to putative mouse symbols
+# Note that we explicitly provide this tutorial to avoid any such conversions when working with real data
+# We simply do this here to provide an example
+rownames(testdata@assays$RNA@counts) <- stringr::str_to_title(rownames(testdata@assays$RNA@counts))
+rownames(testdata@assays$RNA@data) <- stringr::str_to_title(rownames(testdata@assays$RNA@data))
+```
 
-<!-- ## Generate a Dictionary -->
-<!-- In order to convert a human resource to any other organism, we need a dictionary -->
-<!-- which maps human gene symbols to their orthologs from another species,  -->
-<!-- in this case - murine genesymbols. -->
+## Generate a Dictionary
+In order to convert a human resource to any other organism, we need a dictionary
+which maps human gene symbols to their orthologs from another species,
+in this case - murine genesymbols.
 
-<!-- A widely used database for that purpose is [BioMart](https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81) -->
-<!-- and we show how one could use it to obtain mouse orthologs, which we then convert to a dictionary format. -->
+A widely used database for that purpose is [BioMart](https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81)
+and we show how one could use it to obtain mouse orthologs, which we then convert to a dictionary format.
 
-<!-- ```{r biomart, eval=FALSE, warning=FALSE, message=FALSE} -->
-<!-- # Obtain resource -->
-<!-- op_resource <- select_resource("Consensus")[[1]] -->
+```{r biomart, eval=FALSE, warning=FALSE, message=FALSE}
+# Obtain resource
+op_resource <- select_resource("Consensus")[[1]]
 
-<!-- # Get all unique symbols -->
-<!-- symbols <- op_resource %>% -->
-<!--   decomplexify() %>% -->
-<!--   dplyr::select(ends_with("genesymbol")) %>% -->
-<!--   unlist() %>% -->
-<!--   as.vector() %>%  -->
-<!--   unique() -->
+# Get all unique symbols
+symbols <- op_resource %>%
+  decomplexify() %>%
+  dplyr::select(ends_with("genesymbol")) %>%
+  unlist() %>%
+  as.vector() %>%
+  unique()
 
-<!-- # load biomaRt - an R interace for BioMart -->
-<!-- if (!require("biomaRt", quietly = TRUE)) -->
-<!--     install.packages("biomaRt") -->
-<!-- library("biomaRt") -->
+# load biomaRt - an R interace for BioMart
+if (!require("biomaRt", quietly = TRUE))
+    install.packages("biomaRt")
+library("biomaRt")
 
-<!-- # query biomaRt databases -->
-<!-- human <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl") -->
-<!-- mouse <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl") -->
+# query biomaRt databases
+human <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+mouse <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 
-<!-- # Obtain tibble with human and murine genesymbol. -->
-<!-- symbols_dict <- biomaRt::getLDS(attributes = c("hgnc_symbol"), -->
-<!--                                 filters = "hgnc_symbol", -->
-<!--                                 values = symbols, -->
-<!--                                 mart = human, -->
-<!--                                 martL = mouse, -->
-<!--                                 attributesL = c("mgi_symbol")) %>% -->
-<!--   dplyr::rename(human_symbol = HGNC.symbol, -->
-<!--                 murine_symbol = MGI.symbol) %>% -->
-<!--   as_tibble() %>% -->
-<!--   dplyr::select(human_symbol, murine_symbol) %>% -->
-<!--   deframe() -->
-<!-- ``` -->
+# Obtain tibble with human and murine genesymbol.
+symbols_dict <- biomaRt::getLDS(attributes = c("hgnc_symbol"),
+                                filters = "hgnc_symbol",
+                                values = symbols,
+                                mart = human,
+                                martL = mouse,
+                                attributesL = c("mgi_symbol")) %>%
+  dplyr::rename(human_symbol = HGNC.symbol,
+                murine_symbol = MGI.symbol) %>%
+  as_tibble() %>%
+  dplyr::select(human_symbol, murine_symbol) %>%
+  deframe()
+```
 
-<!-- ## A dictionary for murine symbols is also included in liana -->
-<!-- ```{r hidden_load, warning=FALSE, message=FALSE} -->
-<!-- symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS")) -->
-<!-- head(symbols_dict) -->
-<!-- ``` -->
+## A dictionary for murine symbols is also included in liana
+```{r hidden_load, warning=FALSE, message=FALSE}
+symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
+head(symbols_dict)
+```
 
 
-<!-- ## Convert to Orthologues and Example LIANA run -->
-<!-- ```{r orthology, warning=FALSE, message=FALSE, fig.width=11, fig.height=8} -->
-<!-- # Here, we will convert LIANA's Consensus resource to murine symbols -->
-<!-- op_resource <- select_resource("Consensus")[[1]] -->
+## Convert to Orthologues and Example LIANA run
+```{r orthology, warning=FALSE, message=FALSE, fig.width=11, fig.height=8}
+# Here, we will convert LIANA's Consensus resource to murine symbols
+op_resource <- select_resource("Consensus")[[1]]
 
-<!-- # Generate orthologous resource -->
-<!-- ortholog_resource <- generate_orthologs(op_resource = op_resource, -->
-<!--                                         symbols_dict = symbols_dict) -->
+# Generate orthologous resource
+ortholog_resource <- generate_orthologs(op_resource = op_resource,
+                                        symbols_dict = symbols_dict)
 
-<!-- # Run LIANA with the orthologous resource -->
-<!-- liana_res <- liana_wrap(testdata, -->
-<!--                         resource = 'custom', # the resource has to be set to 'custom' to work with external resources -->
-<!--                         external_resource = ortholog_resource, # provide orthologous resource -->
-<!--                         method=c('sca', 'natmi') # run only with sca and natmi for comp. time -->
-<!--                         )  -->
+# Run LIANA with the orthologous resource
+liana_res <- liana_wrap(testdata,
+                        resource = 'custom', # the resource has to be set to 'custom' to work with external resources
+                        external_resource = ortholog_resource, # provide orthologous resource
+                        method=c('sca', 'natmi') # run only with sca and natmi for comp. time
+                        )
 
-<!-- # aggregate -->
-<!-- liana_res <- liana_res %>% -->
-<!--     liana_aggregate() -->
+# aggregate
+liana_res <- liana_res %>%
+    liana_aggregate()
 
-<!-- # Plot example -->
-<!-- liana_res %>% -->
-<!--     filter(source=="B") %>% -->
-<!--     filter(target %in% c("NK", "CD8 T")) %>% -->
-<!--     slice_head(n=15) %>% # simply keep the highest 15 interactions according to aggregate rank -->
-<!--     liana_dotplot(source_groups = "B", -->
-<!--                   target_groups = c("NK", "CD8 T")) -->
-<!-- ``` -->
+# Plot example
+liana_res %>%
+    filter(source=="B") %>%
+    filter(target %in% c("NK", "CD8 T")) %>%
+    slice_head(n=15) %>% # simply keep the highest 15 interactions according to aggregate rank
+    liana_dotplot(source_groups = "B",
+                  target_groups = c("NK", "CD8 T"))
+```
 
-<!-- Note, as some ligand–receptor pairs could be species specific, -->
-<!-- we suggest that if possible to check literature for support of the reported edges when using orthology conversion. -->
+Note, as some ligand–receptor pairs could be species specific,
+we suggest that if possible to check literature for support of the reported edges when using orthology conversion.
 

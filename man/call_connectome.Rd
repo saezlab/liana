@@ -13,6 +13,8 @@ call_connectome(sce, op_resource = NULL, .format = TRUE, assay, ...)
 
 \item{.format}{bool whether to format output}
 
+\item{assay}{assay name}
+
 \item{...}{dot params passed to connectome}
 }
 \value{

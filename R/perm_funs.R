@@ -142,7 +142,7 @@ cellphonedb_score <- function(lr_res,
 #' Function to calculate mean LR expression from shuffled cluster label matrices
 #'  as done in CellPhoneDB
 #'
-#' @param sce_matrix single cell expression matrix (transposed)
+#' @param sce single cell experiment object
 #' @param col_labels cluster labels
 #' @param pb progress bar object
 #' @param assay.type assay type (counts, logcounts, etc)
@@ -166,14 +166,13 @@ mean_permute <- function(col_labels,
 }
 
 
-
-
 #' Helper custom map function
 #'
 #' @inheritParams purrr::map
 #' @param parallelize logical whether to parallelize
 #' @param workers Number of workers to be used in parallelization
-#' @param ... params passed to the called function and to map functions
+#' @param ... params passed to the called function and to `.f`
+#'
 map_custom <- function(.x, .f, parallelize, workers, ...){
     if(parallelize){
         future::plan(future::multisession, workers = workers)

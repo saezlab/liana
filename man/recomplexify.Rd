@@ -7,14 +7,9 @@
 recomplexify(lr_res, columns, ...)
 }
 \arguments{
-\item{columns}{columns to account for complexes for (obtained via the `ScoreSpecifics` class)}
+\item{lr_res}{decomplexified* lr_res}
 
-\item{lr_cmplx}{decomplexified* lr_res}
-
-\item{complex_policy}{policy how to account for the presence of complexes.
-Following the example of \href{https://github.com/Teichlab/cellphonedb}{CellPhoneDB}
-   valid options are: `'mean'` (default): mean of the subunits, and select
-   the subunit with the change/expression closest to 0 (when working with expression)
+\item{columns}{columns to account for complexes for (obtained via the `ScoreSpecifics` class)
 
 One could choose to do any other type of mean: geometric, TriMean, etc.}
 }

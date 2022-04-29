@@ -10,18 +10,30 @@
 #' @param call_sca.params list of Parameters passed to SingleCellSignalR \code{\link{call_sca}}
 #' @param assay Assay name passed to `call_italk`, `call_sca`, `call_cellchat`,
 #'    and `call_connectome`
+#' @param cellphonedb.params list of Parameters passed to liana's internal
+#' cellphonedb implementation \code{\link{cellphonedb_score}}
+#' @param natmi.params list of Parameters passed to liana's internal
+#' edge_specificity implementation \code{\link{natmi_score}}
+#' @param sca.params list of Parameters passed to liana's internal
+#' LRScore implementation \code{\link{sca_score}}
+#' @param connectome.params list of Parameters passed to liana's internal
+#' connectome's weight_sc implementation \code{\link{connectome_score}}
+#' @param cytotalk.params list of Parameters passed to liana's internal
+#' crosstalk scores implementation \code{\link{cytotalk_score}}
+#' @param logfc.params list of Parameters passed to liana's internal
+#' logFC implementation \code{\link{logfc_score}}
+#'
 #' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
 #'  This is further applied at a method-specific level - it is not applied to
 #'   Connectome and Cytotalk, as these methods calculate/normalize the score (or
 #'   statistics used in their scores) across all cell types or cell type pairs.
+#' @param complex_policy policy how to account for the presence of complexes.
 #'
 #' @param seed random seed integer
-#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each
-#'  end of x before the mean is computed. This is relevant only for the
-#'  CellPhoneDB algorithm re-implementation in liana.
 #' @param parallelize whether to parallelize cellphonedb-like
 #' @param workers number of workers to be called
 #'
+#' @inheritParams liana_pipe
 #'
 #' @details The default parameters for each method can also be overwritten by
 #'  manually passing a list of parameters for the appropraite method
@@ -30,6 +42,12 @@
 #' Further, each `get_*` method will by default obtain the default params passed
 #'    via \code{\link{liana_pipe}} and \code{\link{liana_call}}. This is done so that most steps
 #'    required for the calculation of these methods are undertaken only once.
+#'
+#' NB! LIANA's internal methods are made consistent. There is no reason to pass
+#' specific parameters to any of them. Thus, it is best that one sticks to the
+#' non-nested parameters of this function (i.e. excluding `.params`),
+#' unless a very specific reason requires any of LIANA's internal parameters
+#' to be changed.
 #'
 #' @return A list of the default parameters for each method
 #'
@@ -63,7 +81,7 @@ liana_defaults <- function(
     connectome.params = NULL,
     cytotalk.params = NULL,
     logfc.params = NULL,
-    scconnect.params = NULL,
+    # scconnect.params = NULL,
     cellchat.params = NULL,
     squidpy.params = NULL,
     call_sca.params = NULL,

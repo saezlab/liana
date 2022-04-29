@@ -1,6 +1,8 @@
 #' Function to handle different types of object as input and do basic quality checks
 #'
 #' @param sce SingleCellExperiment or Seurat object
+#' @param ... dot dot dot bucket - not passed to anything, handles issues with
+#' passing non-existing arguments
 #'
 #' @export
 liana_prep <- function (sce, ...) {

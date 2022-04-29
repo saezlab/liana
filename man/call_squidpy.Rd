@@ -26,6 +26,8 @@ call_squidpy(
 
 \item{assay}{assay name}
 
+\item{assay.type}{count slot (logcounts by default)}
+
 \item{...}{kwargs passed to Squidpy; For more information see:
 \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}}
 }

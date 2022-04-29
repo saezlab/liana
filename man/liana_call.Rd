@@ -4,9 +4,11 @@
 \alias{liana_call}
 \title{Wrapper Function to obtain scores via liana_pipe}
 \usage{
-liana_call(method, seurat_object, op_resource, lr_res, ...)
+liana_call(method, op_resource, lr_res, ...)
 }
 \arguments{
+\item{method}{name of the method to be called}
+
 \item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}

@@ -33,18 +33,28 @@ call_natmi(
 
 \item{output_dir}{NATMI output directory}
 
+\item{reso_name}{name of the resource usually in the format list(name = op_resource)}
+
 \item{assay}{Seurat assay to be used}
+
+\item{num_cor}{number of cores to be used}
+
+\item{conda_env}{name of the conda environment via which NATMI is called}
+
+\item{assay.type}{logcounts by default, but it's converted back into counts
+as suggested by the authors}
 
 \item{.format}{bool whether to format output}
 
 \item{.overwrite_data}{bool whether Extract and overwrite csv with
 data from Seurat Object}
 
+\item{.seed}{random seed}
+
 \item{.natmi_path}{path of NATMI code and dbs (by default set to liana path)}
 
-\item{omnidbs_dir}{path of saved omnipath resources}
-
-\item{.default_run}{bool whether to run default DBs or not}
+\item{.delete_input_output}{logical whether to delete input and
+output after run.}
 }
 \value{
 DF with NATMI results

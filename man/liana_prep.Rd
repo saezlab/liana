@@ -8,6 +8,9 @@ liana_prep(sce, ...)
 }
 \arguments{
 \item{sce}{SingleCellExperiment or Seurat object}
+
+\item{...}{dot dot dot bucket - not passed to anything, handles issues with
+passing non-existing arguments}
 }
 \description{
 Function to handle different types of object as input and do basic quality checks

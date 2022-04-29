@@ -10,11 +10,11 @@ mean_permute(col_labels, sce, pb, assay.type)
 \arguments{
 \item{col_labels}{cluster labels}
 
+\item{sce}{single cell experiment object}
+
 \item{pb}{progress bar object}
 
 \item{assay.type}{assay type (counts, logcounts, etc)}
-
-\item{sce_matrix}{single cell expression matrix (transposed)}
 }
 \value{
 Returns a list of means per gene calculated with reshuffled

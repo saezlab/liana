@@ -52,7 +52,6 @@ Imports:
     stringr,
     magrittr,
     purrr,
-    furrr (>= 0.2.0),
     tidyr,
     tibble,
     dplyr,
@@ -79,7 +78,9 @@ Suggests:
     logger,
     Seurat,
     entropy,
-    covr
+    covr,
+    furrr (>= 0.2.0),
+    future
 biocViews: OmnipathR, scater, scran, SingleCellExperiment
 Remotes: sqjin/CellChat
 RoxygenNote: 7.1.2

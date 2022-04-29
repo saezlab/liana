@@ -201,6 +201,7 @@ reform_omni <- function(ligrec){
 
 #' Retrieves intercellular interactions from OmniPath
 #' @inheritParams omnipath_partners
+#' @inheritDotParams OmnipathR::filter_intercell_network
 #' @return A tibble with Intercell interactions from OmniPath
 #'
 #' @importFrom magrittr %>%

@@ -216,7 +216,9 @@ compute_mi_dist <- function(exp1, exp2, n_bins) {
 
 
 #' Helper min-max function
-#'  @noRd
+#'
+#' @param x vector
+#' @inheritDotParams base::max
 minmax <- function(x, ...) {
   (x - min(x, ...)) / (max(x, ...) - min(x, ...))
 }

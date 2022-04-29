@@ -8,9 +8,10 @@
 .select_cap(liana_res, fun)
 }
 \arguments{
-\item{fun}{function to execute}
+\item{liana_res}{ligand-receptor stats between clusters, output of
+`liana_pipe`}
 
-\item{lr_res}{ligand-receptor DE results and other stats between clusters}
+\item{fun}{function to execute}
 }
 \description{
 Helper function to execute a function on the vector representing the number

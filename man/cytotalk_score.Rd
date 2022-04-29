@@ -15,6 +15,8 @@ cytotalk_score(lr_res, sce, score_col, assay.type, seed, ...)
 
 \item{assay.type}{data slot to be used}
 
+\item{seed}{random seed}
+
 \item{...}{placeholder}
 }
 \description{

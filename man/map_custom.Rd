@@ -33,7 +33,7 @@ present, the value of \code{.default} will be returned.}
 
 \item{workers}{Number of workers to be used in parallelization}
 
-\item{...}{params passed to the called function and to map functions}
+\item{...}{params passed to the called function and to `.f`}
 }
 \description{
 Helper custom map function

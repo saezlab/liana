@@ -4,7 +4,7 @@
 \alias{FormatConnectome}
 \title{Helper function to filter and format connectome}
 \usage{
-FormatConnectome(conn, ...)
+FormatConnectome(conn)
 }
 \arguments{
 \item{conn}{connectome object}

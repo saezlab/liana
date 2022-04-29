@@ -2,12 +2,19 @@
 % Please edit documentation in R/crosstalk_funs.R
 \name{minmax}
 \alias{minmax}
-\title{Helper min-max function
- @noRd}
+\title{Helper min-max function}
 \usage{
 minmax(x, ...)
 }
+\arguments{
+\item{x}{vector}
+
+\item{...}{
+  Arguments passed on to \code{\link[base:Extremes]{base::max}}
+  \describe{
+    \item{\code{}}{}
+  }}
+}
 \description{
 Helper min-max function
- @noRd
 }

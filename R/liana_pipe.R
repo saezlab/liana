@@ -244,7 +244,7 @@ ligrec_degformat <- function(cluster_markers,
 #'
 #' @return Returns the Average Expression Per Cluster
 #'
-#' @noRd
+#' @export
 join_means <- function(lr_res,
                        means,
                        source_target,

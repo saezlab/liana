@@ -4,7 +4,7 @@
 \alias{call_italk}
 \title{Run iTALK with OmniPath data [[DEPRECATED]]}
 \usage{
-call_italk(sce, op_resource, assay = "RNA", .format = TRUE, .DE = TRUE, ...)
+call_italk(sce, op_resource, assay = "RNA", .format = TRUE, ...)
 }
 \arguments{
 \item{sce}{Seurat object or SingleCellExperiment as input}
@@ -15,19 +15,20 @@ call_italk(sce, op_resource, assay = "RNA", .format = TRUE, .DE = TRUE, ...)
 
 \item{.format}{bool: whether to format output}
 
-\item{.DE}{bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)}
+\item{...}{Parameters passed to Seurat FindMarkers (ref requires import)}
 }
 \value{
 An unfiltered iTALK df sorted by relevance
+
+In this case, we use the product of the logFC rather than thresholding, as in
+the original implementation.
 }
 \description{
 Run iTALK with OmniPath data [[DEPRECATED]]
 }
 \details{
-Stats:
-Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
-Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
-
-In this case, we use the product of the logFC rather than thresholding, as in
-the original implementation.
+In order to be comparable with the remainder of the methods, we
+calculate the mean of the ligand and receptor logFC.
+The original implementation only uses the DE genes above a certain logFC
+threshold.
 }
