@@ -59,6 +59,9 @@ setClass("ScoreSpecifics",
                 method_score = "edge_specificity",
                 descending_order = TRUE,
                 score_fun = natmi_score,
+                # Note that passing both .sum and .expr results the means
+                # being returned for both of them (i.e. recomplexify will
+                # account for both)
                 columns = c("ligand.expr", "receptor.expr",
                             "ligand.sum", "receptor.sum")
             ),
