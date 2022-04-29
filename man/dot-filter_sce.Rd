@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{sce}{SingleCellExperiment Object}
+
+\item{verbose}{logical for verbosity}
 }
 \value{
 SingleCellExperiment object

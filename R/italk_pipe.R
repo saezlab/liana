@@ -4,14 +4,9 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param assay assay to use from Seurat object
 #' @param .format bool: whether to format output
-#' @param .DE bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)
+#' @param ... Parameters passed to Seurat FindMarkers (ref requires import)
 #'
 #' @return An unfiltered iTALK df sorted by relevance
-#'
-#' @details
-#' Stats:
-#' Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
-#' Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE
 #'
 #' In this case, we use the product of the logFC rather than thresholding, as in
 #' the original implementation.
@@ -21,12 +16,16 @@
 #' @importFrom dplyr select rename mutate group_by group_split
 #'
 #' @export
+#'
+#' @details In order to be comparable with the remainder of the methods, we
+#' calculate the mean of the ligand and receptor logFC.
+#' The original implementation only uses the DE genes above a certain logFC
+#' threshold.
 call_italk <- function(
   sce,
   op_resource,
   assay = "RNA",
   .format = TRUE,
-  .DE = TRUE,
   ...){
 
   # Convert sce to seurat
@@ -83,7 +82,7 @@ call_italk <- function(
     bind_rows()
 
   if (.format) {
-    res <- res %>% FormatiTALK(remove.na = TRUE, .DE = .DE)
+    res <- res %>% FormatiTALK(remove.na = TRUE)
   }
 
   return(res)
@@ -100,8 +99,7 @@ call_italk <- function(
 #' @importFrom tibble tibble
 #' @export
 FormatiTALK <- function(italk_res,
-                        remove.na = TRUE,
-                        .DE = FALSE){
+                        remove.na = TRUE){
 
     italk_res <- tibble(
       'source' = italk_res$cell_from,

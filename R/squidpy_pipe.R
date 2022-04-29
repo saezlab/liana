@@ -8,6 +8,7 @@
 #' @param ... kwargs passed to Squidpy; For more information see:
 #'   \link{https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec}
 #' @param assay assay name
+#' @param assay.type count slot (logcounts by default)
 #'
 #' @import reticulate tibble
 #' @importFrom tidyr pivot_longer

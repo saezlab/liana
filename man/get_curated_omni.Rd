@@ -6,8 +6,7 @@
 \usage{
 get_curated_omni(
   curated_resources = c("CellPhoneDB", "CellChatDB", "ICELLNET", "connectomeDB2020",
-    "CellTalkDB"),
-  ...
+    "CellTalkDB")
 )
 }
 \arguments{

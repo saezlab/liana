@@ -25,6 +25,8 @@ cellphonedb_score(
 
 \item{score_col}{name of the score column}
 
+\item{verbose}{logical for verbosity}
+
 \item{...}{placeholder}
 }
 \value{

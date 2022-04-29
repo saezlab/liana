@@ -20,6 +20,8 @@ and 'receptor' containing the ligand-receptor pairs to evaluate}
 
 \item{assay.type}{The name of the data slot containing the log-normalized expression
 values in the SingleCellExperiment object}
+
+\item{seed}{random seed}
 }
 \value{
 A data frame with the computed non-self-talk score for each ligand-receptor

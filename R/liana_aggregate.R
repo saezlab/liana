@@ -134,7 +134,8 @@ liana_aggregate <- function(liana_res,
 #'  of rows in the results for each method
 #'
 #' @param fun function to execute
-#' @inheritParams liana::liana_scores
+#' @param liana_res ligand-receptor stats between clusters, output of
+#' `liana_pipe`
 #'
 .select_cap <- function(liana_res, fun){
     nums <- liana_res %>% map(function(res) nrow(res)) %>% as.numeric

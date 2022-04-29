@@ -138,7 +138,7 @@ get_cytotalk <- function(lr_res,
 
 
 #' Wrapper Function to obtain scores via liana_pipe
-#'
+#' @param method name of the method to be called
 #' @inheritParams liana_pipe
 #' @inheritDotParams liana_pipe
 #' @inheritParams liana_scores
@@ -148,7 +148,6 @@ get_cytotalk <- function(lr_res,
 #'
 #' @return lr_res modified to be method-specific
 liana_call <- function(method,
-                       seurat_object,
                        op_resource,
                        lr_res,
                        ...){

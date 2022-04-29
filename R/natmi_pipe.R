@@ -2,16 +2,24 @@
 #'
 #' @param op_resource List of OmniPath resources
 #' @param sce Seurat or SingleCellExperiment object
-#' @param omnidbs_dir path of saved omnipath resources
 #' @param expr_file expression matrix file name
 #' @param meta_file annotations (i.e. clusters) file name
 #' @param output_dir NATMI output directory
 #' @param .format bool whether to format output
 #' @param .overwrite_data bool whether Extract and overwrite csv with
 #'    data from Seurat Object
-#' @param .default_run bool whether to run default DBs or not
 #' @param .natmi_path path of NATMI code and dbs (by default set to liana path)
 #' @param assay Seurat assay to be used
+#' @param reso_name name of the resource usually in the format list(name = op_resource)
+#' @param num_cor number of cores to be used
+#' @param conda_env name of the conda environment via which NATMI is called
+#' @param assay.type logcounts by default, but it's converted back into counts
+#' as suggested by the authors
+#' @param .seed random seed
+#' @param .delete_input_output logical whether to delete input and
+#'  output after run.
+#'
+#'
 #' @return DF with NATMI results
 #'
 #' @details

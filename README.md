@@ -122,7 +122,7 @@ as well as to explore custom filter options see [customizing OmniPath resources]
   
 ## LIANA++
 If you are interested in making use of the LIANA architecture for your own method, [this vignette](https://saezlab.github.io/liana/articles/liana_devel.html) provides instructions how to obtain a comprehensive table of LR statistics, which can then be used by custom scoring functions.
-In the [same vignette](https://saezlab.github.io/liana/articles/liana_devel.html) are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their unbiased benchmark.
+In the [same vignette](https://saezlab.github.io/liana/articles/liana_devel.html) are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their benchmark.
   
   
   

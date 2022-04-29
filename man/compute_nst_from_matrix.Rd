@@ -11,6 +11,8 @@ compute_nst_from_matrix(mat, ligand_receptor_df, seed)
 
 \item{ligand_receptor_df}{A data frame with, at least, two columns named 'ligand'
 and 'receptor' containing the ligand-receptor pairs to evaluate}
+
+\item{seed}{random seed}
 }
 \value{
 A data frame with the non-self-talk score for each pair of genes (ligand-receptors).

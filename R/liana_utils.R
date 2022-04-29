@@ -14,7 +14,7 @@ generate_orthologs <- function(op_resource,
                                .default_fun = "str_to_title"){
     # decomplexify
     op_resource_decomplex <- op_resource %>%
-        liana::decomplexify()
+        decomplexify()
 
     # translate subunits
     translated_subunits <- op_resource_decomplex %>%

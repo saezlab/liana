@@ -6,6 +6,18 @@
 \usage{
 .format_idents(metadata, active_idents, idents_col, object_class, verbose)
 }
+\arguments{
+\item{metadata}{metadata obtained from the sce object}
+
+\item{active_idents}{active idents (e.g. Seurat::Idents, or sce colLabels)}
+
+\item{idents_col}{the cell identities/labels to be used. By default set to NULL, and will used the active
+Idents or colLabels from the seurat_object or SCE, respectively.}
+
+\item{object_class}{class of the sce object (SingleCellExperiment or Seurat)}
+
+\item{verbose}{logical whether to output messages and warnings (`TRUE` by default)}
+}
 \description{
 Helper Function to get/format the required indentity if required
 }

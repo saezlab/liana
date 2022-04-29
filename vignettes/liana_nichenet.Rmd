@@ -17,194 +17,194 @@ vignette: >
 
 ## Before you start
 
-This vignette is an example of how to combine LIANA's hypotheses with those produced by NicheNet. The biological results that are obtained here are highly dependent on the hypothesis in mind, which is described in [NicheNet's original article](https://www.nature.com/articles/s41592-019-0667-5). Before you start, we strongly recommend to have a look to the [NicheNet's repository](https://github.com/saeyslab/nichenetr), as the data and the analyses that are run here were extracted from its vignettes. We acknowledge NicheNet's authors for the extensive and reproducible documentation that they provide in this repository.
+<!-- This vignette is an example of how to combine LIANA's hypotheses with those produced by NicheNet. The biological results that are obtained here are highly dependent on the hypothesis in mind, which is described in [NicheNet's original article](https://www.nature.com/articles/s41592-019-0667-5). Before you start, we strongly recommend to have a look to the [NicheNet's repository](https://github.com/saeyslab/nichenetr), as the data and the analyses that are run here were extracted from its vignettes. We acknowledge NicheNet's authors for the extensive and reproducible documentation that they provide in this repository. -->
 
-## Background
+<!-- ## Background -->
 
-[LIANA](https://saezlab.github.io/liana/index.html) (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. **LIANA and NicheNet are not mutually exclusive, but rather complementary, given that they aim to explore different aspects of inter and intra cellular communication**.
+<!-- [LIANA](https://saezlab.github.io/liana/index.html) (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. **LIANA and NicheNet are not mutually exclusive, but rather complementary, given that they aim to explore different aspects of inter and intra cellular communication**. -->
 
-![](liana_nichenet.svg)
+<!-- ![](liana_nichenet.svg) -->
 
-Because of this, in this vignette, we show how to use LIANA in combination with NicheNet using the data and the biological scenario described in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md). Briefly, the biological question here is: Which ligands expressed by cancer-associated fibroblasts (CAFs) can induce a specific gene program in neighboring malignant cells? (Using data from Puram et al. 2017).
+<!-- Because of this, in this vignette, we show how to use LIANA in combination with NicheNet using the data and the biological scenario described in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md). Briefly, the biological question here is: Which ligands expressed by cancer-associated fibroblasts (CAFs) can induce a specific gene program in neighboring malignant cells? (Using data from Puram et al. 2017). -->
 
-## Load packages and data
+<!-- ## Load packages and data -->
 
-We first load required libraries
+<!-- We first load required libraries -->
 
-```{r, message=FALSE}
-library(tidyverse)
-library(liana)
-library(nichenetr)
-library(Seurat)
-library(ggrepel)
-library(cowplot)
-options(timeout=300) # required for downloading single-cell expression on slow connection
-```
+<!-- ```{r, message=FALSE} -->
+<!-- library(tidyverse) -->
+<!-- library(liana) -->
+<!-- library(nichenetr) -->
+<!-- library(Seurat) -->
+<!-- library(ggrepel) -->
+<!-- library(cowplot) -->
+<!-- options(timeout=300) # required for downloading single-cell expression on slow connection -->
+<!-- ``` -->
 
-Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md).
+<!-- Then, we load and prepare the single-cell data, NicheNet's model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in [NicheNet's vignette](https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md). -->
 
-```{r, message=FALSE, warning=FALSE}
-# single-cell expression matrix described in Puram et al. 2017
-hnscc_expression <-  readRDS(url("https://zenodo.org/record/3260758/files/hnscc_expression.rds"))
-# model weights
-ligand_target_matrix <- readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"))
-```
+<!-- ```{r, message=FALSE, warning=FALSE} -->
+<!-- # single-cell expression matrix described in Puram et al. 2017 -->
+<!-- hnscc_expression <-  readRDS(url("https://zenodo.org/record/3260758/files/hnscc_expression.rds")) -->
+<!-- # model weights -->
+<!-- ligand_target_matrix <- readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds")) -->
+<!-- ``` -->
 
- Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.
-```{r, warning=FALSE, message=FALSE}
-expression <- hnscc_expression$expression
-sample_info <- hnscc_expression$sample_info
-colnames(sample_info) <- make.names(colnames(sample_info))
+<!--  Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells. -->
+<!-- ```{r, warning=FALSE, message=FALSE} -->
+<!-- expression <- hnscc_expression$expression -->
+<!-- sample_info <- hnscc_expression$sample_info -->
+<!-- colnames(sample_info) <- make.names(colnames(sample_info)) -->
 
-# filter samples based on vignette's information and add cell type
-tumors_remove <-  c("HN10", "HN", "HN12", "HN13", "HN24", "HN7", "HN8", "HN23")
-sample_info <- sample_info %>%
-  subset( !(tumor %in% tumors_remove) & Lymph.node == 0) %>%
-  # fix some cell type identity names
-  mutate(cell_type = ifelse(classified..as.cancer.cell == 1, "Tumor", non.cancer.cell.type)) %>%
-  subset(cell_type %in% c("Tumor", "CAF"))
+<!-- # filter samples based on vignette's information and add cell type -->
+<!-- tumors_remove <-  c("HN10", "HN", "HN12", "HN13", "HN24", "HN7", "HN8", "HN23") -->
+<!-- sample_info <- sample_info %>% -->
+<!--   subset( !(tumor %in% tumors_remove) & Lymph.node == 0) %>% -->
+<!--   # fix some cell type identity names -->
+<!--   mutate(cell_type = ifelse(classified..as.cancer.cell == 1, "Tumor", non.cancer.cell.type)) %>% -->
+<!--   subset(cell_type %in% c("Tumor", "CAF")) -->
 
-# cell ID as rownames
-rownames(sample_info) <- sample_info$cell
+<!-- # cell ID as rownames -->
+<!-- rownames(sample_info) <- sample_info$cell -->
 
-# subset expression to selected cells
-expression <- expression[sample_info$cell, ]
+<!-- # subset expression to selected cells -->
+<!-- expression <- expression[sample_info$cell, ] -->
 
-# gene set of interest
-geneset_oi <- read_tsv(url("https://zenodo.org/record/3260758/files/pemt_signature.txt"), col_types = cols(), col_names = "gene") %>%
-  pull(gene) %>%
-  .[. %in% rownames(ligand_target_matrix)]
-```
+<!-- # gene set of interest -->
+<!-- geneset_oi <- read_tsv(url("https://zenodo.org/record/3260758/files/pemt_signature.txt"), col_types = cols(), col_names = "gene") %>% -->
+<!--   pull(gene) %>% -->
+<!--   .[. %in% rownames(ligand_target_matrix)] -->
+<!-- ``` -->
 
-## Run LIANA
+<!-- ## Run LIANA -->
 
-In the first step, we run LIANA to systematically score all the ligand-receptor interactions between all the cell types included in the dataset. To do so, we first need to create a Seurat object from data:
+<!-- In the first step, we run LIANA to systematically score all the ligand-receptor interactions between all the cell types included in the dataset. To do so, we first need to create a Seurat object from data: -->
 
-```{r, warning=FALSE, message=FALSE}
-# create seurat object
-seurat_object <- Seurat::CreateAssayObject(counts = expm1(t(expression))) %>%
-  Seurat::CreateSeuratObject(., meta.data = sample_info) %>%
-  Seurat::NormalizeData()
+<!-- ```{r, warning=FALSE, message=FALSE} -->
+<!-- # create seurat object -->
+<!-- seurat_object <- Seurat::CreateAssayObject(counts = expm1(t(expression))) %>% -->
+<!--   Seurat::CreateSeuratObject(., meta.data = sample_info) %>% -->
+<!--   Seurat::NormalizeData() -->
 
-# set cell identity to cell type
-Idents(seurat_object) <- seurat_object@meta.data$cell_type
-```
+<!-- # set cell identity to cell type -->
+<!-- Idents(seurat_object) <- seurat_object@meta.data$cell_type -->
+<!-- ``` -->
 
-And then we can execute LIANA using default parameters. After LIANA execution, we employ the function `liana_aggregate()` to summarize the output of different methods and to obtain a single score for each interaction.
+<!-- And then we can execute LIANA using default parameters. After LIANA execution, we employ the function `liana_aggregate()` to summarize the output of different methods and to obtain a single score for each interaction. -->
 
-```{r, warning=FALSE, message=FALSE}
-liana_results <- liana_wrap(seurat_object) %>%
-  liana_aggregate()
-```
+<!-- ```{r, warning=FALSE, message=FALSE} -->
+<!-- liana_results <- liana_wrap(seurat_object) %>% -->
+<!--   liana_aggregate() -->
+<!-- ``` -->
 
-By default, LIANA will score the ligand-receptor interactions in all the possible directions within the two cell types of interest. This includes: Autocrine signaling (e.g. CAFs -> CAFs), CAFs -> Tumor cells and Tumor cells -> CAFs. As we are only interested in the CAFs -> Tumor cell direction, we filter the results and visualize the top 50 interactions according to the consensus/aggregate rank across methods. The aggregate rank itself can be interpreted as the significance of preferential enrichment for the interactions.
+<!-- By default, LIANA will score the ligand-receptor interactions in all the possible directions within the two cell types of interest. This includes: Autocrine signaling (e.g. CAFs -> CAFs), CAFs -> Tumor cells and Tumor cells -> CAFs. As we are only interested in the CAFs -> Tumor cell direction, we filter the results and visualize the top 50 interactions according to the consensus/aggregate rank across methods. The aggregate rank itself can be interpreted as the significance of preferential enrichment for the interactions. -->
 
-```{r}
-# filter results to cell types of interest
-caf_tumor_results <- liana_results %>%
-  subset(source == "CAF" & target == "Tumor")
+<!-- ```{r} -->
+<!-- # filter results to cell types of interest -->
+<!-- caf_tumor_results <- liana_results %>% -->
+<!--   subset(source == "CAF" & target == "Tumor") -->
 
-# filter results to top N interactions
-n <- 50
-top_n_caf_tumor <- caf_tumor_results %>%
-  arrange(aggregate_rank) %>%
-  slice_head(n = n) %>%
-  mutate(id = fct_inorder(paste0(ligand, " -> ", receptor)))
+<!-- # filter results to top N interactions -->
+<!-- n <- 50 -->
+<!-- top_n_caf_tumor <- caf_tumor_results %>% -->
+<!--   arrange(aggregate_rank) %>% -->
+<!--   slice_head(n = n) %>% -->
+<!--   mutate(id = fct_inorder(paste0(ligand, " -> ", receptor))) -->
 
-# visualize median rank
-top_n_caf_tumor %>%
-  ggplot(aes(y = aggregate_rank, x = id)) +
-  geom_bar(stat = "identity") +
-  xlab("Interaction") + ylab("LIANA's aggregate rank") +
-  theme_cowplot() +
-  theme(axis.text.x = element_text(size = 8, angle = 60, hjust = 1, vjust = 1))
-```
+<!-- # visualize median rank -->
+<!-- top_n_caf_tumor %>% -->
+<!--   ggplot(aes(y = aggregate_rank, x = id)) + -->
+<!--   geom_bar(stat = "identity") + -->
+<!--   xlab("Interaction") + ylab("LIANA's aggregate rank") + -->
+<!--   theme_cowplot() + -->
+<!--   theme(axis.text.x = element_text(size = 8, angle = 60, hjust = 1, vjust = 1)) -->
+<!-- ``` -->
 
-## Run NicheNet using LIANA's ligands
+<!-- ## Run NicheNet using LIANA's ligands -->
 
-The key aspect of combining LIANA with NicheNet is that we can use the ligands prioritized by LIANA as the set of potential ligands for NicheNet. Instead of evaluating all the expressed ligands for which the receptor is also expressed in the receiver cell type, we will only explore those that were prioritized by the methods included in LIANA. Hence, we select the ligands that form the interactions previously shown.
+<!-- The key aspect of combining LIANA with NicheNet is that we can use the ligands prioritized by LIANA as the set of potential ligands for NicheNet. Instead of evaluating all the expressed ligands for which the receptor is also expressed in the receiver cell type, we will only explore those that were prioritized by the methods included in LIANA. Hence, we select the ligands that form the interactions previously shown. -->
 
-```{r}
-# get ligands and filter to those included in NicheNet's ligand-target matrix
-ligands <- unique(top_n_caf_tumor$ligand)
-ligands <- ligands[ligands %in% colnames(ligand_target_matrix)]
-ligands
-```
+<!-- ```{r} -->
+<!-- # get ligands and filter to those included in NicheNet's ligand-target matrix -->
+<!-- ligands <- unique(top_n_caf_tumor$ligand) -->
+<!-- ligands <- ligands[ligands %in% colnames(ligand_target_matrix)] -->
+<!-- ligands -->
+<!-- ``` -->
 
-Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in [NicheNet's vignette][].
+<!-- Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in [NicheNet's vignette][]. -->
 
-```{r}
-background_genes <- expression[sample_info$cell[sample_info$cell_type == "Tumor"], ] %>%
-  apply(2,function(x){10*(2**x - 1)}) %>%
-  apply(2,function(x){log2(mean(x) + 1)}) %>%
-  .[. >= 4] %>%
-  names()
-```
+<!-- ```{r} -->
+<!-- background_genes <- expression[sample_info$cell[sample_info$cell_type == "Tumor"], ] %>% -->
+<!--   apply(2,function(x){10*(2**x - 1)}) %>% -->
+<!--   apply(2,function(x){log2(mean(x) + 1)}) %>% -->
+<!--   .[. >= 4] %>% -->
+<!--   names() -->
+<!-- ``` -->
 
-And execute NicheNet to predict the ligand activities using the pEMT gene set previously mentioned
+<!-- And execute NicheNet to predict the ligand activities using the pEMT gene set previously mentioned -->
 
-```{r}
-nichenet_activities <- predict_ligand_activities(
-  geneset = geneset_oi,
-  background_expressed_genes = background_genes,
-  ligand_target_matrix = ligand_target_matrix, potential_ligands = ligands
-)
-```
+<!-- ```{r} -->
+<!-- nichenet_activities <- predict_ligand_activities( -->
+<!--   geneset = geneset_oi, -->
+<!--   background_expressed_genes = background_genes, -->
+<!--   ligand_target_matrix = ligand_target_matrix, potential_ligands = ligands -->
+<!-- ) -->
+<!-- ``` -->
 
-As a result, we obtain the NicheNet's activity predictions for the ligands previously prioritized using LIANA. In a final step, we will visualize the ligand-receptor scores of LIANA and the ligand activity score of NicheNet in a single figure.
+<!-- As a result, we obtain the NicheNet's activity predictions for the ligands previously prioritized using LIANA. In a final step, we will visualize the ligand-receptor scores of LIANA and the ligand activity score of NicheNet in a single figure. -->
 
-```{r, fig.width=8, fig.height=5}
-# prepare data for visualization
-vis_liana_nichenet <- top_n_caf_tumor %>%
-  inner_join(nichenet_activities, by = c("ligand" = "test_ligand")) %>%
-  arrange(pearson) %>%
-  mutate(ligand = fct_inorder(ligand))
+<!-- ```{r, fig.width=8, fig.height=5} -->
+<!-- # prepare data for visualization -->
+<!-- vis_liana_nichenet <- top_n_caf_tumor %>% -->
+<!--   inner_join(nichenet_activities, by = c("ligand" = "test_ligand")) %>% -->
+<!--   arrange(pearson) %>% -->
+<!--   mutate(ligand = fct_inorder(ligand)) -->
 
-# prepare NicheNet figure
-nichenet_scores_plot <- vis_liana_nichenet %>%
-  group_by(ligand) %>%
-  summarize(pearson = mean(pearson)) %>%
-  ggplot(aes(y = ligand, x = pearson)) +
-  geom_bar(stat = "identity") +
-  ggtitle("NicheNet") +
-  xlab("Pearson's score") +
-  theme_cowplot() +
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.title.y = element_blank(),
-        axis.line.y = element_line(color = "white"),
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1))
+<!-- # prepare NicheNet figure -->
+<!-- nichenet_scores_plot <- vis_liana_nichenet %>% -->
+<!--   group_by(ligand) %>% -->
+<!--   summarize(pearson = mean(pearson)) %>% -->
+<!--   ggplot(aes(y = ligand, x = pearson)) + -->
+<!--   geom_bar(stat = "identity") + -->
+<!--   ggtitle("NicheNet") + -->
+<!--   xlab("Pearson's score") + -->
+<!--   theme_cowplot() + -->
+<!--   theme(axis.text.y = element_blank(), -->
+<!--         axis.ticks.y = element_blank(), -->
+<!--         axis.title.y = element_blank(), -->
+<!--         axis.line.y = element_line(color = "white"), -->
+<!--         plot.title = element_text(hjust = 0.5), -->
+<!--         axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1)) -->
 
-# prepare LIANA figure
-liana_receptor_heatmap <- vis_liana_nichenet %>%
-  ggplot(aes(y = ligand, x = receptor, fill = aggregate_rank)) +
-  geom_tile() +
-  theme_cowplot() +
-  ggtitle("LIANA") +
-  ylab("Ligand") + xlab("Receptor") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1),
-        plot.title = element_text(hjust = 0.5),
-        panel.grid.major = element_line(colour = "gray", linetype = 2),
-        legend.position = "left")
+<!-- # prepare LIANA figure -->
+<!-- liana_receptor_heatmap <- vis_liana_nichenet %>% -->
+<!--   ggplot(aes(y = ligand, x = receptor, fill = aggregate_rank)) + -->
+<!--   geom_tile() + -->
+<!--   theme_cowplot() + -->
+<!--   ggtitle("LIANA") + -->
+<!--   ylab("Ligand") + xlab("Receptor") + -->
+<!--   theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1), -->
+<!--         plot.title = element_text(hjust = 0.5), -->
+<!--         panel.grid.major = element_line(colour = "gray", linetype = 2), -->
+<!--         legend.position = "left") -->
 
-# combine plots
-plot_grid(liana_receptor_heatmap, nichenet_scores_plot,
-          align = "h", nrow = 1, rel_widths = c(0.8,0.3))
-```
+<!-- # combine plots -->
+<!-- plot_grid(liana_receptor_heatmap, nichenet_scores_plot, -->
+<!--           align = "h", nrow = 1, rel_widths = c(0.8,0.3)) -->
+<!-- ``` -->
 
-## Conclusion
+<!-- ## Conclusion -->
 
-In this vignette, we exemplify how to use LIANA's predictions as NicheNet's input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, **the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.**
+<!-- In this vignette, we exemplify how to use LIANA's predictions as NicheNet's input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, **the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.** -->
 
-## R Session information
+<!-- ## R Session information -->
 
-```{r}
-sessionInfo()
-```
+<!-- ```{r} -->
+<!-- sessionInfo() -->
+<!-- ``` -->
 
 
-[LIANA]: https://github.com/saezlab/liana/
-[NicheNet's original article]: https://www.nature.com/articles/s41592-019-0667-5
-[NicheNet's vignette]: https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md
-[NicheNet's repository]: https://github.com/saeyslab/nichenetr
+<!-- [LIANA]: https://github.com/saezlab/liana/ -->
+<!-- [NicheNet's original article]: https://www.nature.com/articles/s41592-019-0667-5 -->
+<!-- [NicheNet's vignette]: https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md -->
+<!-- [NicheNet's repository]: https://github.com/saeyslab/nichenetr -->

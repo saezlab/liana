@@ -15,9 +15,11 @@ test_that("Test liana with SingleCellExperiment", {
                               "input", "wrap_sce.rds"))
     res2 <- liana_wrap(sce, resource = "OmniPath", method = c("sca", "natmi"))
 
-    suppressMessages(all_equal(res1@assays@data$counts, exp1@assays@data$counts))
-    all_equal(res2[[1]], exp2[[1]])
-    all_equal(res2[[2]], exp2[[2]])
+    expect_equal(res1@assays@data$counts,
+                 exp1@assays@data$counts)
+
+    expect_equal(res2[[1]], exp2[[1]])
+    expect_equal(res2[[2]], exp2[[2]])
 })
 
 test_that("Test Seurat to SCE conversion", {
@@ -25,7 +27,7 @@ test_that("Test Seurat to SCE conversion", {
     exp3 <- readRDS(file.path(liana_path , "testdata",
                                    "input", "seurat_conv.rds"))
 
-    all_equal(res3@assays@data$logcounts,
-              exp3@assays@data$logcounts)
+    expect_equal(res3@assays@data$logcounts,
+                 exp3@assays@data$logcounts)
     expect_warning(liana_prep(seurat_object))
 })

@@ -15,155 +15,155 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # LIANA ++
 
-To facilitate further method development and the benchmarks of current and future methods,
-in this vignette we provide further instructions relevant for method developers.
+<!-- To facilitate further method development and the benchmarks of current and future methods, -->
+<!-- in this vignette we provide further instructions relevant for method developers. -->
 
 
-## Load prerequisites
-```{r load_prereq, message=FALSE, warning=FALSE}
-require(liana)
-require(tibble)
-require(purrr)
-require(magrittr)
+<!-- ## Load prerequisites -->
+<!-- ```{r load_prereq, message=FALSE, warning=FALSE} -->
+<!-- require(liana) -->
+<!-- require(tibble) -->
+<!-- require(purrr) -->
+<!-- require(magrittr) -->
 
-liana_path <- system.file(package = "liana")
-testdata <-
-    readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
-```
-
-
-## `liana_pipe` and Contributions
-To facilitate method development, we provide a guide how to make use of the architecture already implemented in LIANA.
-
-First, we start by converting the object to SCE (if Seurat) and basic checks via `liana_rep`. 
-Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
-Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`).
-These are later re-assembled back into complexes using the `recomplexify` function.
-```{r lr_cpdb, message=FALSE, warning=FALSE}
-sce <- liana_prep(testdata)
-
-# Obtain LR summary res with CellPhoneDB and dissociate complexes
-lr_res <- liana_pipe(sce,
-                     op_resource = select_resource("CellPhoneDB")[[1]] %>% 
-                       liana:::decomplexify()
-                     ) %>%
-    glimpse()
-```
-``
+<!-- liana_path <- system.file(package = "liana") -->
+<!-- testdata <- -->
+<!--     readRDS(file.path(liana_path , "testdata", "input", "testdata.rds")) -->
+<!-- ``` -->
 
 
-The LR result summary is then passed to the `get_*` functions then provide ways
-to summarize this information into a score (`LRscore` in this case) that can be
-used to the prioritize interactions.
+<!-- ## `liana_pipe` and Contributions -->
+<!-- To facilitate method development, we provide a guide how to make use of the architecture already implemented in LIANA. -->
 
-We also need to pass the function that we wish to use to account for heteromeric complexes
-```{r lr_get, message=FALSE, warning=FALSE}
-get_sca(lr_res, complex_policy="mean") %>% glimpse
-```
-`get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info.
+<!-- First, we start by converting the object to SCE (if Seurat) and basic checks via `liana_rep`.  -->
+<!-- Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type. -->
+<!-- Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`). -->
+<!-- These are later re-assembled back into complexes using the `recomplexify` function. -->
+<!-- ```{r lr_cpdb, message=FALSE, warning=FALSE} -->
+<!-- sce <- liana_prep(testdata) -->
+
+<!-- # Obtain LR summary res with CellPhoneDB and dissociate complexes -->
+<!-- lr_res <- liana_pipe(sce, -->
+<!--                      op_resource = select_resource("CellPhoneDB")[[1]] %>%  -->
+<!--                        liana:::decomplexify() -->
+<!--                      ) %>% -->
+<!--     glimpse() -->
+<!-- ``` -->
+<!-- `` -->
 
 
+<!-- The LR result summary is then passed to the `get_*` functions then provide ways -->
+<!-- to summarize this information into a score (`LRscore` in this case) that can be -->
+<!-- used to the prioritize interactions. -->
 
-## Install LIANA++
-Install a LIANA++ environment with all original software as a way to minimize bias for benchmark studies.
-  
-LIANA++ uses CCC methods from both R and Python, as such dependencies for both need to be installed.  
-  
-To install the LIANA++ framework run the following code in R:
-```{r install_r, eval=FALSE}
-require(devtools)  
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-
-Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK 
-BiocManager::install("ComplexHeatmap") # required for Connectome
-devtools::install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR
-
-# install tools
-devtools::install_github("sqjin/CellChat")  
-devtools::install_github('msraredon/Connectome', ref = 'master')   
-devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
-# A modified version of SingleCellSignalR (SCA) that enables external resources
-devtools::install_github(repo = "saezlab/SingleCellSignalR_v1",
-                         subdir = "SingleCellSignalR")
-
-# Finally, install LIANA
-devtools::install_github('saezlab/liana')
-```
+<!-- We also need to pass the function that we wish to use to account for heteromeric complexes -->
+<!-- ```{r lr_get, message=FALSE, warning=FALSE} -->
+<!-- get_sca(lr_res, complex_policy="mean") %>% glimpse -->
+<!-- ``` -->
+<!-- `get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info. -->
 
 
 
-Squidpy and NATMI are written in Python, as such a python environment with
-the prerequisites of these methods needs to be set up.
+<!-- ## Install LIANA++ -->
+<!-- Install a LIANA++ environment with all original software as a way to minimize bias for benchmark studies. -->
 
-If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up
-a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
-environment by running the following lines in the terminal:
-```{bash, eval = FALSE}
-conda create -n liana_env
-conda activate liana_env
-conda install -c anaconda python=3.8.5
-pip install squidpy
-```
+<!-- LIANA++ uses CCC methods from both R and Python, as such dependencies for both need to be installed.   -->
 
+<!-- To install the LIANA++ framework run the following code in R: -->
+<!-- ```{r install_r, eval=FALSE} -->
+<!-- require(devtools)   -->
+<!-- if (!requireNamespace("BiocManager", quietly = TRUE)) -->
+<!--     install.packages("BiocManager") -->
 
-Please use the [.yml](https://github.com/saezlab/liana/blob/master/liana_env.yml) file to set up a conda environment:
-```
-conda env create -f liana_env.yml
-```
+<!-- if (!requireNamespace("devtools", quietly = TRUE)) -->
+<!--     install.packages("devtools") -->
 
-Note! NATMI and Squidpy are set by default to look for this conda environment ("liana_env").
-  
-#### To use NATMI with LIANA, clone the modified NATMI repo into liana path by running the following in the terminal:
-```{sh, eval=FALSE}
-cd *insert fullpath*/liana
-git clone https://github.com/saezlab/NATMI
-```
+<!-- Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK  -->
+<!-- BiocManager::install("ComplexHeatmap") # required for Connectome -->
+<!-- devtools::install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525dd7e') # install 4.0 version of OmnipathR -->
 
-##### Note that, NATMI was forked from [asrhou/NATMI](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources.
+<!-- # install tools -->
+<!-- devtools::install_github("sqjin/CellChat")   -->
+<!-- devtools::install_github('msraredon/Connectome', ref = 'master')    -->
+<!-- devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE) -->
+<!-- # A modified version of SingleCellSignalR (SCA) that enables external resources -->
+<!-- devtools::install_github(repo = "saezlab/SingleCellSignalR_v1", -->
+<!--                          subdir = "SingleCellSignalR") -->
 
-
-#### If needed, use the following to locate the liana package
-```{r get_liana, eval=FALSE}
-system.file(package = "liana")
-# "/home/user/R/x86_64.../4.0/liana"
-```
-It might be easier to just also clone the liana repo.
-
-#### `call_*` functions
-Use the *call_* functions to run the pipelines of the original methods, rather than their re-implementations.
-These functions work with Seurat objects and they are instead converted to SCE. These are largely getting **deprecated**
-and will be moved to a seperate repository in the future.
-```{r liana_call, message=FALSE, warning=FALSE, print=FALSE}
-# RUN cellchat alone with OmniPath's Consensus
-sca_res <- call_sca(
-  testdata,
-  op_resource = select_resource('Consensus')[[1]]
-  )
-
-# Show CellChat Results
-sca_res
-```
-
-Similarly one could call all `call_*` functions via `liana_wrap`
-```{r liana_calls, message=FALSE, warning=FALSE, print=FALSE}
-liana_calls <- liana_wrap(testdata,
-                          method = c('call_connectome',
-                                     'call_sca',
-                                     'call_italk',
-                                     'call_natmi'
-                                     ),
-                          resource = c("Default")) # Run with Default Resources
-liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
-```
+<!-- # Finally, install LIANA -->
+<!-- devtools::install_github('saezlab/liana') -->
+<!-- ``` -->
 
 
-## Session information
-```{r session_info, echo=TRUE}
-options(width = 120)
-sessioninfo::session_info()
-```
+
+<!-- Squidpy and NATMI are written in Python, as such a python environment with -->
+<!-- the prerequisites of these methods needs to be set up. -->
+
+<!-- If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up -->
+<!-- a [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) -->
+<!-- environment by running the following lines in the terminal: -->
+<!-- ```{bash, eval = FALSE} -->
+<!-- conda create -n liana_env -->
+<!-- conda activate liana_env -->
+<!-- conda install -c anaconda python=3.8.5 -->
+<!-- pip install squidpy -->
+<!-- ``` -->
+
+
+<!-- Please use the [.yml](https://github.com/saezlab/liana/blob/master/liana_env.yml) file to set up a conda environment: -->
+<!-- ``` -->
+<!-- conda env create -f liana_env.yml -->
+<!-- ``` -->
+
+<!-- Note! NATMI and Squidpy are set by default to look for this conda environment ("liana_env"). -->
+
+<!-- #### To use NATMI with LIANA, clone the modified NATMI repo into liana path by running the following in the terminal: -->
+<!-- ```{sh, eval=FALSE} -->
+<!-- cd *insert fullpath*/liana -->
+<!-- git clone https://github.com/saezlab/NATMI -->
+<!-- ``` -->
+
+<!-- ##### Note that, NATMI was forked from [asrhou/NATMI](https://github.com/asrhou/NATMI.git) and changed to be agnostic of the working directory when loading the resources. -->
+
+
+<!-- #### If needed, use the following to locate the liana package -->
+<!-- ```{r get_liana, eval=FALSE} -->
+<!-- system.file(package = "liana") -->
+<!-- # "/home/user/R/x86_64.../4.0/liana" -->
+<!-- ``` -->
+<!-- It might be easier to just also clone the liana repo. -->
+
+<!-- #### `call_*` functions -->
+<!-- Use the *call_* functions to run the pipelines of the original methods, rather than their re-implementations. -->
+<!-- These functions work with Seurat objects and they are instead converted to SCE. These are largely getting **deprecated** -->
+<!-- and will be moved to a seperate repository in the future. -->
+<!-- ```{r liana_call, message=FALSE, warning=FALSE, print=FALSE} -->
+<!-- # RUN cellchat alone with OmniPath's Consensus -->
+<!-- sca_res <- call_sca( -->
+<!--   testdata, -->
+<!--   op_resource = select_resource('Consensus')[[1]] -->
+<!--   ) -->
+
+<!-- # Show CellChat Results -->
+<!-- sca_res -->
+<!-- ``` -->
+
+<!-- Similarly one could call all `call_*` functions via `liana_wrap` -->
+<!-- ```{r liana_calls, message=FALSE, warning=FALSE, print=FALSE} -->
+<!-- liana_calls <- liana_wrap(testdata, -->
+<!--                           method = c('call_connectome', -->
+<!--                                      'call_sca', -->
+<!--                                      'call_italk', -->
+<!--                                      'call_natmi' -->
+<!--                                      ), -->
+<!--                           resource = c("Default")) # Run with Default Resources -->
+<!-- liana_calls %>% liana_aggregate() # Connectome finds no significant hits here -->
+<!-- ``` -->
+
+
+<!-- ## Session information -->
+<!-- ```{r session_info, echo=TRUE} -->
+<!-- options(width = 120) -->
+<!-- sessioninfo::session_info() -->
+<!-- ``` -->
 

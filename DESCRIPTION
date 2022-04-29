@@ -80,11 +80,7 @@ Suggests:
     Seurat,
     entropy,
     covr
-Remotes: sqjin/CellChat,
-    bioc::3.12/BiRewire,
-    bioc::3.12/SingleCellExperiment,
-    bioc::3.12/scran,
-    bioc::3.12/scater,
-    saezlab/OmnipathR
+biocViews: OmnipathR, scater, scran, SingleCellExperiment
+Remotes: sqjin/CellChat
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3

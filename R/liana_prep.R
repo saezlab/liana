@@ -193,6 +193,7 @@ liana_prep.Seurat <- function(sce,
 
 
 #' LIANA message/warning helper function to allow for verbosity
+#'
 #' @inheritParams base::stop
 #' @param output type of output - message, warning, or stop
 #' @param verbose logical for verbosity

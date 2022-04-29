@@ -30,6 +30,8 @@ get_permutations(
 
 \item{assay.type}{- the type of data to be used to calculate the means
 (logcounts by default), available options are: "counts" and "logcounts"}
+
+\item{verbose}{logical for verbosity}
 }
 \value{
 Returns a list of shuffled gene means by cluster

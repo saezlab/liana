@@ -6,6 +6,15 @@
 \usage{
 liana_message(..., output = "message", verbose = TRUE)
 }
+\arguments{
+\item{...}{zero or more objects which can be coerced to character
+    (and which are pasted together with no separator) or a single
+    condition object.}
+
+\item{output}{type of output - message, warning, or stop}
+
+\item{verbose}{logical for verbosity}
+}
 \description{
 LIANA message/warning helper function to allow for verbosity
 }

@@ -6,7 +6,21 @@
 \usage{
 cytotalk_score(lr_res, sce, score_col, assay.type, seed, ...)
 }
+\arguments{
+\item{lr_res}{liana_pipe results}
+
+\item{sce}{SingleCellExperiment object}
+
+\item{score_col}{name of the score column}
+
+\item{assay.type}{data slot to be used}
+
+\item{...}{placeholder}
+}
 \description{
-This function executes all the required functions to extract and compute the
-cross-talk scores as defined by the Cytotalk authors. .
+Compute cross-talk score from a Seurat Object
+}
+\details{
+This function executes all the required functions to extract
+and compute the cross-talk scores as defined by the Cytotalk authors.
 }

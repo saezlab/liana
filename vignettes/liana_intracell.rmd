@@ -13,6 +13,10 @@ output:
       toc_float: true
       toc_depth: 3
       code_folding: show
+vignette: >
+  %\VignetteIndexEntry{LIANA with Intracellular Omnipath}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 # Making use of [Intracellular OmniPath](https://omnipathdb.org/#about)

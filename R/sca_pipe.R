@@ -4,6 +4,7 @@
 #' @param op_resource OmniPath Intercell Resource DN
 #' @param .format bool whether to format output
 #' @param assay Seurat assay data to use
+#' @param assay.type count slot (logcounts by default)
 
 #' @importFrom SeuratObject GetAssayData Idents
 #' @importFrom magrittr %>% %<>%

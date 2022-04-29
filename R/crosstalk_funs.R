@@ -1,12 +1,13 @@
 #' Compute cross-talk score from a Seurat Object
 #'
-#' This function executes all the required functions to extract and compute the
-#' cross-talk scores as defined by the Cytotalk authors.
+#' @details This function executes all the required functions to extract
+#' and compute the cross-talk scores as defined by the Cytotalk authors.
 #'
 #' @param lr_res liana_pipe results
 #' @param sce SingleCellExperiment object
 #' @param score_col name of the score column
 #' @param assay.type data slot to be used
+#' @param seed random seed
 #' @param ... placeholder
 #'
 #'

@@ -7,7 +7,12 @@
 \usage{
 .select_cap(liana_res, fun)
 }
+\arguments{
+\item{fun}{function to execute}
+
+\item{lr_res}{ligand-receptor DE results and other stats between clusters}
+}
 \description{
-@inheritParams liana::liana_aggregate
- @param fun function to execute
+Helper function to execute a function on the vector representing the number
+ of rows in the results for each method
 }

@@ -4,6 +4,7 @@
 #' @param sce Seurat object as input
 #' @param .format bool whether to format output
 #' @param ... dot params passed to connectome
+#' @param assay assay name
 #'
 #' @return An unfiltered connectome results df
 #'
@@ -72,8 +73,7 @@ call_connectome <- function(sce,
 #' @import tibble
 #'
 #' @export
-FormatConnectome <- function(conn,
-                             ...){
+FormatConnectome <- function(conn){
     conn <- conn %>%
         Connectome::FilterConnectome(remove.na=TRUE) %>%
         select(source, target,

@@ -13,7 +13,10 @@
 #'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param organism Obtain CellChatDB for which organism ('mouse' or 'human')
 #' @param de_thresh diff expression of genes p-value
-#'
+#' @param assay assay name (RNA by default)
+#' @param .seed random seed
+#' @param .do_parallel whether to parallelize or not
+#' @param thresh p-value threshold (1 by default)
 #' @inheritDotParams CellChat::subsetCommunication
 #'
 #' @return A DF of intercellular communication network

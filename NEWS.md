@@ -1,10 +1,12 @@
 # LIANA 0.1.2 (29.04.22)
 
 ## Changes
--
 
 ## Minor changes
 -
+
+## Minor Improvements
+- Cleaned up docs, dependencies, examples, and warnings
 
 
 # LIANA 0.1.1 (26.04.22)
