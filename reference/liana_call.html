@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -159,11 +159,15 @@
     <p>Wrapper Function to obtain scores via liana_pipe</p>
     </div>
 
-    <pre class="usage"><span class='fu'>liana_call</span><span class='op'>(</span><span class='va'>method</span>, <span class='va'>seurat_object</span>, <span class='va'>op_resource</span>, <span class='va'>lr_res</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>liana_call</span><span class='op'>(</span><span class='va'>method</span>, <span class='va'>op_resource</span>, <span class='va'>lr_res</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>method</th>
+      <td><p>name of the method to be called</p></td>
+    </tr>
     <tr>
       <th>op_resource</th>
       <td><p>resource tibble obtained via liana::select_resource</p></td>

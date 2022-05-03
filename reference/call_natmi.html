@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -201,8 +201,25 @@
       <td><p>NATMI output directory</p></td>
     </tr>
     <tr>
+      <th>reso_name</th>
+      <td><p>name of the resource usually in the format list(name = op_resource)</p></td>
+    </tr>
+    <tr>
       <th>assay</th>
       <td><p>Seurat assay to be used</p></td>
+    </tr>
+    <tr>
+      <th>num_cor</th>
+      <td><p>number of cores to be used</p></td>
+    </tr>
+    <tr>
+      <th>conda_env</th>
+      <td><p>name of the conda environment via which NATMI is called</p></td>
+    </tr>
+    <tr>
+      <th>assay.type</th>
+      <td><p>logcounts by default, but it's converted back into counts
+as suggested by the authors</p></td>
     </tr>
     <tr>
       <th>.format</th>
@@ -214,16 +231,17 @@
 data from Seurat Object</p></td>
     </tr>
     <tr>
+      <th>.seed</th>
+      <td><p>random seed</p></td>
+    </tr>
+    <tr>
       <th>.natmi_path</th>
       <td><p>path of NATMI code and dbs (by default set to liana path)</p></td>
     </tr>
     <tr>
-      <th>omnidbs_dir</th>
-      <td><p>path of saved omnipath resources</p></td>
-    </tr>
-    <tr>
-      <th>.default_run</th>
-      <td><p>bool whether to run default DBs or not</p></td>
+      <th>.delete_input_output</th>
+      <td><p>logical whether to delete input and
+output after run.</p></td>
     </tr>
     </table>
 

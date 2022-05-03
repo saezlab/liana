@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -194,15 +194,13 @@
       <td><p>assay name</p></td>
     </tr>
     <tr>
+      <th>assay.type</th>
+      <td><p>count slot (logcounts by default)</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>kwargs passed to Squidpy; For more information see:
 https://squidpy.readthedocs.io/en/latest/api/squidpy.gr.ligrec.html#squidpy.gr.ligrec</p></td>
-    </tr>
-    <tr>
-      <th>expr_prop</th>
-      <td><p>minimum proportion of gene expression per cell type (0 by default),
-yet perhaps one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.</p></td>
     </tr>
     </table>
 

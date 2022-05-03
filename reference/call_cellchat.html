@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -201,8 +201,20 @@
       <td><p>number of bootstraps to calculate p-value</p></td>
     </tr>
     <tr>
+      <th>assay</th>
+      <td><p>assay name (RNA by default)</p></td>
+    </tr>
+    <tr>
+      <th>.seed</th>
+      <td><p>random seed</p></td>
+    </tr>
+    <tr>
       <th>.normalize</th>
       <td><p># bool whether to normalize non-normalized data with</p></td>
+    </tr>
+    <tr>
+      <th>.do_parallel</th>
+      <td><p>whether to parallelize or not</p></td>
     </tr>
     <tr>
       <th>.raw_use</th>
@@ -220,6 +232,10 @@ as an assumptions of these method is that communication is coordinated at the cl
       <td><p>Obtain CellChatDB for which organism ('mouse' or 'human')</p></td>
     </tr>
     <tr>
+      <th>thresh</th>
+      <td><p>p-value threshold (1 by default)</p></td>
+    </tr>
+    <tr>
       <th>de_thresh</th>
       <td><p>diff expression of genes p-value</p></td>
     </tr>
@@ -233,7 +249,6 @@ as an assumptions of these method is that communication is coordinated at the cl
     <dt><code>targets.use</code></dt><dd><p>a vector giving the index or the name of target cell groups.</p></dd>
     <dt><code>signaling</code></dt><dd><p>a character vector giving the name of signaling pathways of interest</p></dd>
     <dt><code>pairLR.use</code></dt><dd><p>a data frame consisting of one column named either "interaction_name" or "pathway_name", defining the interactions of interest</p></dd>
-    <dt><code>thresh</code></dt><dd><p>threshold of the p-value for determining significant interaction</p></dd>
     <dt><code>datasets</code></dt><dd><p>select the inferred cell-cell communications from a particular `datasets` when inputing a data frame `net`</p></dd>
     <dt><code>ligand.pvalues</code></dt><dd><p>set threshold for ligand genesligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC &gt; 0, keep upgulated genes; otherwise, kepp downregulated genesligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group</p></dd>
     <dt><code>ligand.logFC</code></dt><dd><p>set threshold for ligand genesligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC &gt; 0, keep upgulated genes; otherwise, kepp downregulated genesligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group</p></dd>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -161,6 +161,31 @@
 
     <pre class="usage"><span class='fu'>.format_idents</span><span class='op'>(</span><span class='va'>metadata</span>, <span class='va'>active_idents</span>, <span class='va'>idents_col</span>, <span class='va'>object_class</span>, <span class='va'>verbose</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>metadata</th>
+      <td><p>metadata obtained from the sce object</p></td>
+    </tr>
+    <tr>
+      <th>active_idents</th>
+      <td><p>active idents (e.g. Seurat::Idents, or sce colLabels)</p></td>
+    </tr>
+    <tr>
+      <th>idents_col</th>
+      <td><p>the cell identities/labels to be used. By default set to NULL, and will used the active
+Idents or colLabels from the seurat_object or SCE, respectively.</p></td>
+    </tr>
+    <tr>
+      <th>object_class</th>
+      <td><p>class of the sce object (SingleCellExperiment or Seurat)</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>logical whether to output messages and warnings (`TRUE` by default)</p></td>
+    </tr>
+    </table>
 
 
   </div>

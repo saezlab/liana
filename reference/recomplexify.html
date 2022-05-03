@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -165,19 +165,12 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>columns</th>
-      <td><p>columns to account for complexes for (obtained via the `ScoreSpecifics` class)</p></td>
-    </tr>
-    <tr>
-      <th>lr_cmplx</th>
+      <th>lr_res</th>
       <td><p>decomplexified* lr_res</p></td>
     </tr>
     <tr>
-      <th>complex_policy</th>
-      <td><p>policy how to account for the presence of complexes.
-Following the example of <a href='https://github.com/Teichlab/cellphonedb'>CellPhoneDB</a>
-   valid options are: `'mean'` (default): mean of the subunits, and select
-   the subunit with the change/expression closest to 0 (when working with expression)</p>
+      <th>columns</th>
+      <td><p>columns to account for complexes for (obtained via the `ScoreSpecifics` class)</p>
 <p>One could choose to do any other type of mean: geometric, TriMean, etc.</p></td>
     </tr>
     </table>

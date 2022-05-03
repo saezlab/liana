@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -221,13 +221,28 @@ method-resource combinations</p></td>
     <dt><code>call_italk.params</code></dt><dd><p>list of Parameters passed to iTALK <code><a href='call_italk.html'>call_italk</a></code></p></dd>
     <dt><code>call_natmi.params</code></dt><dd><p>list of Parameters passed to NATMI <code><a href='call_natmi.html'>call_natmi</a></code></p></dd>
     <dt><code>call_sca.params</code></dt><dd><p>list of Parameters passed to SingleCellSignalR <code><a href='call_sca.html'>call_sca</a></code></p></dd>
+    <dt><code>cellphonedb.params</code></dt><dd><p>list of Parameters passed to liana's internal
+cellphonedb implementation <code><a href='cellphonedb_score.html'>cellphonedb_score</a></code></p></dd>
+    <dt><code>natmi.params</code></dt><dd><p>list of Parameters passed to liana's internal
+edge_specificity implementation <code>natmi_score</code></p></dd>
+    <dt><code>sca.params</code></dt><dd><p>list of Parameters passed to liana's internal
+LRScore implementation <code>sca_score</code></p></dd>
+    <dt><code>connectome.params</code></dt><dd><p>list of Parameters passed to liana's internal
+connectome's weight_sc implementation <code>connectome_score</code></p></dd>
+    <dt><code>cytotalk.params</code></dt><dd><p>list of Parameters passed to liana's internal
+crosstalk scores implementation <code><a href='cytotalk_score.html'>cytotalk_score</a></code></p></dd>
+    <dt><code>logfc.params</code></dt><dd><p>list of Parameters passed to liana's internal
+logFC implementation <code>logfc_score</code></p></dd>
     <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
  statistics used in their scores) across all cell types or cell type pairs.</p></dd>
+    <dt><code>complex_policy</code></dt><dd><p>policy how to account for the presence of complexes.</p></dd>
     <dt><code>seed</code></dt><dd><p>random seed integer</p></dd>
     <dt><code>parallelize</code></dt><dd><p>whether to parallelize cellphonedb-like</p></dd>
     <dt><code>workers</code></dt><dd><p>number of workers to be called</p></dd>
+    <dt><code>assay.type</code></dt><dd><p>- the type of data to be used to calculate the means
+(logcounts by default), available options are: "counts" and "logcounts"</p></dd>
   
 </dl></td>
     </tr>

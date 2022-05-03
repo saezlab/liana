@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-04-20</h4>
+            <h4 class="date">2022-05-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_custom_op.Rmd"><code>vignettes/liana_custom_op.Rmd</code></a></small>
       <div class="hidden name"><code>liana_custom_op.Rmd</code></div>
@@ -154,8 +154,8 @@
 <a href="#loading-prerequisites" class="anchor"></a>Loading prerequisites</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/OmnipathR/">OmnipathR</a></span><span class="op">)</span> 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://omnipathdb.org/">liana</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/OmnipathR/">OmnipathR</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/">liana</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
 
@@ -333,7 +333,7 @@
         external_resource <span class="op">=</span> <span class="va">pm_omni</span>
     <span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in .filter_sce(sce): 3465 genes and/or 0 cells were removed as they had
+<pre><code>## Warning in exec(output, ...): 3465 genes and/or 0 cells were removed as they had
 ## no counts!</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_test</span> <span class="op">%&gt;%</span> <span class="va">glimpse</span></code></pre></div>
@@ -377,7 +377,7 @@
 
 
 <span class="co"># apply filtering according to curation and localisation</span>
-<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
+<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span>
     <span class="fu">OmnipathR</span><span class="fu">::</span><span class="fu"><a href="https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html">filter_intercell_network</a></span><span class="op">(</span>
         loc_consensus_percentile <span class="op">=</span> <span class="fl">30</span>,
         consensus_percentile <span class="op">=</span> <span class="cn">NULL</span>,
@@ -395,7 +395,7 @@
     <span class="op">)</span>
 
 <span class="co"># remove duplicate LRs</span>
-<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span> 
+<span class="va">ligrec</span> <span class="op">%&lt;&gt;%</span>
     <span class="fu">distinct_at</span><span class="op">(</span>
         .vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
             <span class="st">'source_genesymbol'</span>,
@@ -422,14 +422,14 @@
 <pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  setting  value                       
 ##  version  R version 4.0.3 (2020-10-10)
-##  os       Ubuntu 20.04.3 LTS          
+##  os       Ubuntu 20.04.4 LTS          
 ##  system   x86_64, linux-gnu           
 ##  ui       X11                         
 ##  language en_US                       
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Brussels             
-##  date     2022-04-20                  
+##  date     2022-05-03                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source        
@@ -453,12 +453,16 @@
 ##  broom                  0.7.8    2021-06-24 [2] CRAN (R 4.0.3)
 ##  bslib                  0.2.4    2021-01-25 [2] CRAN (R 4.0.3)
 ##  cachem                 1.0.4    2021-02-13 [2] CRAN (R 4.0.3)
+##  Cairo                  1.5-12.2 2020-07-07 [2] CRAN (R 4.0.3)
 ##  cellranger             1.1.0    2016-07-27 [2] CRAN (R 4.0.2)
 ##  checkmate              2.0.0    2020-02-06 [2] CRAN (R 4.0.3)
+##  circlize               0.4.12   2021-01-08 [2] CRAN (R 4.0.3)
 ##  cli                    2.5.0    2021-04-26 [2] CRAN (R 4.0.3)
+##  clue                   0.3-58   2020-12-03 [2] CRAN (R 4.0.3)
 ##  cluster                2.1.0    2019-06-19 [5] CRAN (R 4.0.0)
 ##  codetools              0.2-16   2018-12-24 [5] CRAN (R 4.0.0)
 ##  colorspace             2.0-0    2020-11-11 [2] CRAN (R 4.0.2)
+##  ComplexHeatmap         2.6.2    2020-11-12 [2] Bioconductor  
 ##  cowplot                1.1.1    2020-12-30 [2] CRAN (R 4.0.3)
 ##  crayon                 1.4.1    2021-02-08 [2] CRAN (R 4.0.3)
 ##  curl                   4.3.2    2021-06-23 [2] CRAN (R 4.0.3)
@@ -486,10 +490,12 @@
 ##  GenomeInfoDb           1.26.2   2020-12-08 [2] Bioconductor  
 ##  GenomeInfoDbData       1.2.4    2020-12-14 [2] Bioconductor  
 ##  GenomicRanges          1.42.0   2020-10-27 [2] Bioconductor  
+##  GetoptLong             1.0.5    2020-12-15 [2] CRAN (R 4.0.3)
 ##  ggbeeswarm             0.6.0    2017-08-07 [2] CRAN (R 4.0.2)
 ##  ggplot2              * 3.3.5    2021-06-25 [2] CRAN (R 4.0.3)
 ##  ggrepel                0.9.1    2021-01-15 [2] CRAN (R 4.0.3)
 ##  ggridges               0.5.3    2021-01-08 [2] CRAN (R 4.0.3)
+##  GlobalOptions          0.1.2    2020-06-10 [2] CRAN (R 4.0.3)
 ##  globals                0.14.0   2020-11-22 [2] CRAN (R 4.0.2)
 ##  glue                   1.4.2    2020-08-27 [2] CRAN (R 4.0.2)
 ##  goftest                1.2-2    2019-12-02 [2] CRAN (R 4.0.2)
@@ -513,7 +519,7 @@
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)
-##  liana                * 0.1.0    2022-04-20 [1] local         
+##  liana                * 0.1.2    2022-05-03 [1] Bioconductor  
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor  
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)
@@ -561,6 +567,7 @@
 ##  reprex                 1.0.0    2021-01-27 [2] CRAN (R 4.0.3)
 ##  reshape2               1.4.4    2020-04-09 [2] CRAN (R 4.0.2)
 ##  reticulate             1.20     2021-05-03 [2] CRAN (R 4.0.3)
+##  rjson                  0.2.20   2018-06-08 [2] CRAN (R 4.0.3)
 ##  rlang                  0.4.11   2021-04-30 [2] CRAN (R 4.0.3)
 ##  rmarkdown              2.7      2021-02-19 [2] CRAN (R 4.0.3)
 ##  RobustRankAggreg       1.1      2013-06-03 [2] CRAN (R 4.0.3)
@@ -582,6 +589,7 @@
 ##  sessioninfo            1.1.1    2018-11-05 [2] CRAN (R 4.0.2)
 ##  Seurat                 4.0.3    2021-06-10 [2] CRAN (R 4.0.3)
 ##  SeuratObject           4.0.2    2021-06-09 [2] CRAN (R 4.0.3)
+##  shape                  1.4.5    2020-09-13 [2] CRAN (R 4.0.3)
 ##  shiny                  1.6.0    2021-01-25 [2] CRAN (R 4.0.3)
 ##  SingleCellExperiment   1.12.0   2020-10-27 [2] Bioconductor  
 ##  sparseMatrixStats      1.2.1    2021-02-02 [2] Bioconductor  
@@ -619,7 +627,7 @@
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor  
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)
 ## 
-## [1] /tmp/Rtmp6wiz7a/temp_libpath2335966af1479
+## [1] /tmp/RtmprUhNMn/temp_libpatha2db722f56f1a
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

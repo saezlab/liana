@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -153,41 +153,89 @@
       <small>Source: <a href='https://github.com/saezlab/liana/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="liana-010-200422" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.0">
-<a href="#liana-010-200422" class="anchor"></a>LIANA 0.1.0 (20.04.22)</h1>
+    <div id="liana-012-030522" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.2">
+<a href="#liana-012-030522" class="anchor"></a>LIANA 0.1.2 (03.05.22)</h1>
+<div id="new-implementations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-implementations" class="anchor"></a>New Implementations</h2>
+<ul>
+<li>Frequency and Average Specificity Heatmaps available via <code>heat_freq</code> and <code>heat_spec</code> functions. These were added due to being common requests. However, I strongly suggest that one should keep in mind the arbitrarity of such plots.</li>
+</ul>
+</div>
 <div id="changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#changes" class="anchor"></a>Changes</h2>
 <ul>
-<li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li>
+<li>Extended basic tutorial to accommodate new heatmap plots.</li>
 </ul>
 </div>
 <div id="minor-changes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes" class="anchor"></a>Minor Changes</h2>
+<a href="#minor-changes" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>Allow labels to be passed to <code>liana_dotplot</code>
+</li>
+<li>Cleaned up docs, dependencies, examples, and warnings</li>
+</ul>
+</div>
+</div>
+    <div id="liana-011-260422" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.1">
+<a href="#liana-011-260422" class="anchor"></a>LIANA 0.1.1 (26.04.22)</h1>
+<div id="changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-1" class="anchor"></a>Changes</h2>
+<ul>
+<li>Change the order of non-expressed genes and empty droplet filtering. I now appropriately filter cells in the <code>sce</code> object <em>after</em> limiting the gene universe to ligands and receptors in the resource.</li>
+</ul>
+</div>
+<div id="minor-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
+<ul>
+<li><p>Appropriately pass <code>verbose</code> to <code>.filter_sce</code></p></li>
+<li><p>Silence expected warning in <code>cellchat_formatDB</code></p></li>
+</ul>
+</div>
+</div>
+    <div id="liana-010-200422" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.0">
+<a href="#liana-010-200422" class="anchor"></a>LIANA 0.1.0 (20.04.22)</h1>
+<div id="changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-2" class="anchor"></a>Changes</h2>
+<ul>
+<li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li>
+</ul>
+</div>
+<div id="minor-changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-2" class="anchor"></a>Minor Changes</h2>
 <ul>
 <li><p>Flipped <code>x</code> and <code>y</code> axes dotplot according to feedback.</p></li>
 <li><p>Added <code>.default_fun</code> parameter to <code>generate_orthologues</code></p></li>
 <li><p>Minor code clean up</p></li>
 <li><p>Added <code>examples</code> to main exported functions docs</p></li>
 <li><p>Removed several low quality interactions from the <code>Consensus</code> resource</p></li>
+<li><p>CellChat will now work with the simplified format of intercell (i.e. Consensus resource).</p></li>
+<li><p>CellChat and Squidpy should now be called using <code>call_cellchat</code> and <code>call_squidpy</code>, respectively.</p></li>
 </ul>
 </div>
 </div>
     <div id="liana-009-23032022" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.9">
 <a href="#liana-009-23032022" class="anchor"></a>LIANA 0.0.9 (23.03.2022)</h1>
-<div id="new-implementations" class="section level2">
+<div id="new-implementations-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-implementations" class="anchor"></a>New Implementations</h2>
+<a href="#new-implementations-1" class="anchor"></a>New Implementations</h2>
 <ul>
 <li>We now provide a tutorial dedicated to <code>orthology conversion</code> of the resources in LIANA</li>
 </ul>
 </div>
-<div id="minor-changes-1" class="section level2">
+<div id="minor-changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-1" class="anchor"></a>Minor Changes</h2>
+<a href="#minor-changes-3" class="anchor"></a>Minor Changes</h2>
 <p>LIANA will now check if:</p>
 <ul>
 <li><p>There is enough of a gene intesect between the resource and the data (i.e. if they are both for human)</p></li>
@@ -200,16 +248,16 @@
     <div id="liana-008-05032022" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.8">
 <a href="#liana-008-05032022" class="anchor"></a>LIANA 0.0.8 (05.03.2022)</h1>
-<div id="changes-1" class="section level2">
+<div id="changes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-1" class="anchor"></a>Changes</h2>
+<a href="#changes-3" class="anchor"></a>Changes</h2>
 <ul>
 <li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li>
 </ul>
 </div>
-<div id="minor-changes-2" class="section level2">
+<div id="minor-changes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-2" class="anchor"></a>Minor Changes</h2>
+<a href="#minor-changes-4" class="anchor"></a>Minor Changes</h2>
 <ul>
 <li>testthat tests external methods only if requested explicitly</li>
 <li>Readme updated - clarified and accordingly describes the <code>Consensus</code> resource as default</li>
@@ -231,9 +279,9 @@
     <div id="liana-007" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.7">
 <a href="#liana-007" class="anchor"></a>LIANA 0.0.7</h1>
-<div id="changes-2" class="section level2">
+<div id="changes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-2" class="anchor"></a>Changes</h2>
+<a href="#changes-4" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>LIANA will now use the <code>Consensus</code> resource by default. This is a highly-literature supported resource, generated using similar filtering steps as the ‘OmniPath’ (old default) resource. This resource is similar in size (~4,700 interactions), but contains a higher complex and curation content.</p></li>
 <li><p>All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.</p></li>
@@ -241,9 +289,9 @@
 <li><p><code>liana_aggregate</code> now groups by ligand.complex and receptor.complex as well as the subunits, and hence returns a all of those columns</p></li>
 </ul>
 </div>
-<div id="minor-changes-3" class="section level2">
+<div id="minor-changes-5" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-3" class="anchor"></a>Minor Changes</h2>
+<a href="#minor-changes-5" class="anchor"></a>Minor Changes</h2>
 <ul>
 <li><p>Added option to show complexes on dotplot and is now the default option</p></li>
 <li><p>Documentation improvements</p></li>
@@ -267,29 +315,29 @@
     <div id="liana-006" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.6">
 <a href="#liana-006" class="anchor"></a>LIANA 0.0.6</h1>
-<div id="new-implementations-1" class="section level2">
+<div id="new-implementations-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-implementations-1" class="anchor"></a>New implementations</h2>
+<a href="#new-implementations-2" class="anchor"></a>New implementations</h2>
 <ul>
 <li><p>LIANA has now been optimized in terms of RAM, by swapping all internal function to rely solely on the BioConductor single-cell framework (for all internal methods).</p></li>
 <li><p>LIANA now accepts both <code>SingleCellExperiment</code> and <code>Seurat</code> objects as input.</p></li>
 <li><p>added <code>liana_dotplot</code> as a basic, but flexible, dotplot function for LIANA output. (+ tests)</p></li>
 </ul>
 </div>
-<div id="changes-3" class="section level2">
+<div id="changes-5" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-3" class="anchor"></a>Changes</h2>
+<a href="#changes-5" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.</p></li>
 <li><p><code>global_mean</code> is now calculated in a more efficient manner.</p></li>
+<li><p><code>assay.type</code> in <code>liana_pipe</code> was passed to <code>get_logFC</code> would result in using the logcounts, rather than the library-normalized counts.</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
 <ul>
-<li><p><code>assay.type</code> in <code>liana_pipe</code> was passed to <code>get_logFC</code> would result in using the logcounts, rather than the library-normalized counts for logFC calculation. Now appropriately changed.</p></li>
-<li><p>Fixed a bug where incorrectly passing method names in different cases results in an error.</p></li>
+<li>Fixed a bug where incorrectly passing method names in different cases results in an error.</li>
 </ul>
 </div>
 <div id="deprecated" class="section level2">
@@ -303,9 +351,9 @@
     <div id="liana-005" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.5">
 <a href="#liana-005" class="anchor"></a>LIANA 0.0.5</h1>
-<div id="changes-4" class="section level2">
+<div id="changes-6" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-4" class="anchor"></a>Changes</h2>
+<a href="#changes-6" class="anchor"></a>Changes</h2>
 <ul>
 <li><p>I now filter the Crosstalk scores to include only those &gt; 0. Otherwise, LIANA would return all possible combinations of clusters and interactions, which would be simply NAs and 0s for Crosstalk scores. Should do the same for Connectome (&gt;0).</p></li>
 <li><p><code>CellChat</code> and Crosstalk scores/<code>cytotalk</code> will no longer by called by default by liana_wrap. However, it both are available as an option to be passed to the <code>method</code> parameter.</p></li>
@@ -352,9 +400,9 @@
 <code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
 </ul>
 </div>
-<div id="changes-5" class="section level2">
+<div id="changes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-5" class="anchor"></a>Changes</h2>
+<a href="#changes-7" class="anchor"></a>Changes</h2>
 <ul>
 <li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br>
 </li>

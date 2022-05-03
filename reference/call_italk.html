@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -159,7 +159,7 @@
     <p>Run iTALK with OmniPath data [[DEPRECATED]]</p>
     </div>
 
-    <pre class="usage"><span class='fu'>call_italk</span><span class='op'>(</span><span class='va'>sce</span>, <span class='va'>op_resource</span>, assay <span class='op'>=</span> <span class='st'>"RNA"</span>, .format <span class='op'>=</span> <span class='cn'>TRUE</span>, .DE <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>call_italk</span><span class='op'>(</span><span class='va'>sce</span>, <span class='va'>op_resource</span>, assay <span class='op'>=</span> <span class='st'>"RNA"</span>, .format <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -181,21 +181,22 @@
       <td><p>bool: whether to format output</p></td>
     </tr>
     <tr>
-      <th>.DE</th>
-      <td><p>bool: whether to use DE (TRUE) or highlyVarGenes (FALSE)</p></td>
+      <th>...</th>
+      <td><p>Parameters passed to Seurat FindMarkers (ref requires import)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An unfiltered iTALK df sorted by relevance</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Stats:
-Ligand and Receptor Expressions (and P-values if ran with .DE==TRUE)
-Dot params are inherited from Seurat::FindAllMarkers, if .deg = TRUE</p>
 <p>In this case, we use the product of the logFC rather than thresholding, as in
 the original implementation.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>In order to be comparable with the remainder of the methods, we
+calculate the mean of the ligand and receptor logFC.
+The original implementation only uses the DE genes above a certain logFC
+threshold.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

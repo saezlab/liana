@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -176,7 +176,6 @@
   connectome.params <span class='op'>=</span> <span class='cn'>NULL</span>,
   cytotalk.params <span class='op'>=</span> <span class='cn'>NULL</span>,
   logfc.params <span class='op'>=</span> <span class='cn'>NULL</span>,
-  scconnect.params <span class='op'>=</span> <span class='cn'>NULL</span>,
   cellchat.params <span class='op'>=</span> <span class='cn'>NULL</span>,
   squidpy.params <span class='op'>=</span> <span class='cn'>NULL</span>,
   call_sca.params <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -194,6 +193,11 @@
 and `call_connectome`</p></td>
     </tr>
     <tr>
+      <th>assay.type</th>
+      <td><p>- the type of data to be used to calculate the means
+(logcounts by default), available options are: "counts" and "logcounts"</p></td>
+    </tr>
+    <tr>
       <th>expr_prop</th>
       <td><p>minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
@@ -203,6 +207,10 @@ This is further applied at a method-specific level - it is not applied to
     <tr>
       <th>seed</th>
       <td><p>random seed integer</p></td>
+    </tr>
+    <tr>
+      <th>complex_policy</th>
+      <td><p>policy how to account for the presence of complexes.</p></td>
     </tr>
     <tr>
       <th>parallelize</th>
@@ -219,6 +227,36 @@ This is further applied at a method-specific level - it is not applied to
     <tr>
       <th>liana_call.params</th>
       <td><p>list of Parameters passed to NATMI <code><a href='liana_call.html'>liana_call</a></code></p></td>
+    </tr>
+    <tr>
+      <th>cellphonedb.params</th>
+      <td><p>list of Parameters passed to liana's internal
+cellphonedb implementation <code><a href='cellphonedb_score.html'>cellphonedb_score</a></code></p></td>
+    </tr>
+    <tr>
+      <th>natmi.params</th>
+      <td><p>list of Parameters passed to liana's internal
+edge_specificity implementation <code>natmi_score</code></p></td>
+    </tr>
+    <tr>
+      <th>sca.params</th>
+      <td><p>list of Parameters passed to liana's internal
+LRScore implementation <code>sca_score</code></p></td>
+    </tr>
+    <tr>
+      <th>connectome.params</th>
+      <td><p>list of Parameters passed to liana's internal
+connectome's weight_sc implementation <code>connectome_score</code></p></td>
+    </tr>
+    <tr>
+      <th>cytotalk.params</th>
+      <td><p>list of Parameters passed to liana's internal
+crosstalk scores implementation <code><a href='cytotalk_score.html'>cytotalk_score</a></code></p></td>
+    </tr>
+    <tr>
+      <th>logfc.params</th>
+      <td><p>list of Parameters passed to liana's internal
+logFC implementation <code>logfc_score</code></p></td>
     </tr>
     <tr>
       <th>cellchat.params</th>
@@ -244,12 +282,6 @@ This is further applied at a method-specific level - it is not applied to
       <th>call_italk.params</th>
       <td><p>list of Parameters passed to iTALK <code><a href='call_italk.html'>call_italk</a></code></p></td>
     </tr>
-    <tr>
-      <th>trim</th>
-      <td><p>the fraction (0 to 0.5) of observations to be trimmed from each
-end of x before the mean is computed. This is relevant only for the
-CellPhoneDB algorithm re-implementation in liana.</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -263,16 +295,24 @@ CellPhoneDB algorithm re-implementation in liana.</p></td>
 <p>Further, each `get_*` method will by default obtain the default params passed
    via <code><a href='liana_pipe.html'>liana_pipe</a></code> and <code><a href='liana_call.html'>liana_call</a></code>. This is done so that most steps
    required for the calculation of these methods are undertaken only once.</p>
+<p>NB! LIANA's internal methods are made consistent. There is no reason to pass
+specific parameters to any of them. Thus, it is best that one sticks to the
+non-nested parameters of this function (i.e. excluding `.params`),
+unless a very specific reason requires any of LIANA's internal parameters
+to be changed.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># get a `named` list with all default parameters passed to liana.</span>
+    <pre class="examples"><div class='input'><span class='va'>liana_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span>package <span class='op'>=</span> <span class='st'>"liana"</span><span class='op'>)</span>
+<span class='co'># load testdata</span>
+<span class='va'>testdata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/readRDS.html'>readRDS</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>liana_path</span> , <span class='st'>"testdata"</span>, <span class='st'>"input"</span>, <span class='st'>"testdata.rds"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='co'># get a `named` list with all default parameters passed to liana.</span>
 <span class='va'>def_params</span> <span class='op'>&lt;-</span> <span class='fu'>liana_defaults</span><span class='op'>(</span><span class='op'>)</span>
 <span class='co'># any of these can then be overwritten and passed to `...` in `liana_wrap`</span>
 <span class='co'># with the `.params` suffix to the parameter name type. For example,</span>
 <span class='va'>liana_res</span> <span class='op'>&lt;-</span> <span class='fu'><a href='liana_wrap.html'>liana_wrap</a></span><span class='op'>(</span><span class='va'>testdata</span>,
-                        permutation.params <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>parms<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
+                        permutation.params <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>nperms<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
                         liana_pipe.params <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>test.type<span class='op'>=</span><span class='st'>'wilcox'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in liana_prep(sce, idents_col = idents_col, assay = assay, verbose = verbose): object 'testdata' not found</span></div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Expression from the `RNA` assay will be used</span></div><div class='output co'>#&gt; <span class='message'>Running LIANA with `seurat_annotations` as labels!</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 3465 genes and/or 0 cells were removed as they had no counts!</span></div><div class='output co'>#&gt; <span class='message'>LIANA: LR summary stats calculated!</span></div><div class='output co'>#&gt; <span class='message'>Now Running: Natmi</span></div><div class='output co'>#&gt; <span class='message'>Now Running: Connectome</span></div><div class='output co'>#&gt; <span class='message'>Now Running: Logfc</span></div><div class='output co'>#&gt; <span class='message'>Now Running: Sca</span></div><div class='output co'>#&gt; <span class='message'>Now Running: Cellphonedb</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

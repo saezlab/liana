@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -161,6 +161,71 @@
 
     <pre class="usage"><span class='fu'>omnipath_intercell</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>...</th>
+      <td><p>Arguments passed on to <code><a href='https://saezlab.github.io/OmnipathR/reference/filter_intercell_network.html'>OmnipathR::filter_intercell_network</a></code></p><dl>
+    <dt><code>network</code></dt><dd><p>An intercell network data frame, as provided by
+<code><a href='https://saezlab.github.io/OmnipathR/reference/import_intercell_network.html'>import_intercell_network</a></code>, without <code>simplify</code>.</p></dd>
+    <dt><code>transmitter_topology</code></dt><dd><p>Character vector: topologies allowed for the
+entities in transmitter role. Abbreviations allowed: "sec", "pmtm"
+and "pmp".</p></dd>
+    <dt><code>receiver_topology</code></dt><dd><p>Same as <code>transmitter_topology</code> for the
+entities in the receiver role.</p></dd>
+    <dt><code>min_curation_effort</code></dt><dd><p>Numeric: a minimum value of curation effort
+(resource-reference pairs) for network interactions. Use zero to
+disable filtering.</p></dd>
+    <dt><code>min_resources</code></dt><dd><p>Numeric: minimum number of resources for
+interactions. The value 1 means no filtering.</p></dd>
+    <dt><code>min_references</code></dt><dd><p>Numeric: minimum number of references for
+interactions. Use zero to disable filtering.</p></dd>
+    <dt><code>min_provenances</code></dt><dd><p>Numeric: minimum number of provenances (either
+resources or references) for interactions. Use zero or one to
+disable filtering.</p></dd>
+    <dt><code>consensus_percentile</code></dt><dd><p>Numeric: percentile threshold for the consensus
+score of generic categories in intercell annotations. The consensus
+score is the number of resources supporting the classification of an
+entity into a category based on combined information of many resources.
+Here you can apply a cut-off, keeping only the annotations supported
+by a higher number of resources than a certain percentile of each
+category. If <code>NULL</code> no filtering will be performed. The value is
+either in the 0-1 range, or will be divided by 100 if greater than 1.
+The percentiles will be calculated against the generic composite
+categories and then will be applied to their resource specific
+annotations and specific child categories.</p></dd>
+    <dt><code>loc_consensus_percentile</code></dt><dd><p>Numeric: similar to
+<code>consensus_percentile</code> for major localizations. For example, with
+a value of 50, the secreted, plasma membrane transmembrane or
+peripheral attributes will be <code>TRUE</code> only where at least 50
+percent of the resources support these.</p></dd>
+    <dt><code>ligand_receptor</code></dt><dd><p>Logical. If <code>TRUE</code>, only <em>ligand</em> and
+<em>receptor</em> annotations will be used instead of the more generic
+<em>transmitter</em> and <em>receiver</em> categories.</p></dd>
+    <dt><code>simplify</code></dt><dd><p>Logical: keep only the most often used columns. This
+function combines a network data frame with two copies of the
+intercell annotation data frames, all of them already having quite
+some columns. With this option we keep only the names of the
+interacting pair, their intercellular communication roles, and the
+minimal information of the origin of both the interaction and
+the annotations.</p></dd>
+    <dt><code>unique_pairs</code></dt><dd><p>Logical: instead of having separate rows for each
+pair of annotations, drop the annotations and reduce the data frame to
+unique interacting pairs. See <code><a href='https://saezlab.github.io/OmnipathR/reference/unique_intercell_network.html'>unique_intercell_network</a></code>
+for details.</p></dd>
+    <dt><code>omnipath</code></dt><dd><p>Logical: shortcut to include the <em>omnipath</em> dataset
+in the interactions query.</p></dd>
+    <dt><code>ligrecextra</code></dt><dd><p>Logical: shortcut to include the <em>ligrecextra</em>
+dataset in the interactions query.</p></dd>
+    <dt><code>kinaseextra</code></dt><dd><p>Logical: shortcut to include the <em>kinaseextra</em>
+dataset in the interactions query.</p></dd>
+    <dt><code>pathwayextra</code></dt><dd><p>Logical: shortcut to include the <em>pathwayextra</em>
+dataset in the interactions query.</p></dd>
+  
+</dl></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 

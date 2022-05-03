@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Compute cross-talk score from a Seurat Object — cytotalk_score" />
-<meta property="og:description" content="This function executes all the required functions to extract and compute the
-cross-talk scores as defined by the Cytotalk authors. ." />
+<meta property="og:description" content="Compute cross-talk score from a Seurat Object" />
 
 
 
@@ -73,7 +72,7 @@ cross-talk scores as defined by the Cytotalk authors. ." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -157,13 +156,44 @@ cross-talk scores as defined by the Cytotalk authors. ." />
     </div>
 
     <div class="ref-description">
-    <p>This function executes all the required functions to extract and compute the
-cross-talk scores as defined by the Cytotalk authors. .</p>
+    <p>Compute cross-talk score from a Seurat Object</p>
     </div>
 
     <pre class="usage"><span class='fu'>cytotalk_score</span><span class='op'>(</span><span class='va'>lr_res</span>, <span class='va'>sce</span>, <span class='va'>score_col</span>, <span class='va'>assay.type</span>, <span class='va'>seed</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>lr_res</th>
+      <td><p>liana_pipe results</p></td>
+    </tr>
+    <tr>
+      <th>sce</th>
+      <td><p>SingleCellExperiment object</p></td>
+    </tr>
+    <tr>
+      <th>score_col</th>
+      <td><p>name of the score column</p></td>
+    </tr>
+    <tr>
+      <th>assay.type</th>
+      <td><p>data slot to be used</p></td>
+    </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>random seed</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>placeholder</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This function executes all the required functions to extract
+and compute the cross-talk scores as defined by the Cytotalk authors.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
