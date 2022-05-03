@@ -45,7 +45,7 @@ Then, we load and prepare the single-cell data, NicheNet's model weights, and th
 
 ```{r, message=FALSE, warning=FALSE}
 # single-cell expression matrix described in Puram et al. 2017
-hnscc_expression <-  readRDS(url("https://zenodo.org/record/3260758/files/hnscc_expression.rds"))
+hnscc_expression <- readRDS(url("https://zenodo.org/record/3260758/files/hnscc_expression.rds"))
 # model weights
 ligand_target_matrix <- readRDS(url("https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"))
 ```

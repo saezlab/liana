@@ -148,12 +148,12 @@ in both cell clusters.
 
 ## Frequency and Specificity Heatmaps
 We will now plot the frequencies of interactions and the average interaction 
-specificity for each pair of potentially commmunicating cell types.
+specificity for each pair of *potentially* communicating cell types.
 
 These plots were inspired by CellChat's and CellPhoneDB's heatmap designs.
 
-We filter interactions by `aggregate_rank`, which can
-itself be treated as a p-value of robustly, highly ranked interactions.
+First, we filter interactions by `aggregate_rank`, which can itself
+ be treated as a p-value of for the robustly, highly ranked interactions.
 Nevertheless, one can also filter according to [CPDB p-value](https://www.nature.com/articles/s41596-020-0292-x) (<=0.05) or
 [SingleCellExperiments LRScore](https://academic.oup.com/nar/article/48/10/e55/5810485), etc.
 
@@ -167,15 +167,14 @@ liana_trunc <- liana_test %>%
 heat_freq(liana_trunc)
 ```
 
-We then see that `NK`-`CD8 T` share a relatively large number of the inferred
+Here, we see that `NK`-`CD8 T` share a relatively large number of the inferred
 interactions, with many of those being send from `NK` - note large sum of 
 interactions (gray barplot) in which NK is the `Sender`.
 
-**NB!** Here, an assumption is made that the number of interactions inferred between
+**NB!** Here, an assumption is implied that the number of interactions inferred between
 cell types is informative of the communication events occurring in the system.
-This is a rather strong assumption limited by the arbitrarily filter applied
-to the interactions. Thus, I suggest that one considers this prior to any making
-conclusions, and if possible to compliment these with further information.
+This is a rather strong assumption that one should consider prior to making any 
+conclusions. [Our suggestion](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.abstract) is that any conclusions should be complimented with further information, such as biological prior knowledge, spatial information, etc.
 
 
 #### Interaction Average Specificity
@@ -190,7 +189,7 @@ heat_spec(liana_trunc)
 ```
 
 Notably, these functions are simply wrappers of the `liana_heatmap` function.
-Also, similarly to the previous plot, one should be cautious with conclusions.
+Also, similarly to the previous plot one should be cautious with conclusions.
 
 
 ## Run any method of choice.

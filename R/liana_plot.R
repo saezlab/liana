@@ -165,7 +165,7 @@ heat_spec <- function(liana_res,
                       ...){
 
     # Average Specificity
-    avg_specificity <- liana_trunc %>%
+    avg_specificity <- liana_res %>%
         select(source, target, natmi.edge_specificity) %>%
         group_by(source, target) %>%
         summarise(avg_spec = mean(natmi.edge_specificity),
