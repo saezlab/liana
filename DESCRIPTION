@@ -74,13 +74,11 @@ Suggests:
     BiocStyle,
     rmarkdown,
     markdown,
-    workflowr,
     testthat (>= 3.0.0),
     sessioninfo,
     logger,
     Seurat,
     entropy,
-    covr,
     furrr (>= 0.2.0),
     future
 biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap

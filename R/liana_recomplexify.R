@@ -2,6 +2,7 @@
 #'
 #' @param lr_res decomplexified* lr_res
 #' @param columns columns to account for complexes for (obtained via the `ScoreSpecifics` class)
+#' @param ... placeholder
 #'
 #' One could choose to do any other type of mean: geometric, TriMean, etc.
 #'
@@ -112,6 +113,7 @@ account_missing <- function(lr_res, env){
 #' @param lr_res LR results as obtained by `lr_pipe`
 #' @param complex complex of interest
 #' @param entity is the complex a 'ligand' or 'receptor'
+#' @param env environment passed to which recursive changes are saved
 #'
 #' @return A `lr_res` tibble with
 missing_subunits_to0 <- function(lr_res, complex, entity, env){

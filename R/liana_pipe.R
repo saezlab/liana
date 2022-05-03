@@ -4,12 +4,10 @@
 #' @param op_resource resource tibble obtained via \link{liana::select_resource}
 #' @inheritParams liana_scores
 #' @inheritParams scran::findMarkers
-#' @param expr_prop minimum proportion of gene expression per cell type (0.2 by default),
-#'  yet one should consider setting this to an appropriate value between 0 and 1,
-#'  as an assumptions of these method is that communication is coordinated at the cluster level.
 #' @param assay assay to be used ("RNA" by default)
 #' @param assay.type - the type of data to be used to calculate the means
 #'  (logcounts by default), available options are: "counts" and "logcounts"
+#'  @param verbose logical for verbosity
 #'
 #' @import SingleCellExperiment SeuratObject
 #' @importFrom scran findMarkers
@@ -239,6 +237,7 @@ ligrec_degformat <- function(cluster_markers,
 #' @param source_target target or source cell
 #' @param entity ligand or receptor
 #' @param type type of mean to join (count or scaled)
+#' @param pb progress bar
 #'
 #' @importFrom magrittr %>% %<>%
 #'

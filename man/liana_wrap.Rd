@@ -60,6 +60,7 @@ connectome's weight_sc implementation \code{\link{connectome_score}}}
 crosstalk scores implementation \code{\link{cytotalk_score}}}
     \item{\code{logfc.params}}{list of Parameters passed to liana's internal
 logFC implementation \code{\link{logfc_score}}}
+    \item{\code{permutation.params}}{list of parameters passed to permutation methods}
     \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
@@ -69,7 +70,8 @@ This is further applied at a method-specific level - it is not applied to
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"}
+(logcounts by default), available options are: "counts" and "logcounts"
+@param verbose logical for verbosity}
   }}
 }
 \value{

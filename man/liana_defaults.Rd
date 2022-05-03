@@ -34,7 +34,8 @@ liana_defaults(
 and `call_connectome`}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"}
+(logcounts by default), available options are: "counts" and "logcounts"
+@param verbose logical for verbosity}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
@@ -48,6 +49,8 @@ This is further applied at a method-specific level - it is not applied to
 \item{parallelize}{whether to parallelize cellphonedb-like}
 
 \item{workers}{number of workers to be called}
+
+\item{permutation.params}{list of parameters passed to permutation methods}
 
 \item{liana_pipe.params}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
 

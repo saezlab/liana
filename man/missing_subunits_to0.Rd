@@ -12,6 +12,8 @@ missing_subunits_to0(lr_res, complex, entity, env)
 \item{complex}{complex of interest}
 
 \item{entity}{is the complex a 'ligand' or 'receptor'}
+
+\item{env}{environment passed to which recursive changes are saved}
 }
 \value{
 A `lr_res` tibble with

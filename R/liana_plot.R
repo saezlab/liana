@@ -112,7 +112,6 @@ liana_dotplot <- function(liana_agg,
 #'
 #' @param liana_res aggregated liana results (preferably truncated
 #'  to some threshold)
-#' @param pallette colour palette to be used for the cells
 #' @inheritDotParams liana_heatmap
 #'
 #' @export

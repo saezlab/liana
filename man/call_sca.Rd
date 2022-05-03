@@ -23,6 +23,8 @@ call_sca(
 \item{assay}{Seurat assay data to use}
 
 \item{assay.type}{count slot (logcounts by default)}
+
+\item{...}{arguments passed to `SCAomni::cell_signaling`}
 }
 \value{
 An unfiltered SCA tibble

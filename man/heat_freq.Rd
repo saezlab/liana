@@ -22,8 +22,6 @@ By default the heatmap name is used as the title of the heatmap legend.}
     \item{\code{row_title}}{Row tittle}
     \item{\code{column_title}}{Column tittle}
   }}
-
-\item{pallette}{colour palette to be used for the cells}
 }
 \description{
 Communication Frequency heatmap plot

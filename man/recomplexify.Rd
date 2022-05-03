@@ -9,7 +9,9 @@ recomplexify(lr_res, columns, ...)
 \arguments{
 \item{lr_res}{decomplexified* lr_res}
 
-\item{columns}{columns to account for complexes for (obtained via the `ScoreSpecifics` class)
+\item{columns}{columns to account for complexes for (obtained via the `ScoreSpecifics` class)}
+
+\item{...}{placeholder
 
 One could choose to do any other type of mean: geometric, TriMean, etc.}
 }

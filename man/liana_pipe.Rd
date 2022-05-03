@@ -28,11 +28,8 @@ or a binomial test with \code{"binom"}.}
 \item{assay}{assay to be used ("RNA" by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"}
-
-\item{expr_prop}{minimum proportion of gene expression per cell type (0.2 by default),
-yet one should consider setting this to an appropriate value between 0 and 1,
-as an assumptions of these method is that communication is coordinated at the cluster level.}
+(logcounts by default), available options are: "counts" and "logcounts"
+@param verbose logical for verbosity}
 }
 \value{
 Returns a tibble with information required for LR calculations downstream

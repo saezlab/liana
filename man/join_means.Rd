@@ -16,6 +16,8 @@ join_means(lr_res, means, source_target, entity, type, pb = NULL)
 \item{entity}{ligand or receptor}
 
 \item{type}{type of mean to join (count or scaled)}
+
+\item{pb}{progress bar}
 }
 \value{
 Returns the Average Expression Per Cluster

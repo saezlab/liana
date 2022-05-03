@@ -22,6 +22,7 @@
 #' crosstalk scores implementation \code{\link{cytotalk_score}}
 #' @param logfc.params list of Parameters passed to liana's internal
 #' logFC implementation \code{\link{logfc_score}}
+#' @param permutation.params list of parameters passed to permutation methods
 #'
 #' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
 #'  This is further applied at a method-specific level - it is not applied to
