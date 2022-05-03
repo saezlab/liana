@@ -73,7 +73,7 @@ Yet, the original method pipelines can be called via the `call_*` functions.
 
 To run `liana`, we will use a down-sampled toy *HUMAN* PBMCs scRNA-Seq data set, obtained from [SeuratData](https://github.com/satijalab/seurat-data).
 
-`liana` takes `Seurat` and `SingleCellExperiment` objects as input, containing processed counts and clustered cells
+`liana` takes `Seurat` and `SingleCellExperiment` objects as input, containing processed counts and clustered cells.
 ```{r load_data}
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -144,6 +144,53 @@ liana_test %>%
 ```
 Note that missing dots are interactions which are not expressed in at least 10% of the cells (by default)
 in both cell clusters.
+
+
+## Frequency and Specificity Heatmaps
+We will now plot the frequencies of interactions and the average interaction 
+specificity for each pair of potentially commmunicating cell types.
+
+These plots were inspired by CellChat's and CellPhoneDB's heatmap designs.
+
+We filter interactions by `aggregate_rank`, which can
+itself be treated as a p-value of robustly, highly ranked interactions.
+Nevertheless, one can also filter according to [CPDB p-value](https://www.nature.com/articles/s41596-020-0292-x) (<=0.05) or
+[SingleCellExperiments LRScore](https://academic.oup.com/nar/article/48/10/e55/5810485), etc.
+
+#### Interaction Frequency
+
+```{r heatfreq, warning=FALSE, fig.width=7, fig.height=5}
+liana_trunc <- liana_test %>%
+   # only keep interactions concordant between methods
+  filter(aggregate_rank <= 0.01) # this can be FDR-corr if n is too high
+
+heat_freq(liana_trunc)
+```
+
+We then see that `NK`-`CD8 T` share a relatively large number of the inferred
+interactions, with many of those being send from `NK` - note large sum of 
+interactions (gray barplot) in which NK is the `Sender`.
+
+**NB!** Here, an assumption is made that the number of interactions inferred between
+cell types is informative of the communication events occurring in the system.
+This is a rather strong assumption limited by the arbitrarily filter applied
+to the interactions. Thus, I suggest that one considers this prior to any making
+conclusions, and if possible to compliment these with further information.
+
+
+#### Interaction Average Specificity
+
+In this case, we consider the specificity of interactions as defined by 
+[NATMI's](https://www.nature.com/articles/s41467-020-18873-z) edge specificity weights. 
+NATMI's specificity edges range from 0 to 1, where `1` means both the ligand
+and receptor are uniquely expressed in a given pair of cells.
+
+```{r heatspec, warning=FALSE, fig.width=7, fig.height=5}
+heat_spec(liana_trunc)
+```
+
+Notably, these functions are simply wrappers of the `liana_heatmap` function.
+Also, similarly to the previous plot, one should be cautious with conclusions.
 
 
 ## Run any method of choice.

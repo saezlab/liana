@@ -84,12 +84,12 @@ cellphonedb_score <- function(lr_res,
         map_custom(function(pmean){
             og_res %>%
                 distinct() %>%
-                liana::join_means(means = pmean,
+                liana:::join_means(means = pmean,
                                    source_target = "source",
                                    entity = "ligand",
                                    type = "expr",
                                    pb = progress_bar) %>%
-                liana::join_means(means = pmean,
+                liana:::join_means(means = pmean,
                                    source_target = "target",
                                    entity = "receptor",
                                    type = "expr",

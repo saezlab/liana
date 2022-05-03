@@ -40,7 +40,7 @@ Authors@R: c(
     ))
 Description: LIANA provides a number of methods and resource for ligand-receptor interaction inference from scRNA-seq data
 License: GPL-3 + file LICENSE
-URL: https://omnipathdb.org/
+URL: https://saezlab.github.io/liana/
 BugReports: https://github.com/saezlab/liana/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
@@ -65,7 +65,9 @@ Imports:
     SeuratObject,
     RobustRankAggreg,
     tidyselect,
-    ggplot2
+    ggplot2,
+    ComplexHeatmap,
+    RColorBrewer
 Suggests:
     CellChat,
     knitr,
@@ -81,7 +83,7 @@ Suggests:
     covr,
     furrr (>= 0.2.0),
     future
-biocViews: OmnipathR, scater, scran, SingleCellExperiment
+biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3

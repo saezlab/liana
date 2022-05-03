@@ -1,11 +1,16 @@
-# LIANA 0.1.2 (29.04.22)
+# LIANA 0.1.2 (03.05.22)
+
+## New Implementations
+- Frequency and Average Specificity Heatmaps available via `heat_freq` and
+`heat_spec` functions. These were added due to being common requests. However,
+I strongly suggest that one should keep in mind the arbitrarity of such plots.
+
 
 ## Changes
+- Extended basic tutorial to accommodate new heatmap plots.
 
 ## Minor changes
 - Allow labels to be passed to `liana_dotplot`
-
-## Minor Improvements
 - Cleaned up docs, dependencies, examples, and warnings
 
 
