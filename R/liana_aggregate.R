@@ -64,9 +64,7 @@ liana_aggregate <- function(liana_res,
     }
 
     # fix external methods which return only ligand/receptor, but not .complex
-    if(any(names(liana_res) %in% c('cellchat', 'call_natmi',
-                                   'call_connectome', 'call_sca',
-                                   'call_italk', 'squidpy'))){
+    if(any(startsWith(names(liana_res), "call_"))){
         join_cols <- c("source", "target",
                        "ligand", "receptor")
     } else{
