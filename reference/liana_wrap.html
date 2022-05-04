@@ -233,6 +233,7 @@ connectome's weight_sc implementation <code>connectome_score</code></p></dd>
 crosstalk scores implementation <code><a href='cytotalk_score.html'>cytotalk_score</a></code></p></dd>
     <dt><code>logfc.params</code></dt><dd><p>list of Parameters passed to liana's internal
 logFC implementation <code>logfc_score</code></p></dd>
+    <dt><code>permutation.params</code></dt><dd><p>list of parameters passed to permutation methods</p></dd>
     <dt><code>expr_prop</code></dt><dd><p>minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to
  Connectome and Cytotalk, as these methods calculate/normalize the score (or
@@ -242,7 +243,8 @@ This is further applied at a method-specific level - it is not applied to
     <dt><code>parallelize</code></dt><dd><p>whether to parallelize cellphonedb-like</p></dd>
     <dt><code>workers</code></dt><dd><p>number of workers to be called</p></dd>
     <dt><code>assay.type</code></dt><dd><p>- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"</p></dd>
+(logcounts by default), available options are: "counts" and "logcounts"
+@param verbose logical for verbosity</p></dd>
   
 </dl></td>
     </tr>
