@@ -142,55 +142,6 @@ heat_freq <- function(liana_res, ...){
 }
 
 
-#' Communication Specificity heatmap plot
-#'
-#' @param liana_res aggregated liana results (preferably truncated
-#'  to some threshold)
-#' @inheritParams liana_heatmap
-#' @param pallette colour palette to be used for the cells
-#' @inheritDotParams liana_heatmap
-#'
-#' @export
-#'
-#' @details This function builds on the frequency heatmap. Here, we plot the
-#' average specificity per celltype pair, using NATMI's specificity edges.
-#' NATMI's specificity ranges from 1 to 0, with 1 being assigned to interactions
-#' uniquely expressed in a pair of cell types. Similarly to the previous plot,
-#' this one is also limited by the arbitrarity of filtering and any conclusions
-#' should be considered with caution.
-heat_spec <- function(liana_res,
-                      name = 'Average\nSpecificity',
-                      pallette = c("white", "#2cb7b9"),
-                      ...){
-
-    # Average Specificity
-    avg_specificity <- liana_res %>%
-        select(source, target, natmi.edge_specificity) %>%
-        group_by(source, target) %>%
-        summarise(avg_spec = mean(natmi.edge_specificity),
-                  .groups = 'keep') %>%
-        arrange(source) %>%
-        ungroup() %>%
-        pivot_wider(id_cols = source,
-                    names_from = target,
-                    values_from = avg_spec,
-                    values_fill = 0) %>%
-        arrange(source) %>%
-        ungroup() %>%
-        as.data.frame() %>%
-        column_to_rownames('source') %>%
-        as.matrix()
-
-    liana_heatmap(mat = avg_specificity,
-                  name = name,
-                  pallette = pallette,
-                  ...)
-}
-
-
-
-
-
 #' Communication by cell type Heatmap
 #'
 #' @param mat Diagonal celltype-celltype matrix to be plotted. In theory,

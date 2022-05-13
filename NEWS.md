@@ -1,10 +1,30 @@
+# LIANA 0.1.3 (15.05.22)
+
+## Changes
+- Changed the aggregation columns of `liana_aggregate`, as in some cases
+methods would assign different subunits as the minimum, which results in
+redundencies for the same complex. As such, `liana_aggregate` will now
+return only the complex columns, nevertheless, the methods will still return 
+both the minimum (lowest expressed subunit) and it's corresponding complex.
+
+- `base` used to calculate logFC will now default to Euler's number when working
+with Seurat objects, and 2 when working with SingleCellExperiment. 
+Users can also now pass any base number.
+
+## Minor Changes
+- Extended the heatmap to allow filtering down to certain cell types.
+- Removed redundant/leftover code
+
+## New implementations
+- Chord plot
+
+
+
 # LIANA 0.1.2 (03.05.22)
 
 ## New Implementations
-- Frequency and Average Specificity Heatmaps available via `heat_freq` and
-`heat_spec` functions. These were added due to being common requests. However,
-I strongly suggest that one should keep in mind the arbitrarity of such plots.
-
+- Frequency Heatmap available via the `heat_freq` functions, added due to being common requests.
+This heatmap was inspired by CellPhoneDB and CellChat.
 
 ## Changes
 - Extended basic tutorial to accommodate new heatmap plots.

@@ -1,29 +1,3 @@
-#' Function Used to Calculate the scConnect `Interaction` scores
-#'
-#' @param lr_res \link(liana::liana_pipe) results
-#' @param score_col name of the score column
-#'
-#' @noRd
-#'
-#' @return lr_res with an added `LRscore` column
-scconnect_score <- function(lr_res,
-                            score_col,
-                            ...){
-    lr_res %>%
-        select(source, target,
-               ligand, receptor,
-               contains("complex"),
-               ligand.expr, receptor.expr,
-               ligand.pval, receptor.pval) %>%
-        rowwise() %>%
-        mutate(specificity = -log10(mean(c(ligand.pval, receptor.pval)))) %>%
-        mutate(score = sqrt(ligand.expr * receptor.expr)) %>%
-        mutate(importance = log10(score) * specificity) %>%
-        select(source, target, ligand, receptor,
-               contains("complex"), importance)
-}
-
-
 #' Function Used to Calculate the Connectome-like `weight_sc` weights
 #'
 #' @param lr_res \link(liana::liana_pipe) results
