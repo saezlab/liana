@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -160,9 +160,9 @@
     </div>
 
     <pre class="usage"><span class='fu'>liana_dotplot</span><span class='op'>(</span>
-  <span class='va'>liana_agg</span>,
-  <span class='va'>source_groups</span>,
-  <span class='va'>target_groups</span>,
+  <span class='va'>liana_res</span>,
+  source_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  target_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
   specificity <span class='op'>=</span> <span class='st'>"natmi.edge_specificity"</span>,
   magnitude <span class='op'>=</span> <span class='st'>"sca.LRscore"</span>,
   y.label <span class='op'>=</span> <span class='st'>"Interactions (Ligand -&gt; Receptor)"</span>,
@@ -175,17 +175,19 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>liana_agg</th>
-      <td><p>aggregated `liana_wrap` results -&gt; preferentially filtered
-by some condition (e.g. preferential ranking, specific interactions, etc)</p></td>
+      <th>liana_res</th>
+      <td><p>aggregated `liana_wrap` results from multiple methods,
+or alternatively results from running `liana_wrap` with a single method.
+Should be filtered by some condition (e.g. preferential consesus ranking,
+specific interactions, etc).</p></td>
     </tr>
     <tr>
       <th>source_groups</th>
-      <td><p>names of the source(sender) cell types</p></td>
+      <td><p>names of the source (sender) cell types (NULL = no filter)</p></td>
     </tr>
     <tr>
       <th>target_groups</th>
-      <td><p>names of the target cell types</p></td>
+      <td><p>names of the target cell types (NULL = no filter)</p></td>
     </tr>
     <tr>
       <th>specificity</th>

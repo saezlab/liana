@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Helper Function to Format CellChatDB — cellchat_formatDB • liana</title>
+<title>Frequency ChordDiagram — chord_freq • liana</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Helper Function to Format CellChatDB — cellchat_formatDB" />
-<meta property="og:description" content="Helper Function to Format CellChatDB" />
+<meta property="og:title" content="Frequency ChordDiagram — chord_freq" />
+<meta property="og:description" content="Frequency ChordDiagram" />
 
 
 
@@ -150,31 +150,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Helper Function to Format CellChatDB</h1>
-    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/cellchat_pipe.R'><code>R/cellchat_pipe.R</code></a></small>
-    <div class="hidden name"><code>cellchat_formatDB.Rd</code></div>
+    <h1>Frequency ChordDiagram</h1>
+    <small class="dont-index">Source: <a href='https://github.com/saezlab/liana/blob/master/R/liana_plot.R'><code>R/liana_plot.R</code></a></small>
+    <div class="hidden name"><code>chord_freq.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Helper Function to Format CellChatDB</p>
+    <p>Frequency ChordDiagram</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cellchat_formatDB</span><span class='op'>(</span><span class='va'>ccDB</span>, <span class='va'>op_resource</span>, <span class='va'>exclude_anns</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>chord_freq</span><span class='op'>(</span>
+  <span class='va'>liana_res</span>,
+  source_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  target_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cex <span class='op'>=</span> <span class='fl'>1</span>,
+  transparency <span class='op'>=</span> <span class='fl'>0.4</span>,
+  facing <span class='op'>=</span> <span class='st'>"clockwise"</span>,
+  adj <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>0.5</span>, <span class='fl'>0.05</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>ccDB</th>
-      <td><p>Inbuilt cellchatDB object</p></td>
+      <th>liana_res</th>
+      <td><p>aggregated `liana_wrap` results from multiple methods,
+or alternatively results from running `liana_wrap` with a single method.
+Should be filtered by some condition (e.g. preferential consesus ranking,
+specific interactions, etc).</p></td>
     </tr>
     <tr>
-      <th>op_resource</th>
-      <td><p>OmniPath Intercell Resource DN</p></td>
+      <th>source_groups</th>
+      <td><p>names of the source (sender) cell types (NULL = no filter)</p></td>
     </tr>
     <tr>
-      <th>exclude_anns</th>
-      <td><p>Annotation criteria to be excluded</p></td>
+      <th>target_groups</th>
+      <td><p>names of the target cell types (NULL = no filter)</p></td>
+    </tr>
+    <tr>
+      <th>cex</th>
+      <td><p>label relative font size</p></td>
+    </tr>
+    <tr>
+      <th>transparency</th>
+      <td><p>transparency</p></td>
+    </tr>
+    <tr>
+      <th>facing</th>
+      <td><p>axis label rotation (check `circlize::circos.text` for options)</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other paramters passed to `circlize::chordDiagram`</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>for text.</p></td>
     </tr>
     </table>
 

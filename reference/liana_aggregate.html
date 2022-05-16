@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -167,6 +167,8 @@
   get_ranks <span class='op'>=</span> <span class='cn'>TRUE</span>,
   get_agrank <span class='op'>=</span> <span class='cn'>TRUE</span>,
   .score_mode <span class='op'>=</span> <span class='va'>.score_specs</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  join_cols <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -216,6 +218,12 @@ By default, we use the score of each method which reflects specificity
 This aggregation is by default done on the basis of the list returns by
 `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
 aggragate of the housekeeping interactions of each `external` LIANA++ method.</p></td>
+    </tr>
+    <tr>
+      <th>join_cols</th>
+      <td><p>columns by which different method results will be joined.
+NULL by default, and automatically will handle the columns depending on the
+methods used.</p></td>
     </tr>
     <tr>
       <th>...</th>

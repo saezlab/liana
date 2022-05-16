@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-05-04</h4>
+            <h4 class="date">2022-05-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_intracell.rmd"><code>vignettes/liana_intracell.rmd</code></a></small>
       <div class="hidden name"><code>liana_intracell.rmd</code></div>
@@ -165,7 +165,9 @@
 <span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                         resource<span class="op">=</span><span class="st">'custom'</span>,
                         external_resource <span class="op">=</span> <span class="va">liana_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># aggregate</span></code></pre></div>
+  <span class="co"># Note! here we work with the 'minimum' subunits</span>
+  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span>join_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source"</span>, <span class="st">"target"</span>,
+                                <span class="st">"ligand"</span>, <span class="st">"receptor"</span><span class="op">)</span><span class="op">)</span> <span class="co"># aggregate</span></code></pre></div>
 <pre><code>## Warning in exec(output, ...): 3465 genes and/or 0 cells were removed as they had
 ## no counts!</code></pre>
 <div id="filter-liana-output-to-only-rtk-interactions" class="section level3">
@@ -184,22 +186,21 @@
 <span class="co"># Show only interactions in which BOTH the ligand and the receptor</span>
 <span class="co"># are associated with the RTK pathway</span>
 <span class="va">liana_rtk</span></code></pre></div>
-<pre><code>## # A tibble: 8 x 20
-##   source target ligand receptor ligand.complex receptor.complex aggregate_rank
-##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;                     &lt;dbl&gt;
-## 1 NK     NK     TGFB1  TGFBR1   TGFB1          TGFBR1                   0.0107
-## 2 NK     CD8 T  TGFB1  TGFBR2   TGFB1          TGFBR2                   0.0233
-## 3 NK     CD8 T  TGFBR1 TGFBR2   TGFBR1         TGFBR2                   0.107 
-## 4 CD8 T  NK     TGFBR2 TGFBR1   TGFBR2         TGFBR1                   0.109 
-## 5 B      NK     TGFB1  TGFBR1   TGFB1          TGFBR1                   1     
-## 6 B      CD8 T  TGFB1  TGFBR2   TGFB1          TGFBR2                   1     
-## 7 CD8 T  NK     TGFB1  TGFBR1   TGFB1          TGFBR1                   1     
-## 8 CD8 T  CD8 T  TGFB1  TGFBR2   TGFB1          TGFBR2                   1     
-## # … with 13 more variables: mean_rank &lt;dbl&gt;, natmi.edge_specificity &lt;dbl&gt;,
-## #   natmi.rank &lt;dbl&gt;, connectome.weight_sc &lt;dbl&gt;, connectome.rank &lt;dbl&gt;,
-## #   logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;,
-## #   sca.rank &lt;dbl&gt;, cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;,
-## #   ligand_pathway &lt;chr&gt;, receptor_pathway &lt;chr&gt;</code></pre>
+<pre><code>## # A tibble: 8 x 18
+##   source target ligand receptor aggregate_rank mean_rank natmi.edge_specificity
+##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;                  &lt;dbl&gt;
+## 1 NK     NK     TGFB1  TGFBR1           0.0107      192.                  0.488
+## 2 NK     CD8 T  TGFB1  TGFBR2           0.0233      221.                  0.355
+## 3 NK     CD8 T  TGFBR1 TGFBR2           0.107       342.                  0.526
+## 4 CD8 T  NK     TGFBR2 TGFBR1           0.109       342.                  0.526
+## 5 B      NK     TGFB1  TGFBR1           1           525.                  0.218
+## 6 B      CD8 T  TGFB1  TGFBR2           1           604.                  0.158
+## 7 CD8 T  NK     TGFB1  TGFBR1           1           652.                  0.144
+## 8 CD8 T  CD8 T  TGFB1  TGFBR2           1           719.                  0.105
+## # … with 11 more variables: natmi.rank &lt;dbl&gt;, connectome.weight_sc &lt;dbl&gt;,
+## #   connectome.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;,
+## #   sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;, cellphonedb.pvalue &lt;dbl&gt;,
+## #   cellphonedb.rank &lt;dbl&gt;, ligand_pathway &lt;chr&gt;, receptor_pathway &lt;chr&gt;</code></pre>
 </div>
 <div id="run-liana-with-only-specific-interactions" class="section level3">
 <h3 class="hasAnchor">
@@ -223,7 +224,8 @@
 <span class="va">liana_rtk_omni</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                              resource<span class="op">=</span><span class="st">'custom'</span>,
                              external_resource <span class="op">=</span> <span class="va">rkt_omni</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span>join_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source"</span>, <span class="st">"target"</span>,
+                                <span class="st">"ligand"</span>, <span class="st">"receptor"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## Expression from the `RNA` assay will be used</code></pre>
 <pre><code>## Running LIANA with `seurat_annotations` as labels!</code></pre>
 <pre><code>## Warning in exec(output, ...): 3465 genes and/or 0 cells were removed as they had
@@ -242,24 +244,23 @@
 <pre><code>## Aggregating Ranks</code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">liana_rtk_omni</span></code></pre></div>
-<pre><code>## # A tibble: 39 x 18
-##    source target ligand receptor ligand.complex receptor.complex aggregate_rank
-##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;                     &lt;dbl&gt;
-##  1 NK     NK     TGFB1  TGFBR1   TGFB1          TGFBR1                0.0000567
-##  2 NK     CD8 T  IFNG   IFNGR1   IFNG           IFNGR1                0.000431 
-##  3 NK     CD8 T  TGFB1  TGFBR2   TGFB1          TGFBR2                0.000931 
-##  4 CD8 T  NK     IL23A  IL12RB1  IL23A          IL12RB1               0.00182  
-##  5 NK     B      IFNG   IFNGR2   IFNG           IFNGR2                0.00327  
-##  6 NK     CD8 T  IL10RB IL10RA   IL10RB         IL10RA                0.00327  
-##  7 B      CD8 T  IL4R   IL2RG    IL4R           IL2RG                 0.0138   
-##  8 B      CD8 T  IFNAR1 IFNGR1   IFNAR1         IFNGR1                0.0298   
-##  9 NK     NK     IFNG   IFNGR2   IFNG           IFNGR2                0.0421   
-## 10 NK     NK     IFNG   IFNGR1   IFNG           IFNGR1                0.0581   
-## # … with 29 more rows, and 11 more variables: mean_rank &lt;dbl&gt;,
-## #   natmi.edge_specificity &lt;dbl&gt;, natmi.rank &lt;dbl&gt;, connectome.weight_sc &lt;dbl&gt;,
-## #   connectome.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;,
-## #   sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;, cellphonedb.pvalue &lt;dbl&gt;,
-## #   cellphonedb.rank &lt;dbl&gt;</code></pre>
+<pre><code>## # A tibble: 39 x 16
+##    source target ligand receptor aggregate_rank mean_rank natmi.edge_specificity
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;                  &lt;dbl&gt;
+##  1 NK     NK     TGFB1  TGFBR1        0.0000567       2.6                  0.488
+##  2 NK     CD8 T  IFNG   IFNGR1        0.000431        4.2                  0.359
+##  3 NK     CD8 T  TGFB1  TGFBR2        0.000931        4                    0.355
+##  4 CD8 T  NK     IL23A  IL12RB1       0.00182         3                    0.530
+##  5 NK     B      IFNG   IFNGR2        0.00327         5                    0.372
+##  6 NK     CD8 T  IL10RB IL10RA        0.00327         7.4                  0.349
+##  7 B      CD8 T  IL4R   IL2RG         0.0138          9                    0.259
+##  8 B      CD8 T  IFNAR1 IFNGR1        0.0298         12.8                  0.261
+##  9 NK     NK     IFNG   IFNGR2        0.0421         10.2                  0.269
+## 10 NK     NK     IFNG   IFNGR1        0.0581         12.2                  0.223
+## # … with 29 more rows, and 9 more variables: natmi.rank &lt;dbl&gt;,
+## #   connectome.weight_sc &lt;dbl&gt;, connectome.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;,
+## #   logfc.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;,
+## #   cellphonedb.pvalue &lt;dbl&gt;, cellphonedb.rank &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="perform-an-over-representation-representation-analysis-ora-on-predicted-lr-interactions" class="section level2">
@@ -274,7 +275,8 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 <code class="sourceCode R"><span class="co"># we take liana from above and keep only the columns that we need</span>
 <span class="co"># in this case we will use the aggragate for all methods</span>
 <span class="va">liana_form</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span>
-  <span class="fu">select</span><span class="op">(</span><span class="va">source</span>, <span class="va">ligand</span>, <span class="va">target</span>, <span class="va">receptor</span>, <span class="va">aggregate_rank</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">select</span><span class="op">(</span><span class="va">source</span>, <span class="va">ligand</span>, <span class="va">target</span>,
+         <span class="va">receptor</span>, <span class="va">aggregate_rank</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="co"># one could treat the aggragate rank as </span>
   <span class="co"># the probability to observe an interaction</span>
   <span class="co"># as preferentially highly ranked</span>
@@ -417,7 +419,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  collate  en_US.UTF-8                 
 ##  ctype    en_US.UTF-8                 
 ##  tz       Europe/Brussels             
-##  date     2022-05-04                  
+##  date     2022-05-16                  
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package              * version  date       lib source        
@@ -444,7 +446,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  Cairo                  1.5-12.2 2020-07-07 [2] CRAN (R 4.0.3)
 ##  cellranger             1.1.0    2016-07-27 [2] CRAN (R 4.0.2)
 ##  checkmate              2.0.0    2020-02-06 [2] CRAN (R 4.0.3)
-##  circlize               0.4.12   2021-01-08 [2] CRAN (R 4.0.3)
+##  circlize               0.4.15   2022-05-10 [2] CRAN (R 4.0.3)
 ##  cli                    2.5.0    2021-04-26 [2] CRAN (R 4.0.3)
 ##  clue                   0.3-58   2020-12-03 [2] CRAN (R 4.0.3)
 ##  cluster                2.1.0    2019-06-19 [5] CRAN (R 4.0.0)
@@ -466,7 +468,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)
 ##  edgeR                  3.32.1   2021-01-14 [2] Bioconductor  
 ##  ellipsis               0.3.2    2021-04-29 [2] CRAN (R 4.0.3)
-##  evaluate               0.14     2019-05-28 [2] CRAN (R 4.0.2)
+##  evaluate               0.15     2022-02-18 [2] CRAN (R 4.0.3)
 ##  fansi                  0.4.2    2021-01-15 [2] CRAN (R 4.0.3)
 ##  fastmap                1.1.0    2021-01-25 [2] CRAN (R 4.0.3)
 ##  fitdistrplus           1.1-3    2020-12-05 [2] CRAN (R 4.0.2)
@@ -502,12 +504,12 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  jquerylib              0.1.3    2020-12-17 [2] CRAN (R 4.0.3)
 ##  jsonlite               1.7.2    2020-12-09 [2] CRAN (R 4.0.2)
 ##  KernSmooth             2.23-17  2020-04-26 [5] CRAN (R 4.0.0)
-##  knitr                  1.31     2021-01-27 [2] CRAN (R 4.0.3)
+##  knitr                  1.39     2022-04-26 [2] CRAN (R 4.0.3)
 ##  later                  1.1.0.1  2020-06-05 [2] CRAN (R 4.0.2)
 ##  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)
 ##  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)
 ##  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)
-##  liana                * 0.1.2    2022-05-04 [1] Bioconductor  
+##  liana                * 0.1.3    2022-05-16 [1] Bioconductor  
 ##  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)
 ##  limma                  3.46.0   2020-10-27 [2] Bioconductor  
 ##  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)
@@ -607,7 +609,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  viridisLite            0.3.0    2018-02-01 [2] CRAN (R 4.0.2)
 ##  vroom                  1.5.6    2021-11-10 [2] CRAN (R 4.0.3)
 ##  withr                  2.4.1    2021-01-26 [2] CRAN (R 4.0.3)
-##  xfun                   0.21     2021-02-10 [2] CRAN (R 4.0.3)
+##  xfun                   0.30     2022-03-02 [2] CRAN (R 4.0.3)
 ##  xml2                   1.3.2    2020-04-23 [2] CRAN (R 4.0.2)
 ##  xtable                 1.8-4    2019-04-21 [2] CRAN (R 4.0.2)
 ##  XVector                0.30.0   2020-10-27 [2] Bioconductor  
@@ -615,7 +617,7 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.</p>
 ##  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor  
 ##  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)
 ## 
-## [1] /tmp/RtmphTuIG8/temp_libpathb8719475bf2a1
+## [1] /tmp/Rtmp8eL3Yz/temp_libpath1a12c49e51fb9
 ## [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 ## [3] /usr/local/lib/R/site-library
 ## [4] /usr/lib/R/site-library

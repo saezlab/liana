@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-05-04</h4>
+            <h4 class="date">2022-05-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_tutorial.Rmd"><code>vignettes/liana_tutorial.Rmd</code></a></small>
       <div class="hidden name"><code>liana_tutorial.Rmd</code></div>
@@ -234,15 +234,13 @@
 <span class="co">#&gt; Aggregating Ranks</span>
 
 <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">liana_test</span><span class="op">)</span>
-<span class="co">#&gt; Rows: 835</span>
-<span class="co">#&gt; Columns: 18</span>
+<span class="co">#&gt; Rows: 811</span>
+<span class="co">#&gt; Columns: 16</span>
 <span class="co">#&gt; $ source                 &lt;chr&gt; "B", "B", "B", "B", "B", "B", "NK", "NK", "B", …</span>
 <span class="co">#&gt; $ target                 &lt;chr&gt; "CD8 T", "CD8 T", "CD8 T", "CD8 T", "CD8 T", "C…</span>
-<span class="co">#&gt; $ ligand                 &lt;chr&gt; "HLA-DQA1", "HLA-DRA", "HLA-DQA2", "HLA-DRB1", …</span>
-<span class="co">#&gt; $ receptor               &lt;chr&gt; "LAG3", "LAG3", "LAG3", "LAG3", "LAG3", "LAG3",…</span>
 <span class="co">#&gt; $ ligand.complex         &lt;chr&gt; "HLA-DQA1", "HLA-DRA", "HLA-DQA2", "HLA-DRB1", …</span>
 <span class="co">#&gt; $ receptor.complex       &lt;chr&gt; "LAG3", "LAG3", "LAG3", "LAG3", "LAG3", "LAG3",…</span>
-<span class="co">#&gt; $ aggregate_rank         &lt;dbl&gt; 6.846032e-07, 4.683326e-06, 6.580061e-06, 9.800…</span>
+<span class="co">#&gt; $ aggregate_rank         &lt;dbl&gt; 7.471186e-07, 5.418542e-06, 7.390164e-06, 1.100…</span>
 <span class="co">#&gt; $ mean_rank              &lt;dbl&gt; 23.2, 12.4, 42.0, 21.2, 32.4, 18.2, 37.0, 13.8,…</span>
 <span class="co">#&gt; $ natmi.edge_specificity &lt;dbl&gt; 0.8945477, 0.7374111, 0.9665280, 0.6819579, 0.8…</span>
 <span class="co">#&gt; $ natmi.rank             &lt;dbl&gt; 2, 7, 1, 10, 5, 12, 69, 20, 11, 8, 29, 139, 4, …</span>
@@ -290,13 +288,27 @@
 <p>Here, we see that <code>NK</code>-<code>CD8 T</code> share a relatively large number of the inferred interactions, with many of those being send from <code>NK</code> - note large sum of interactions (gray barplot) in which NK is the <code>Sender</code>.</p>
 <p><strong>NB!</strong> Here, an assumption is implied that the number of interactions inferred between cell types is informative of the communication events occurring in the system. This is a rather strong assumption that one should consider prior to making any conclusions. <a href="https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.abstract">Our suggestion</a> is that any conclusions should be complimented with further information, such as biological prior knowledge, spatial information, etc.</p>
 </div>
+<div id="frequency-chord-diagram" class="section level2">
+<h2 class="hasAnchor">
+<a href="#frequency-chord-diagram" class="anchor"></a>Frequency Chord diagram</h2>
+<p>Here, we will generate a chord diagram equivalent to the frequencies heatmap.</p>
+<p>First, make sure you have the <code>circlize</code> package installed.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"circlize"</span><span class="op">)</span></code></pre></div>
+<p>In this case, one could choose the source and target cell type groups that they wish to plot.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chord_freq.html">chord_freq</a></span><span class="op">(</span><span class="va">liana_trunc</span>,
+                source_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CD8 T"</span>, <span class="st">"NK"</span>, <span class="st">"B"</span><span class="op">)</span>,
+                target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CD8 T"</span>, <span class="st">"NK"</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="liana_tutorial_files/figure-html/chordfreq-1.png" width="576"></p>
+</div>
 <div id="run-any-method-of-choice-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-any-method-of-choice-" class="anchor"></a>Run any method of choice.</h2>
 <p>We will now run only the CellPhoneDB’s permutation-based algorithm. We will also lower the number of permutations that we wish to perform for the sake of computational time. Note that one can also parallelize the CPDB algorithm implemented in LIANA (in this case we don’t, as this would only make sense when working with large datasets).</p>
 <p>Also, here we will use a <code>SingleCellExperiment</code> object as input. In reality, LIANA converts <code>Seurat</code> objects to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.</p>
 <p>Finally, in this scenario we decide to show the names of the complexes, rather than the subunit with the lowest ~expression.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Load Sce testdata</span>
 <span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testsce.rds"</span><span class="op">)</span><span class="op">)</span>
 
@@ -325,7 +337,7 @@
 <h2 class="hasAnchor">
 <a href="#singlecellsignalr-cytotalk-natmi-and-connectome-scores-w-complexes" class="anchor"></a>SingleCellSignalR, CytoTalk, NATMI, and Connectome scores /w Complexes</h2>
 <p>The re-implementation of the aforementioned methods in LIANA enables us to make use of multimeric complex information as provided by the e.g. CellPhoneDB, CellChatDB, and ICELLNET resources</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Run liana re-implementations with the CellPhoneDB resource</span>
 <span class="va">complex_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                            method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'natmi'</span>, <span class="st">'sca'</span>, <span class="st">'logfc'</span><span class="op">)</span>,
@@ -334,29 +346,29 @@
 <span class="co">#&gt; no counts!</span>
 
 <span class="va">complex_test</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 228 x 14</span>
-<span class="co">#&gt;    source target ligand receptor ligand.complex receptor.complex aggregate_rank</span>
-<span class="co">#&gt;    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;                     &lt;dbl&gt;</span>
-<span class="co">#&gt;  1 NK     B      MIF    CD74     MIF            CD74                   0.000173</span>
-<span class="co">#&gt;  2 CD8 T  CD8 T  LCK    CD8B     LCK            CD8A_CD8B              0.00104 </span>
-<span class="co">#&gt;  3 CD8 T  B      MIF    CD74     MIF            CD74                   0.00154 </span>
-<span class="co">#&gt;  4 NK     NK     HLA-C  KIR2DL3  HLA-C          KIR2DL3                0.00234 </span>
-<span class="co">#&gt;  5 B      B      MIF    CD74     MIF            CD74                   0.00426 </span>
-<span class="co">#&gt;  6 NK     NK     HLA-E  KLRC1    HLA-E          KLRC1_KLRD1            0.00612 </span>
-<span class="co">#&gt;  7 NK     CD8 T  CD58   CD2      CD58           CD2                    0.00831 </span>
-<span class="co">#&gt;  8 CD8 T  NK     HLA-E  KLRC1    HLA-E          KLRC1_KLRD1            0.0108  </span>
-<span class="co">#&gt;  9 NK     B      PTPRC  CD22     PTPRC          CD22                   0.0109  </span>
-<span class="co">#&gt; 10 CD8 T  B      PTPRC  CD22     PTPRC          CD22                   0.0118  </span>
-<span class="co">#&gt; # … with 218 more rows, and 7 more variables: mean_rank &lt;dbl&gt;,</span>
-<span class="co">#&gt; #   natmi.edge_specificity &lt;dbl&gt;, natmi.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;,</span>
-<span class="co">#&gt; #   sca.rank &lt;dbl&gt;, logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;</span></code></pre></div>
+<span class="co">#&gt; # A tibble: 221 x 12</span>
+<span class="co">#&gt;    source target ligand.complex receptor.complex aggregate_rank mean_rank</span>
+<span class="co">#&gt;    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;          &lt;chr&gt;                     &lt;dbl&gt;     &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 NK     B      MIF            CD74                   0.000184      25  </span>
+<span class="co">#&gt;  2 CD8 T  CD8 T  LCK            CD8A_CD8B              0.00114       10.3</span>
+<span class="co">#&gt;  3 CD8 T  B      MIF            CD74                   0.00164       36  </span>
+<span class="co">#&gt;  4 NK     NK     HLA-C          KIR2DL3                0.00257       19.7</span>
+<span class="co">#&gt;  5 B      B      MIF            CD74                   0.00454       41  </span>
+<span class="co">#&gt;  6 NK     NK     HLA-E          KLRC1_KLRD1            0.00651       19.7</span>
+<span class="co">#&gt;  7 NK     CD8 T  CD58           CD2                    0.00884       32.3</span>
+<span class="co">#&gt;  8 CD8 T  NK     HLA-E          KLRC1_KLRD1            0.0115        21.7</span>
+<span class="co">#&gt;  9 NK     B      PTPRC          CD22                   0.0119        29.7</span>
+<span class="co">#&gt; 10 CD8 T  B      PTPRC          CD22                   0.0130        31.3</span>
+<span class="co">#&gt; # … with 211 more rows, and 6 more variables: natmi.edge_specificity &lt;dbl&gt;,</span>
+<span class="co">#&gt; #   natmi.rank &lt;dbl&gt;, sca.LRscore &lt;dbl&gt;, sca.rank &lt;dbl&gt;,</span>
+<span class="co">#&gt; #   logfc.logfc_comb &lt;dbl&gt;, logfc.rank &lt;dbl&gt;</span></code></pre></div>
 </div>
 <div id="call-liana-with-overwritten-default-settings" class="section level2">
 <h2 class="hasAnchor">
 <a href="#call-liana-with-overwritten-default-settings" class="anchor"></a>Call <code>liana</code> with overwritten default settings</h2>
 <p>By default <code>liana</code> is run with the default for each method which can be obtained via <code>liana_default()</code></p>
 <p>Alternatively, one can also overwrite the default settings by simply passing them to the liana wrapper function</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># define geometric mean</span>
 <span class="va">geometric_mean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vec</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">vec</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">}</span>
 
@@ -437,7 +449,7 @@
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       Europe/Brussels             
-#&gt;  date     2022-05-04                  
+#&gt;  date     2022-05-16                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package              * version  date       lib source        
@@ -462,7 +474,7 @@
 #&gt;  Cairo                  1.5-12.2 2020-07-07 [2] CRAN (R 4.0.3)
 #&gt;  cellranger             1.1.0    2016-07-27 [2] CRAN (R 4.0.2)
 #&gt;  checkmate              2.0.0    2020-02-06 [2] CRAN (R 4.0.3)
-#&gt;  circlize               0.4.12   2021-01-08 [2] CRAN (R 4.0.3)
+#&gt;  circlize               0.4.15   2022-05-10 [2] CRAN (R 4.0.3)
 #&gt;  cli                    2.5.0    2021-04-26 [2] CRAN (R 4.0.3)
 #&gt;  clue                   0.3-58   2020-12-03 [2] CRAN (R 4.0.3)
 #&gt;  cluster                2.1.0    2019-06-19 [5] CRAN (R 4.0.0)
@@ -484,7 +496,7 @@
 #&gt;  dqrng                  0.2.1    2019-05-17 [2] CRAN (R 4.0.2)
 #&gt;  edgeR                  3.32.1   2021-01-14 [2] Bioconductor  
 #&gt;  ellipsis               0.3.2    2021-04-29 [2] CRAN (R 4.0.3)
-#&gt;  evaluate               0.14     2019-05-28 [2] CRAN (R 4.0.2)
+#&gt;  evaluate               0.15     2022-02-18 [2] CRAN (R 4.0.3)
 #&gt;  fansi                  0.4.2    2021-01-15 [2] CRAN (R 4.0.3)
 #&gt;  farver                 2.0.3    2020-01-16 [2] CRAN (R 4.0.2)
 #&gt;  fastmap                1.1.0    2021-01-25 [2] CRAN (R 4.0.3)
@@ -522,13 +534,13 @@
 #&gt;  jquerylib              0.1.3    2020-12-17 [2] CRAN (R 4.0.3)
 #&gt;  jsonlite               1.7.2    2020-12-09 [2] CRAN (R 4.0.2)
 #&gt;  KernSmooth             2.23-17  2020-04-26 [5] CRAN (R 4.0.0)
-#&gt;  knitr                  1.31     2021-01-27 [2] CRAN (R 4.0.3)
+#&gt;  knitr                  1.39     2022-04-26 [2] CRAN (R 4.0.3)
 #&gt;  labeling               0.4.2    2020-10-20 [2] CRAN (R 4.0.2)
 #&gt;  later                  1.1.0.1  2020-06-05 [2] CRAN (R 4.0.2)
 #&gt;  lattice                0.20-41  2020-04-02 [5] CRAN (R 4.0.0)
 #&gt;  lazyeval               0.2.2    2019-03-15 [2] CRAN (R 4.0.2)
 #&gt;  leiden                 0.3.7    2021-01-26 [2] CRAN (R 4.0.3)
-#&gt;  liana                * 0.1.2    2022-05-04 [1] Bioconductor  
+#&gt;  liana                * 0.1.3    2022-05-16 [1] Bioconductor  
 #&gt;  lifecycle              1.0.0    2021-02-15 [2] CRAN (R 4.0.3)
 #&gt;  limma                  3.46.0   2020-10-27 [2] Bioconductor  
 #&gt;  listenv                0.8.0    2019-12-05 [2] CRAN (R 4.0.2)
@@ -627,7 +639,7 @@
 #&gt;  viridis                0.5.1    2018-03-29 [2] CRAN (R 4.0.2)
 #&gt;  viridisLite            0.3.0    2018-02-01 [2] CRAN (R 4.0.2)
 #&gt;  withr                  2.4.1    2021-01-26 [2] CRAN (R 4.0.3)
-#&gt;  xfun                   0.21     2021-02-10 [2] CRAN (R 4.0.3)
+#&gt;  xfun                   0.30     2022-03-02 [2] CRAN (R 4.0.3)
 #&gt;  xml2                   1.3.2    2020-04-23 [2] CRAN (R 4.0.2)
 #&gt;  xtable                 1.8-4    2019-04-21 [2] CRAN (R 4.0.2)
 #&gt;  XVector                0.30.0   2020-10-27 [2] Bioconductor  
@@ -635,7 +647,7 @@
 #&gt;  zlibbioc               1.36.0   2020-10-27 [2] Bioconductor  
 #&gt;  zoo                    1.8-8    2020-05-02 [2] CRAN (R 4.0.2)
 #&gt; 
-#&gt; [1] /tmp/RtmphTuIG8/temp_libpathb8719475bf2a1
+#&gt; [1] /tmp/Rtmp8eL3Yz/temp_libpath1a12c49e51fb9
 #&gt; [2] /home/dbdimitrov/R/x86_64-pc-linux-gnu-library/4.0
 #&gt; [3] /usr/local/lib/R/site-library
 #&gt; [4] /usr/lib/R/site-library
