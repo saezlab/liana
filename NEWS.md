@@ -9,7 +9,7 @@ both the minimum (lowest expressed subunit) and it's corresponding complex.
 
 - `base` used to calculate logFC will now default to Euler's number when working
 with Seurat objects, and 2 when working with SingleCellExperiment. 
-Users can also now pass any base number.
+Users can also now pass any base number as a parameter to `logfc.params`.
 
 ## Minor Changes
 - Extended the heatmap to allow filtering down to certain cell types.

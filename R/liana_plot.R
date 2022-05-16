@@ -1,10 +1,12 @@
 #' Liana dotplot interactions by source and target cells
 #'
-#' @param liana_agg aggregated `liana_wrap` results -> preferentially filtered
-#' by some condition (e.g. preferential ranking, specific interactions, etc)
+#' @param liana_res aggregated `liana_wrap` results from multiple methods,
+#' or alternatively results from running `liana_wrap` with a single method.
+#' Should be filtered by some condition (e.g. preferential consesus ranking,
+#' specific interactions, etc).
 #'
-#' @param source_groups names of the source(sender) cell types
-#' @param target_groups names of the target cell types
+#' @param source_groups names of the source (sender) cell types (NULL = no filter)
+#' @param target_groups names of the target cell types (NULL = no filter)
 #'
 #' @param magnitude column to represent interactions expression magnitude
 #' (by default `sca.LRscore`)
@@ -32,9 +34,9 @@
 #' @return a ggplot2 object
 #'
 #' @export
-liana_dotplot <- function(liana_agg,
-                          source_groups,
-                          target_groups,
+liana_dotplot <- function(liana_res,
+                          source_groups = NULL,
+                          target_groups = NULL,
                           specificity = "natmi.edge_specificity",
                           magnitude = "sca.LRscore",
                           y.label = "Interactions (Ligand -> Receptor)",
@@ -49,10 +51,14 @@ liana_dotplot <- function(liana_agg,
     }
 
     # Modify for the plot
-    liana_mod <- liana_agg %>%
+    liana_mod <- liana_res %>%
         # Filter to only the cells of interest
-        filter(source %in% source_groups) %>%
-        filter(target %in% target_groups) %>%
+        `if`(!is.null(source_groups),
+             filter(., source %in% source_groups),
+             .) %>%
+        `if`(!is.null(target_groups),
+             filter(., target %in% target_groups),
+             .) %>%
         rename(magnitude = !!magnitude) %>%
         rename(specificity = !!specificity) %>%
         unite(entities, col = "interaction", sep = " -> ") %>%
@@ -107,6 +113,75 @@ liana_dotplot <- function(liana_agg,
 
 
 
+#' Frequency ChordDiagram
+#'
+#' @inheritParams liana_dotplot
+#' @param cex label relative font size
+#'
+#' @param ... other paramters passed to `circlize::chordDiagram`
+#' @param transparency transparency
+#'
+#' @param facing axis label rotation (check `circlize::circos.text` for options)
+#' @param offset for text.
+#'
+#' @export
+chord_freq <- function(liana_res,
+                       source_groups = NULL,
+                       target_groups = NULL,
+                       cex = 1,
+                       transparency = 0.4,
+                       facing = "clockwise",
+                       adj = c(-0.5, 0.05),
+                       ...){
+
+    # Get Frequencies for the celltypes of interest
+    freqs <- liana_res %>%
+        `if`(!is.null(source_groups),
+             filter(., source %in% source_groups),
+             .) %>%
+        `if`(!is.null(target_groups),
+             filter(., target %in% target_groups),
+             .) %>%
+        .get_freq()
+
+    celltypes <- union(colnames(freqs), rownames(freqs))
+
+    grid.col <- grDevices::colorRampPalette(
+        (RColorBrewer::brewer.pal(n = 8, name = 'Dark2'))
+    )(length(celltypes)) %>%
+        setNames(celltypes)
+
+    # 4ord plot
+    circlize::circos.clear()
+    circlize::chordDiagram(freqs,
+                           directional = 1,
+                           direction.type = c("diffHeight", "arrows"),
+                           link.arr.type = "big.arrow",
+                           transparency = transparency,
+                           grid.col = grid.col,
+                           annotationTrack = c("grid"),
+                           self.link = 1,
+                           big.gap = 7.5,
+                           small.gap = 5,
+                           ...
+    )
+
+    # Taken from https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
+    circlize::circos.trackPlotRegion(track.index = 1,
+                                     panel.fun = function(x, y) {
+        xlim = circlize::get.cell.meta.data("xlim")
+        ylim = circlize::get.cell.meta.data("ylim")
+        sector.name = circlize::get.cell.meta.data("sector.index")
+        circlize::circos.text(mean(xlim), ylim[1],
+                              sector.name, facing = facing,
+                              niceFacing = TRUE, adj = adj, cex = cex)
+    }, bg.border = NA)
+
+    p <- grDevices::recordPlot()
+
+    return(p)
+}
+
 
 #' Communication Frequency heatmap plot
 #'
@@ -125,17 +200,7 @@ liana_dotplot <- function(liana_agg,
 heat_freq <- function(liana_res, ...){
     # Calculate Frequencies
     freqs <- liana_res %>%
-        group_by(source, target) %>%
-        summarise(freq = n(), .groups = 'keep') %>%
-        pivot_wider(id_cols = source,
-                    names_from = target,
-                    values_from = freq,
-                    values_fill = 0) %>%
-        arrange(source) %>%
-        ungroup() %>%
-        as.data.frame() %>%
-        column_to_rownames('source') %>%
-        as.matrix()
+        .get_freq()
 
     liana_heatmap(mat = freqs,
                   ...)
@@ -265,4 +330,21 @@ liana_heatmap <- function(mat,
 }
 
 
-
+#' Helper function to obtain interaction frequencies
+#'
+#' @param liana_res liana-formatted results
+#'
+.get_freq <- function(liana_res){
+    liana_res %>%
+        group_by(source, target) %>%
+        summarise(freq = n(), .groups = 'keep') %>%
+        pivot_wider(id_cols = source,
+                    names_from = target,
+                    values_from = freq,
+                    values_fill = 0) %>%
+        arrange(source) %>%
+        ungroup() %>%
+        as.data.frame() %>%
+        column_to_rownames('source') %>%
+        as.matrix()
+}

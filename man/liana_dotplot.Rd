@@ -5,9 +5,9 @@
 \title{Liana dotplot interactions by source and target cells}
 \usage{
 liana_dotplot(
-  liana_agg,
-  source_groups,
-  target_groups,
+  liana_res,
+  source_groups = NULL,
+  target_groups = NULL,
   specificity = "natmi.edge_specificity",
   magnitude = "sca.LRscore",
   y.label = "Interactions (Ligand -> Receptor)",
@@ -17,12 +17,14 @@ liana_dotplot(
 )
 }
 \arguments{
-\item{liana_agg}{aggregated `liana_wrap` results -> preferentially filtered
-by some condition (e.g. preferential ranking, specific interactions, etc)}
+\item{liana_res}{aggregated `liana_wrap` results from multiple methods,
+or alternatively results from running `liana_wrap` with a single method.
+Should be filtered by some condition (e.g. preferential consesus ranking,
+specific interactions, etc).}
 
-\item{source_groups}{names of the source(sender) cell types}
+\item{source_groups}{names of the source (sender) cell types (NULL = no filter)}
 
-\item{target_groups}{names of the target cell types}
+\item{target_groups}{names of the target cell types (NULL = no filter)}
 
 \item{specificity}{column to represent the dot-size of the interaction
 (by default `natmi.edge_specificity`)}

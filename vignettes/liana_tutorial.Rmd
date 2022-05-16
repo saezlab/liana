@@ -181,6 +181,23 @@ This is a rather strong assumption that one should consider prior to making any
 conclusions. [Our suggestion](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.abstract) is that any conclusions should be complimented with further information, such as biological prior knowledge, spatial information, etc.
 
 
+## Frequency Chord diagram
+
+Here, we will generate a chord diagram equivalent to the frequencies heatmap.
+
+First, make sure you have the `circlize` package installed.
+```{r cricl, eval=FALSE}
+install.packages("circlize")
+```
+
+In this case, one could choose the source and target cell type groups that they wish to plot.
+```{r chordfreq, warning=FALSE, fig.width=6, fig.height=6}
+p <- chord_freq(liana_trunc,
+                source_groups = c("CD8 T", "NK", "B"),
+                target_groups = c("CD8 T", "NK", "B"))
+```
+
+
 ## Run any method of choice.
 
 We will now run only the CellPhoneDB's permutation-based algorithm.
