@@ -71,7 +71,7 @@ liana_aggregate <- function(liana_res,
     # fix external methods which return only ligand/receptor, but not .complex
     if(any(startsWith(names(liana_res), "call_"))){
         join_cols %<>% `%||%` (c("source", "target",
-                                 "ligand.complex", "receptor.complex"))
+                                 "ligand", "receptor"))
     } else{
         # Default/internal-only liana runs
         join_cols %<>% `%||%`  (c("source", "target",

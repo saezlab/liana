@@ -160,6 +160,8 @@ liana_calls <- liana_wrap(testdata,
                                      ),
                           resource = c("Default")) # Run with Default Resources
 liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
+# Note that for italk we use mean(ligand.logFC, receptor.logFC) as a way to compare
+# to the other methods
 ```
 
 
