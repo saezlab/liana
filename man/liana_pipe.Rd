@@ -11,7 +11,8 @@ liana_pipe(
   pval.type = "all",
   assay = "RNA",
   assay.type = "logcounts",
-  verbose = TRUE
+  verbose = TRUE,
+  base
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ or a binomial test with \code{"binom"}.}
 \item{assay.type}{- the type of data to be used to calculate the means
 (logcounts by default), available options are: "counts" and "logcounts"
 @param verbose logical for verbosity}
+
+\item{base}{base for conversion}
 }
 \value{
 Returns a tibble with information required for LR calculations downstream

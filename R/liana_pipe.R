@@ -9,6 +9,8 @@
 #'  (logcounts by default), available options are: "counts" and "logcounts"
 #'  @param verbose logical for verbosity
 #'
+#' @inheritParams .antilog1m
+#'
 #' @import SingleCellExperiment SeuratObject
 #' @importFrom scran findMarkers
 #' @importFrom scuttle summarizeAssayByGroup
@@ -22,7 +24,8 @@ liana_pipe <- function(sce,
                        pval.type = "all",
                        assay = "RNA",
                        assay.type = "logcounts",
-                       verbose = TRUE){
+                       verbose = TRUE,
+                       base){
 
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
@@ -46,7 +49,8 @@ liana_pipe <- function(sce,
     # Get Log2FC (note we do it before any filtering)
     logfc_df <- get_log2FC(
         sce,
-        assay.type = assay.type
+        assay.type = assay.type,
+        base
     )
 
 
@@ -335,6 +339,7 @@ join_log2FC <- function(lr_res,
 #' @param subject leave-one-out subject, i.e. the cluster whose log2FC we wish
 #'    to calculate when compared to all other cells
 #' @inheritParams liana_pipe
+#' @inheritParams .antilog1m
 #'
 #' @return A log2FC dataframe for a given cell identity
 #'
@@ -342,10 +347,17 @@ join_log2FC <- function(lr_res,
 #' `assay.type` should be the raw counts
 #'
 #' @noRd
-get_log2FC <- function(sce, assay.type){
+get_log2FC <- function(sce, assay.type, base){
 
-    # Get anti-logged normalized counts
-    sce@assays@data[["normcounts"]] <- .get_invcounts(sce, assay.type)
+
+    if(!is.nan(base)){
+        # Get anti-logged normalized counts (preserves batch effets)
+        sce@assays@data[["normcounts"]] <- .get_invcounts(sce, assay.type, base)
+    } else{
+        # Get raw counts as they are
+        sce@assays@data[["normcounts"]] <- counts(sce)
+    }
+
 
     # iterate over each possible cluster leaving one out
     levels(colLabels(sce)) %>%
@@ -448,8 +460,11 @@ row_scale <- function(mat){
 #'
 #' @param sce SingleCellExperiment object
 #' @param assay.type counts slot
-.get_invcounts <- function(sce, assay.type){
-    antilogged <- .antilog1m(slot(exec(assay.type, sce), "x"))
+#' @param base a positive or complex number: the base with respect to which
+#'  logarithms are computed; Defaults to 2 (i.e. log2-transformation is assumed);
+#'  for log-transformed use base=exp(1).
+.get_invcounts <- function(sce, assay.type, base){
+    antilogged <- .antilog1m(slot(exec(assay.type, sce), "x"), base = base)
 
     methods::new(
         "dgCMatrix",

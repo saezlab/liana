@@ -45,7 +45,9 @@ sce <- liana_prep(testdata)
 # Obtain LR summary res with CellPhoneDB and dissociate complexes
 lr_res <- liana_pipe(sce,
                      op_resource = select_resource("CellPhoneDB")[[1]] %>%
-                       liana:::decomplexify()
+                       liana:::decomplexify(),
+                     base = 2 # here we assumed log2-transformation
+                     # of the library-normalized counts
                      ) %>%
     glimpse()
 ```

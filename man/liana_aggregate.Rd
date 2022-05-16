@@ -12,6 +12,8 @@ liana_aggregate(
   get_ranks = TRUE,
   get_agrank = TRUE,
   .score_mode = .score_specs,
+  verbose = TRUE,
+  join_cols = NULL,
   ...
 )
 }
@@ -45,6 +47,10 @@ By default, we use the score of each method which reflects specificity
 This aggregation is by default done on the basis of the list returns by
 `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
 aggragate of the housekeeping interactions of each `external` LIANA++ method.}
+
+\item{join_cols}{columns by which different method results will be joined.
+NULL by default, and automatically will handle the columns depending on the
+methods used.}
 
 \item{...}{
   Arguments passed on to \code{\link[RobustRankAggreg:aggregateRanks]{RobustRankAggreg::aggregateRanks}}

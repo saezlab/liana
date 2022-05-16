@@ -161,7 +161,7 @@ min0 <- function(vec){
 #'
 #' @export
 mean0 <- function(vec){
-    if(0 %in% vec){
+    if((0 %in% vec)){
         return(0)
     }
     return(mean(x = vec))

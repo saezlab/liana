@@ -9,7 +9,8 @@ pipe_out <- readRDS(file.path(liana_path, "testdata",
 test_that("Test liana pipe", {
     res1 <- liana_pipe(sce = liana_prep(sce = seurat_object),
                        op_resource = select_resource("OmniPath")[[1]] %>%
-                           decomplexify())
+                           decomplexify(),
+                       base=2)
 
     expect_equal(res1, pipe_out)
 })
@@ -18,7 +19,8 @@ test_that("Test liana pipe", {
 test_that("Test liana pipe", {
     lr_cmplx <- liana_pipe(liana_prep(sce = seurat_object),
                            op_resource = select_resource("CellPhoneDB")[[1]] %>%
-                               decomplexify())
+                               decomplexify(),
+                           base=2)
 
     recomplex_exp <- readRDS(file.path(liana_path, "testdata",
                                        "output", "recomplex.RDS"))

@@ -4,7 +4,7 @@
 \alias{.aggregate_rank}
 \title{Robust Aggregate ranks using `RobustRankAggreg`}
 \usage{
-.aggregate_rank(liana_mlist, join_cols, ...)
+.aggregate_rank(liana_mlist, join_cols, verbose, ...)
 }
 \arguments{
 \item{liana_mlist}{liana list with method tibbles}

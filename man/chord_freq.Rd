@@ -11,7 +11,7 @@ chord_freq(
   cex = 1,
   transparency = 0.4,
   facing = "clockwise",
-  adj = c(-1, 0.05),
+  adj = c(-0.5, 0.05),
   ...
 )
 }

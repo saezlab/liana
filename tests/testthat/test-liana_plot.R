@@ -32,3 +32,10 @@ test_that("Test liana heatmaps", {
     expect_identical(methods::slotNames(res_freq),
                      methods::slotNames(exp_freq))
 })
+
+
+# Test chord
+test_that("Test liana heatmaps", {
+    res_chord <- chord_freq(liana_cpdb %>% filter(pvalue <= 0.05))
+    expect_identical(class(res_chord), "recordedplot")
+})

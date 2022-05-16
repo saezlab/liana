@@ -23,6 +23,9 @@
 #' This aggregation is by default done on the basis of the list returns by
 #' `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
 #' aggragate of the housekeeping interactions of each `external` LIANA++ method.
+#' @param join_cols columns by which different method results will be joined.
+#' NULL by default, and automatically will handle the columns depending on the
+#' methods used.
 #'
 #'
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
@@ -54,26 +57,25 @@ liana_aggregate <- function(liana_res,
                             get_ranks = TRUE,
                             get_agrank = TRUE,
                             .score_mode = .score_specs,
+                            verbose = TRUE,
+                            join_cols = NULL,
                             ...){
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
         stop("Please provide provide a name for the resource ",
-                 "to be plucked and used to aggregate the method results!")
+             "to be plucked and used to aggregate the method results!")
     } else if(!is_tibble(liana_res[[1]])){
         liana_res %<>% map(function(m_results) m_results %>% pluck(resource))
     }
 
     # fix external methods which return only ligand/receptor, but not .complex
-    if(any(names(liana_res) %in% c('cellchat', 'call_natmi',
-                                   'call_connectome', 'call_sca',
-                                   'call_italk', 'squidpy'))){
-        join_cols <- c("source", "target",
-                       "ligand", "receptor")
+    if(any(startsWith(names(liana_res), "call_"))){
+        join_cols %<>% `%||%` (c("source", "target",
+                                 "ligand.complex", "receptor.complex"))
     } else{
         # Default/internal-only liana runs
-        join_cols <- c("source", "target",
-                       "ligand", "receptor",
-                       "ligand.complex", "receptor.complex")
+        join_cols %<>% `%||%`  (c("source", "target",
+                                  "ligand.complex", "receptor.complex"))
     }
 
 
@@ -83,10 +85,15 @@ liana_aggregate <- function(liana_res,
         map2(names(.), function(res, method_name){
 
             if(is.null(.score_mode()[[method_name]])){
-                warning(str_glue("Unknown method name or missing specifics for: {method_name}"))
+                liana_message(
+                    str_glue(
+                        "Unknown method name or missing specifics for: {method_name}"
+                    ), output = "warning",  verbose = verbose)
                 return()
             } else{
-                message(str_glue("Now aggregating {method_name}"))
+                liana_message(str_glue("Now aggregating {method_name}"),
+                              output = "message",
+                              verbose = verbose)
             }
 
             method_score <- .score_mode()[[method_name]]@method_score
@@ -97,7 +104,7 @@ liana_aggregate <- function(liana_res,
 
             res %>%
                 # split ligand and receptors for cellchat
-                {if(method_name=="cellchat")
+                {if(method_name=="call_cellchat")
                     decomplexify(., columns = c("ligand", "receptor")) %>%
                         dplyr::rename(ligand.complex = ligand_complex,
                                       receptor.complex = receptor_complex) else .} %>%
@@ -117,12 +124,14 @@ liana_aggregate <- function(liana_res,
 
     liana_aggr <- liana_mlist %>%
         purrr::reduce(., full_join, by = join_cols) %>%
-        {`if`(get_ranks, .liana_consensus(., cap))}
+        {`if`(get_ranks, .liana_consensus(., cap, join_cols))}
 
     # Get Robust Ranks
     if(get_agrank){
         liana_aggr <- liana_mlist %>%
-            .aggregate_rank(., join_cols = join_cols, ...) %>%
+            .aggregate_rank(join_cols = join_cols,
+                            verbose = verbose,
+                            ...) %>%
             right_join(., liana_aggr,
                        by = join_cols)
     }
@@ -155,15 +164,14 @@ liana_aggregate <- function(liana_res,
 #' @return aggregated liana tibble with consensus ranks
 #'
 #' @noRd
-.liana_consensus <- function(liana_aggr, cap){
+.liana_consensus <- function(liana_aggr, cap, join_cols){
     liana_aggr %>%
         mutate_at(vars(ends_with(".rank")),
-              ~ replace(., is.na(.), cap)) %>% # assign .rank_cap to NA
+                  ~ replace(., is.na(.), cap)) %>% # assign .rank_cap to NA
         mutate(mean_rank = pmap_dbl(select(., ends_with(".rank")),
                                     function(...) mean(c(...)))) %>%
         arrange(mean_rank) %>%
-        select(source, target,
-               ligand, receptor,
+        select(all_of(join_cols),
                ends_with("_rank"),
                everything())
 }
@@ -190,8 +198,8 @@ liana_aggregate <- function(liana_res,
 #' @param join_cols columns to be concatenated to create entity to be ranked
 #'
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
-.aggregate_rank <- function(liana_mlist, join_cols, ...){
-    message("Aggregating Ranks")
+.aggregate_rank <- function(liana_mlist, join_cols, verbose, ...){
+    liana_message("Aggregating Ranks", output = "message", verbose = verbose)
 
     liana_mlist %>%
         map(function(res){

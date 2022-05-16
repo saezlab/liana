@@ -96,7 +96,8 @@ liana_defaults <- function(
         test.type = "wilcox",
         pval.type = "all",
         assay = assay,
-        assay.type = assay.type
+        assay.type = assay.type,
+        base = 2
     )
 
     # liana_call.defaults

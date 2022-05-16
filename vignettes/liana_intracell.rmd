@@ -69,7 +69,9 @@ liana_omni <- select_resource("OmniPath")[[1]] %>%
 liana_res <- liana_wrap(testdata,
                         resource='custom',
                         external_resource = liana_omni) %>%
-  liana_aggregate() # aggregate
+  # Note! here we work with the 'minimum' subunits
+  liana_aggregate(join_cols = c("source", "target",
+                                "ligand", "receptor")) # aggregate
 ```
 
 ### Filter LIANA output to only RTK interactions
@@ -109,7 +111,8 @@ rkt_omni <- liana_omni %>%
 liana_rtk_omni <- liana_wrap(testdata,
                              resource='custom',
                              external_resource = rkt_omni) %>%
-  liana_aggregate()
+  liana_aggregate(join_cols = c("source", "target",
+                                "ligand", "receptor"))
 
 liana_rtk_omni
 ```
@@ -124,7 +127,8 @@ gene sets in preferentially ranked ligand-receptor interactions from LIANA.
 # we take liana from above and keep only the columns that we need
 # in this case we will use the aggragate for all methods
 liana_form <- liana_res %>%
-  select(source, ligand, target, receptor, aggregate_rank) %>%
+  select(source, ligand, target,
+         receptor, aggregate_rank) %>%
   # one could treat the aggragate rank as 
   # the probability to observe an interaction
   # as preferentially highly ranked

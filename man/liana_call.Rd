@@ -25,6 +25,7 @@ liana_call(method, op_resource, lr_res, ...)
 a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
 or a binomial test with \code{"binom"}.}
     \item{\code{pval.type}}{A string specifying how p-values are to be combined across pairwise comparisons for a given group/cluster.}
+    \item{\code{base}}{base for conversion}
   }}
 }
 \value{

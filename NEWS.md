@@ -3,20 +3,25 @@
 ## Changes
 - Changed the aggregation columns of `liana_aggregate`, as in some cases
 methods would assign different subunits as the minimum, which results in
-redundencies for the same complex. As such, `liana_aggregate` will now
+redundancies for the same complex. As such, `liana_aggregate` will now
 return only the complex columns, nevertheless, the methods will still return 
 both the minimum (lowest expressed subunit) and it's corresponding complex.
 
-- `base` used to calculate logFC will now default to Euler's number when working
-with Seurat objects, and 2 when working with SingleCellExperiment. 
-Users can also now pass any base number as a parameter to `logfc.params`.
+- `base` used to calculate logFC (via `get_log2FC`) can now be passed as 
+a parameter to `liana_wrap` via `liana_pipe.params`.
+Passing `NaN` to base would result in log2FC calculation using the raw counts
+without any pre-processing (e.g. no batch correction, etc).
+
+The base is by default set to 2, assuming that log2 transformation is performed
+following library size normalization, and thus preserving the normalization, 
+while reverting back to ~counts.
 
 ## Minor Changes
 - Extended the heatmap to allow filtering down to certain cell types.
 - Removed redundant/leftover code
 
 ## New implementations
-- Chord plot
+- A chord plot for interaction frequncies was included.
 
 
 

@@ -4,12 +4,16 @@
 \alias{.get_invcounts}
 \title{Helper function to generate inversed counts (i.e. normalized but not logged)}
 \usage{
-.get_invcounts(sce, assay.type)
+.get_invcounts(sce, assay.type, base)
 }
 \arguments{
 \item{sce}{SingleCellExperiment object}
 
 \item{assay.type}{counts slot}
+
+\item{base}{a positive or complex number: the base with respect to which
+logarithms are computed; Defaults to 2 (i.e. log2-transformation is assumed);
+for log-transformed use base=exp(1).}
 }
 \description{
 Helper function to generate inversed counts (i.e. normalized but not logged)
