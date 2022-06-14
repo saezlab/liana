@@ -174,8 +174,17 @@ setClass("ScoreSpecifics",
         "cellphonedb" =
             methods::new(
                 "ScoreSpecifics",
-                method_name = "Squidpy",
+                method_name = "cellphonedb",
                 method_score = "lr.mean",
+                descending_order = TRUE,
+                score_fun = function(){},
+                columns = ""
+            ),
+        "natmi" =
+            methods::new(
+                "ScoreSpecifics",
+                method_name = "natmi",
+                method_score = "prod_weight",
                 descending_order = TRUE,
                 score_fun = function(){},
                 columns = ""

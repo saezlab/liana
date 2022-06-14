@@ -34,8 +34,7 @@ liana_defaults(
 and `call_connectome`}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.1 by default).
 This is further applied at a method-specific level - it is not applied to

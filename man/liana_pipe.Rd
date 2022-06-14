@@ -12,7 +12,8 @@ liana_pipe(
   assay = "RNA",
   assay.type = "logcounts",
   verbose = TRUE,
-  base
+  base,
+  cell.adj = NULL
 )
 }
 \arguments{
@@ -29,10 +30,17 @@ or a binomial test with \code{"binom"}.}
 \item{assay}{assay to be used ("RNA" by default)}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
+
+\item{verbose}{logical for verbosity}
 
 \item{base}{base for conversion}
+
+\item{cell.adj}{cell adjacency tibble/dataframe /w weights by which we will
+`multiply` the relevant columns. Note that if working with LIANA's default
+methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
+will be meaningfully weighed without changing the interpretation of their
+scores, thus allow one to filter SCA, rank NATMI, etc.}
 }
 \value{
 Returns a tibble with information required for LR calculations downstream

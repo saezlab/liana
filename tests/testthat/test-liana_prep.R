@@ -22,6 +22,7 @@ test_that("Test liana with SingleCellExperiment", {
     expect_equal(res2[[2]], exp2[[2]])
 })
 
+
 test_that("Test Seurat to SCE conversion", {
     res3 <- liana_prep(seurat_object)
     exp3 <- readRDS(file.path(liana_path , "testdata",

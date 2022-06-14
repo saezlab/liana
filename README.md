@@ -133,7 +133,7 @@ We appreciate any feedback, so please do not hesitate to open an issue on the [l
   
 ### Citing `LIANA`:
 Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and Saez-Rodriguez, J., 2021.  Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data.
-  bioRxiv. [10.1101/2021.05.21.445160v1](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1)
+*Nat Commun 13*, 3224 (2022). [https://doi.org/10.1038/s41467-022-30755-0](https://www.nature.com/articles/s41467-022-30755-0)
 
 #### Also, if you use the `OmniPath` CCC Resource for your analysis, please cite:
 Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923.

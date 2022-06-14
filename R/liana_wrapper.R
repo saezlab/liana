@@ -21,6 +21,7 @@
 #'   method-resource combinations
 #'
 #' @inheritDotParams liana_defaults
+#' @inheritParams liana_pipe
 #'
 #' @import tibble
 #' @importFrom magrittr %<>% %>%
@@ -57,6 +58,7 @@ liana_wrap <- function(sce,
                        verbose = TRUE,
                        assay = NULL,
                        .simplify = TRUE,
+                       cell.adj = NULL,
                        ...){
 
   # Handle object
@@ -96,7 +98,8 @@ liana_wrap <- function(sce,
                       append(
                         list("sce" = sce,
                              "op_resource" =  decomplexify(reso),
-                             verbose = verbose),
+                             verbose = verbose,
+                             cell.adj = cell.adj),
                         liana_defaults(...)[["liana_pipe"]]
                         )
                       )

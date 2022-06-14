@@ -33,6 +33,7 @@ natmi_score <- function(lr_res,
                         ...){
     lr_res %>%
         rowwise() %>%
+        mutate( prod_weight = ligand.expr * receptor.expr) %>%
         mutate( {{ score_col }} := ((ligand.expr*(ligand.sum^-1))) *
                     ((receptor.expr*(receptor.sum^-1)))) %>%
         mutate( {{ score_col }} := tidyr::replace_na(.data[[score_col]], 0))

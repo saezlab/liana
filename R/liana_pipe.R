@@ -7,7 +7,12 @@
 #' @param assay assay to be used ("RNA" by default)
 #' @param assay.type - the type of data to be used to calculate the means
 #'  (logcounts by default), available options are: "counts" and "logcounts"
-#'  @param verbose logical for verbosity
+#' @param verbose logical for verbosity
+#' @param cell.adj cell adjacency tibble/dataframe /w weights by which we will
+#' `multiply` the relevant columns. Note that if working with LIANA's default
+#' methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
+#' will be meaningfully weighed without changing the interpretation of their
+#' scores, thus allow one to filter SCA, rank NATMI, etc.
 #'
 #' @inheritParams .antilog1m
 #'
@@ -25,7 +30,8 @@ liana_pipe <- function(sce,
                        assay = "RNA",
                        assay.type = "logcounts",
                        verbose = TRUE,
-                       base){
+                       base,
+                       cell.adj = NULL){
 
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
@@ -171,6 +177,13 @@ liana_pipe <- function(sce,
     liana_message("LIANA: LR summary stats calculated!",
                   verbose = verbose
     )
+
+    # Weigh by (spatial) constrains
+    if(!is.null(cell.adj)){
+        lr_res %<>%
+            .sp_costrain(cell.adj)
+    }
+
 
     # Join complexes (recomplexify) to lr_res
     cmplx <- op_resource %>%
@@ -525,4 +538,64 @@ fast_mean <- function(mat){
     }
 
     return(sce[,nonzero_cells])
+}
+
+
+#' Weigh by spatial constrans
+#'
+#' @param lr_res liana_pipe output prior to joining complexes
+#' @param cell.adj cell adjacency weights (should be positive)
+#' @param adjacency name of the column with cell pair adjacency scores
+#'
+#' @return weighed lr_res
+#'
+#' @details Note that for the case that there are weights from 0-1, the negative
+#' values (in e.g. logFC, z-scores) might be counter-logically affected - i.e.
+#' they would be brought closer to 0.
+#' Thus, by default liana expects weights from 0-1. These are then multiplied
+#' for positive values, while negative values are divided.
+#'
+#' Alternatively, one could e.g. multiply the weights by a factor (e.g. 10,000),
+#' if logFC and Connectome are used. However, this would change some of
+#' the assumptions/interpretations of the scores, while
+#' consensus ranking will be unaffected.
+#'
+#' Also, note that any interactions between cell pairs with an adjacency of 0
+#' will be excluded (this would affect the scores from CytoTalk).
+#'
+#' NB! `%/*/%` is only applicable and relevant to logFC and z-scores from a
+#' single-context, and should not be used when scaling between conditions!!!
+#'
+.sp_costrain <- function(lr_res,
+                         cell.adj,
+                         adjacency = "adjacency"){
+    lr_res %>%
+        left_join(cell.adj, by=c("source", "target")) %>%
+        # remove any interactions between non-interacting cells
+        filter(.data[[adjacency]]!=0) %>%
+        # weigh relevant columns by adjacency
+        mutate(across(ends_with(c("expr", "pem") #**
+        ), ~`*`(.x, adjacency))) %>%
+        rowwise() %>% # required as its done by element (not vector operation)
+        mutate(across(ends_with(c("log2FC", "scaled")),
+                      # makes sense for single context
+                      # but makes no sense for multiple (better to change to prod)
+                      ~`%/*/%`(.x, adjacency))) %>%
+        ungroup()
+}
+
+
+
+#' Helper function to multiply or divide depending on sign
+#'
+#' @param x target for weighing
+#' @param y weight
+`%/*/%` <- function(x, y){
+    if(y==0) return(0)
+
+    if(x >= 0){
+        x * y
+    } else{
+        x / y
+    }
 }

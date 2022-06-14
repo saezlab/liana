@@ -19,8 +19,13 @@ liana_call(method, op_resource, lr_res, ...)
     \item{\code{sce}}{SingleCellExperiment Object}
     \item{\code{assay}}{assay to be used ("RNA" by default)}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
+    \item{\code{verbose}}{logical for verbosity}
+    \item{\code{cell.adj}}{cell adjacency tibble/dataframe /w weights by which we will
+`multiply` the relevant columns. Note that if working with LIANA's default
+methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
+will be meaningfully weighed without changing the interpretation of their
+scores, thus allow one to filter SCA, rank NATMI, etc.}
     \item{\code{test.type}}{String specifying the type of pairwise test to perform -
 a t-test with \code{"t"}, a Wilcoxon rank sum test with \code{"wilcox"}, 
 or a binomial test with \code{"binom"}.}

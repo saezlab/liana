@@ -1,3 +1,21 @@
+# LIANA 0.1.4 (18.06.22)
+
+## Changes
+- Add `prod_weight` to NATMI's score. This is the weight that both Connectome and
+NATMI suggest for between-condition comparisons. Add NATMI to the housekeeping
+aggregate ranking.
+
+- Enable weighing of interactions by cell pairs (using a DF in which each 
+cell pair has  an assigned weight). This would typically be done by spatial
+constraints, etc. Tutorial on this /w [misty](https://github.com/saezlab/mistyR)
+to be written.
+
+
+## Minor Changes
+- 
+-
+
+
 # LIANA 0.1.3 (15.05.22)
 
 ## Changes

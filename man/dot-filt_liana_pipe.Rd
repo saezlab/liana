@@ -46,8 +46,7 @@ This is further applied at a method-specific level - it is not applied to
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
   }}
 }
 \description{

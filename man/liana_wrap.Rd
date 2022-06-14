@@ -13,6 +13,7 @@ liana_wrap(
   verbose = TRUE,
   assay = NULL,
   .simplify = TRUE,
+  cell.adj = NULL,
   ...
 )
 }
@@ -36,6 +37,12 @@ Idents or colLabels from the seurat_object or SCE, respectively.}
 \item{.simplify}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with
 method-resource combinations}
+
+\item{cell.adj}{cell adjacency tibble/dataframe /w weights by which we will
+`multiply` the relevant columns. Note that if working with LIANA's default
+methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
+will be meaningfully weighed without changing the interpretation of their
+scores, thus allow one to filter SCA, rank NATMI, etc.}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_defaults]{liana_defaults}}
@@ -70,8 +77,7 @@ This is further applied at a method-specific level - it is not applied to
     \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
     \item{\code{workers}}{number of workers to be called}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
   }}
 }
 \value{

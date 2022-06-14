@@ -29,8 +29,7 @@ get_permutations(
 \item{workers}{Number of workers to be used in parallelization}
 
 \item{assay.type}{- the type of data to be used to calculate the means
-(logcounts by default), available options are: "counts" and "logcounts"
-@param verbose logical for verbosity}
+(logcounts by default), available options are: "counts" and "logcounts"}
 
 \item{verbose}{logical for verbosity}
 }

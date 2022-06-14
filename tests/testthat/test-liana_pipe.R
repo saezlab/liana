@@ -15,6 +15,7 @@ test_that("Test liana pipe", {
     expect_equal(res1, pipe_out)
 })
 
+
 # Test De-/Re- Complexify
 test_that("Test liana pipe", {
     lr_cmplx <- liana_pipe(liana_prep(sce = seurat_object),
@@ -30,7 +31,6 @@ test_that("Test liana pipe", {
 
     expect_equal(recomplex, recomplex_exp)
 })
-
 
 
 # Test Get Scores
