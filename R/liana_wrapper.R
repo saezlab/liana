@@ -19,6 +19,12 @@
 #' @param .simplify if methods are run with only 1 resource, return a list
 #'   of tibbles for each method (default), rather than a list of lists with
 #'   method-resource combinations
+#' @param base Default to NULL (i.e. log2-transformation is assumed
+#'  for SCE, and log-tranformation for Seurat). This is a requred step for the
+#'  calculation of the logFC method - ensures that any other preprocessing of
+#'  the counts is preserved. One could also pass `NaN` if they wish to use the
+#'  counts stored in the counts assay/slot, or any other number according to the
+#'  base that was used for log-tranformation.
 #'
 #' @inheritDotParams liana_defaults
 #' @inheritParams liana_pipe
@@ -59,6 +65,7 @@ liana_wrap <- function(sce,
                        assay = NULL,
                        .simplify = TRUE,
                        cell.adj = NULL,
+                       base = NULL,
                        ...){
 
   # Handle object
@@ -66,6 +73,8 @@ liana_wrap <- function(sce,
                     idents_col = idents_col,
                     assay = assay,
                     verbose = verbose)
+  # If base is not passed use default base of Seurat or SingleCellExperiment
+  base %<>% `%||%` (sce@int_metadata$base)
 
   # method to lower
   method %<>% stringr::str_to_lower()
@@ -99,7 +108,8 @@ liana_wrap <- function(sce,
                         list("sce" = sce,
                              "op_resource" =  decomplexify(reso),
                              verbose = verbose,
-                             cell.adj = cell.adj),
+                             cell.adj = cell.adj,
+                             base = base),
                         liana_defaults(...)[["liana_pipe"]]
                         )
                       )

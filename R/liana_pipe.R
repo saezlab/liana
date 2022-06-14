@@ -9,10 +9,12 @@
 #'  (logcounts by default), available options are: "counts" and "logcounts"
 #' @param verbose logical for verbosity
 #' @param cell.adj cell adjacency tibble/dataframe /w weights by which we will
-#' `multiply` the relevant columns. Note that if working with LIANA's default
-#' methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
-#' will be meaningfully weighed without changing the interpretation of their
-#' scores, thus allow one to filter SCA, rank NATMI, etc.
+#' `multiply` the relevant columns. Any cell pairs with a weights of 0 will be
+#' filtered out.
+#' Note that if working with LIANA's default methods, we suggest weights >= 0 & =< 1.
+#' This ensure that all methods' score will be meaningfully weighed without
+#' changing the interpretation of their scores, thus allow one to filter SCA,
+#' rank NATMI, etc.
 #'
 #' @inheritParams .antilog1m
 #'
@@ -52,7 +54,8 @@ liana_pipe <- function(sce,
                                                receivers$gene),
                           verbose)
 
-    # Get Log2FC (note we do it before any filtering)
+    # Get Log2FC (done after non-expr. cell and gene filter from `liana_prep`)
+    # also any cells with 0 counts of LR genes are removed (in`.prep_universe`)
     logfc_df <- get_log2FC(
         sce,
         assay.type = assay.type,
@@ -351,8 +354,9 @@ join_log2FC <- function(lr_res,
 #' @param sce SingleCellExperiment object
 #' @param subject leave-one-out subject, i.e. the cluster whose log2FC we wish
 #'    to calculate when compared to all other cells
-#' @inheritParams liana_pipe
 #' @inheritParams .antilog1m
+#'
+#' @inheritParams liana_pipe
 #'
 #' @return A log2FC dataframe for a given cell identity
 #'
@@ -465,7 +469,7 @@ row_scale <- function(mat){
 #' Helper function to inverse logged counts
 #'
 #' @param x mat or array
-#' @param base base for conversion
+#' @param base base for conversion from log-tranformed ~CPM back to ~CPM.
 .antilog1m <- function(x, base=2){base ^ (x) - 1}
 
 
@@ -474,8 +478,7 @@ row_scale <- function(mat){
 #' @param sce SingleCellExperiment object
 #' @param assay.type counts slot
 #' @param base a positive or complex number: the base with respect to which
-#'  logarithms are computed; Defaults to 2 (i.e. log2-transformation is assumed);
-#'  for log-transformed use base=exp(1).
+#' log-transformation was computed.
 .get_invcounts <- function(sce, assay.type, base){
     antilogged <- .antilog1m(slot(exec(assay.type, sce), "x"), base = base)
 

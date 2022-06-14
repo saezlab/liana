@@ -7,13 +7,17 @@ aggregate ranking.
 
 - Enable weighing of interactions by cell pairs (using a DF in which each 
 cell pair has  an assigned weight). This would typically be done by spatial
-constraints, etc. Tutorial on this /w [misty](https://github.com/saezlab/mistyR)
-to be written.
+constraints, etc. These weights can also be used to mask any cell-pair interactions
+which are not relevant (by assigning weights of 0). This currently assumes that
+the weights would be between 0 to 1 - to be extended. Tutorial on this /w appropriate
+spatial weight generation to be written. 
 
 
 ## Minor Changes
-- 
--
+- By default, the base for logFC will now be automatically assigned depending 
+on the object passed to LIANA, i.e. `.antilog1m` for SCE will use 2 as base,
+and Euler's number for Seurat. One could also pass the base they wish to use
+via `liana_wrap`.
 
 
 # LIANA 0.1.3 (15.05.22)

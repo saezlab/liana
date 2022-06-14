@@ -47,4 +47,28 @@ test_that("Test expr_prop filtering", {
 
 })
 
+# Test /w weights/contraints  ----
+test_that("Test cell.adj weights", {
+    # Generate putative cell adjacency score
+    # Here we generate weights between 0 to 1, i.e. similar to densities
+    # We assign 0s to cell types which are not expected to communicate
+    set.seed(1)
+    cell.adj <- readRDS(file.path(liana_path,
+                                  "testdata",
+                                  "output",
+                                  "liana_pipe.RDS")) %>%
+        select(source, target) %>%
+        distinct() %>%
+        mutate(adjacency = rbinom(n=nrow(.), size=1, prob=0.5)) %>%
+        rowwise() %>%
+        mutate(adjacency = if_else(adjacency==1, runif(1, min=0, max=1), 0)) %>%
+        ungroup()
 
+    exp1 <- readRDS(file.path(liana_path, "testdata",
+                              "output", "liana_constrained.RDS"))
+    res1 <- liana_wrap(seurat_object,
+                       method = c('logfc','sca', 'connectome'),
+                       resource = c('Consensus'),
+                       cell.adj = cell.adj)
+    expect_equal(res1, exp1)
+})

@@ -46,7 +46,7 @@ sce <- liana_prep(testdata)
 lr_res <- liana_pipe(sce,
                      op_resource = select_resource("CellPhoneDB")[[1]] %>%
                        liana:::decomplexify(),
-                     base = 2 # here we assumed log2-transformation
+                     base = exp(1) # here we assume log-transformation
                      # of the library-normalized counts
                      ) %>%
     glimpse()

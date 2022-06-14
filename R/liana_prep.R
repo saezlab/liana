@@ -29,6 +29,7 @@ liana_prep.SingleCellExperiment <- function(sce,
 
     # Assign idents to default if not passed
     SingleCellExperiment::colLabels(sce) <- idents
+    sce@int_metadata$base <- 2 # save base for logFC conv
 
     return(.filter_sce(sce, verbose))
 }
@@ -65,6 +66,7 @@ liana_prep.Seurat <- function(sce,
         metadata = sce@meta.data)
 
     SingleCellExperiment::colLabels(sce) <- idents
+    sce@int_metadata$base <- exp(1) # save base for logFC conv
 
     return(.filter_sce(sce, verbose))
 }

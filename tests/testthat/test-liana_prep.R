@@ -20,6 +20,7 @@ test_that("Test liana with SingleCellExperiment", {
 
     expect_equal(res2[[1]], exp2[[1]])
     expect_equal(res2[[2]], exp2[[2]])
+    expect_equal(res1@int_metadata$base, 2)
 })
 
 
