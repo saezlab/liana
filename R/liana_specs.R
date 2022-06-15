@@ -13,6 +13,8 @@
 #' @field columns columns required to generate the score
 #'
 #' @exportClass ScoreSpecifics
+#'
+#' @keywords internal
 setClass("ScoreSpecifics",
          slots=list(method_name = "character",
                     method_score = "character",

@@ -23,3 +23,4 @@ descending order (i.e. highest score for an interaction is most likely)}
 \item{\code{columns}}{columns required to generate the score}
 }}
 
+\keyword{internal}
