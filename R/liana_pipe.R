@@ -604,6 +604,8 @@ fast_mean <- function(mat){
 #'
 #' @param x target for weighing
 #' @param y weight
+#'
+#' @noRd
 `%/*/%` <- function(x, y){
     if(y==0) return(0)
 

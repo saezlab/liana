@@ -80,6 +80,8 @@ recomplexify <- function(lr_res,
 #'    the stats of any complexes with a missing subunit. The loop is iteratively
 #'    applied over the same `lr_res`, to provide a more controlled environment
 #'    we pass the environment of recomplexify and modify `lr_res` in place.
+#'
+#' @noRd
 account_missing <- function(lr_res, env){
 
     env$lr_res <- lr_res

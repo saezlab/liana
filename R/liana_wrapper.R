@@ -335,6 +335,8 @@ show_resources <- function(){
 #' @param liana_res resutls from `liana_pipe`
 #' @param method current method
 #' @inheritDotParams liana_defaults
+#'
+#' @noRd
 .filt_liana_pipe <- function(liana_res,
                              method,
                              ...){
