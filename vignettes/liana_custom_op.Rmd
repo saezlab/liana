@@ -79,17 +79,16 @@ which is used to generate the curated consensus (default) resource that LIANA us
 
 We suggest using the latest OmnipathR version for any resource-generation purposes.
 ```{r, eval = FALSE}
-require(devtools)
-install_github('saezlab/OmnipathR')
+remotes::install_github('saezlab/OmnipathR')
 ```
 
 ## Loading prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
-require(tidyverse)
-require(OmnipathR)
-require(liana)
-require(purrr)
-require(magrittr)
+library(tidyverse)
+library(OmnipathR)
+library(liana)
+library(purrr)
+library(magrittr)
 
 liana_path <- system.file(package = "liana")
 testdata <-
