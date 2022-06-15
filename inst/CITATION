@@ -4,23 +4,25 @@ citEntry(
     entry="Article",
     author = c(
         person("Daniel", "Dimitrov"),
-        person("Charlotte", "Boys"),
         person("Denes", "Turei"),
+        person("Martin", "Garrido-Rodriguez"),
+        person("Paul", "L.", "Burmedi"),
         person("James", "S.", "Nagai"),
+        person("Charlotte", "Boys"),
         person("Ricardo", "O.", "Ramirez Flores"),
         person("Hyojin", "Kim"),
         person("Bence", "Szalai"),
         person("Ivan", "G.", "Costa"),
-        person("Aurélien", "Dugourd"),
         person("Alberto", "Valdeolivas"),
+        person("Aurélien", "Dugourd"),
         person("Julio", "Saez-Rodriguez")
     ),
-    title = "Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data",
-    journal = "BioRxiv",
-    year = 2021,
-    doi = "10.1101/2021.05.21.445160",
-    textVersion = "Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R.,
-    Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and Saez-Rodriguez, J., 2021.
-    Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data. bioRxiv.",
+    title = "Comparison of methods and resources for cell-cell communication inference from single-cell RNA-Seq data",
+    journal = "Nature Communications",
+    year = 2022,
+    doi = "10.1038/s41467-022-30755-0",
+    textVersion = "Dimitrov, D., Türei, D., Garrido-Rodriguez M., Burmedi P.L., Nagai, J.S., Boys, C., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G.,
+    Valdeolivas, A., Dugourd, A. and Saez-Rodriguez, J. Comparison of methods and resources for cell-cell communication inference from single-cell RNA-Seq
+    data. Nat Commun 13, 3224 (2022). ",
     encoding = "UTF-8"
 )

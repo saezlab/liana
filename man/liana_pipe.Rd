@@ -34,13 +34,15 @@ or a binomial test with \code{"binom"}.}
 
 \item{verbose}{logical for verbosity}
 
-\item{base}{base for conversion}
+\item{base}{base for conversion from log-tranformed ~CPM back to ~CPM.}
 
 \item{cell.adj}{cell adjacency tibble/dataframe /w weights by which we will
-`multiply` the relevant columns. Note that if working with LIANA's default
-methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
-will be meaningfully weighed without changing the interpretation of their
-scores, thus allow one to filter SCA, rank NATMI, etc.}
+`multiply` the relevant columns. Any cell pairs with a weights of 0 will be
+filtered out.
+Note that if working with LIANA's default methods, we suggest weights >= 0 & =< 1.
+This ensure that all methods' score will be meaningfully weighed without
+changing the interpretation of their scores, thus allow one to filter SCA,
+rank NATMI, etc.}
 }
 \value{
 Returns a tibble with information required for LR calculations downstream

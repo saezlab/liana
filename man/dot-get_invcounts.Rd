@@ -12,8 +12,7 @@
 \item{assay.type}{counts slot}
 
 \item{base}{a positive or complex number: the base with respect to which
-logarithms are computed; Defaults to 2 (i.e. log2-transformation is assumed);
-for log-transformed use base=exp(1).}
+log-transformation was computed.}
 }
 \description{
 Helper function to generate inversed counts (i.e. normalized but not logged)

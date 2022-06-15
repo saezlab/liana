@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{mat or array}
 
-\item{base}{base for conversion}
+\item{base}{base for conversion from log-tranformed ~CPM back to ~CPM.}
 }
 \description{
 Helper function to inverse logged counts

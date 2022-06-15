@@ -14,6 +14,7 @@ liana_wrap(
   assay = NULL,
   .simplify = TRUE,
   cell.adj = NULL,
+  base = NULL,
   ...
 )
 }
@@ -39,10 +40,19 @@ of tibbles for each method (default), rather than a list of lists with
 method-resource combinations}
 
 \item{cell.adj}{cell adjacency tibble/dataframe /w weights by which we will
-`multiply` the relevant columns. Note that if working with LIANA's default
-methods, we suggest weights >= 0 & =< 1. This ensure that all methods' score
-will be meaningfully weighed without changing the interpretation of their
-scores, thus allow one to filter SCA, rank NATMI, etc.}
+`multiply` the relevant columns. Any cell pairs with a weights of 0 will be
+filtered out.
+Note that if working with LIANA's default methods, we suggest weights >= 0 & =< 1.
+This ensure that all methods' score will be meaningfully weighed without
+changing the interpretation of their scores, thus allow one to filter SCA,
+rank NATMI, etc.}
+
+\item{base}{Default to NULL (i.e. log2-transformation is assumed
+for SCE, and log-tranformation for Seurat). This is a requred step for the
+calculation of the logFC method - ensures that any other preprocessing of
+the counts is preserved. One could also pass `NaN` if they wish to use the
+counts stored in the counts assay/slot, or any other number according to the
+base that was used for log-tranformation.}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_defaults]{liana_defaults}}
