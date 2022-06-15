@@ -43,7 +43,7 @@ Here, we will assume that we have strong reason to believe that the RTK pathway
 is particularly relevant in our study and we are hence solely interested in
 interactions from the `RKT` pathway. Thus, we will filter LIANA and OmniPath to 
 only interactions associated with the `RKT` pathway from [SignaLink](https://link.springer.com/protocol/10.1007/978-1-4939-8618-7_3).
-*Signalink* itself is a signaling pathway resource with multi-layered regulatory networks.
+*SignaLink* itself is a signaling pathway resource with multi-layered regulatory networks.
 
 First, let's obtain SignaLink
 ```{r load_signalink}

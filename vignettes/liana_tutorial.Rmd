@@ -38,7 +38,7 @@ resource could be combined with any method.
 To this end, we built `liana` - a framework to decouple the tools from their
 corresponding resources.
 
-![](../ligrec_pipe.png)
+![](ligrec_pipe.png)
 
 ## Load required packages
 ```{r load_pkgs, message=FALSE, warning=FALSE}
@@ -93,7 +93,7 @@ aforementioned ones (available via `show_resources()`) can be added to the `reso
 liana_test <- liana_wrap(testdata)
 
 # Liana returns a list of results, each element of which corresponds to a method
-liana_test %>% dplyr::glimpse
+liana_test %>% dplyr::glimpse()
 ```
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
 By default, LIANA will call *only the internal scoring function*, i.e. those that are re-implemented in LIANA.
@@ -186,8 +186,10 @@ conclusions. [Our suggestion](https://www.biorxiv.org/content/10.1101/2021.05.21
 Here, we will generate a chord diagram equivalent to the frequencies heatmap.
 
 First, make sure you have the `circlize` package installed.
-```{r cricl, eval=FALSE}
-install.packages("circlize")
+```{r cricl, eval=TRUE, message=TRUE}
+if(!require("circlize")){
+  install.packages("circlize", quiet = TRUE, repos = "http://cran.us.r-project.org")
+}
 ```
 
 In this case, one could choose the source and target cell type groups that they wish to plot.
@@ -269,7 +271,7 @@ liana_test <- liana_wrap(testdata,
                          )
 
 # This returns a list of results for each method
-liana_test %>% dplyr::glimpse
+liana_test %>% dplyr::glimpse()
 ```
 Note that with `liana_call.params` one can change the way that we account for complexes.
 By default this is set to the mean of the subunits in the complex (as done for expression in CellPhoneDB/Squidpy), 

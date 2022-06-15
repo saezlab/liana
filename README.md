@@ -2,7 +2,7 @@
 [![R-CMD-check](https://github.com/saezlab/liana/workflows/R-CMD-check/badge.svg)](https://github.com/saezlab/liana/actions)
 <!-- badges: end -->
 
-# LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
+# LIANA: a LIgand-receptor ANalysis frAmework <img src="inst/figures/liana_logo.png" align="right" height="100">
 
 The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
 an immense interest in understanding intercellular crosstalk. Multiple
@@ -55,7 +55,7 @@ LIANA also goes a step further as it provides:
 
 * A customizable plethora of resources
   
-![landingpage](ligrec_pipe.png)
+![landingpage](vignettes/ligrec_pipe.png)
   
   
 ## Tools
@@ -70,7 +70,7 @@ The tools implemented in this repository are:
 - [iTALK](https://github.com/Coolgenome/iTALK)-inspired *1-vs-rest* LogFC score (`logfc_comb`) (*, $)
 - [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
   
-- `consensus_rank` of the predictions is also provied using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) package
+- `consensus_rank` of the predictions is also provided using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) package
   
   
 *The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).

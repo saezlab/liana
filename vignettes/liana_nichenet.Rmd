@@ -21,7 +21,7 @@ This vignette is an example of how to combine LIANA's hypotheses with those prod
 
 ## Background
 
-[LIANA](https://saezlab.github.io/liana/index.html) (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. **LIANA and NicheNet are not mutually exclusive, but rather complementary, given that they aim to explore different aspects of inter and intra cellular communication**.
+[LIANA](https://saezlab.github.io/liana/index.html) (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. **LIANA and NicheNet are not mutually exclusive, but in certain scenarios could be rather complementary, given that they aim to explore different aspects of inter- and intra-cellular communication**. 
 
 ![](liana_nichenet.svg)
 
@@ -29,7 +29,20 @@ Because of this, in this vignette, we show how to use LIANA in combination with 
 
 ## Load packages and data
 
-We first load required libraries
+We first install NicheNet and load required libraries
+```{r, message=FALSE, warning=FALSE}
+if(!require("ggpubr")){
+  install.packages("ggpubr", quiet = TRUE, repos = "http://cran.us.r-project.org")
+}
+if(!require("ggrepel")){
+  install.packages("ggrepel", quiet = TRUE, repos = "http://cran.us.r-project.org")
+}
+if(!require("cowplot")){
+  install.packages("cowplot", quiet = TRUE, repos = "http://cran.us.r-project.org")
+}
+remotes::install_github("saeyslab/nichenetr", quiet = TRUE)
+```
+
 
 ```{r, message=FALSE}
 library(tidyverse)
@@ -102,7 +115,8 @@ By default, LIANA will score the ligand-receptor interactions in all the possibl
 ```{r}
 # filter results to cell types of interest
 caf_tumor_results <- liana_results %>%
-  subset(source == "CAF" & target == "Tumor")
+  subset(source == "CAF" & target == "Tumor") %>%
+  dplyr::rename(ligand=ligand.complex, receptor=receptor.complex)
 
 # filter results to top N interactions
 n <- 50

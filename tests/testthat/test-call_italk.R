@@ -10,6 +10,7 @@ test_that("Test iTALK", {
     } else{
         if(!test_external) skip("Not testing externals")
     }
+    skip_on_ci()
 
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "italk_res.RDS"))

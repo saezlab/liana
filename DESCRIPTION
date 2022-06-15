@@ -81,7 +81,8 @@ Suggests:
     entropy,
     circlize,
     furrr (>= 0.2.0),
-    future
+    future,
+    tidyverse
 biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat
 RoxygenNote: 7.1.2

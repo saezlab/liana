@@ -29,7 +29,13 @@ jobs:
 
       - name: Show testthat output
         if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        run: : |
+          rcmdcheck::rcmdcheck(
+              args = c("--no-build-vignettes", "--no-manual", "--timings"),
+              build_args = c("--no-manual", "--no-resave-data"),
+              error_on = "error",
+              check_dir = "check"
+          )
         shell: bash
 
       - name: Upload check results

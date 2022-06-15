@@ -18,6 +18,7 @@ spatial weight generation to be written.
 on the object passed to LIANA, i.e. `.antilog1m` for SCE will use 2 as base,
 and Euler's number for Seurat. One could also pass the base they wish to use
 via `liana_wrap`.
+- Automate website deployment to gh-pages and run R checks on push.
 
 
 # LIANA 0.1.3 (15.05.22)
