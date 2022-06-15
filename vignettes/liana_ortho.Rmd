@@ -33,10 +33,10 @@ In this vignette, we provide an example how this could be achieved using the Bio
 
 ## Loading prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
-require(tidyverse)
-require(OmnipathR)
-require(liana)
-require(magrittr)
+library(tidyverse)
+library(OmnipathR)
+library(liana)
+library(magrittr)
 
 liana_path <- system.file(package = "liana")
 testdata <-

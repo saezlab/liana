@@ -42,9 +42,9 @@ corresponding resources.
 
 ## Load required packages
 ```{r load_pkgs, message=FALSE, warning=FALSE}
-require(tidyverse)
-require(magrittr)
-require(liana)
+library(tidyverse)
+library(magrittr)
+library(liana)
 ```
 
 ## CCC Resources
@@ -55,7 +55,7 @@ show_resources()
 
 # A list of resources can be obtained using the `select_resource()` function:
 # See `?select_resource()` documentation for further information.
-# select_resource(c('OmniPath')) %>% glimpse() 
+# select_resource(c('OmniPath')) %>% dplyr::glimpse() 
 ```
   
   
@@ -79,7 +79,7 @@ liana_path <- system.file(package = "liana")
 testdata <-
   readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
 
-testdata %>% glimpse()
+testdata %>% dplyr::glimpse()
 ```
 
 `liana_wrap` calls a number of methods and and each method is run with the provided resource(s).
@@ -93,7 +93,7 @@ aforementioned ones (available via `show_resources()`) can be added to the `reso
 liana_test <- liana_wrap(testdata)
 
 # Liana returns a list of results, each element of which corresponds to a method
-liana_test %>% glimpse
+liana_test %>% dplyr::glimpse
 ```
 LIANA currently provides a mixture of re-implemented methods and pipelines which externally call specific LR methods.
 By default, LIANA will call *only the internal scoring function*, i.e. those that are re-implemented in LIANA.
@@ -111,7 +111,7 @@ ranks
 liana_test <- liana_test %>%
   liana_aggregate()
 
-glimpse(liana_test)
+dplyr::glimpse(liana_test)
 ```
 
 Voila! That's it. A very brief intro to LIANA and how to obtain the scoring functions†
@@ -137,8 +137,8 @@ and we plot interactions in which B cells are the `source` (express the ~ligands
 the other 3 cell types in this toy dataset are the `target` (express the ~receptors).
 ```{r liana_dotplot, warning=FALSE, fig.width=11, fig.height=8}
 liana_test %>% 
-  filter(source =="B") %>%
-  top_n(25, desc(aggregate_rank)) %>%
+  dplyr::filter(source =="B") %>%
+  dplyr::top_n(25, desc(aggregate_rank)) %>%
   liana_dotplot(source_groups = c("B"),
                 target_groups = c("NK", "CD8 T", "B"))
 ```
@@ -269,7 +269,7 @@ liana_test <- liana_wrap(testdata,
                          )
 
 # This returns a list of results for each method
-liana_test %>% glimpse
+liana_test %>% dplyr::glimpse
 ```
 Note that with `liana_call.params` one can change the way that we account for complexes.
 By default this is set to the mean of the subunits in the complex (as done for expression in CellPhoneDB/Squidpy), 

@@ -27,10 +27,10 @@ information from OmniPath's intracellular components with LIANA.
 
 ## Load Prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
-require(tidyverse)
-require(liana)
-require(purrr)
-require(magrittr)
+library(tidyverse)
+library(liana)
+library(purrr)
+library(magrittr)
 
 liana_path <- system.file(package = "liana")
 testdata <-

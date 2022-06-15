@@ -21,10 +21,9 @@ in this vignette we provide further instructions relevant for method developers.
 
 ## Load prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}
-require(liana)
-require(tibble)
-require(purrr)
-require(magrittr)
+library(tidyverse)
+library(magrittr)
+library(liana)
 
 liana_path <- system.file(package = "liana")
 testdata <-
@@ -73,7 +72,7 @@ LIANA++ uses CCC methods from both R and Python, as such dependencies for both n
 
 To install the LIANA++ framework run the following code in R:
 ```{r install_r, eval=FALSE}
-require(devtools)
+library(devtools)
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
