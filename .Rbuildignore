@@ -4,3 +4,6 @@
 ^pkgdown$
 ^latex/.*$
 ^codecov\.yml$
+^_pkgdown\.yml$
+^docs$
+^\.github$
