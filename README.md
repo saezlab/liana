@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/saezlab/liana/workflows/R-CMD-check/badge.svg)](https://github.com/saezlab/liana/actions)
+<!-- badges: end -->
+
 # LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
 
 The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
