@@ -41,3 +41,14 @@ reference:
     contents:
       - starts_with("show_")
       - starts_with("select_")
+
+  - title: Others
+    desc: "Potentially relevant others"
+    contents:
+      - chord_freq
+      - heat_freq
+      - minmax
+      - min0
+      - decomplexify
+      - generate_orthologs
+

@@ -9,3 +9,4 @@ logg(level, ...)
 \description{
 Dispatch log message to the OmnipathR logger
 }
+\keyword{internal}

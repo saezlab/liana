@@ -23,3 +23,4 @@ Given two normalized gene expression vectors, and a given number of bins, this
 function uses the entropy package to compute the mutual information between the
 two vectors. Values passed to this function should be log-transformed.
 }
+\keyword{internal}

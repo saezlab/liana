@@ -10,6 +10,7 @@
 #' @param seed random seed
 #' @param ... placeholder
 #'
+#' @keywords internal
 #'
 #' @import SingleCellExperiment tibble tidyr dplyr
 cytotalk_score <- function(lr_res,
@@ -85,6 +86,8 @@ cytotalk_score <- function(lr_res,
 #' @return A data frame with the computed non-self-talk score for each ligand-receptor
 #' pair on each cell-type.
 #'
+#' @keywords internal
+#'
 #' @import SingleCellExperiment dplyr
 compute_nst_scores <- function(sce,
                                ligand_receptor_df,
@@ -127,6 +130,8 @@ compute_nst_scores <- function(sce,
 #' @return A data frame with the non-self-talk score for each pair of genes (ligand-receptors).
 #'
 #' @import dplyr
+#'
+#' @keywords internal
 #'
 compute_nst_from_matrix <- function(mat,
                                     ligand_receptor_df,
@@ -178,6 +183,7 @@ compute_nst_from_matrix <- function(mat,
 #'
 #' @return The mututal information distance, also refered to as non-self atalk score
 #'
+#' @keywords internal
 #'
 compute_mi_dist <- function(exp1, exp2, n_bins) {
 
@@ -219,6 +225,8 @@ compute_mi_dist <- function(exp1, exp2, n_bins) {
 #'
 #' @param x vector
 #' @inheritDotParams base::max
+#'
+#' @export
 minmax <- function(x, ...) {
   (x - min(x, ...)) / (max(x, ...) - min(x, ...))
 }
@@ -244,6 +252,7 @@ minmax <- function(x, ...) {
 #'
 #' @import SingleCellExperiment tibble tidyr dplyr
 #'
+#' @keywords internal
 compute_pem_scores <- function(sce, assay.type = "logcounts") {
 
   # extract normalized data
@@ -280,6 +289,8 @@ compute_pem_scores <- function(sce, assay.type = "logcounts") {
 #' @param means_per_cell A matrix containing the mean expression per cell type
 #'
 #' @return A matrix with the computed PEM scores
+#'
+#' @noRd
 #'
 pems_from_means <- function(means_per_cell) {
 

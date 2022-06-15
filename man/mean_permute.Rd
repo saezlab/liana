@@ -24,3 +24,4 @@ Returns a list of means per gene calculated with reshuffled
 Function to calculate mean LR expression from shuffled cluster label matrices
  as done in CellPhoneDB
 }
+\keyword{internal}

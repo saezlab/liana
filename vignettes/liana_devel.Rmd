@@ -20,7 +20,7 @@ in this vignette we provide further instructions relevant for method developers.
 
 
 ## Load prerequisites
-```{r load_prereq, message=FALSE, warning=FALSE}
+```{r load_prereq, message=FALSE, warning=FALSE, eval=FALSE}
 library(tidyverse)
 library(magrittr)
 library(liana)
@@ -38,7 +38,7 @@ First, we start by converting the object to SCE (if Seurat) and basic checks via
 Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
 Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`).
 These are later re-assembled back into complexes using the `recomplexify` function.
-```{r lr_cpdb, message=FALSE, warning=FALSE}
+```{r lr_cpdb, message=FALSE, warning=FALSE, eval=FALSE}
 sce <- liana_prep(testdata)
 
 # Obtain LR summary res with CellPhoneDB and dissociate complexes
@@ -86,7 +86,7 @@ devtools::install_github('saezlab/OmnipathR@ff3ad88e3915747e1b557bf44ac5396f9525
 # install tools
 devtools::install_github("sqjin/CellChat")
 devtools::install_github('msraredon/Connectome', ref = 'master')
-devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
+devtools::install_github("Coolgenome/iTALK", build_vignettes = FALSE)
 # A modified version of SingleCellSignalR (SCA) that enables external resources
 devtools::install_github(repo = "saezlab/SingleCellSignalR_v1",
                          subdir = "SingleCellSignalR")
@@ -138,7 +138,7 @@ It might be easier to just also clone the liana repo.
 Use the *call_* functions to run the pipelines of the original methods, rather than their re-implementations.
 These functions work with Seurat objects and they are instead converted to SCE. These are largely getting **deprecated**
 and will be moved to a seperate repository in the future.
-```{r liana_call, message=FALSE, warning=FALSE, print=FALSE}
+```{r liana_call, message=FALSE, warning=FALSE, print=FALSE, eval=FALSE}
 # RUN cellchat alone with OmniPath's Consensus
 sca_res <- call_sca(
   testdata,
@@ -150,7 +150,7 @@ sca_res
 ```
 
 Similarly one could call all `call_*` functions via `liana_wrap`
-```{r liana_calls, message=FALSE, warning=FALSE, print=FALSE}
+```{r liana_calls, message=FALSE, warning=FALSE, print=FALSE, eval=FALSE}
 liana_calls <- liana_wrap(testdata,
                           method = c('call_connectome',
                                      'call_sca',
@@ -165,7 +165,7 @@ liana_calls %>% liana_aggregate() # Connectome finds no significant hits here
 
 
 ## Session information
-```{r session_info, echo=TRUE}
+```{r session_info, echo=TRUE, eval=FALSE}
 options(width = 120)
 sessioninfo::session_info()
 ```

@@ -290,6 +290,8 @@ liana_defaults <- function(
 #' @param defaults named list with default arguments
 #'
 #' @returns a named list with the same arguments
+#'
+#' @noRd
 reassign_params <- function(replacements,
                             defaults){
     if(!is.null(replacements)){

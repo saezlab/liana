@@ -162,6 +162,8 @@ setClass("ScoreSpecifics",
 #'
 #' @details functions the same way as .score_specs, but is only used in
 #' liana_aggragate for the purpose of the manuscript.
+#'
+#' @noRd
 .score_housekeep <- function(){
     list(
         "squidpy" =

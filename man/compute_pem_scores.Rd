@@ -27,3 +27,4 @@ from the exponential of the normalized expression values.
 IMPORTANT:
 This function expects an object containing log-transformed values (not raw counts).
 }
+\keyword{internal}

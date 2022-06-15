@@ -12,3 +12,4 @@ conn_formatDB(op_resource)
 \description{
 Helper Function to convert Omni to Connectome resource Format
 }
+\keyword{internal}

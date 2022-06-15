@@ -19,6 +19,8 @@
 #'
 #' @export
 #'
+#' @keywords internal
+#'
 #' @importFrom stringr str_split
 recomplexify <- function(lr_res,
                          columns,
@@ -116,6 +118,8 @@ account_missing <- function(lr_res, env){
 #' @param env environment passed to which recursive changes are saved
 #'
 #' @return A `lr_res` tibble with
+#'
+#' @noRd
 missing_subunits_to0 <- function(lr_res, complex, entity, env){
 
     entity.complex <- str_glue("{entity}.complex")
@@ -148,6 +152,7 @@ missing_subunits_to0 <- function(lr_res, complex, entity, env){
 #' @param vec numeric vector
 #'
 #' @return value closest to 0
+#'
 min0 <- function(vec){
     vec[which.min(abs(vec))]
 }
@@ -160,6 +165,8 @@ min0 <- function(vec){
 #' @return the mean of the vector unless 0 is present, then returns 0
 #'
 #' @export
+#'
+#' @keywords internal
 mean0 <- function(vec){
     if((0 %in% vec)){
         return(0)

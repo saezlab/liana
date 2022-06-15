@@ -16,3 +16,4 @@ cellchat_formatDB(ccDB, op_resource, exclude_anns)
 \description{
 Helper Function to Format CellChatDB
 }
+\keyword{internal}

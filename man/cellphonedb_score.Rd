@@ -35,3 +35,4 @@ lr_res + pvalue and lr.mean
 \description{
 Function to calculate p-values as in CellPhoneDB
 }
+\keyword{internal}

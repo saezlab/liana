@@ -14,3 +14,4 @@ assign_ligrecs(ligrec_list)
 Helper function to obtain distinct transmitter and receiver lists
 used in the resource comparison
 }
+\keyword{internal}

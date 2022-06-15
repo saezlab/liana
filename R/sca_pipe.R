@@ -116,6 +116,8 @@ FormatSCA <- function(sca_res, remove.na = TRUE) {
 #' @param op_resource OmniPath resource
 #'
 #' @export
+#'
+#' @keywords internal
 sca_formatDB <- function(op_resource){
   op_resource %>%
   select(ligand = source_genesymbol,

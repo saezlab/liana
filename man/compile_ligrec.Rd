@@ -25,3 +25,4 @@ receptors and interactions
 calls on omnipath_intercell, intercell_connections, get_partners,
 and intercell_connections
 }
+\keyword{internal}

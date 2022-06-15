@@ -79,6 +79,7 @@ liana_prep.Seurat <- function(sce,
 #'
 #' @return SingleCellExperiment object
 #'
+#' @noRd
 .filter_sce <- function(sce, verbose){
     # EXTEND QUALITY CONTROL STEPS
     nonzero_genes <- rowSums(counts(sce)) > 0
@@ -125,6 +126,8 @@ liana_prep.Seurat <- function(sce,
 #' @param object_class class of the sce object (SingleCellExperiment or Seurat)
 #'
 #' @inheritParams liana_wrap
+#'
+#' @noRd
 .format_idents <- function (metadata,
                             active_idents,
                             idents_col,

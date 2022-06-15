@@ -146,6 +146,7 @@ liana_aggregate <- function(liana_res,
 #' @param liana_res ligand-receptor stats between clusters, output of
 #' `liana_pipe`
 #'
+#' @noRd
 .select_cap <- function(liana_res, fun){
     nums <- liana_res %>% map(function(res) nrow(res)) %>% as.numeric
     exec(fun, nums)
@@ -198,6 +199,8 @@ liana_aggregate <- function(liana_res,
 #' @param join_cols columns to be concatenated to create entity to be ranked
 #'
 #' @inheritDotParams RobustRankAggreg::aggregateRanks
+#'
+#' @noRd
 .aggregate_rank <- function(liana_mlist, join_cols, verbose, ...){
     liana_message("Aggregating Ranks", output = "message", verbose = verbose)
 

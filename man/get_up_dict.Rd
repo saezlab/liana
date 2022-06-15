@@ -23,3 +23,4 @@ get_up_dict(
 \description{
 Helper function to get UniProt dictionary
 }
+\keyword{internal}

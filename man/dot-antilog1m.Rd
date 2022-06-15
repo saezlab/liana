@@ -14,3 +14,4 @@
 \description{
 Helper function to inverse logged counts
 }
+\keyword{internal}

@@ -118,8 +118,11 @@ FormatiTALK <- function(italk_res,
 
 
 #' Helper Function to convert Omni to iTALK resource Format
+#'
 #' @param op_resource OmniPath resource
 #' @export
+#'
+#' @noRd
 italk_formatDB <- function(op_resource){
   op_resource %>%
     unite(col = "Pair.Name", source_genesymbol, target_genesymbol,

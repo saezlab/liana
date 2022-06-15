@@ -63,7 +63,10 @@ generate_orthologs <- function(op_resource,
 #'
 #' @details enables to modify unmatched genesymbols
 #' @import stringr
-recode.character2 <- function(.x, ...,
+#'
+#' @noRd
+recode.character2 <- function(.x,
+                              ...,
                               .default = NULL,
                               .missing = NULL,
                               .default_fun) {
@@ -100,6 +103,8 @@ recode.character2 <- function(.x, ...,
 #' subunits
 #'
 #' @param entity column of interest (target or source)
+#'
+#' @noRd
 .generate_complex_dict <- function(translated_subunits, entity = "target"){
     genesymbol_complex <- str_glue("{entity}_genesymbol_complex")
     genesymbol <- str_glue("{entity}_genesymbol")

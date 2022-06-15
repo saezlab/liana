@@ -264,6 +264,8 @@ ligrec_degformat <- function(cluster_markers,
 #' @return Returns the Average Expression Per Cluster
 #'
 #' @export
+#'
+#' @keywords internal
 join_means <- function(lr_res,
                        means,
                        source_target,
@@ -470,6 +472,8 @@ row_scale <- function(mat){
 #'
 #' @param x mat or array
 #' @param base base for conversion from log-tranformed ~CPM back to ~CPM.
+#'
+#' @keywords internal
 .antilog1m <- function(x, base=2){base ^ (x) - 1}
 
 
@@ -479,6 +483,8 @@ row_scale <- function(mat){
 #' @param assay.type counts slot
 #' @param base a positive or complex number: the base with respect to which
 #' log-transformation was computed.
+#'
+#' @noRd
 .get_invcounts <- function(sce, assay.type, base){
     antilogged <- .antilog1m(slot(exec(assay.type, sce), "x"), base = base)
 
@@ -499,6 +505,8 @@ row_scale <- function(mat){
 #' @param mat a matrix
 #'
 #' @details r mean is slow and it overflows on memory.
+#'
+#' @noRd
 fast_mean <- function(mat){
     if(class(mat)=="dgCMatrix"){
         sum(mat@x)/(as.numeric(nrow(mat)) * as.numeric(ncol(mat)))
@@ -511,6 +519,8 @@ fast_mean <- function(mat){
 #' @param sce SingleCellExperiment object
 #' @param entity_genes union of ligand-receptor genes
 #' @param verbose verbose - True/Flase
+#'
+#' @noRd
 .prep_universe <- function(sce, entity_genes, verbose){
 
     # Keep only LR universe
@@ -569,6 +579,7 @@ fast_mean <- function(mat){
 #' NB! `%/*/%` is only applicable and relevant to logFC and z-scores from a
 #' single-context, and should not be used when scaling between conditions!!!
 #'
+#' @keywords internal
 .sp_costrain <- function(lr_res,
                          cell.adj,
                          adjacency = "adjacency"){

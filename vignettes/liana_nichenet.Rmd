@@ -31,16 +31,11 @@ Because of this, in this vignette, we show how to use LIANA in combination with 
 
 We first install NicheNet and load required libraries
 ```{r, message=FALSE, warning=FALSE}
-if(!require("ggpubr")){
-  install.packages("ggpubr", quiet = TRUE, repos = "http://cran.us.r-project.org")
-}
-if(!require("ggrepel")){
-  install.packages("ggrepel", quiet = TRUE, repos = "http://cran.us.r-project.org")
-}
-if(!require("cowplot")){
-  install.packages("cowplot", quiet = TRUE, repos = "http://cran.us.r-project.org")
-}
-remotes::install_github("saeyslab/nichenetr", quiet = TRUE)
+if(!require('ggpubr')) install.packages('ggpubr', quiet = TRUE, repos = "http://cran.us.r-project.org")
+if(!require('ggrepel')) install.packages('ggrepel', quiet = TRUE, repos = "http://cran.us.r-project.org")
+if(!require('cowplot')) install.packages('cowplot', quiet = TRUE, repos = "http://cran.us.r-project.org")
+if(!require('remotes')) install.packages('remotes', quiet = TRUE, repos = "http://cran.us.r-project.org")
+if(!require('nichenetr')) remotes::install_github("saeyslab/nichenetr", quiet = TRUE)
 ```
 
 

@@ -31,3 +31,4 @@ Note that we call `account_missing` function to assign any complex with missing 
 relevant columns and expression proportion to 0. This then results in the whole
 complex being then being filtered (by default) or considered as non-expressed.
 }
+\keyword{internal}

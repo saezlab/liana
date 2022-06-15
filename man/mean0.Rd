@@ -15,3 +15,4 @@ the mean of the vector unless 0 is present, then returns 0
 \description{
 Helper Function which returns the mean, unless there is a 0 value then it returns 0
 }
+\keyword{internal}

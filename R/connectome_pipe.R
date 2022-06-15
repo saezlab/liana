@@ -89,8 +89,12 @@ FormatConnectome <- function(conn){
 
 
 #' Helper Function to convert Omni to Connectome resource Format
+#'
 #' @param op_resource OmniPath resource
+#'
 #' @export
+#'
+#' @keywords internal
 conn_formatDB <- function(op_resource){
     op_resource %>%
         select("source_genesymbol", "target_genesymbol") %>%

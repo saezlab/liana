@@ -25,3 +25,4 @@ Returns the Average Expression Per Cluster
 \description{
 Join Expression per Cluster
 }
+\keyword{internal}

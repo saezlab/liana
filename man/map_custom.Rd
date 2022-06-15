@@ -38,3 +38,4 @@ present, the value of \code{.default} will be returned.}
 \description{
 Helper custom map function
 }
+\keyword{internal}

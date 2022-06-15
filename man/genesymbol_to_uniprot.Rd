@@ -12,3 +12,4 @@ genesymbol_to_uniprot(st)
 \description{
 Helper Function to translate to UniProt
 }
+\keyword{internal}

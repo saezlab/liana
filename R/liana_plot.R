@@ -334,6 +334,7 @@ liana_heatmap <- function(mat,
 #'
 #' @param liana_res liana-formatted results
 #'
+#' @noRd
 .get_freq <- function(liana_res){
     liana_res %>%
         group_by(source, target) %>%

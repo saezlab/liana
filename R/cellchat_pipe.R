@@ -161,6 +161,8 @@ call_cellchat <- function(sce,
 #' @importFrom purrr pmap
 #'
 #' @export
+#'
+#' @keywords internal
 cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
 
     # Check if op_resource contains all required columns:

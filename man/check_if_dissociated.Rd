@@ -22,3 +22,4 @@ complexes.
 We count the times that a ligand (check_entity) exists in a combination
 with the same receptor (anchor_entity)
 }
+\keyword{internal}

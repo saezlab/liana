@@ -22,3 +22,4 @@ Calculates the non-self talk scores (also refered to as mutual information dista
 for each ligand-receptor pair using the normalized expression matrix for a given
 cell type. It expects log-transformed expression values.
 }
+\keyword{internal}

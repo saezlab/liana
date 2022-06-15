@@ -60,6 +60,8 @@ op_ia_quality_param <- list(
 #' @importFrom purrr pluck map
 #' @importFrom rlang !!! exec
 #'
+#' @keywords internal
+#'
 #' @export
 compile_ligrec <- function(lr_pipeline = TRUE){
 
@@ -186,6 +188,8 @@ compile_ligrec <- function(lr_pipeline = TRUE){
 #' using their default resource)
 #' @importFrom purrr pluck map
 #' @importFrom dplyr distinct_at
+#'
+#' @noRd
 reform_omni <- function(ligrec){
     map(ligrec, function(x) x %>%
             pluck("interactions") %>%
@@ -205,6 +209,8 @@ reform_omni <- function(ligrec){
 #' @return A tibble with Intercell interactions from OmniPath
 #'
 #' @importFrom magrittr %>%
+#'
+#' @noRd
 omnipath_intercell <- function(...){
     OmnipathR::import_intercell_network() %>%
         OmnipathR::filter_intercell_network(...)
@@ -214,9 +220,12 @@ omnipath_intercell <- function(...){
 
 
 #' Retrieves the interactions from one ligand-receptor resource
+#'
 #' @inheritDotParams OmnipathR::import_post_translational_interactions
 #' @inheritParams get_partners
 #' @import tibble
+#'
+#' @noRd
 intercell_connections <- function(resource, ...){
 
     if(resource == 'OmniPath'){
@@ -309,6 +318,8 @@ get_partners <- function(side, resource, ...){
 #'
 #' @importFrom OmnipathR import_omnipath_intercell
 #' @importFrom magrittr %>%
+#'
+#' @keywords internal
 omnipath_partners <- function(side, ...){
 
     causality <- list(ligand = 'trans', receptor = 'rec')
@@ -332,6 +343,8 @@ omnipath_partners <- function(side, ...){
 #' @export
 #'
 #' @return An OmniPath resource
+#'
+#' @noRd
 generate_omni <- function(remove_complexes=TRUE,
                           simplify = TRUE,
                           ...){
@@ -367,6 +380,8 @@ generate_omni <- function(remove_complexes=TRUE,
 
 
 #' Function to Obtain the CellCall database
+#'
+#' @keywords internal
 #'
 #' @returns cellcall db converted to LIANA/OP format
 get_cellcall <- function(){
@@ -432,6 +447,8 @@ get_cellcall <- function(){
 
 #' Helper Function to translate to UniProt
 #' @param st any genesymbol string - to be separate by `_`
+#'
+#' @keywords internal
 genesymbol_to_uniprot <- function(st){
     st.split <- as.vector(str_split(st, pattern = "_"))[[1]]
     AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
@@ -451,6 +468,8 @@ genesymbol_to_uniprot <- function(st){
 #' @param up uniprot db to be queried
 #' @param key_column1 name of the ligand  column
 #' @param key_column2 name of the receptor column
+#'
+#' @keywords internal
 get_up_dict <- function(ligrec_res,
                         up,
                         key_column1 = "Ligand_ID",
@@ -501,6 +520,8 @@ geneid_to_uniprot <- function(st,
 
 
 #' Helper Function to get Missing Interactions from OG CellChatDB
+#'
+#' @keywords internal
 get_cellchat_missing <- function(){
     CellChat::CellChatDB.human %>%
         pluck("interaction") %>%
@@ -522,6 +543,8 @@ get_cellchat_missing <- function(){
 #' used in the resource comparison
 #'
 #' @param ligrec_list e.g. ligrec$OmniPath
+#'
+#' @keywords internal
 assign_ligrecs <- function(ligrec_list){
     ligrec_list[["transmitters"]] <- ligrec_list$interactions %>%
         select(genesymbol = source_genesymbol,
@@ -547,6 +570,7 @@ assign_ligrecs <- function(ligrec_list){
 #' @param check_entity the entity to be check for duplicates
 #' @param anchor_entity the anchor entity with which we check for duplicates
 #'
+#' @keywords internal
 check_if_dissociated <- function(complex_omni, check_entity, anchor_entity){
     check.complex <- str_glue("{check_entity}_complex")
     anchor.complex <- str_glue("{anchor_entity}_complex")
@@ -593,6 +617,7 @@ check_if_dissociated <- function(complex_omni, check_entity, anchor_entity){
 #' @return a curated OmniPath resource formatted for LIANA
 #'
 #' @export
+#'
 get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                                                    "CellChatDB",
                                                    "ICELLNET",

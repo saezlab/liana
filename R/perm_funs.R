@@ -64,6 +64,8 @@ get_permutations <- function(lr_res,
 #' @param ... placeholder
 #'
 #' @returns lr_res + pvalue and lr.mean
+#'
+#' @keywords internal
 cellphonedb_score <- function(lr_res,
                               perm_means,
                               parallelize,
@@ -151,6 +153,8 @@ cellphonedb_score <- function(lr_res,
 #'
 #' @return Returns a list of means per gene calculated with reshuffled
 #'    cluster/cell identity labels
+#'
+#' @keywords internal
 mean_permute <- function(col_labels,
                          sce,
                          pb,
@@ -173,6 +177,7 @@ mean_permute <- function(col_labels,
 #' @param workers Number of workers to be used in parallelization
 #' @param ... params passed to the called function and to `.f`
 #'
+#' @keywords internal
 map_custom <- function(.x, .f, parallelize, workers, ...){
     if(parallelize){
         future::plan(future::multisession, workers = workers)

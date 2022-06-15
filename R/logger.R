@@ -21,6 +21,8 @@
 #' Dispatch log message to the OmnipathR logger
 #'
 #' @importFrom magrittr %<>%
+#'
+#' @keywords internal
 logg <- function(level, ...){
 
     level %<>% (OmnipathR:::ensure_loglevel)

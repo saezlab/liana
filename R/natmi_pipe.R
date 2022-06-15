@@ -176,6 +176,8 @@ call_natmi <- function(
 #' @param op_resource Resource formatted as OmniPath
 #' @param reso_name name of the resource
 #' @param natmi_db_path directory in which to save the resource
+#'
+#' @noRd
 omni_to_NATMI <- function(op_resource,
                           reso_name = "placeholder",
                           natmi_db_path = "input/omnipath_NATMI"){

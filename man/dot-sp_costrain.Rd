@@ -37,3 +37,4 @@ will be excluded (this would affect the scores from CytoTalk).
 NB! `%/*/%` is only applicable and relevant to logFC and z-scores from a
 single-context, and should not be used when scaling between conditions!!!
 }
+\keyword{internal}

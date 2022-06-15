@@ -64,3 +64,4 @@ of the resources support these.}
 Retrieves intercellular communication partners (transmitters or receivers)
 from OmniPath
 }
+\keyword{internal}

@@ -34,3 +34,4 @@ that are provided as input and calculates these entropy-based measurements for e
 cell type using its normalized expression matrix, which should contain log-transformed
 values.
 }
+\keyword{internal}
