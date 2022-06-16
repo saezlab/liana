@@ -2,7 +2,7 @@
 [![R-CMD-check](https://github.com/saezlab/liana/workflows/R-CMD-check/badge.svg)](https://github.com/saezlab/liana/actions)
 <!-- badges: end -->
 
-# LIANA: a LIgand-receptor ANalysis frAmework <img src="inst/figures/liana_logo.png" align="right" height="100">
+# LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/z6s7cp00kbbm1s9/liana_logo.png?raw=1" align="right" height="100">
 
 The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
 an immense interest in understanding intercellular crosstalk. Multiple
