@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -73,25 +69,22 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/saezlab/liana/">
+  <a href="https://github.com/saezlab/liana/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/saezlab">
+  <a href="https://twitter.com/saezlab" class="external-link">
     <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="http://www.saezlab.org">
+  <a href="http://www.saezlab.org" class="external-link">
     <span class="fas fa-university"></span>
      
   </a>
@@ -106,18 +99,18 @@
 
       
 
-      </header><script src="liana_ortho_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="liana_ortho_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Orthology Conversion with LIANA</h1>
-                        <h4 class="author">Daniel Dimitrov</h4>
+                        <h4 data-toc-skip class="author">Daniel Dimitrov</h4>
             <address class="author_afil">
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 class="date">2022-05-16</h4>
+            <h4 data-toc-skip class="date">2022-06-16</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_ortho.Rmd"><code>vignettes/liana_ortho.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_ortho.Rmd" class="external-link"><code>vignettes/liana_ortho.Rmd</code></a></small>
       <div class="hidden name"><code>liana_ortho.Rmd</code></div>
 
     </div>
@@ -127,76 +120,76 @@
 <p>LIANA’s OmniPath resource was largely compiled from CCC databases with a human focus, as such LIANA works with human symbols by default.</p>
 <p>Nevertheless, one could run LIANA with any other organism, provided a dictionary is available to map human genesymbols to those of species X.</p>
 <p>In this vignette, we provide an example how this could be achieved using the BioMart database with LIANA’s <code>generate_orthologs</code>. A mouse dictionary is also included with LIANA (see below).</p>
-<div id="loading-prerequisites" class="section level2">
-<h2 class="hasAnchor">
-<a href="#loading-prerequisites" class="anchor"></a>Loading prerequisites</h2>
+<div class="section level2">
+<h2 id="loading-prerequisites">Loading prerequisites<a class="anchor" aria-label="anchor" href="#loading-prerequisites"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/OmnipathR/">OmnipathR</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/">liana</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/OmnipathR/" class="external-link">OmnipathR</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/" class="external-link">liana</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
 
-<span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span>
+<span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span>
 <span class="va">testdata</span> <span class="op">&lt;-</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Convert testdata to putative mouse symbols</span>
 <span class="co"># Note that we explicitly provide this tutorial to avoid any such conversions when working with real data</span>
 <span class="co"># We simply do this here to provide an example</span>
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="generate-a-dictionary" class="section level2">
-<h2 class="hasAnchor">
-<a href="#generate-a-dictionary" class="anchor"></a>Generate a Dictionary</h2>
+<div class="section level2">
+<h2 id="generate-a-dictionary">Generate a Dictionary<a class="anchor" aria-label="anchor" href="#generate-a-dictionary"></a>
+</h2>
 <p>In order to convert a human resource to any other organism, we need a dictionary which maps human gene symbols to their orthologs from another species, in this case - murine genesymbols.</p>
-<p>A widely used database for that purpose is <a href="https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81">BioMart</a> and we show how one could use it to obtain mouse orthologs, which we then convert to a dictionary format.</p>
+<p>A widely used database for that purpose is <a href="https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81" class="external-link">BioMart</a> and we show how one could use it to obtain mouse orthologs, which we then convert to a dictionary format.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Obtain resource</span>
 <span class="va">op_resource</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_resource.html">select_resource</a></span><span class="op">(</span><span class="st">"Consensus"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
 
 <span class="co"># Get all unique symbols</span>
-<span class="va">symbols</span> <span class="op">&lt;-</span> <span class="va">op_resource</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/decomplexify.html">decomplexify</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">ends_with</span><span class="op">(</span><span class="st">"genesymbol"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">symbols</span> <span class="op">&lt;-</span> <span class="va">op_resource</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/decomplexify.html">decomplexify</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"genesymbol"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># load biomaRt - an R interace for BioMart</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"biomaRt"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st">"biomaRt"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
 
 <span class="co"># query biomaRt databases</span>
-<span class="va">human</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span>
-<span class="va">mouse</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"mmusculus_gene_ensembl"</span><span class="op">)</span>
+<span class="va">human</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu">useMart</span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span>
+<span class="va">mouse</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu">useMart</span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"mmusculus_gene_ensembl"</span><span class="op">)</span>
 
 <span class="co"># Obtain tibble with human and murine genesymbol.</span>
-<span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getLDS.html">getLDS</a></span><span class="op">(</span>attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"hgnc_symbol"</span><span class="op">)</span>,
+<span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu">getLDS</span><span class="op">(</span>attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hgnc_symbol"</span><span class="op">)</span>,
                                 filters <span class="op">=</span> <span class="st">"hgnc_symbol"</span>,
                                 values <span class="op">=</span> <span class="va">symbols</span>,
                                 mart <span class="op">=</span> <span class="va">human</span>,
                                 martL <span class="op">=</span> <span class="va">mouse</span>,
-                                attributesL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mgi_symbol"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>human_symbol <span class="op">=</span> <span class="va">HGNC.symbol</span>,
-                murine_symbol <span class="op">=</span> <span class="va">MGI.symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">human_symbol</span>, <span class="va">murine_symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/enframe.html">deframe</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+                                attributesL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mgi_symbol"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>human_symbol <span class="op">=</span> <span class="va">HGNC.symbol</span>,
+                murine_symbol <span class="op">=</span> <span class="va">MGI.symbol</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">human_symbol</span>, <span class="va">murine_symbol</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/enframe.html" class="external-link">deframe</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="a-dictionary-for-murine-symbols-is-also-included-in-liana" class="section level2">
-<h2 class="hasAnchor">
-<a href="#a-dictionary-for-murine-symbols-is-also-included-in-liana" class="anchor"></a>A dictionary for murine symbols is also included in liana</h2>
+<div class="section level2">
+<h2 id="a-dictionary-for-murine-symbols-is-also-included-in-liana">A dictionary for murine symbols is also included in liana<a class="anchor" aria-label="anchor" href="#a-dictionary-for-murine-symbols-is-also-included-in-liana"></a>
+</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"human_mouse_orthologues.RDS"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">symbols_dict</span><span class="op">)</span></code></pre></div>
-<pre><code>##   TNFRSF13C         TTR        DSG3       FGF16        DSC1       ITGA5 
-## "Tnfrsf13c"       "Ttr"      "Dsg3"     "Fgf16"      "Dsc1"     "Itga5"</code></pre>
+<code class="sourceCode R"><span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"human_mouse_orthologues.RDS"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">symbols_dict</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##   TNFRSF13C         TTR        DSG3       FGF16        DSC1       ITGA5 </span>
+<span class="co">## "Tnfrsf13c"       "Ttr"      "Dsg3"     "Fgf16"      "Dsc1"     "Itga5"</span></code></pre>
 </div>
-<div id="convert-to-orthologues-and-example-liana-run" class="section level2">
-<h2 class="hasAnchor">
-<a href="#convert-to-orthologues-and-example-liana-run" class="anchor"></a>Convert to Orthologues and Example LIANA run</h2>
+<div class="section level2">
+<h2 id="convert-to-orthologues-and-example-liana-run">Convert to Orthologues and Example LIANA run<a class="anchor" aria-label="anchor" href="#convert-to-orthologues-and-example-liana-run"></a>
+</h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Here, we will convert LIANA's Consensus resource to murine symbols</span>
 <span class="va">op_resource</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_resource.html">select_resource</a></span><span class="op">(</span><span class="st">"Consensus"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
@@ -209,20 +202,20 @@
 <span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,
                         resource <span class="op">=</span> <span class="st">'custom'</span>, <span class="co"># the resource has to be set to 'custom' to work with external resources</span>
                         external_resource <span class="op">=</span> <span class="va">ortholog_resource</span>, <span class="co"># provide orthologous resource</span>
-                        method<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'sca'</span>, <span class="st">'natmi'</span><span class="op">)</span> <span class="co"># run only with sca and natmi for comp. time</span>
+                        method<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'sca'</span>, <span class="st">'natmi'</span><span class="op">)</span> <span class="co"># run only with sca and natmi for comp. time</span>
                         <span class="op">)</span>
 
 <span class="co"># aggregate</span>
-<span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op">%&gt;%</span>
+<span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="va">liana_res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
     <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Plot example</span>
-<span class="va">liana_res</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">source</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">target</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">slice_head</span><span class="op">(</span>n<span class="op">=</span><span class="fl">15</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co"># simply keep the highest 15 interactions according to aggregate rank</span>
+<span class="va">liana_res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">source</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">target</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">15</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># simply keep the highest 15 interactions according to aggregate rank</span>
     <span class="fu"><a href="../reference/liana_dotplot.html">liana_dotplot</a></span><span class="op">(</span>source_groups <span class="op">=</span> <span class="st">"B"</span>,
-                  target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+                  target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="liana_ortho_files/figure-html/orthology-1.png" width="1056"></p>
 <p>Note, as some ligand–receptor pairs could be species specific, we suggest that if possible to check literature for support of the reported edges when using orthology conversion.</p>
 </div>
@@ -239,11 +232,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
+  <p></p>
+<p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -251,6 +246,8 @@
 
   
 
+
+  
 
   </body>
 </html>

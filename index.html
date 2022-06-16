@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -73,25 +69,22 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/saezlab/liana/">
+  <a href="https://github.com/saezlab/liana/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/saezlab">
+  <a href="https://twitter.com/saezlab" class="external-link">
     <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="http://www.saezlab.org">
+  <a href="http://www.saezlab.org" class="external-link">
     <span class="fas fa-university"></span>
      
   </a>
@@ -108,38 +101,39 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="liana-a-ligand-receptor-analysis-framework-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#liana-a-ligand-receptor-analysis-framework-" class="anchor"></a>LIANA: a LIgand-receptor ANalysis frAmework <img src="liana_logo.png" align="right" height="100">
+
+
+<div class="section level1">
+<div class="page-header"><h1 id="liana-a-ligand-receptor-analysis-framework-">LIANA: a LIgand-receptor ANalysis frAmework <img src="inst/figures/liana_logo.png" align="right" height="100"><a class="anchor" aria-label="anchor" href="#liana-a-ligand-receptor-analysis-framework-"></a>
 </h1></div>
 <p>The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked an immense interest in understanding intercellular crosstalk. Multiple tools and resources that aid the investigation of cell-cell communication (CCC) were published recently. However, these methods and resources are usually in a fixed combination of a tool and its corresponding resource, but in principle any resource could be combined with any method.</p>
-<div id="install-liana" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-liana" class="anchor"></a>Install LIANA</h2>
-<pre class="{r}"><code>if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+<div class="section level2">
+<h2 id="install-liana">Install LIANA<a class="anchor" aria-label="anchor" href="#install-liana"></a>
+</h2>
+<pre class="{r}"><code><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 
-if (!requireNamespace("remotes", quietly = TRUE))
-    install.packages("remotes")
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
 
-remotes::install_github('saezlab/liana')</code></pre>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'saezlab/liana'</span><span class="op">)</span></code></pre>
 </div>
-<div id="tutorial" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tutorial" class="anchor"></a>Tutorial</h2>
-<p>See a <a href="https://saezlab.github.io/liana/articles/liana_tutorial.html">tutorial</a> how to use LIANA to run any combination of 7 methods, plus their consensus, and 16 different resources! The tutorial with the test data takes minutes to complete!</p>
+<div class="section level2">
+<h2 id="tutorial">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial"></a>
+</h2>
+<p>See a <a href="https://saezlab.github.io/liana/articles/liana_tutorial.html" class="external-link">tutorial</a> how to use LIANA to run any combination of 7 methods, plus their consensus, and 16 different resources! The tutorial with the test data takes minutes to complete!</p>
 <p>Additional tutorials:</p>
 <ul>
-<li><p><a href="https://saezlab.github.io/liana/articles/liana_nichenet.html">How to combine LIANA and NicheNet</a></p></li>
-<li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html">How to make use of OmniPathR’s intracellular component</a></p></li>
-<li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html">How to customize OmniPath’s intercellular resource</a></p></li>
-<li><p><a href="https://saezlab.github.io/liana/articles/liana_ortho.html">How to convert the resources in LIANA to orthologs from other species</a></p></li>
-<li><p><a href="https://saezlab.github.io/liana/articles/liana_devel.html">LIANA for developers and benchmarks</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_nichenet.html" class="external-link">How to combine LIANA and NicheNet</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html" class="external-link">How to make use of OmniPathR’s intracellular component</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_intracell.html" class="external-link">How to customize OmniPath’s intercellular resource</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_ortho.html" class="external-link">How to convert the resources in LIANA to orthologs from other species</a></p></li>
+<li><p><a href="https://saezlab.github.io/liana/articles/liana_devel.html" class="external-link">LIANA for developers and benchmarks</a></p></li>
 </ul>
 </div>
-<div id="liana-framework" class="section level2">
-<h2 class="hasAnchor">
-<a href="#liana-framework" class="anchor"></a>LIANA Framework</h2>
+<div class="section level2">
+<h2 id="liana-framework">LIANA Framework<a class="anchor" aria-label="anchor" href="#liana-framework"></a>
+</h2>
 <p>To this end, we built a framework to decouple the methods from their corresponding resources.</p>
 <p>LIANA also goes a step further as it provides:</p>
 <ul>
@@ -147,31 +141,33 @@ remotes::install_github('saezlab/liana')</code></pre>
 <li><p>A rank aggregate from the results of different methods</p></li>
 <li><p>A customizable plethora of resources</p></li>
 </ul>
-<p><img src="ligrec_pipe.png" alt="landingpage"></p>
+<div class="figure">
+<img src="articles/ligrec_pipe.png" alt=""><p class="caption">landingpage</p>
 </div>
-<div id="tools" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tools" class="anchor"></a>Tools</h2>
+</div>
+<div class="section level2">
+<h2 id="tools">Tools<a class="anchor" aria-label="anchor" href="#tools"></a>
+</h2>
 <p>The tools implemented in this repository are:</p>
 <ul>
-<li><p><a href="https://github.com/Teichlab/cellphonedb">CellPhoneDBv2</a> (*, $)</p></li>
-<li><p><a href="https://github.com/sqjin/CellChat">CellChat</a></p></li>
-<li><p><a href="https://github.com/forrest-lab/NATMI">NATMI</a> (*, $)</p></li>
-<li><p><a href="https://github.com/msraredon/Connectome">Connectome</a> (<code>edge_weights</code>) (*, $)</p></li>
-<li><p><a href="https://github.com/SCA-IRCM/SingleCellSignalR">SingleCellSignalR</a> (<code>LRscores</code>) (SCA) (*, $)</p></li>
-<li><p><a href="https://github.com/Coolgenome/iTALK">iTALK</a>-inspired <em>1-vs-rest</em> LogFC score (<code>logfc_comb</code>) (*, $)</p></li>
-<li><p><a href="https://advances.sciencemag.org/content/7/16/eabf1356">CytoTalk</a>-inspired <code>cross-talk</code> scores (*)</p></li>
-<li><p><code>consensus_rank</code> of the predictions is also provied using the <a href="https://pubmed.ncbi.nlm.nih.gov/22247279/">RobustRankAggregate</a> package</p></li>
+<li><p><a href="https://github.com/Teichlab/cellphonedb" class="external-link">CellPhoneDBv2</a> (*, $)</p></li>
+<li><p><a href="https://github.com/sqjin/CellChat" class="external-link">CellChat</a></p></li>
+<li><p><a href="https://github.com/forrest-lab/NATMI" class="external-link">NATMI</a> (*, $)</p></li>
+<li><p><a href="https://github.com/msraredon/Connectome" class="external-link">Connectome</a> (<code>edge_weights</code>) (*, $)</p></li>
+<li><p><a href="https://github.com/SCA-IRCM/SingleCellSignalR" class="external-link">SingleCellSignalR</a> (<code>LRscores</code>) (SCA) (*, $)</p></li>
+<li><p><a href="https://github.com/Coolgenome/iTALK" class="external-link">iTALK</a>-inspired <em>1-vs-rest</em> LogFC score (<code>logfc_comb</code>) (*, $)</p></li>
+<li><p><a href="https://advances.sciencemag.org/content/7/16/eabf1356" class="external-link">CytoTalk</a>-inspired <code>cross-talk</code> scores (*)</p></li>
+<li><p><code>consensus_rank</code> of the predictions is also provided using the <a href="https://pubmed.ncbi.nlm.nih.gov/22247279/" class="external-link">RobustRankAggregate</a> package</p></li>
 </ul>
-<p>*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see <a href="https://saezlab.github.io/liana/articles/liana_devel.html">LIANA++</a>.</p>
+<p>*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see <a href="https://saezlab.github.io/liana/articles/liana_devel.html" class="external-link">LIANA++</a>.</p>
 <p>$ Default methods in LIANA.</p>
 </div>
-<div id="resources" class="section level2">
-<h2 class="hasAnchor">
-<a href="#resources" class="anchor"></a>Resources</h2>
-<div id="cell-cell-communication-resources" class="section level3">
-<h3 class="hasAnchor">
-<a href="#cell-cell-communication-resources" class="anchor"></a>Cell-cell Communication resources</h3>
+<div class="section level2">
+<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+</h2>
+<div class="section level3">
+<h3 id="cell-cell-communication-resources">Cell-cell Communication resources<a class="anchor" aria-label="anchor" href="#cell-cell-communication-resources"></a>
+</h3>
 <p>The following CCC resources are accessible via this pipeline:</p>
 <ul>
 <li><p><em>Consensus</em></p></li>
@@ -192,91 +188,96 @@ remotes::install_github('saezlab/liana')</code></pre>
 <li><p>OmniPath [Deprecated]</p></li>
 </ul>
 </div>
-<div id="consensus-resource" class="section level3">
-<h3 class="hasAnchor">
-<a href="#consensus-resource" class="anchor"></a>Consensus Resource</h3>
+<div class="section level3">
+<h3 id="consensus-resource">Consensus Resource<a class="anchor" aria-label="anchor" href="#consensus-resource"></a>
+</h3>
 <p>LIANA’s default resource was generated from the <code>Consensus</code> of several expert-curated resources, then filtered to additional quality control steps including literature support, complex re-union/consensus, and localisation.</p>
 </div>
-<div id="omnipath" class="section level3">
-<h3 class="hasAnchor">
-<a href="#omnipath" class="anchor"></a>OmniPath</h3>
-<p>All the resources above are retrieved from <a href="https://omnipathdb.org/">OmniPath</a>, and more specifically <a href="https://github.com/saezlab/OmnipathR">OmnipathR</a>. However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing steps.</p>
-<p><code>OmniPath</code> itself serves as a composite CCC resource combining all the ones listed above + <a href="https://doi.org/10.15252/msb.20209923">more</a>. <code>OmniPath</code> also collects further information about the roles and localisation of proteins in intercellular communication.</p>
-<p>We made use of this information to generate the <code>Consensus</code> resource. To obtain more information how we filtered the default <code>Consensus</code> resource, as well as to explore custom filter options see <a href="https://saezlab.github.io/liana/articles/liana_custom_op.html">customizing OmniPath resources</a>.</p>
+<div class="section level3">
+<h3 id="omnipath">OmniPath<a class="anchor" aria-label="anchor" href="#omnipath"></a>
+</h3>
+<p>All the resources above are retrieved from <a href="https://omnipathdb.org/" class="external-link">OmniPath</a>, and more specifically <a href="https://github.com/saezlab/OmnipathR" class="external-link">OmnipathR</a>. However, individual resources retrieved from the OmniPath web service are not to be affected by this, as each resource expected to be identical to its original form, apart from minor processing steps.</p>
+<p><code>OmniPath</code> itself serves as a composite CCC resource combining all the ones listed above + <a href="https://doi.org/10.15252/msb.20209923" class="external-link">more</a>. <code>OmniPath</code> also collects further information about the roles and localisation of proteins in intercellular communication.</p>
+<p>We made use of this information to generate the <code>Consensus</code> resource. To obtain more information how we filtered the default <code>Consensus</code> resource, as well as to explore custom filter options see <a href="https://saezlab.github.io/liana/articles/liana_custom_op.html" class="external-link">customizing OmniPath resources</a>.</p>
 </div>
 </div>
-<div id="liana" class="section level2">
-<h2 class="hasAnchor">
-<a href="#liana" class="anchor"></a>LIANA++</h2>
-<p>If you are interested in making use of the LIANA architecture for your own method, <a href="https://saezlab.github.io/liana/articles/liana_devel.html">this vignette</a> provides instructions how to obtain a comprehensive table of LR statistics, which can then be used by custom scoring functions. In the <a href="https://saezlab.github.io/liana/articles/liana_devel.html">same vignette</a> are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their benchmark.</p>
+<div class="section level2">
+<h2 id="liana">LIANA++<a class="anchor" aria-label="anchor" href="#liana"></a>
+</h2>
+<p>If you are interested in making use of the LIANA architecture for your own method, <a href="https://saezlab.github.io/liana/articles/liana_devel.html" class="external-link">this vignette</a> provides instructions how to obtain a comprehensive table of LR statistics, which can then be used by custom scoring functions. In the <a href="https://saezlab.github.io/liana/articles/liana_devel.html" class="external-link">same vignette</a> are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their benchmark.</p>
 </div>
-<div id="contact" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contact" class="anchor"></a>Contact</h2>
-<p>We appreciate any feedback, so please do not hesitate to open an issue on the <a href="https://github.com/saezlab/liana">liana github page</a>!</p>
-<div id="citing-liana" class="section level3">
-<h3 class="hasAnchor">
-<a href="#citing-liana" class="anchor"></a>Citing <code>LIANA</code>:</h3>
-<p>Dimitrov, D., Türei, D., Boys, C., Nagai, J.S., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Dugourd, A., Valdeolivas, A. and Saez-Rodriguez, J., 2021. Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data. bioRxiv. <a href="https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1">10.1101/2021.05.21.445160v1</a></p>
-<div id="also-if-you-use-the-omnipath-ccc-resource-for-your-analysis-please-cite" class="section level4">
-<h4 class="hasAnchor">
-<a href="#also-if-you-use-the-omnipath-ccc-resource-for-your-analysis-please-cite" class="anchor"></a>Also, if you use the <code>OmniPath</code> CCC Resource for your analysis, please cite:</h4>
-<p>Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923. <a href="https://doi.org/10.15252/msb.20209923" class="uri">https://doi.org/10.15252/msb.20209923</a></p>
+<div class="section level2">
+<h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
+</h2>
+<p>We appreciate any feedback, so please do not hesitate to open an issue on the <a href="https://github.com/saezlab/liana" class="external-link">liana github page</a>!</p>
+<div class="section level3">
+<h3 id="citing-liana">Citing <code>LIANA</code>:<a class="anchor" aria-label="anchor" href="#citing-liana"></a>
+</h3>
+<p>Dimitrov, D., Türei, D., Garrido-Rodriguez M., Burmedi P.L., Nagai, J.S., Boys, C., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Valdeolivas, A., Dugourd, A. and Saez-Rodriguez, J. Comparison of methods and resources for cell-cell communication inference from single-cell RNA-Seq data. <em>Nat Commun 13</em>, 3224 (2022). <a href="https://www.nature.com/articles/s41467-022-30755-0" class="external-link">https://doi.org/10.1038/s41467-022-30755-0</a></p>
+<div class="section level4">
+<h4 id="also-if-you-use-the-omnipath-ccc-resource-for-your-analysis-please-cite">Also, if you use the <code>OmniPath</code> CCC Resource for your analysis, please cite:<a class="anchor" aria-label="anchor" href="#also-if-you-use-the-omnipath-ccc-resource-for-your-analysis-please-cite"></a>
+</h4>
+<p>Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923. <a href="https://doi.org/10.15252/msb.20209923" class="external-link uri">https://doi.org/10.15252/msb.20209923</a></p>
 </div>
-<div id="similarly-please-consider-appropriately-citing-any-of-the-methods-andor-resources-implemented-in-liana-that-were-particularly-relevant-for-your-research" class="section level4">
-<h4 class="hasAnchor">
-<a href="#similarly-please-consider-appropriately-citing-any-of-the-methods-andor-resources-implemented-in-liana-that-were-particularly-relevant-for-your-research" class="anchor"></a>Similarly, please consider appropriately citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!</h4>
-</div>
+<div class="section level4"><h4 id="similarly-please-consider-appropriately-citing-any-of-the-methods-andor-resources-implemented-in-liana-that-were-particularly-relevant-for-your-research">Similarly, please consider appropriately citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!<a class="anchor" aria-label="anchor" href="#similarly-please-consider-appropriately-citing-any-of-the-methods-andor-resources-implemented-in-liana-that-were-particularly-relevant-for-your-research"></a>
+</h4></div>
 </div>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/saezlab/liana/">https://​github.com/​saezlab/​liana/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/saezlab/liana/issues">https://​github.com/​saezlab/​liana/​issues</a>
-</li>
+<li><a href="https://github.com/saezlab/liana/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/saezlab/liana/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
+
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing liana</a></li>
+<li><a href="authors.html#citation">Citing liana</a></li>
 </ul>
 </div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Daniel Dimitrov <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0002-5197-2112" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Charlotte Boys <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-3955-5110" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Martin Garrido Rodríguez <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4125-5643" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Denes Turei <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7249-9379" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>James Nagai <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7655-7206" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Daniel Dimitrov <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0002-5197-2112" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Charlotte Boys <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-3955-5110" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Martin Garrido Rodríguez <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4125-5643" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Denes Turei <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7249-9379" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>James Nagai <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7655-7206" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
+  <p></p>
+<p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -284,6 +285,8 @@ remotes::install_github('saezlab/liana')</code></pre>
 
   
 
+
+  
 
   </body>
 </html>

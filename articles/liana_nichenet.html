@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -73,25 +69,22 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/saezlab/liana/">
+  <a href="https://github.com/saezlab/liana/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/saezlab">
+  <a href="https://twitter.com/saezlab" class="external-link">
     <span class="fab fa-twitter fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="http://www.saezlab.org">
+  <a href="http://www.saezlab.org" class="external-link">
     <span class="fas fa-university"></span>
      
   </a>
@@ -106,322 +99,334 @@
 
       
 
-      </header><script src="liana_nichenet_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="liana_nichenet_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LIANA - NicheNet</h1>
-                        <h4 class="author">Martin Garrido Rodriguez-Cordoba</h4>
+                        <h4 data-toc-skip class="author">Martin Garrido Rodriguez-Cordoba</h4>
             
-            <h4 class="date">2022-05-04</h4>
+            <h4 data-toc-skip class="date">2022-06-16</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/master/vignettes/liana_nichenet.Rmd"><code>vignettes/liana_nichenet.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_nichenet.Rmd" class="external-link"><code>vignettes/liana_nichenet.Rmd</code></a></small>
       <div class="hidden name"><code>liana_nichenet.Rmd</code></div>
 
     </div>
 
     
     
-<div id="before-you-start" class="section level2">
-<h2 class="hasAnchor">
-<a href="#before-you-start" class="anchor"></a>Before you start</h2>
-<p>This vignette is an example of how to combine LIANA’s hypotheses with those produced by NicheNet. The biological results that are obtained here are highly dependent on the hypothesis in mind, which is described in <a href="https://www.nature.com/articles/s41592-019-0667-5">NicheNet’s original article</a>. Before you start, we strongly recommend to have a look to the <a href="https://github.com/saeyslab/nichenetr">NicheNet’s repository</a>, as the data and the analyses that are run here were extracted from its vignettes. We acknowledge NicheNet’s authors for the extensive and reproducible documentation that they provide in this repository.</p>
+<div class="section level2">
+<h2 id="before-you-start">Before you start<a class="anchor" aria-label="anchor" href="#before-you-start"></a>
+</h2>
+<p>This vignette is an example of how to combine LIANA’s hypotheses with those produced by NicheNet. The biological results that are obtained here are highly dependent on the hypothesis in mind, which is described in <a href="https://www.nature.com/articles/s41592-019-0667-5" class="external-link">NicheNet’s original article</a>. Before you start, we strongly recommend to have a look to the <a href="https://github.com/saeyslab/nichenetr" class="external-link">NicheNet’s repository</a>, as the data and the analyses that are run here were extracted from its vignettes. We acknowledge NicheNet’s authors for the extensive and reproducible documentation that they provide in this repository.</p>
 </div>
-<div id="background" class="section level2">
-<h2 class="hasAnchor">
-<a href="#background" class="anchor"></a>Background</h2>
-<p><a href="https://saezlab.github.io/liana/index.html">LIANA</a> (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. <strong>LIANA and NicheNet are not mutually exclusive, but rather complementary, given that they aim to explore different aspects of inter and intra cellular communication</strong>.</p>
+<div class="section level2">
+<h2 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h2>
+<p><a href="https://saezlab.github.io/liana/index.html" class="external-link">LIANA</a> (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. <strong>LIANA and NicheNet are not mutually exclusive, but in certain scenarios could be rather complementary, given that they aim to explore different aspects of inter- and intra-cellular communication</strong>.</p>
 <p><img src="liana_nichenet.svg"></p>
-<p>Because of this, in this vignette, we show how to use LIANA in combination with NicheNet using the data and the biological scenario described in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>. Briefly, the biological question here is: Which ligands expressed by cancer-associated fibroblasts (CAFs) can induce a specific gene program in neighboring malignant cells? (Using data from Puram et al. 2017).</p>
+<p>Because of this, in this vignette, we show how to use LIANA in combination with NicheNet using the data and the biological scenario described in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>. Briefly, the biological question here is: Which ligands expressed by cancer-associated fibroblasts (CAFs) can induce a specific gene program in neighboring malignant cells? (Using data from Puram et al. 2017).</p>
 </div>
-<div id="load-packages-and-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#load-packages-and-data" class="anchor"></a>Load packages and data</h2>
-<p>We first load required libraries</p>
+<div class="section level2">
+<h2 id="load-packages-and-data">Load packages and data<a class="anchor" aria-label="anchor" href="#load-packages-and-data"></a>
+</h2>
+<p>We first install NicheNet and load required libraries</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/">liana</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/saeyslab/nichenetr">nichenetr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/slowkow/ggrepel">ggrepel</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span> <span class="co"># required for downloading single-cell expression on slow connection</span></code></pre></div>
-<p>Then, we load and prepare the single-cell data, NicheNet’s model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>.</p>
+<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://rpkgs.datanovia.com/ggpubr/" class="external-link">'ggpubr'</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ggpubr'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
+<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://github.com/slowkow/ggrepel" class="external-link">'ggrepel'</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ggrepel'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
+<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/" class="external-link">'cowplot'</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'cowplot'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
+<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">'remotes'</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
+<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://github.com/saeyslab/nichenetr" class="external-link">'nichenetr'</a></span><span class="op">)</span><span class="op">)</span> <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saeyslab/nichenetr"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># single-cell expression matrix described in Puram et al. 2017</span>
-<span class="va">hnscc_expression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/hnscc_expression.rds"</span><span class="op">)</span><span class="op">)</span>
-<span class="co"># model weights</span>
-<span class="va">ligand_target_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.</p>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/" class="external-link">liana</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/saeyslab/nichenetr" class="external-link">nichenetr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/slowkow/ggrepel" class="external-link">ggrepel</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span> <span class="co"># required to download expression data /w slow connection</span></code></pre></div>
+<p>Then, we load and prepare the single-cell data, NicheNet’s model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># single-cell expression matrix described in Puram et al. 2017</span>
+<span class="va">hnscc_expression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/hnscc_expression.rds"</span><span class="op">)</span><span class="op">)</span>
+<span class="co"># model weights</span>
+<span class="va">ligand_target_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">expression</span> <span class="op">&lt;-</span> <span class="va">hnscc_expression</span><span class="op">$</span><span class="va">expression</span>
 <span class="va">sample_info</span> <span class="op">&lt;-</span> <span class="va">hnscc_expression</span><span class="op">$</span><span class="va">sample_info</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.names.html">make.names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># filter samples based on vignette's information and add cell type</span>
-<span class="va">tumors_remove</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HN10"</span>, <span class="st">"HN"</span>, <span class="st">"HN12"</span>, <span class="st">"HN13"</span>, <span class="st">"HN24"</span>, <span class="st">"HN7"</span>, <span class="st">"HN8"</span>, <span class="st">"HN23"</span><span class="op">)</span>
-<span class="va">sample_info</span> <span class="op">&lt;-</span> <span class="va">sample_info</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span> <span class="op">!</span><span class="op">(</span><span class="va">tumor</span> <span class="op">%in%</span> <span class="va">tumors_remove</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">Lymph.node</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tumors_remove</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HN10"</span>, <span class="st">"HN"</span>, <span class="st">"HN12"</span>, <span class="st">"HN13"</span>, <span class="st">"HN24"</span>, <span class="st">"HN7"</span>, <span class="st">"HN8"</span>, <span class="st">"HN23"</span><span class="op">)</span>
+<span class="va">sample_info</span> <span class="op">&lt;-</span> <span class="va">sample_info</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span> <span class="op">!</span><span class="op">(</span><span class="va">tumor</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">tumors_remove</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">Lymph.node</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="co"># fix some cell type identity names</span>
-  <span class="fu">mutate</span><span class="op">(</span>cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">classified..as.cancer.cell</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"Tumor"</span>, <span class="va">non.cancer.cell.type</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">cell_type</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Tumor"</span>, <span class="st">"CAF"</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">classified..as.cancer.cell</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"Tumor"</span>, <span class="va">non.cancer.cell.type</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cell_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Tumor"</span>, <span class="st">"CAF"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># cell ID as rownames</span>
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">sample_info</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span>
 
 <span class="co"># subset expression to selected cells</span>
 <span class="va">expression</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span>, <span class="op">]</span>
 
 <span class="co"># gene set of interest</span>
-<span class="va">geneset_oi</span> <span class="op">&lt;-</span> <span class="fu">read_tsv</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/pemt_signature.txt"</span><span class="op">)</span>, col_types <span class="op">=</span> <span class="fu">cols</span><span class="op">(</span><span class="op">)</span>, col_names <span class="op">=</span> <span class="st">"gene"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">pull</span><span class="op">(</span><span class="va">gene</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="va">.</span><span class="op">[</span><span class="va">.</span> <span class="op">%in%</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<span class="va">geneset_oi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_tsv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/pemt_signature.txt"</span><span class="op">)</span>, col_types <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html" class="external-link">cols</a></span><span class="op">(</span><span class="op">)</span>, col_names <span class="op">=</span> <span class="st">"gene"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">gene</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">.</span><span class="op">[</span><span class="va">.</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 </div>
-<div id="run-liana" class="section level2">
-<h2 class="hasAnchor">
-<a href="#run-liana" class="anchor"></a>Run LIANA</h2>
+<div class="section level2">
+<h2 id="run-liana">Run LIANA<a class="anchor" aria-label="anchor" href="#run-liana"></a>
+</h2>
 <p>In the first step, we run LIANA to systematically score all the ligand-receptor interactions between all the cell types included in the dataset. To do so, we first need to create a Seurat object from data:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create seurat object</span>
-<span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/CreateAssayObject.html">CreateAssayObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">expm1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">.</span>, meta.data <span class="op">=</span> <span class="va">sample_info</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateAssayObject.html" class="external-link">CreateAssayObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">expm1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">.</span>, meta.data <span class="op">=</span> <span class="va">sample_info</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># set cell identity to cell type</span>
-<span class="fu"><a href="https://satijalab.org/seurat/reference/Idents.html">Idents</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">cell_type</span></code></pre></div>
+<span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Idents.html" class="external-link">Idents</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">cell_type</span></code></pre></div>
 <p>And then we can execute LIANA using default parameters. After LIANA execution, we employ the function <code><a href="../reference/liana_aggregate.html">liana_aggregate()</a></code> to summarize the output of different methods and to obtain a single score for each interaction.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>By default, LIANA will score the ligand-receptor interactions in all the possible directions within the two cell types of interest. This includes: Autocrine signaling (e.g. CAFs -&gt; CAFs), CAFs -&gt; Tumor cells and Tumor cells -&gt; CAFs. As we are only interested in the CAFs -&gt; Tumor cell direction, we filter the results and visualize the top 50 interactions according to the consensus/aggregate rank across methods. The aggregate rank itself can be interpreted as the significance of preferential enrichment for the interactions.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>By default, LIANA will score the ligand-receptor interactions in all the possible directions within the two cell types of interest. This includes: Autocrine signaling (e.g. CAFs -&gt; CAFs), CAFs -&gt; Tumor cells and Tumor cells -&gt; CAFs. As we are only interested in the CAFs -&gt; Tumor cell direction, we filter the results and visualize the top 50 interactions according to the consensus/aggregate rank across methods. The aggregate rank itself can be interpreted as the significance of preferential enrichment for the interactions.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># filter results to cell types of interest</span>
-<span class="va">caf_tumor_results</span> <span class="op">&lt;-</span> <span class="va">liana_results</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">source</span> <span class="op">==</span> <span class="st">"CAF"</span> <span class="op">&amp;</span> <span class="va">target</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">)</span>
+<span class="va">caf_tumor_results</span> <span class="op">&lt;-</span> <span class="va">liana_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">source</span> <span class="op">==</span> <span class="st">"CAF"</span> <span class="op">&amp;</span> <span class="va">target</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>ligand<span class="op">=</span><span class="va">ligand.complex</span>, receptor<span class="op">=</span><span class="va">receptor.complex</span><span class="op">)</span>
 
 <span class="co"># filter results to top N interactions</span>
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">50</span>
-<span class="va">top_n_caf_tumor</span> <span class="op">&lt;-</span> <span class="va">caf_tumor_results</span> <span class="op">%&gt;%</span>
-  <span class="fu">arrange</span><span class="op">(</span><span class="va">aggregate_rank</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">slice_head</span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>id <span class="op">=</span> <span class="fu">fct_inorder</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">ligand</span>, <span class="st">" -&gt; "</span>, <span class="va">receptor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">top_n_caf_tumor</span> <span class="op">&lt;-</span> <span class="va">caf_tumor_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">aggregate_rank</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_inorder.html" class="external-link">fct_inorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">ligand</span>, <span class="st">" -&gt; "</span>, <span class="va">receptor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># visualize median rank</span>
-<span class="va">top_n_caf_tumor</span> <span class="op">%&gt;%</span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">aggregate_rank</span>, x <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_bar</span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">xlab</span><span class="op">(</span><span class="st">"Interaction"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ylab</span><span class="op">(</span><span class="st">"LIANA's aggregate rank"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span>, angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="liana_nichenet_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<span class="va">top_n_caf_tumor</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">aggregate_rank</span>, x <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Interaction"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"LIANA's aggregate rank"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html" class="external-link">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span>, angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="liana_nichenet_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
-<div id="run-nichenet-using-lianas-ligands" class="section level2">
-<h2 class="hasAnchor">
-<a href="#run-nichenet-using-lianas-ligands" class="anchor"></a>Run NicheNet using LIANA’s ligands</h2>
+<div class="section level2">
+<h2 id="run-nichenet-using-lianas-ligands">Run NicheNet using LIANA’s ligands<a class="anchor" aria-label="anchor" href="#run-nichenet-using-lianas-ligands"></a>
+</h2>
 <p>The key aspect of combining LIANA with NicheNet is that we can use the ligands prioritized by LIANA as the set of potential ligands for NicheNet. Instead of evaluating all the expressed ligands for which the receptor is also expressed in the receiver cell type, we will only explore those that were prioritized by the methods included in LIANA. Hence, we select the ligands that form the interactions previously shown.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get ligands and filter to those included in NicheNet's ligand-target matrix</span>
-<span class="va">ligands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">top_n_caf_tumor</span><span class="op">$</span><span class="va">ligand</span><span class="op">)</span>
-<span class="va">ligands</span> <span class="op">&lt;-</span> <span class="va">ligands</span><span class="op">[</span><span class="va">ligands</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span>
+<span class="va">ligands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">top_n_caf_tumor</span><span class="op">$</span><span class="va">ligand</span><span class="op">)</span>
+<span class="va">ligands</span> <span class="op">&lt;-</span> <span class="va">ligands</span><span class="op">[</span><span class="va">ligands</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ligand_target_matrix</span><span class="op">)</span><span class="op">]</span>
 <span class="va">ligands</span></code></pre></div>
-<pre><code>##  [1] "COL1A1" "FN1"    "THBS2"  "CXCL12" "COL4A1" "THBS1"  "THBS4"  "LAMB1" 
-##  [9] "LAMA2"  "COMP"   "LAMB2"  "HSPG2"</code></pre>
-<p>Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md">NicheNet’s vignette</a>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">background_genes</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">]</span>, <span class="op">]</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fl">10</span><span class="op">*</span><span class="op">(</span><span class="fl">2</span><span class="op">**</span><span class="va">x</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="va">.</span><span class="op">[</span><span class="va">.</span> <span class="op">&gt;=</span> <span class="fl">4</span><span class="op">]</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>And execute NicheNet to predict the ligand activities using the pEMT gene set previously mentioned</p>
+<pre><code><span class="co">##  [1] "COL1A1" "FN1"    "THBS2"  "CXCL12" "THBS1"  "COL4A1" "THBS4"  "LAMB1" </span>
+<span class="co">##  [9] "LAMA2"  "COMP"   "LAMB2"  "HSPG2"</span></code></pre>
+<p>Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nichenet_activities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nichenetr/man/predict_ligand_activities.html">predict_ligand_activities</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">background_genes</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">]</span>, <span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fl">10</span><span class="op">*</span><span class="op">(</span><span class="fl">2</span><span class="op">**</span><span class="va">x</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">.</span><span class="op">[</span><span class="va">.</span> <span class="op">&gt;=</span> <span class="fl">4</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>And execute NicheNet to predict the ligand activities using the pEMT gene set previously mentioned</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">nichenet_activities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nichenetr/man/predict_ligand_activities.html" class="external-link">predict_ligand_activities</a></span><span class="op">(</span>
   geneset <span class="op">=</span> <span class="va">geneset_oi</span>,
   background_expressed_genes <span class="op">=</span> <span class="va">background_genes</span>,
   ligand_target_matrix <span class="op">=</span> <span class="va">ligand_target_matrix</span>, potential_ligands <span class="op">=</span> <span class="va">ligands</span>
 <span class="op">)</span></code></pre></div>
 <p>As a result, we obtain the NicheNet’s activity predictions for the ligands previously prioritized using LIANA. In a final step, we will visualize the ligand-receptor scores of LIANA and the ligand activity score of NicheNet in a single figure.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare data for visualization</span>
-<span class="va">vis_liana_nichenet</span> <span class="op">&lt;-</span> <span class="va">top_n_caf_tumor</span> <span class="op">%&gt;%</span>
-  <span class="fu">inner_join</span><span class="op">(</span><span class="va">nichenet_activities</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ligand"</span> <span class="op">=</span> <span class="st">"test_ligand"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">arrange</span><span class="op">(</span><span class="va">pearson</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>ligand <span class="op">=</span> <span class="fu">fct_inorder</span><span class="op">(</span><span class="va">ligand</span><span class="op">)</span><span class="op">)</span>
+<span class="va">vis_liana_nichenet</span> <span class="op">&lt;-</span> <span class="va">top_n_caf_tumor</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">nichenet_activities</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ligand"</span> <span class="op">=</span> <span class="st">"test_ligand"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">pearson</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ligand <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_inorder.html" class="external-link">fct_inorder</a></span><span class="op">(</span><span class="va">ligand</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># prepare NicheNet figure</span>
-<span class="va">nichenet_scores_plot</span> <span class="op">&lt;-</span> <span class="va">vis_liana_nichenet</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">ligand</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarize</span><span class="op">(</span>pearson <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pearson</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ligand</span>, x <span class="op">=</span> <span class="va">pearson</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_bar</span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"NicheNet"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">xlab</span><span class="op">(</span><span class="st">"Pearson's score"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>axis.text.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-        axis.ticks.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-        axis.title.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-        axis.line.y <span class="op">=</span> <span class="fu">element_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>,
-        plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,
-        axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="va">nichenet_scores_plot</span> <span class="op">&lt;-</span> <span class="va">vis_liana_nichenet</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ligand</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>pearson <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pearson</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">ligand</span>, x <span class="op">=</span> <span class="va">pearson</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"NicheNet"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Pearson's score"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html" class="external-link">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+        axis.ticks.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+        axis.title.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+        axis.line.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>,
+        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,
+        axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># prepare LIANA figure</span>
-<span class="va">liana_receptor_heatmap</span> <span class="op">&lt;-</span> <span class="va">vis_liana_nichenet</span> <span class="op">%&gt;%</span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ligand</span>, x <span class="op">=</span> <span class="va">receptor</span>, fill <span class="op">=</span> <span class="va">aggregate_rank</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_tile</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"LIANA"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Ligand"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">xlab</span><span class="op">(</span><span class="st">"Receptor"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
-        plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,
-        panel.grid.major <span class="op">=</span> <span class="fu">element_line</span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"gray"</span>, linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,
+<span class="va">liana_receptor_heatmap</span> <span class="op">&lt;-</span> <span class="va">vis_liana_nichenet</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">ligand</span>, x <span class="op">=</span> <span class="va">receptor</span>, fill <span class="op">=</span> <span class="va">aggregate_rank</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html" class="external-link">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"LIANA"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Ligand"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Receptor"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">60</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
+        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,
+        panel.grid.major <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"gray"</span>, linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,
         legend.position <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span>
 
 <span class="co"># combine plots</span>
-<span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">liana_receptor_heatmap</span>, <span class="va">nichenet_scores_plot</span>,
-          align <span class="op">=</span> <span class="st">"h"</span>, nrow <span class="op">=</span> <span class="fl">1</span>, rel_widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="liana_nichenet_files/figure-html/unnamed-chunk-10-1.png" width="768"></p>
+<span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">liana_receptor_heatmap</span>, <span class="va">nichenet_scores_plot</span>,
+          align <span class="op">=</span> <span class="st">"h"</span>, nrow <span class="op">=</span> <span class="fl">1</span>, rel_widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="liana_nichenet_files/figure-html/unnamed-chunk-11-1.png" width="768"></p>
 </div>
-<div id="conclusion" class="section level2">
-<h2 class="hasAnchor">
-<a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p>In this vignette, we exemplify how to use LIANA’s predictions as NicheNet’s input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, <strong>the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.</strong></p>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
+<p>In this vignette, we exemplify how to use LIANA’s predictions as NicheNet’s input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, <strong>the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.</strong></p>
 </div>
-<div id="r-session-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#r-session-information" class="anchor"></a>R Session information</h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R version 4.0.3 (2020-10-10)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.4 LTS
-## 
-## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
-## 
-## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-##  [1] cowplot_1.1.1      ggrepel_0.9.1      SeuratObject_4.0.2 Seurat_4.0.3      
-##  [5] nichenetr_1.0.0    liana_0.1.2        forcats_0.5.1      stringr_1.4.0     
-##  [9] dplyr_1.0.7        purrr_0.3.4        readr_2.1.0        tidyr_1.1.3       
-## [13] tibble_3.1.2       ggplot2_3.3.5      tidyverse_1.3.0    BiocStyle_2.18.1  
-## 
-## loaded via a namespace (and not attached):
-##   [1] rappdirs_0.3.3              scattermore_0.7            
-##   [3] ModelMetrics_1.2.2.2        ragg_1.1.0                 
-##   [5] bit64_4.0.5                 knitr_1.31                 
-##   [7] irlba_2.3.3                 DelayedArray_0.16.1        
-##   [9] data.table_1.14.0           rpart_4.1-15               
-##  [11] RCurl_1.98-1.3              generics_0.1.0             
-##  [13] BiocGenerics_0.36.0         RANN_2.6.1                 
-##  [15] future_1.21.0               DiagrammeR_1.0.6.1         
-##  [17] bit_4.0.4                   tzdb_0.1.2                 
-##  [19] spatstat.data_2.1-0         xml2_1.3.2                 
-##  [21] lubridate_1.7.9.2           httpuv_1.5.5               
-##  [23] SummarizedExperiment_1.20.0 assertthat_0.2.1           
-##  [25] viridis_0.5.1               gower_0.2.2                
-##  [27] xfun_0.21                   hms_1.0.0                  
-##  [29] jquerylib_0.1.3             evaluate_0.14              
-##  [31] promises_1.2.0.1            fansi_0.4.2                
-##  [33] progress_1.2.2              caTools_1.18.1             
-##  [35] dbplyr_2.1.0                readxl_1.3.1               
-##  [37] igraph_1.3.0                DBI_1.1.1                  
-##  [39] htmlwidgets_1.5.3           spatstat.geom_2.0-1        
-##  [41] stats4_4.0.3                ellipsis_0.3.2             
-##  [43] backports_1.2.1             bookdown_0.21              
-##  [45] deldir_0.2-10               sparseMatrixStats_1.2.1    
-##  [47] MatrixGenerics_1.2.1        vctrs_0.3.8                
-##  [49] SingleCellExperiment_1.12.0 Biobase_2.50.0             
-##  [51] Cairo_1.5-12.2              ROCR_1.0-11                
-##  [53] abind_1.4-5                 caret_6.0-88               
-##  [55] cachem_1.0.4                withr_2.4.1                
-##  [57] vroom_1.5.6                 checkmate_2.0.0            
-##  [59] sctransform_0.3.2           fdrtool_1.2.16             
-##  [61] prettyunits_1.1.1           scran_1.18.5               
-##  [63] goftest_1.2-2               cluster_2.1.0              
-##  [65] lazyeval_0.2.2              crayon_1.4.1               
-##  [67] labeling_0.4.2              edgeR_3.32.1               
-##  [69] recipes_0.1.16              pkgconfig_2.0.3            
-##  [71] GenomeInfoDb_1.26.2         vipor_0.4.5                
-##  [73] nlme_3.1-149                nnet_7.3-14                
-##  [75] rlang_0.4.11                globals_0.14.0             
-##  [77] lifecycle_1.0.0             miniUI_0.1.1.1             
-##  [79] modelr_0.1.8                rsvd_1.0.3                 
-##  [81] randomForest_4.6-14         cellranger_1.1.0           
-##  [83] rprojroot_2.0.2             polyclip_1.10-0            
-##  [85] matrixStats_0.58.0          lmtest_0.9-38              
-##  [87] Matrix_1.4-1                zoo_1.8-8                  
-##  [89] beeswarm_0.2.3              base64enc_0.1-3            
-##  [91] reprex_1.0.0                ggridges_0.5.3             
-##  [93] GlobalOptions_0.1.2         png_0.1-7                  
-##  [95] viridisLite_0.3.0           rjson_0.2.20               
-##  [97] bitops_1.0-6                visNetwork_2.0.9           
-##  [99] pROC_1.17.0.1               KernSmooth_2.23-17         
-## [101] DelayedMatrixStats_1.12.3   shape_1.4.5                
-## [103] parallelly_1.24.0           jpeg_0.1-8.1               
-## [105] S4Vectors_0.28.1            beachmat_2.6.4             
-## [107] scales_1.1.1                memoise_2.0.0              
-## [109] magrittr_2.0.1              plyr_1.8.6                 
-## [111] ica_1.0-2                   RobustRankAggreg_1.1       
-## [113] zlibbioc_1.36.0             compiler_4.0.3             
-## [115] dqrng_0.2.1                 RColorBrewer_1.1-2         
-## [117] clue_0.3-58                 fitdistrplus_1.1-3         
-## [119] cli_2.5.0                   XVector_0.30.0             
-## [121] listenv_0.8.0               patchwork_1.1.1            
-## [123] pbapply_1.4-3               htmlTable_2.1.0            
-## [125] Formula_1.2-4               MASS_7.3-53                
-## [127] mgcv_1.8-33                 tidyselect_1.1.0           
-## [129] stringi_1.5.3               textshaping_0.3.0          
-## [131] highr_0.8                   yaml_2.2.1                 
-## [133] BiocSingular_1.6.0          locfit_1.5-9.4             
-## [135] latticeExtra_0.6-29         grid_4.0.3                 
-## [137] sass_0.3.1                  tools_4.0.3                
-## [139] future.apply_1.7.0          parallel_4.0.3             
-## [141] circlize_0.4.12             rstudioapi_0.13            
-## [143] foreign_0.8-80              bluster_1.0.0              
-## [145] foreach_1.5.1               gridExtra_2.3              
-## [147] prodlim_2019.11.13          farver_2.0.3               
-## [149] Rtsne_0.15                  digest_0.6.27              
-## [151] BiocManager_1.30.10         lava_1.6.9                 
-## [153] shiny_1.6.0                 Rcpp_1.0.6                 
-## [155] GenomicRanges_1.42.0        broom_0.7.8                
-## [157] scuttle_1.0.4               later_1.1.0.1              
-## [159] RcppAnnoy_0.0.18            httr_1.4.2                 
-## [161] ComplexHeatmap_2.6.2        colorspace_2.0-0           
-## [163] rvest_0.3.6                 fs_1.5.0                   
-## [165] tensor_1.5                  reticulate_1.20            
-## [167] IRanges_2.24.1              splines_4.0.3              
-## [169] uwot_0.1.10                 statmod_1.4.35             
-## [171] OmnipathR_3.3.21            spatstat.utils_2.1-0       
-## [173] scater_1.18.5               pkgdown_1.6.1              
-## [175] plotly_4.9.3                systemfonts_1.0.1          
-## [177] xtable_1.8-4                jsonlite_1.7.2             
-## [179] timeDate_3043.102           ipred_0.9-11               
-## [181] R6_2.5.0                    Hmisc_4.4-2                
-## [183] pillar_1.6.1                htmltools_0.5.1.1          
-## [185] mime_0.10                   glue_1.4.2                 
-## [187] fastmap_1.1.0               BiocParallel_1.24.1        
-## [189] BiocNeighbors_1.8.2         class_7.3-17               
-## [191] codetools_0.2-16            utf8_1.1.4                 
-## [193] lattice_0.20-41             bslib_0.2.4                
-## [195] spatstat.sparse_2.0-0       logger_0.2.0               
-## [197] ggbeeswarm_0.6.0            curl_4.3.2                 
-## [199] leiden_0.3.7                survival_3.2-7             
-## [201] limma_3.46.0                rmarkdown_2.7              
-## [203] desc_1.2.0                  munsell_0.5.0              
-## [205] e1071_1.7-4                 GetoptLong_1.0.5           
-## [207] GenomeInfoDbData_1.2.4      iterators_1.0.13           
-## [209] haven_2.3.1                 reshape2_1.4.4             
-## [211] gtable_0.3.0                spatstat.core_2.0-0</code></pre>
+<div class="section level2">
+<h2 id="r-session-information">R Session information<a class="anchor" aria-label="anchor" href="#r-session-information"></a>
+</h2>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## R version 4.2.0 (2022-04-22)</span>
+<span class="co">## Platform: x86_64-pc-linux-gnu (64-bit)</span>
+<span class="co">## Running under: Ubuntu 20.04.4 LTS</span>
+<span class="co">## </span>
+<span class="co">## Matrix products: default</span>
+<span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0</span>
+<span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0</span>
+<span class="co">## </span>
+<span class="co">## locale:</span>
+<span class="co">##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span>
+<span class="co">##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span>
+<span class="co">##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span>
+<span class="co">## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span>
+<span class="co">## </span>
+<span class="co">## attached base packages:</span>
+<span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
+<span class="co">## </span>
+<span class="co">## other attached packages:</span>
+<span class="co">##  [1] sp_1.5-0           SeuratObject_4.1.0 Seurat_4.1.1       nichenetr_1.1.0   </span>
+<span class="co">##  [5] liana_0.1.4        forcats_0.5.1      stringr_1.4.0      dplyr_1.0.9       </span>
+<span class="co">##  [9] purrr_0.3.4        readr_2.1.2        tidyr_1.2.0        tibble_3.1.7      </span>
+<span class="co">## [13] tidyverse_1.3.1    cowplot_1.1.1      ggrepel_0.9.1      ggpubr_0.4.0      </span>
+<span class="co">## [17] ggplot2_3.3.6      BiocStyle_2.24.0  </span>
+<span class="co">## </span>
+<span class="co">## loaded via a namespace (and not attached):</span>
+<span class="co">##   [1] rsvd_1.0.5                  Hmisc_4.7-0                </span>
+<span class="co">##   [3] ica_1.0-2                   class_7.3-20               </span>
+<span class="co">##   [5] foreach_1.5.2               lmtest_0.9-40              </span>
+<span class="co">##   [7] rprojroot_2.0.3             crayon_1.5.1               </span>
+<span class="co">##   [9] spatstat.core_2.4-4         MASS_7.3-57                </span>
+<span class="co">##  [11] nlme_3.1-158                backports_1.4.1            </span>
+<span class="co">##  [13] reprex_2.0.1                rlang_1.0.2                </span>
+<span class="co">##  [15] XVector_0.36.0              caret_6.0-92               </span>
+<span class="co">##  [17] ROCR_1.0-11                 readxl_1.4.0               </span>
+<span class="co">##  [19] irlba_2.3.5                 limma_3.52.1               </span>
+<span class="co">##  [21] scater_1.24.0               BiocParallel_1.30.3        </span>
+<span class="co">##  [23] rjson_0.2.21                bit64_4.0.5                </span>
+<span class="co">##  [25] glue_1.6.2                  sctransform_0.3.3          </span>
+<span class="co">##  [27] parallel_4.2.0              vipor_0.4.5                </span>
+<span class="co">##  [29] spatstat.sparse_2.1-1       BiocGenerics_0.42.0        </span>
+<span class="co">##  [31] spatstat.geom_2.4-0         haven_2.5.0                </span>
+<span class="co">##  [33] tidyselect_1.1.2            SummarizedExperiment_1.26.1</span>
+<span class="co">##  [35] fitdistrplus_1.1-8          zoo_1.8-10                 </span>
+<span class="co">##  [37] xtable_1.8-4                magrittr_2.0.3             </span>
+<span class="co">##  [39] evaluate_0.15               scuttle_1.6.2              </span>
+<span class="co">##  [41] cli_3.3.0                   zlibbioc_1.42.0            </span>
+<span class="co">##  [43] rstudioapi_0.13             miniUI_0.1.1.1             </span>
+<span class="co">##  [45] logger_0.2.2                bslib_0.3.1                </span>
+<span class="co">##  [47] rpart_4.1.16                shiny_1.7.1                </span>
+<span class="co">##  [49] BiocSingular_1.12.0         xfun_0.31                  </span>
+<span class="co">##  [51] clue_0.3-61                 cluster_2.1.3              </span>
+<span class="co">##  [53] caTools_1.18.2              listenv_0.8.0              </span>
+<span class="co">##  [55] png_0.1-7                   future_1.26.1              </span>
+<span class="co">##  [57] ipred_0.9-13                withr_2.5.0                </span>
+<span class="co">##  [59] bitops_1.0-7                plyr_1.8.7                 </span>
+<span class="co">##  [61] cellranger_1.1.0            hardhat_1.1.0              </span>
+<span class="co">##  [63] e1071_1.7-11                dqrng_0.3.0                </span>
+<span class="co">##  [65] pROC_1.18.0                 pillar_1.7.0               </span>
+<span class="co">##  [67] GlobalOptions_0.1.2         cachem_1.0.6               </span>
+<span class="co">##  [69] fs_1.5.2                    GetoptLong_1.0.5           </span>
+<span class="co">##  [71] DelayedMatrixStats_1.18.0   vctrs_0.4.1                </span>
+<span class="co">##  [73] ellipsis_0.3.2              generics_0.1.2             </span>
+<span class="co">##  [75] lava_1.6.10                 tools_4.2.0                </span>
+<span class="co">##  [77] foreign_0.8-82              beeswarm_0.4.0             </span>
+<span class="co">##  [79] munsell_0.5.0               proxy_0.4-27               </span>
+<span class="co">##  [81] DelayedArray_0.22.0         fastmap_1.1.0              </span>
+<span class="co">##  [83] compiler_4.2.0              abind_1.4-5                </span>
+<span class="co">##  [85] httpuv_1.6.5                plotly_4.10.0              </span>
+<span class="co">##  [87] rgeos_0.5-9                 GenomeInfoDbData_1.2.8     </span>
+<span class="co">##  [89] prodlim_2019.11.13          gridExtra_2.3              </span>
+<span class="co">##  [91] edgeR_3.38.1                lattice_0.20-45            </span>
+<span class="co">##  [93] deldir_1.0-6                visNetwork_2.1.0           </span>
+<span class="co">##  [95] utf8_1.2.2                  later_1.3.0                </span>
+<span class="co">##  [97] RobustRankAggreg_1.1        recipes_0.2.0              </span>
+<span class="co">##  [99] jsonlite_1.8.0              scales_1.2.0               </span>
+<span class="co">## [101] ScaledMatrix_1.4.0          pbapply_1.5-0              </span>
+<span class="co">## [103] carData_3.0-5               sparseMatrixStats_1.8.0    </span>
+<span class="co">## [105] lazyeval_0.2.2              promises_1.2.0.1           </span>
+<span class="co">## [107] car_3.1-0                   doParallel_1.0.17          </span>
+<span class="co">## [109] latticeExtra_0.6-29         goftest_1.2-3              </span>
+<span class="co">## [111] spatstat.utils_2.3-1        reticulate_1.25            </span>
+<span class="co">## [113] checkmate_2.1.0             rmarkdown_2.14             </span>
+<span class="co">## [115] pkgdown_2.0.4               textshaping_0.3.6          </span>
+<span class="co">## [117] statmod_1.4.36              Rtsne_0.16                 </span>
+<span class="co">## [119] Biobase_2.56.0              uwot_0.1.11                </span>
+<span class="co">## [121] igraph_1.3.2                survival_3.3-1             </span>
+<span class="co">## [123] yaml_2.3.5                  systemfonts_1.0.4          </span>
+<span class="co">## [125] htmltools_0.5.2             memoise_2.0.1              </span>
+<span class="co">## [127] locfit_1.5-9.5              IRanges_2.30.0             </span>
+<span class="co">## [129] viridisLite_0.4.0           digest_0.6.29              </span>
+<span class="co">## [131] assertthat_0.2.1            mime_0.12                  </span>
+<span class="co">## [133] rappdirs_0.3.3              future.apply_1.9.0         </span>
+<span class="co">## [135] remotes_2.4.2               data.table_1.14.2          </span>
+<span class="co">## [137] S4Vectors_0.34.0            ragg_1.2.2                 </span>
+<span class="co">## [139] DiagrammeR_1.0.9            labeling_0.4.2             </span>
+<span class="co">## [141] splines_4.2.0               Formula_1.2-4              </span>
+<span class="co">## [143] RCurl_1.98-1.7              broom_0.8.0                </span>
+<span class="co">## [145] hms_1.1.1                   modelr_0.1.8               </span>
+<span class="co">## [147] colorspace_2.0-3            base64enc_0.1-3            </span>
+<span class="co">## [149] BiocManager_1.30.18         ggbeeswarm_0.6.0           </span>
+<span class="co">## [151] GenomicRanges_1.48.0        shape_1.4.6                </span>
+<span class="co">## [153] nnet_7.3-17                 sass_0.4.1                 </span>
+<span class="co">## [155] Rcpp_1.0.8.3                bookdown_0.27              </span>
+<span class="co">## [157] RANN_2.6.1                  circlize_0.4.15            </span>
+<span class="co">## [159] fansi_1.0.3                 tzdb_0.3.0                 </span>
+<span class="co">## [161] parallelly_1.32.0           ModelMetrics_1.2.2.2       </span>
+<span class="co">## [163] R6_2.5.1                    grid_4.2.0                 </span>
+<span class="co">## [165] ggridges_0.5.3              lifecycle_1.0.1            </span>
+<span class="co">## [167] bluster_1.6.0               curl_4.3.2                 </span>
+<span class="co">## [169] ggsignif_0.6.3              leiden_0.4.2               </span>
+<span class="co">## [171] jquerylib_0.1.4             Matrix_1.4-1               </span>
+<span class="co">## [173] desc_1.4.1                  RcppAnnoy_0.0.19           </span>
+<span class="co">## [175] RColorBrewer_1.1-3          iterators_1.0.14           </span>
+<span class="co">## [177] gower_1.0.0                 htmlwidgets_1.5.4          </span>
+<span class="co">## [179] beachmat_2.12.0             polyclip_1.10-0            </span>
+<span class="co">## [181] rvest_1.0.2                 ComplexHeatmap_2.12.0      </span>
+<span class="co">## [183] mgcv_1.8-40                 globals_0.15.0             </span>
+<span class="co">## [185] htmlTable_2.4.0             patchwork_1.1.1            </span>
+<span class="co">## [187] spatstat.random_2.2-0       progressr_0.10.1           </span>
+<span class="co">## [189] codetools_0.2-18            matrixStats_0.62.0         </span>
+<span class="co">## [191] lubridate_1.8.0             metapod_1.4.0              </span>
+<span class="co">## [193] randomForest_4.7-1.1        prettyunits_1.1.1          </span>
+<span class="co">## [195] SingleCellExperiment_1.18.0 dbplyr_2.2.0               </span>
+<span class="co">## [197] GenomeInfoDb_1.32.2         gtable_0.3.0               </span>
+<span class="co">## [199] DBI_1.1.2                   stats4_4.2.0               </span>
+<span class="co">## [201] highr_0.9                   tensor_1.5                 </span>
+<span class="co">## [203] httr_1.4.3                  KernSmooth_2.23-20         </span>
+<span class="co">## [205] stringi_1.7.6               vroom_1.5.7                </span>
+<span class="co">## [207] progress_1.2.2              farver_2.1.0               </span>
+<span class="co">## [209] reshape2_1.4.4              viridis_0.6.2              </span>
+<span class="co">## [211] fdrtool_1.2.17              timeDate_3043.102          </span>
+<span class="co">## [213] xml2_1.3.3                  BiocNeighbors_1.14.0       </span>
+<span class="co">## [215] OmnipathR_3.4.0             scattermore_0.8            </span>
+<span class="co">## [217] scran_1.24.0                bit_4.0.4                  </span>
+<span class="co">## [219] jpeg_0.1-9                  MatrixGenerics_1.8.0       </span>
+<span class="co">## [221] spatstat.data_2.2-0         pkgconfig_2.0.3            </span>
+<span class="co">## [223] rstatix_0.7.0               knitr_1.39</span></code></pre>
 </div>
   </div>
 
@@ -436,11 +441,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
+  <p></p>
+<p>Developed by Daniel Dimitrov, Charlotte Boys, Martin Garrido Rodríguez, Denes Turei, James Nagai.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -448,6 +455,8 @@
 
   
 
+
+  
 
   </body>
 </html>
