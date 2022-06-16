@@ -26,3 +26,6 @@ jobs:
           extra-packages: rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v1
+        with:
+          args: 'c("--no-build-vignettes", "--no-manual", "--as-cran")'
+          error-on: '"error"'

@@ -20,7 +20,7 @@ in this vignette we provide further instructions relevant for method developers.
 
 
 ## Load prerequisites
-```{r load_prereq, message=FALSE, warning=FALSE, eval=FALSE}
+```{r load_prereq, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(magrittr)
 library(liana)
@@ -38,7 +38,7 @@ First, we start by converting the object to SCE (if Seurat) and basic checks via
 Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type.
 Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?`liana:::decomplexify`).
 These are later re-assembled back into complexes using the `recomplexify` function.
-```{r lr_cpdb, message=FALSE, warning=FALSE, eval=FALSE}
+```{r lr_cpdb, message=FALSE, warning=FALSE}
 sce <- liana_prep(testdata)
 
 # Obtain LR summary res with CellPhoneDB and dissociate complexes
