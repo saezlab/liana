@@ -121,7 +121,7 @@ for each method implemented in it, as well as an aggregate_rank* which serves as
 single sample system. Most of these, with the exception of SingleCellSignalR's LRscore, take
 the specificity of the cluster pair into account.
 
-(*) The aggregate consensus rank (`aggregate_rank`) is obtained using the RobustRankAggreg package and its [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method.
+(*) The aggregate consensus rank (`aggregate_rank`) is obtained using a re-implementation of the [`RRA`](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278763/) method from the `RobustRankAggreg` package.
 
 `RRA` scores can be interpreted as p-values and interactions which are
 ranked consistently higher than random are assigned low scores/p-values.

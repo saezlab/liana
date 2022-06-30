@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
     person(
         given = "Daniel",
@@ -63,7 +63,6 @@ Imports:
     scater,
     scuttle,
     SeuratObject,
-    RobustRankAggreg,
     tidyselect,
     ggplot2,
     ComplexHeatmap,

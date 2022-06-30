@@ -26,9 +26,7 @@
 #' @param join_cols columns by which different method results will be joined.
 #' NULL by default, and automatically will handle the columns depending on the
 #' methods used.
-#'
-#'
-#' @inheritDotParams RobustRankAggreg::aggregateRanks
+#' @inheritDotParams .rank_matrix
 #'
 #' @return Tibble with the interaction results and ranking for each method
 #'
@@ -70,6 +68,13 @@ liana_aggregate <- function(liana_res,
 
     # fix external methods which return only ligand/receptor, but not .complex
     if(any(startsWith(names(liana_res), "call_"))){
+        if(!all(startsWith(names(liana_res), "call_"))){
+            liana_message(
+                "Using internal and external methods should be done with caution!",
+                output = "warning",
+                verbose = verbose)
+        }
+
         join_cols %<>% `%||%` (c("source", "target",
                                  "ligand", "receptor"))
     } else{
@@ -77,6 +82,8 @@ liana_aggregate <- function(liana_res,
         join_cols %<>% `%||%`  (c("source", "target",
                                   "ligand.complex", "receptor.complex"))
     }
+
+    #
 
 
     cap %<>% `%||%`(.select_cap(liana_res, set_cap))
@@ -209,15 +216,121 @@ liana_aggregate <- function(liana_res,
             # bad practice, but almost unavoidable here...
             res %>%
                 unite(join_cols,
-                      col = "interaction", sep = "⊎") %>%
+                      col = "interaction",
+                      sep = "⊎") %>%
                 pull("interaction")
         }) %>%
-        RobustRankAggreg::aggregateRanks(rmat = RobustRankAggreg::rankMatrix(.),
-                                         ...) %>%
-        as_tibble() %>%
-        rename(aggregate_rank = Score,
-               interaction = Name) %>%
+        .rank_matrix %>%
+        .robust_rank_agg(.,
+                         ...) %>%
         separate(col = "interaction", sep = "⊎",
                  into = join_cols)
 }
+
+
+
+#' Function to convert a list of characters to a ranked matrix [0,1]
+#'
+#' @param glist a list of ranked/ordered characters
+#'
+#' @return a matrix filled with 0-1 values depending on the position order
+#' of the characters.
+#'
+#' @details Adated from Kolde et al., 2012.
+#' Required due to the removal of the RobustRankAggregate package from CRAN.
+#'
+#' @references Kolde, R., Laur, S., Adler, P. and Vilo, J., 2012.
+#'  Robust rank aggregation for gene list integration and meta-analysis.
+#'  Bioinformatics, 28(4), pp.573-580.
+#'
+#' @keywords internal
+.rank_matrix <- function(glist, ...){
+
+    # Get unique entities
+    u.ents <- unique(c(glist, recursive = TRUE))
+
+    # num of entities per col
+    num.ents <- length(u.ents)
+
+    # get position for each vect
+    pos.mat <- sapply(FUN = match,
+                      X = glist,
+                      x = u.ents,
+                      nomatch = num.ents) %>%
+        matrix(nrow = num.ents,
+               ncol = length(glist),
+               dimnames = list(u.ents, names(glist)))
+
+    # Fill mat /w total ents
+    rank.mat <- matrix(num.ents,
+                       nrow = num.ents,
+                       ncol = length(glist),
+                       dimnames = list(u.ents, names(glist)))
+
+    # return rank/total_rank by pos
+    return(pos.mat / rank.mat)
+
+}
+
+
+#' Function to calculate and format aggregate ranks
+#'
+#' @param rmat ranked matrix formated with `.rank_matrix`
+#'
+#' @details Adated from Kolde et al., 2012.
+#' Required due to the removal of the RobustRankAggregate package from CRAN.
+#'
+#' @references Kolde, R., Laur, S., Adler, P. and Vilo, J., 2012.
+#'  Robust rank aggregation for gene list integration and meta-analysis.
+#'  Bioinformatics, 28(4), pp.573-580.
+#'
+#' @noRd
+.robust_rank_agg <- function(rmat){
+    tibble(interaction = rownames(rmat), # Name
+           # calc aggr ranks
+           aggregate_rank = unname(apply(rmat, 1, .rho_scores))) %>% # Score
+        arrange(aggregate_rank)
+}
+
+
+#' Calculate (corrected) beta scores and rho values
+#'
+#' @param r normalized ranks vector [0,1]
+#'
+#' @return The functions returns a vector of p-values
+#'
+#' @details Adated from Kolde et al., 2012.
+#' Required due to the removal of the RobustRankAggregate package from CRAN.
+#'
+#' @references Kolde, R., Laur, S., Adler, P. and Vilo, J., 2012.
+#'  Robust rank aggregation for gene list integration and meta-analysis.
+#'  Bioinformatics, 28(4), pp.573-580.
+#'
+#' @noRd
+.rho_scores <- function(r){
+    r <- sort(r)
+    n <- length(r)
+
+    # Calc beta p-vals
+    p <- pbeta(q=r,
+               shape1 = 1:n,
+               shape2 = n - (1:n) + 1)
+
+    # correct beta pvals
+    .corr_beta_pvals(p = min(p), k=n)
+}
+
+#' Correct beta p-vals
+#'
+#' @param p min p-val
+#' @param k number of elements in the vec
+#'
+#' @noRd
+.corr_beta_pvals <- function(p, k){
+    min(p * k, 1)
+}
+
+
+
+
 

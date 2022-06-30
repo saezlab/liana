@@ -1,7 +1,7 @@
 # Input
 liana_path <- system.file(package = "liana")
 
-# Test without decomplexify
+# Test without decomplexify ----
 test_that("Test liana aggregate", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_aggr.RDS"))
@@ -14,7 +14,7 @@ test_that("Test liana aggregate", {
 })
 
 
-# aggregate with housekeeping
+# aggregate with housekeeping ----
 test_that("Test liana aggregate (housekeep)", {
     exp2 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_house_aggr.RDS"))

@@ -1,3 +1,11 @@
+# LIANA 0.1.5 (XX.07.22)
+
+## Changes
+- Re-implemented the `RRA` method from  Kolde et al., 2012, as a consequence of
+the removal of the `RobustRankAggregate` package from CRAN.
+
+
+
 # LIANA 0.1.4 (18.06.22)
 
 ## Changes
