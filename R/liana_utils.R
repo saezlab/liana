@@ -84,13 +84,22 @@ recode.character2 <- function(.x,
     replaced <- rep(FALSE, n)
 
     for (nm in names(values)) {
-        out <- dplyr:::replace_with(out, .x == nm, values[[nm]], paste0("`", nm, "`"))
+        out <- dplyr:::replace_with(out,
+                                    .x == nm,
+                                    values[[nm]],
+                                    paste0("`", nm, "`"))
         replaced[.x == nm] <- TRUE
     }
 
     .default <- dplyr:::validate_recode_default(.default, .x, out, replaced)
-    out <- dplyr:::replace_with(out, !replaced & !is.na(.x), exec(.default_fun, .default), "`.default`")
-    out <- dplyr:::replace_with(out, is.na(.x), .missing, "`.missing`")
+    out <- dplyr:::replace_with(out,
+                                !replaced & !is.na(.x),
+                                exec(.default_fun, .default),
+                                "`.default`")
+    out <- dplyr:::replace_with(out,
+                                is.na(.x),
+                                .missing,
+                                "`.missing`")
     out
 }
 
@@ -121,5 +130,64 @@ recode.character2 <- function(.x,
         dplyr::select(.data[[genesymbol_complex]], translated_complex) %>%
         unnest(translated_complex)
 
+}
+
+
+
+#' Helper function to bind dictionaries
+#'
+#' @param main_entity entity with one-to-many mapping (ligand or receptor)
+#' @param secondary_entity other entity (ligand or receptor)
+#'
+#' @details split by interaction, deframe and bind the secondary entity.
+#' For example, if a ligand (`main_entity`) has one-to-many mapping to
+#' multiple homologs, then main_entity will contain all homologs that match to
+#' the ligand's subunits (or protein if not a complex). To this, we also attach
+#' the genes of the receptor (`secondary_entity`) so that `generate_orthologs`
+#' can translate both the ligand and receptor, and vice versa.
+#'
+#' @noRd
+.bind_dicts <- function(main_entity, secondary_entity){
+    main_entity %>%
+        group_by(genesymbol_source, genesymbol_target) %>%
+        group_split() %>%
+        map(~deframe(bind_rows(.x, secondary_entity)))
+}
+
+#' Function to create a dictionary for one2many maps
+#'
+#' @param hg_human_mouse_gs the human to mouse dict tibble (should be a vect)
+#' @param op_row.decomp decomp omni (we need all genes)
+#' @param entity_2many entities that match to many homologs
+#'
+#' @return a dictionary for the provided interaction
+#'
+#' @noRd
+.create_row_dict <- function(hg_human_mouse_gs,
+                             op_row.decomp,
+                             entity_2many
+                             ){
+    # do the ligand or receptor posses homologs
+    is.l.2many <- any(op_row.decomp$source_genesymbol %in% entity_2many)
+    is.r.2many <- any(op_row.decomp$target_genesymbol %in% entity_2many)
+
+    # Ligands
+    dicts_row.l <- hg_human_mouse_gs %>%
+        filter(genesymbol_source %in% op_row.decomp$source_genesymbol)
+    # Receptors
+    dicts_row.r <- hg_human_mouse_gs %>%
+        filter(genesymbol_source %in% op_row.decomp$target_genesymbol)
+
+    if(all(is.l.2many, is.r.2many)){
+        c( # both
+            .bind_dicts(dicts_row.l, dicts_row.r),
+            .bind_dicts(dicts_row.r, dicts_row.l)
+        )
+
+    } else if(is.l.2many){
+        .bind_dicts(dicts_row.l, dicts_row.r)
+    } else if(is.r.2many){
+        .bind_dicts(dicts_row.r, dicts_row.l)
+    }
 }
 
