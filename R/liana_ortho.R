@@ -50,8 +50,8 @@ generate_homologs <- function(op_resource,
                       op_resource.decomp[[target]])
 
     if(is.null(symbols_dict)){
-        symbols_dict <- get_homologene_dict(entities,
-                                            target_organism)
+        symbols_dict <- get_homologene_dict(entities=entities,
+                                            target_organism=target_organism)
     }
 
     # Remove any missing antities
@@ -84,12 +84,14 @@ generate_homologs <- function(op_resource,
         op_resource <- anti_join(op_resource,
                                  op_resource.decomp,
                                  by = c("source", "target",
-                                        "source_genesymbol", "target_genesymbol"))
+                                        "source_genesymbol",
+                                        "target_genesymbol"))
     }
 
     # Obtain genes with multiple matches
     entity_2many <- symbols_dict %>%
-        enframe(name = "genesymbol_source", value = "genesymbol_target") %>%
+        enframe(name = "genesymbol_source",
+                value = "genesymbol_target") %>%
         group_by(genesymbol_source) %>%
         count(name = "n_match") %>%
         filter(n_match > 1 & n_match <= max_homologs) %>%

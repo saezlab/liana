@@ -72,8 +72,8 @@ show_homologene()
 op_resource <- select_resource("Consensus")[[1]]
 
 # Generate orthologous resource
-ortholog_resource <- generate_orthologs(op_resource = op_resource,
-                                        target_organism = 10090) # mouse
+ortholog_resource <- generate_homologs(op_resource = op_resource,
+                                       target_organism = 10090) # mouse
 
 # Run LIANA with the orthologous resource
 liana_res <- liana_wrap(testdata,
@@ -157,9 +157,14 @@ symbols_dict <- biomaRt::getLDS(attributes = c("hgnc_symbol"),
 
 ```
 
-## An example dictionary for murine symbols is also included in liana
+## An example dictionary (generated /w homologene) for murine symbols is included in liana
 ```{r hidden_load, warning=FALSE, message=FALSE}
 symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
 head(symbols_dict)
 ```
 
+One then simply passes the `symbols_dict` to the `symbols_dict` param instead of
+specifying a tax id to `generate_homologs`.
+
+Alternatively, one could also use external curated databases (e.g. murine 
+CellChatDB) with LIANA.

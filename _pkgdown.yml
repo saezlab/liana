@@ -51,4 +51,5 @@ reference:
       - min0
       - decomplexify
       - generate_orthologs
+      - generate_homologs
 
