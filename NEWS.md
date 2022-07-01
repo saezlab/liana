@@ -4,6 +4,11 @@
 - Re-implemented the `RRA` method from  Kolde et al., 2012, as a consequence of
 the removal of the `RobustRankAggregate` package from CRAN.
 
+- Integrate `generate_homologs` with OmniPath's `homologene` database.
+This allows homology conversion by simply passing an organism ID. Also, handles
+complicated cases, such as complex subunits with one-to-many mapping homologs.
+
+
 
 
 # LIANA 0.1.4 (18.06.22)

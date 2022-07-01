@@ -24,7 +24,8 @@ See `show_homologene` for available organisms via OmnipathR's `HomoloGene`}
 \item{max_homologs}{Determines the max number of homologs to be translated.
 Certain genes will have multiple homolog matches, with some having also
 certain isoforms considered. To exclude cases in which the number of
-matched homologs is too high, one can adjust the homologs parameter.}
+matched homologs is too high, one can adjust the homologs parameter.
+Setting this to `1` would mean that one-to-many homolog matches are discarded}
 
 \item{.missing_fun}{approach to handle missing interactions. By default
 set to `NULL` which would mean that any interactions without a homology
