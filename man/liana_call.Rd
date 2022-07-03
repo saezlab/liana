@@ -4,12 +4,10 @@
 \alias{liana_call}
 \title{Wrapper Function to obtain scores via liana_pipe}
 \usage{
-liana_call(method, op_resource, lr_res, ...)
+liana_call(method, lr_res, ...)
 }
 \arguments{
 \item{method}{name of the method to be called}
-
-\item{op_resource}{resource tibble obtained via \link{liana::select_resource}}
 
 \item{lr_res}{ligand-receptor DE results and other stats between clusters}
 
@@ -17,6 +15,7 @@ liana_call(method, op_resource, lr_res, ...)
   Arguments passed on to \code{\link[=liana_pipe]{liana_pipe}}
   \describe{
     \item{\code{sce}}{SingleCellExperiment Object}
+    \item{\code{op_resource}}{resource tibble obtained via \link{liana::select_resource}}
     \item{\code{assay}}{assay to be used ("RNA" by default)}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
 (logcounts by default), available options are: "counts" and "logcounts"}

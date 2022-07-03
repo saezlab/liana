@@ -51,6 +51,11 @@ rownames(testdata@assays$RNA@counts) <- stringr::str_to_title(rownames(testdata@
 rownames(testdata@assays$RNA@data) <- stringr::str_to_title(rownames(testdata@assays$RNA@data))
 ```
 
+It is also recommended to ensure that you have the latest OmnipathR version installed:
+```{r omni, eval=FALSE}
+remotes::install_github("saezlab/OmnipathR")
+```
+
 
 ## Internally available organisms
 
@@ -61,7 +66,7 @@ Here, we check the organisms which are currently available.
 
 One must simply choose the `ncbi_taxid` and pass it as `target_organism` parameter
 to the `generate_homologs` function below.
-```{r}
+```{r show_taxid}
 show_homologene()
 ```
 
@@ -97,23 +102,23 @@ liana_res %>%
 
 
 Conversion is trickier than anticipated. In the sense that, there will be genes
-without matching homologs, while other genes will have multiple matching homologs.
+without matching homologs, while others will have multiple matching homologs.
 These issues are further complicated when working with complexes, as is the case
-for the interactions in LIANA.
-
-Furthermore, some ligand–receptor interactions could be species-specific.
+for the interactions in LIANA. Some ligand–receptor interactions can also 
+be species-specific. 
 
 Thus, we suggest that if possible to check literature for support of the predicted
 edges when using orthology conversion.
 
-Nevertheless, the `generate_homologs` function was designed to be very flexible,
-but by default will be relatively conservative with conversion, with the idea
-to return a resource with good conversion quality. Please refer to its documentation
-for more information.
+Notably, the `generate_homologs` function was designed to be very flexible,
+but by default will be relatively conservative. So, please refer to its
+documentation for more information.
 
 
 
-## Generating an External Dictionary
+## Extra
+
+### Generating an External Dictionary
 In order to convert a human resource to any other organism, we need a dictionary
 which maps human gene symbols to their orthologs from another species, which 
 might not be available via OmniPath. 
@@ -163,8 +168,8 @@ symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
 head(symbols_dict)
 ```
 
-One then simply passes the `symbols_dict` to the `symbols_dict` param instead of
-specifying a tax id to `generate_homologs`.
+One can then simply pass the `symbols_dict` to the `symbols_dict` param to
+`generate_homologs`, instead of specifying a tax id in `target_organism`.
 
 Alternatively, one could also use external curated databases (e.g. murine 
 CellChatDB) with LIANA.

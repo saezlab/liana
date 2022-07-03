@@ -148,7 +148,6 @@ get_cytotalk <- function(lr_res,
 #'
 #' @return lr_res modified to be method-specific
 liana_call <- function(method,
-                       op_resource,
                        lr_res,
                        ...){
 

@@ -13,7 +13,6 @@ get_natmi(lr_res, ...)
   Arguments passed on to \code{\link[=liana_call]{liana_call}}
   \describe{
     \item{\code{method}}{name of the method to be called}
-    \item{\code{op_resource}}{resource tibble obtained via \link{liana::select_resource}}
   }}
 }
 \value{
