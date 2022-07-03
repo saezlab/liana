@@ -303,7 +303,7 @@ join_means <- function(lr_res,
 #' @noRd
 join_sum_means <- function(lr_res, means, entity){
 
-    entity.expr = sym(str_glue("{entity}.sum"))
+    entity.expr <- sym(str_glue("{entity}.sum"))
 
     sums <- means %>%
         as.data.frame() %>%
@@ -334,7 +334,7 @@ join_log2FC <- function(lr_res,
                         source_target,
                         entity){
 
-    entity.fc = sym(str_glue("{entity}.log2FC"))
+    entity.fc <- sym(str_glue("{entity}.log2FC"))
 
     logfc <- logfc_df %>%
         dplyr::rename(

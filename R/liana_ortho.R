@@ -59,8 +59,7 @@ generate_homologs <- function(op_resource,
     if(is.null(.missing_fun)){
 
         # All missing entities
-        missing_entities <- setdiff(union(op_resource.decomp$source_genesymbol,
-                                          op_resource.decomp$target_genesymbol),
+        missing_entities <- setdiff(entities,
                                     names(symbols_dict))
 
         liana_message(

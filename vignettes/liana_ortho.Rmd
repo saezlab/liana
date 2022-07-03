@@ -116,9 +116,7 @@ documentation for more information.
 
 
 
-## Extra
-
-### Generating an External Dictionary
+## ## Generating an External Dictionary
 In order to convert a human resource to any other organism, we need a dictionary
 which maps human gene symbols to their orthologs from another species, which 
 might not be available via OmniPath. 
@@ -171,5 +169,6 @@ head(symbols_dict)
 One can then simply pass the `symbols_dict` to the `symbols_dict` param to
 `generate_homologs`, instead of specifying a tax id in `target_organism`.
 
-Alternatively, one could also use external curated databases (e.g. murine 
-CellChatDB) with LIANA.
+Automatic conversion comes with some limitation, we thus also refer the user to
+external curated databases (e.g. murine CellChatDB), which can also be used 
+with LIANA.
