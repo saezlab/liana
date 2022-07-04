@@ -81,7 +81,8 @@ Suggests:
     circlize,
     furrr (>= 0.2.0),
     future,
-    tidyverse
+    tidyverse,
+    devtools
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat, saezlab/OmnipathR
 RoxygenNote: 7.1.2
