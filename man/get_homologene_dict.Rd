@@ -4,10 +4,11 @@
 \alias{get_homologene_dict}
 \title{Helper function to get homologene dictionary}
 \usage{
-get_homologene_dict(entities, target_organism)
+get_homologene_dict(entities, target_organism, id_type = "genesymbol")
 }
 \arguments{
-\item{entities}{genes to be converted}
+\item{entities}{genes to be converted - function will return a dictionary
+with only those.}
 
 \item{target_organism}{target organism (obtain tax id from `show_homologene`)}
 }

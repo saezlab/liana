@@ -82,7 +82,7 @@ Suggests:
     furrr (>= 0.2.0),
     future,
     tidyverse
-biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
-Remotes: sqjin/CellChat
+biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
+Remotes: sqjin/CellChat, saezlab/OmnipathR
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3
