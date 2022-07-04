@@ -1,4 +1,4 @@
-# LIANA 0.1.5 (XX.07.22)
+# LIANA 0.1.5 (04.07.22)
 
 ## Changes
 - Re-implemented the `RRA` method from  Kolde et al., 2012, as a consequence of

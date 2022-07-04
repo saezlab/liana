@@ -116,7 +116,7 @@ documentation for more information.
 
 
 
-## ## Generating an External Dictionary
+## Generating an External Dictionary
 In order to convert a human resource to any other organism, we need a dictionary
 which maps human gene symbols to their orthologs from another species, which 
 might not be available via OmniPath. 

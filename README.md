@@ -3,15 +3,6 @@
 <!-- badges: end -->
 
 # LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/z6s7cp00kbbm1s9/liana_logo.png?raw=1" align="right" height="100">
-
-The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
-an immense interest in understanding intercellular crosstalk. Multiple
-tools and resources that aid the investigation of cell-cell communication (CCC)
-were published recently.
-However, these methods and resources are usually in a fixed combination of a
-tool and its corresponding resource, but in principle any resource could be
-combined with any method.  
-
     
 ## Install LIANA  
 ```{r}
@@ -44,7 +35,16 @@ Additional tutorials:
   
   
 ## LIANA Framework
-  
+
+The continuous developments of single-cell RNA-Seq (scRNA-Seq) have sparked
+an immense interest in understanding intercellular crosstalk. Multiple
+tools and resources that aid the investigation of cell-cell communication (CCC)
+were published recently.
+However, these methods and resources are usually in a fixed combination of a
+tool and its corresponding resource, but in principle any resource could be
+combined with any method.  
+
+
 To this end, we built a framework to decouple the methods from their corresponding resources.
    
 LIANA also goes a step further as it provides:
@@ -128,11 +128,17 @@ as well as to explore custom filter options see [customizing OmniPath resources]
 If you are interested in making use of the LIANA architecture for your own method, [this vignette](https://saezlab.github.io/liana/articles/liana_devel.html) provides instructions how to obtain a comprehensive table of LR statistics, which can then be used by custom scoring functions.
 In the [same vignette](https://saezlab.github.io/liana/articles/liana_devel.html) are also instructions how to install and run the original methods via a convenient R wrapper, e.g. for their benchmark.
   
-  
+
   
 ## Contact
 We appreciate any feedback, so please do not hesitate to open an issue on the [liana github page](https://github.com/saezlab/liana)!  
   
+  
+  
+## NEWS
+
+<strong> We are commited to the further developments of LIANA and we refer the users to 
+check the [NEWS](https://github.com/saezlab/liana/blob/master/NEWS.md) page after very update! </strong>
   
   
 ### Citing `LIANA`:
