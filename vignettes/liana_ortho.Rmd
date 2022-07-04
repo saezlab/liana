@@ -82,7 +82,7 @@ ortholog_resource <- generate_homologs(op_resource = op_resource,
 
 # Run LIANA with the orthologous resource
 liana_res <- liana_wrap(testdata,
-                        resource = 'custom', # the resource has to be set to 'custom' to work with external resources
+                        resource = 'custom', # resource has to be set to 'custom' to work with external resources
                         external_resource = ortholog_resource, # provide orthologous resource
                         method=c('sca', 'natmi') # run only with sca and natmi for comp. time
                         )

@@ -8,7 +8,8 @@ symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
 test_that("Test liana pipe", {
 
     op_ortho <- generate_homologs(op_resource = op_resource,
-                                  symbols_dict = symbols_dict)
+                                  symbols_dict = symbols_dict,
+                                  target_organism = 10090)
     res1 <- readRDS(file.path(liana_path,
                               "testdata",
                               "output",

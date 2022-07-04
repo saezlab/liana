@@ -38,22 +38,26 @@ generate_homologs <- function(op_resource,
                               max_homologs = 5,
                               .missing_fun = NULL,
                               symbols_dict = NULL,
-                              source = "source_genesymbol",
-                              target = "target_genesymbol",
+                              columns = c("source_genesymbol",
+                                          "target_genesymbol"),
                               verbose = TRUE){
 
-    # Break down resource into subunit
-    op_resource.decomp <- op_resource %>%
-        liana::decomplexify(columns = c(source, target))
+    op_resource %<>% mutate(across(all_of(columns),
+                                   ~str_replace(., "COMPLEX:", "")))
+
+    # Minimum column set resource
+    minres <- op_resource %>% select(!!columns)
+
+    # Get decomplexified resource
+    decomp <- decomplexify(minres, columns = columns)
 
     # Get union of symbols
-    entities <- union(op_resource.decomp[[source]],
-                      op_resource.decomp[[target]])
+    entities <- purrr::reduce(map(columns, function(col) decomp[[col]]), union)
 
-    if(is.null(symbols_dict)){
-        symbols_dict <- get_homologene_dict(entities=entities,
-                                            target_organism=target_organism)
-    }
+    # generate homology geneset
+    symbols_dict <- get_homologene_dict(entities = entities,
+                                        target_organism = target_organism)
+
 
     # Remove any missing antities
     if(is.null(.missing_fun)){
@@ -69,24 +73,22 @@ generate_homologs <- function(op_resource,
         )
 
         # Keep only interactions for which all proteins (incl. subunits) have a matching homologue
-        op_resource.decomp %<>%
-            mutate(source_present = !(source_genesymbol %in% missing_entities)) %>%
-            mutate(target_present = !(target_genesymbol %in% missing_entities)) %>%
-            mutate(lr_present = source_present * target_present) %>%
-            mutate(source_genesymbol=source_genesymbol_complex,
-                   target_genesymbol=target_genesymbol_complex) %>%
-            group_by(source, target, source_genesymbol, target_genesymbol) %>%
+        missing <- decomp %>%
+            # check if neither is in missing entities
+            mutate(lr_present = !if_any(columns, function(x) x %in% missing_entities)) %>%
+            group_by(across(all_of(ends_with("complex")))) %>%
             summarise(all_present = mean(lr_present), .groups = "keep") %>%
             # only keep those that are present
-            filter(all_present < 1)
+            filter(all_present < 1) %>%
+            # remove _complex for join
+            rename_with(~gsub("_complex", "", .x), ends_with("complex"))
 
         # Remove interactions without matches
-        op_resource <- anti_join(op_resource,
-                                 op_resource.decomp,
-                                 by = c("source", "target",
-                                        "source_genesymbol",
-                                        "target_genesymbol"))
+        minres <- anti_join(minres,
+                            missing,
+                            by = columns)
     }
+
 
     # Obtain genes with multiple matches
     entity_2many <- symbols_dict %>%
@@ -98,41 +100,37 @@ generate_homologs <- function(op_resource,
         pull(genesymbol_source)
 
     liana_message(
-        str_glue("One-to-many homolog matches: {paste(entity_2many, collapse = '; ')}"),
+        stringr::str_glue("One-to-many homolog matches: {paste(entity_2many, collapse = '; ')}"),
         verbose = verbose
     )
 
     ### IF NOT many2many .handle_complexes for all
-    op_notmany <- op_resource %>%
-        liana::decomplexify() %>%
-        filter(!(source_genesymbol %in% entity_2many),
-               !(target_genesymbol %in% entity_2many))
+    op_notmany <- minres %>%
+        decomplexify(columns = columns) %>%
+        filter(!if_any(!ends_with("complex"), function(x) x %in% entity_2many)) %>%
+        # recomplexify
+        select(-columns) %>%
+        rename_with(~gsub("_complex", "", .x), ends_with("complex")) %>%
+        distinct()
 
     # homologous omnipath resource (with 1to1 alone)
     or_notmany <- op_notmany %>%
-        # recomplexify
-        mutate(source_genesymbol = source_genesymbol_complex,
-               target_genesymbol = target_genesymbol_complex) %>%
-        distinct() %>%
+        # join back missing cols
+        left_join(op_resource, by = columns) %>%
         .handle_complexes(symbols_dict = symbols_dict,
-                          .missing_fun = .missing_fun)
-
+                          .missing_fun = .missing_fun,
+                          columns=columns)
 
     ### Get interactions with many-many
-    op_1many <- anti_join(op_resource, or_notmany,
-                          by = c("source", "target",
-                                 "source_genesymbol", "target_genesymbol",
-                                 "category_intercell_source",
-                                 "database_intercell_source",
-                                 "category_intercell_target",
-                                 "database_intercell_target",
-                                 "sources", "references"))
+    op_1many <- anti_join(minres,
+                          op_notmany,
+                          by = columns)
 
     # Recursively translate the 1many resource
     op_one2_many <- op_1many %>%
-        liana::decomplexify() %>%
-        group_split(source_genesymbol_complex,
-                    target_genesymbol_complex)
+        liana::decomplexify(columns = columns) %>%
+        group_by(across(ends_with("complex"))) %>%
+        group_split()
 
     # On all one2many !!!
     suppressWarnings(pb <- dplyr::progress_estimated(length(op_one2_many)))
@@ -140,44 +138,46 @@ generate_homologs <- function(op_resource,
         map(function(op_row.decomp){
             if(verbose) pb$tick()$print()
 
+            # create dictonary by row
             dicts_row <- .create_row_dict(symbols_dict,
                                           op_row.decomp,
-                                          entity_2many)
-
+                                          entity_2many,
+                                          columns)
 
             # The tibble to be translated to all homologs
-            op_row <- inner_join(op_row.decomp, op_1many,
-                                 by = c("source", "target",
-                                        "category_intercell_source",
-                                        "database_intercell_source",
-                                        "category_intercell_target",
-                                        "database_intercell_target",
-                                        "sources", "references",
-                                        "source_genesymbol", "target_genesymbol")) %>%
-                mutate(source_genesymbol=source_genesymbol_complex,
-                       target_genesymbol=target_genesymbol_complex) %>%
-                distinct()
+            op_row <- inner_join(op_row.decomp,
+                                 op_1many,
+                                 by = columns) %>%
+                # recomplexify
+                select(-columns) %>%
+                rename_with(~gsub("_complex", "", .x),
+                            ends_with("complex")) %>%
+                distinct() %>%
+                # join back remainder of cols
+                left_join(op_resource,
+                          by = columns)
 
             # Return all matches for all homologs
             or_row <- map(dicts_row, function(d){
                 .handle_complexes(op_row,
                                   symbols_dict = d,
-                                  .missing_fun = .missing_fun)
+                                  .missing_fun = .missing_fun,
+                                  columns = columns)
             }) %>%
                 bind_rows() %>%
                 distinct()
         }) %>%
-        bind_rows() %>%
-        select(-ends_with("complex"))
+        bind_rows()
 
     # Bind 1to1 and 1tomany
     or_resource <- bind_rows(or_notmany, or_many) %>%
         select(-ends_with("complex")) %>%
-        select(!!source, !!target, everything())
+        select(!!columns, everything())
 
     return(or_resource)
 
 }
+
 
 #' Function to translate Human complexes to organism X homologs
 #'
@@ -186,38 +186,37 @@ generate_homologs <- function(op_resource,
 #' @param symbols_dict dictionary (named list) with human genesymbols and ortholog
 #'  in a second species
 #'
+#' @param columns columns relevant for homology conversion
+#'
 #' @details Complexes cannot be joined directly, thus this function will
 #' translate each subunit one by one.
 #'
 #' @noRd
 .handle_complexes <- function(op_resource,
                               symbols_dict,
+                              columns=columns,
                               .missing_fun = NULL){
     # decomplexify
     op_resource_decomplex <- op_resource %>%
-        decomplexify()
+        decomplexify(columns=columns)
 
     # translate subunits
     translated_subunits <- op_resource_decomplex %>%
-        mutate(across(ends_with("genesymbol"),
+        mutate(across(all_of(columns),
                       ~recode.character2(.x, !!!symbols_dict,
                                          .missing_fun = .missing_fun)))
 
     # Generate Dictionaries for complexes
-    target_complex_dict <- .generate_complex_dict(translated_subunits,
-                                                  entity="target") %>%
-        deframe()
-    source_complex_dict <- .generate_complex_dict(translated_subunits,
-                                                  entity="source") %>%
-        deframe()
+    complex_dict <- map(columns,
+                        ~.generate_complex_dict(translated_subunits, col=.x))
+
 
     # Bind all dictionaries
     dict <- pmap( # append multiple lists
         list(
             list(
                 symbols_dict,
-                target_complex_dict,
-                source_complex_dict
+                flatten(complex_dict)
             )
         ), c) %>%
         flatten %>%
@@ -225,8 +224,9 @@ generate_homologs <- function(op_resource,
 
     # get orthologous resource
     op_ortholog <- op_resource %>%
-        mutate(across(ends_with("genesymbol"),
-                      ~recode.character2(.x, !!!dict,
+        mutate(across(columns,
+                      ~recode.character2(.x,
+                                         !!!dict,
                                          .missing_fun = .missing_fun)))
 
     return(op_ortholog)
@@ -300,24 +300,23 @@ recode.character2 <- function(.x,
 #' @param entity column of interest (target or source)
 #'
 #' @noRd
-.generate_complex_dict <- function(translated_subunits, entity = "target"){
-    genesymbol_complex <- str_glue("{entity}_genesymbol_complex")
-    genesymbol <- str_glue("{entity}_genesymbol")
+.generate_complex_dict <- function(translated_subunits, col){
+    col_complex <- str_glue("{col}_complex")
 
-    filter(translated_subunits, str_detect(.data[[genesymbol_complex]], "_")) %>%
-        dplyr::select(.data[[genesymbol_complex]], .data[[genesymbol]]) %>%
+    filter(translated_subunits, str_detect(.data[[col_complex]], "_")) %>%
+        dplyr::select(.data[[col_complex]], .data[[col]]) %>%
         distinct() %>%
-        group_by(.data[[genesymbol_complex]]) %>%
+        group_by(.data[[col_complex]]) %>%
         group_nest(keep = FALSE, .key = 'subunits') %>%
         mutate(translated_complex = map(subunits, function(sub){
-            glue::glue_collapse(sub[[genesymbol]], sep = "_") %>%
+            glue::glue_collapse(sub[[col]], sep = "_") %>%
                 as.character()
         })) %>%
-        dplyr::select(.data[[genesymbol_complex]], translated_complex) %>%
-        unnest(translated_complex)
+        dplyr::select(.data[[col_complex]], translated_complex) %>%
+        unnest(translated_complex) %>%
+        deframe()
 
 }
-
 
 
 #' Helper function to bind dictionaries
@@ -335,55 +334,58 @@ recode.character2 <- function(.x,
 #' @noRd
 .bind_dicts <- function(main_entity, secondary_entity){
     main_entity %>%
-        group_by(genesymbol_source, genesymbol_target) %>%
+        group_by_all() %>%
         group_split() %>%
         map(~deframe(bind_rows(.x, secondary_entity)))
 }
+
 
 #' Function to create a dictionary for one2many maps
 #'
 #' @param symbols_dict the human to mouse dict (should be a vect)
 #' @param op_row.decomp decomp omni (we need all genes)
 #' @param entity_2many entities that match to many homologs
+#' @param columns columns
 #'
 #' @return a dictionary for the provided interaction
 #'
 #' @noRd
 .create_row_dict <- function(symbols_dict,
                              op_row.decomp,
-                             entity_2many
-                             ){
-    # do the ligand or receptor posses homologs
-    is.l.2many <- any(op_row.decomp$source_genesymbol %in% entity_2many)
-    is.r.2many <- any(op_row.decomp$target_genesymbol %in% entity_2many)
+                             entity_2many,
+                             columns){
 
-    # Ligands
-    dicts_row.l <-
-        symbols_dict[names(symbols_dict) %in% op_row.decomp$source_genesymbol] %>%
-        enframe(name = "genesymbol_source", value = "genesymbol_target")
-    # Receptors
-    dicts_row.r <-
-        symbols_dict[names(symbols_dict) %in% op_row.decomp$target_genesymbol] %>%
-        enframe(name = "genesymbol_source", value = "genesymbol_target")
+    logical_row <- map_lgl(columns, function(col){
+        any(op_row.decomp[[col]] %in% entity_2many)
+    })
 
-    if(all(is.l.2many, is.r.2many)){
-        c( # both
-            .bind_dicts(dicts_row.l, dicts_row.r),
-            .bind_dicts(dicts_row.r, dicts_row.l)
-        )
+    dicts_row <- map(columns, function(col){
+        symbols_dict[names(symbols_dict) %in% op_row.decomp[[col]]] %>%
+            enframe(name = "genesymbol_source", value = "genesymbol_target")
+    })
 
-    } else if(is.l.2many){
-        .bind_dicts(dicts_row.l, dicts_row.r)
-    } else if(is.r.2many){
-        .bind_dicts(dicts_row.r, dicts_row.l)
+    # if only 1 col -> return dict
+    if(length(columns)==1){
+        symbols_dict[names(symbols_dict) %in% op_row.decomp[[columns]]] %>%
+            enframe(name = "genesymbol_source", value = "genesymbol_target") %>%
+            group_by_all() %>%
+            group_split() %>%
+            map(~deframe(.x))
+
+    } else if(all(logical_row)){ # if all columns have 1-to-many
+        c(.bind_dicts(dicts_row[[1]], dicts_row[[2]]),
+          .bind_dicts(dicts_row[[2]], dicts_row[[1]]))
+    } else{ # main entity is the one with 1-to-many
+        .bind_dicts(main_entity = keep(dicts_row, logical_row) %>% pluck(1),
+                    secondary_entity = discard(dicts_row, logical_row) %>% pluck(1))
     }
 }
 
 
-
 #' Helper function to get homologene dictionary
 #'
-#' @param entities genes to be converted
+#' @param entities genes to be converted - function will return a dictionary
+#' with only those.
 #'
 #' @param target_organism target organism (obtain tax id from `show_homologene`)
 #'
@@ -391,19 +393,21 @@ recode.character2 <- function(.x,
 #'
 #' @importFrom OmnipathR homologene_download
 get_homologene_dict <- function(entities,
-                                target_organism){
+                                target_organism,
+                                id_type = "genesymbol"){
 
     # Load homology geneset
     hg_gs <- homologene_download(target = !!target_organism,
                                  source = 9606L, # always human
-                                 id_type = "genesymbol") %>%
+                                 id_type = !!id_type) %>%
         select(-hgroup) %>%
         # Limit to the universe of the resource
-        filter(genesymbol_source %in% entities)
+        filter(.data[[str_glue("{id_type}_source")]] %in% entities)
 
     # Convert to dictionary
     return(hg_gs %>% deframe())
 }
+
 
 #' Deprecated call to generate_homologs
 #'

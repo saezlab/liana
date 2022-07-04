@@ -442,10 +442,10 @@ decomplexify <- function(resource,
                 pivot_longer(cols = all_of(sep_cols),
                              values_to = col,
                              names_to = NULL) %>%
-                tidyr::drop_na(col) %>%
+                tidyr::drop_na(all_of(col)) %>%
                 distinct() %>%
-                mutate_at(.vars = c(col),
-                          ~str_replace(., "COMPLEX:", ""))
+                mutate(across(all_of(c(col, col.complex)),
+                              ~str_replace(., "COMPLEX:", "")))
         })
     return(resource)
 }
