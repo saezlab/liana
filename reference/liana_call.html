@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
-      <a href="../articles/liana_ortho.html">Orthology Conversion with LIANA</a>
+      <a href="../articles/liana_ortho.html"> LIANA Orhology Conversion</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
@@ -87,17 +87,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">liana_call</span><span class="op">(</span><span class="va">method</span>, <span class="va">op_resource</span>, <span class="va">lr_res</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">liana_call</span><span class="op">(</span><span class="va">method</span>, <span class="va">lr_res</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>method</dt>
 <dd><p>name of the method to be called</p></dd>
-
-
-<dt>op_resource</dt>
-<dd><p>resource tibble obtained via liana::select_resource</p></dd>
 
 
 <dt>lr_res</dt>
@@ -107,6 +103,9 @@
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="liana_pipe.html">liana_pipe</a></code></p><dl><dt><code>sce</code></dt>
 <dd><p>SingleCellExperiment Object</p></dd>
+
+    <dt><code>op_resource</code></dt>
+<dd><p>resource tibble obtained via liana::select_resource</p></dd>
 
     <dt><code>assay</code></dt>
 <dd><p>assay to be used ("RNA" by default)</p></dd>
@@ -161,7 +160,7 @@ or a binomial test with <code>"binom"</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

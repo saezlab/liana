@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 2.0.4
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
   liana_custom_op: liana_custom_op.html
@@ -8,5 +8,5 @@ articles:
   liana_nichenet: liana_nichenet.html
   liana_ortho: liana_ortho.html
   liana_tutorial: liana_tutorial.html
-last_built: 2022-06-16T10:13Z
+last_built: 2022-07-04T13:30Z
 

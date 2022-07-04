@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
-      <a href="../articles/liana_ortho.html">Orthology Conversion with LIANA</a>
+      <a href="../articles/liana_ortho.html"> LIANA Orhology Conversion</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
@@ -226,6 +226,10 @@ one ligand-receptor resource.</p></td>
           <p class="section-desc"></p><p>Functions used to obtain available methods and resources, lists, etc</p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="show_homologene.html">show_homologene()</a></code> </p>
+        </td>
+        <td><p>Helper function to show available organisms via OmnipathR's homologene resource</p></td>
+      </tr><tr><td>
           <p><code><a href="show_methods.html">show_methods()</a></code> </p>
         </td>
         <td><p>Helper Function to return the methods in LIANA</p></td>
@@ -264,7 +268,11 @@ one ligand-receptor resource.</p></td>
       </tr><tr><td>
           <p><code><a href="generate_orthologs.html">generate_orthologs()</a></code> </p>
         </td>
-        <td><p>Function to translate Human genes to organism X orthologues</p></td>
+        <td><p>Deprecated call to generate_homologs</p></td>
+      </tr><tr><td>
+          <p><code><a href="generate_homologs.html">generate_homologs()</a></code> </p>
+        </td>
+        <td><p>Function to generate a homologous OmniPath resource</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -278,7 +286,7 @@ one ligand-receptor resource.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

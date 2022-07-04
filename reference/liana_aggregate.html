@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
-      <a href="../articles/liana_ortho.html">Orthology Conversion with LIANA</a>
+      <a href="../articles/liana_ortho.html"> LIANA Orhology Conversion</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
@@ -87,18 +87,18 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">liana_aggregate</span><span class="op">(</span>
-  <span class="va">liana_res</span>,
-  resource <span class="op">=</span> <span class="cn">NULL</span>,
-  set_cap <span class="op">=</span> <span class="st">"max"</span>,
-  cap <span class="op">=</span> <span class="cn">NULL</span>,
-  get_ranks <span class="op">=</span> <span class="cn">TRUE</span>,
-  get_agrank <span class="op">=</span> <span class="cn">TRUE</span>,
-  .score_mode <span class="op">=</span> <span class="va">.score_specs</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  join_cols <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">liana_aggregate</span><span class="op">(</span></span>
+<span>  <span class="va">liana_res</span>,</span>
+<span>  resource <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  set_cap <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>  cap <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  get_ranks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  get_agrank <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .score_mode <span class="op">=</span> <span class="va">.score_specs</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  join_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -154,39 +154,8 @@ methods used.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/RobustRankAggreg/man/aggregateRanks.html" class="external-link">RobustRankAggreg::aggregateRanks</a></code></p><dl><dt><code>glist</code></dt>
-<dd><p>list of element vectors, the order of the
-  vectors is used as the ranking.</p></dd>
-
-    <dt><code>rmat</code></dt>
-<dd><p>the rankings in matrix format. The glist is
-  by default converted to this format.</p></dd>
-
-    <dt><code>N</code></dt>
-<dd><p>the number of ranked elements, important when
-  using only top-k ranks, by default it is calculated as
-  the number of unique elements in the input.</p></dd>
-
-    <dt><code>method</code></dt>
-<dd><p>rank aggregation method, by defaylt
-  <code>'RRA'</code>, other options are <code>'min'</code>,
-  <code>'geom.mean'</code>, <code>'mean'</code>, <code>'median'</code> and
-  <code>'stuart'</code></p></dd>
-
-    <dt><code>full</code></dt>
-<dd><p>indicates if the full rankings are given,
-  used if the the sets of ranked elements do not match
-  perfectly</p></dd>
-
-    <dt><code>exact</code></dt>
-<dd><p>indicator showing if exact p-value will be
-  calculated based on rho score (Default: if number of
-  lists smaller than 10, exact is used)</p></dd>
-
-    <dt><code>topCutoff</code></dt>
-<dd><p>a vector of cutoff values used to limit
-  the number of elements in the input lists elements do not
-  match perfectly</p></dd>
+<dd><p>Arguments passed on to <code><a href="dot-rank_matrix.html">.rank_matrix</a></code></p><dl><dt><code>glist</code></dt>
+<dd><p>a list of ranked/ordered characters</p></dd>
 
   
 </dl></dd>
@@ -210,11 +179,11 @@ which returns complexes by default</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># load testdata</span></span>
-<span class="r-in"><span class="va">testdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># run liana</span></span>
-<span class="r-in"><span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>, method<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sca"</span>, <span class="st">"natmi"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">liana_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"liana"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># load testdata</span></span></span>
+<span class="r-in"><span><span class="va">testdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testdata.rds"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># run liana</span></span></span>
+<span class="r-in"><span><span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>, method<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sca"</span>, <span class="st">"natmi"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Expression from the `RNA` assay will be used</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running LIANA with `seurat_annotations` as labels!</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>3465 genes and/or 0 cells were removed as they had no counts!</span>
@@ -224,8 +193,8 @@ which returns complexes by default</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> LIANA: LR summary stats calculated!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Now Running: Sca</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Now Running: Natmi</span>
-<span class="r-in"><span class="co"># aggregate results from multiple methods</span></span>
-<span class="r-in"><span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu">liana_aggregate</span><span class="op">(</span><span class="va">liana_res</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># aggregate results from multiple methods</span></span></span>
+<span class="r-in"><span><span class="va">liana_res</span> <span class="op">&lt;-</span> <span class="fu">liana_aggregate</span><span class="op">(</span><span class="va">liana_res</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Now aggregating sca</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Now aggregating natmi</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Aggregating Ranks</span>
@@ -243,7 +212,7 @@ which returns complexes by default</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

@@ -112,7 +112,13 @@
     <loc>/reference/dot-antilog1m.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-rank_matrix.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-sp_costrain.html</loc>
+  </url>
+  <url>
+    <loc>/reference/generate_homologs.html</loc>
   </url>
   <url>
     <loc>/reference/generate_orthologs.html</loc>
@@ -131,6 +137,9 @@
   </url>
   <url>
     <loc>/reference/get_curated_omni.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_homologene_dict.html</loc>
   </url>
   <url>
     <loc>/reference/get_logfc.html</loc>
@@ -217,6 +226,9 @@
     <loc>/reference/omnipath_partners.html</loc>
   </url>
   <url>
+    <loc>/reference/recode.character2.html</loc>
+  </url>
+  <url>
     <loc>/reference/recomplexify.html</loc>
   </url>
   <url>
@@ -224,6 +236,9 @@
   </url>
   <url>
     <loc>/reference/select_resource.html</loc>
+  </url>
+  <url>
+    <loc>/reference/show_homologene.html</loc>
   </url>
   <url>
     <loc>/reference/show_methods.html</loc>
