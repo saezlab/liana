@@ -72,12 +72,13 @@ LIANA++ uses CCC methods from both R and Python, as such dependencies for both n
 
 To install the LIANA++ framework run the following code in R:
 ```{r install_r, eval=FALSE}
-library(devtools)
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
+
+library(devtools)
 
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = TRUE) # ignore warning from iTALK
 BiocManager::install("ComplexHeatmap") # required for Connectome
