@@ -83,8 +83,9 @@ Suggests:
     future,
     tidyverse,
     rstatix,
-    patchwork
+    patchwork,
+    devtools
 biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
-Remotes: sqjin/CellChat
+Remotes: sqjin/CellChat, saezlab/OmnipathR
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3
