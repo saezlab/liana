@@ -74,8 +74,6 @@ context_df_dict <- liana_bysample(sce = sce,
                                   condition_col = "stim",
                                   idents_col = "cluster",
                                   method="sca")
-
-saveRDS(context_df_dict, file = "~/Repos/liana2/data/pbmcs_lrs.RDS")
 ```
 
 
@@ -120,7 +118,7 @@ different between the groups. We also see that the loadings for the "Sender" and
 "Receiver" cells have a relatively uniform distribution, suggesting that these most
 cell types involved in the interactions that distinguish the conditions.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=12}
+```{r, message=FALSE, warning=FALSE, fig.width=16, fig.height=12}
 # First we format the factors
 factors <- format_c2c_factors(tensor$factors)
 
@@ -145,7 +143,7 @@ as well as cell types participating in cell-cell communication before
 and after IFN-beta stimulation.
 
 
-```{r, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get all boxplots
 all_facts_boxes <- plot_context_boxplot(factors$contexts, paired=TRUE)
 
@@ -165,7 +163,7 @@ wrap_plots(
 
 Again, we see a clear seperation between STIM and CTRL, further suggesting the
 relevance of the changes in the inferred interactions.
-```{r, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 
 plot_contexts_heat(factors)
 
@@ -177,7 +175,7 @@ plot_contexts_heat(factors)
 Here we use the product of the `source` and `target` loadings to generate the
 heatmap of potential celltype-celltype pair relationships, which contribute to
 `Factor.6`.
-```{r ccpairs, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+```{r ccpairs, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 
 plot_c2c_cells(factors, factor_of_int = "Factor.6",
                name = "Loadings \nProduct")
@@ -188,7 +186,7 @@ plot_c2c_cells(factors, factor_of_int = "Factor.6",
 ### LR loadings Heatmap
 We can see the LRs involved across contexts.
 In particular, those associated with high loadings for factors 6.
-```{r, echo=FALSE, fig.width=9, fig.height=13, message=FALSE, warning=FALSE}
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 plot_lr_heatmap(factors)
 ```
   
@@ -212,7 +210,7 @@ equality between the cell type.
 
 We will now check the contributions of Sender and Receiver cell types across
 the factors.
-```{r}
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get loadings for source/sender Cell types
 calculate_gini(factors$senders)
 ```
@@ -220,7 +218,7 @@ When we focus on factor 6, we see that the source/sender cell types have almost
 uniform contributions
 
 
-```{r}
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get loadings for target/receiver Cell types
 calculate_gini(factors$receivers)
 ```
