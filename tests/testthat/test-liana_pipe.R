@@ -37,19 +37,27 @@ test_that("Test liana pipe", {
 test_that("Test LIANA Scores", {
     complex_policy='mean0'
 
-    conn_score <- get_connectome(pipe_out, expr_prop=0, complex_policy=complex_policy)
+    conn_score <- get_connectome(pipe_out,
+                                 complex_policy=complex_policy,
+                                 expr_prop=liana_defaults()[["expr_prop"]])
     conn_exp <- readRDS(file.path(liana_path, "testdata",
                                   "output", "conn_score.RDS"))
 
-    logfc_score <- get_logfc(pipe_out, complex_policy=complex_policy)
+    logfc_score <- get_logfc(pipe_out,
+                             complex_policy=complex_policy,
+                             expr_prop=liana_defaults()[["expr_prop"]])
     logfc_exp <- readRDS(file.path(liana_path, "testdata",
                                    "output", "logfc_score.RDS"))
 
-    natmi_score <- get_natmi(pipe_out, complex_policy=complex_policy)
+    natmi_score <- get_natmi(pipe_out,
+                             complex_policy=complex_policy,
+                             expr_prop=liana_defaults()[["expr_prop"]])
     natmi_exp <- readRDS(file.path(liana_path, "testdata",
                                    "output", "natmi_score.RDS"))
 
-    sca_score <- get_sca(pipe_out, complex_policy=complex_policy)
+    sca_score <- get_sca(pipe_out,
+                         complex_policy=complex_policy,
+                         expr_prop=liana_defaults()[["expr_prop"]])
     sca_exp <- readRDS(file.path(liana_path, "testdata",
                                  "output", "sca_score.RDS"))
 

@@ -10,8 +10,7 @@ generate_homologs(
   max_homologs = 5,
   .missing_fun = NULL,
   symbols_dict = NULL,
-  source = "source_genesymbol",
-  target = "target_genesymbol",
+  columns = c("source_genesymbol", "target_genesymbol"),
   verbose = TRUE
 )
 }
@@ -39,11 +38,11 @@ mismatches.}
 to generate a dictionary from OmniPathR's homologene resource. Alternatively,
 one can pass their own symbols_dictionary.}
 
+\item{verbose}{logical for verbosity}
+
 \item{source}{name of the source (ligand) column}
 
 \item{target}{name of the target (receptor) column}
-
-\item{verbose}{logical for verbosity}
 }
 \value{
 a converted ligand-receptor resource

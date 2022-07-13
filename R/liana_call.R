@@ -168,6 +168,7 @@ liana_call <- function(method,
 liana_scores <- function(score_object,
                          lr_res,
                          ...){
+
     lr_res %<>%
         select(ligand, receptor,
                ends_with("complex"),
@@ -188,9 +189,13 @@ liana_scores <- function(score_object,
             list(...)
         )
 
+    # Get expr prop from defaults/kwargs
+    expr_prop <- list(...)[["expr_prop"]]
+
     exec(score_object@score_fun, !!!args) %>%
         ungroup() %>%
-        select(-ends_with("prop"))
+        select(everything(), ends_with("prop")) %>%
+        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
 }
 
 

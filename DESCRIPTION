@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.5
+Version: 0.1.6
 Authors@R: c(
     person(
         given = "Daniel",
@@ -81,7 +81,9 @@ Suggests:
     circlize,
     furrr (>= 0.2.0),
     future,
-    tidyverse
+    tidyverse,
+    rstatix,
+    patchwork
 biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat
 RoxygenNote: 7.1.2

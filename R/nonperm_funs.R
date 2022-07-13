@@ -8,12 +8,10 @@
 connectome_score <- function(lr_res,
                              score_col,
                              ...){
-    expr_prop <- list(...)[["expr_prop"]]
 
     lr_res %>%
         rowwise() %>%
-        mutate( {{ score_col }} := mean(c(ligand.scaled, receptor.scaled))) %>%
-        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+        mutate( {{ score_col }} := mean(c(ligand.scaled, receptor.scaled)))
 }
 
 
@@ -31,6 +29,7 @@ connectome_score <- function(lr_res,
 natmi_score <- function(lr_res,
                         score_col,
                         ...){
+
     lr_res %>%
         rowwise() %>%
         mutate( prod_weight = ligand.expr * receptor.expr) %>%
@@ -51,6 +50,7 @@ natmi_score <- function(lr_res,
 logfc_score <- function(lr_res,
                         score_col,
                         ...){
+
     lr_res %>%
         rowwise() %>%
         mutate( {{ score_col }} := mean(c(ligand.log2FC, receptor.log2FC)))
@@ -69,6 +69,7 @@ logfc_score <- function(lr_res,
 sca_score <- function(lr_res,
                       score_col,
                       ...){
+
     lr_res %>%
         rowwise() %>%
         mutate( {{ score_col }} :=
