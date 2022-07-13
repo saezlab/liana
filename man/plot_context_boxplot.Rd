@@ -10,6 +10,8 @@ plot_context_boxplot(contexts, test = "t_test", ...)
 \item{test}{test to be performed (t_test - default) or any others from the
 `rstatix` package, others include anova_test, wilcox_test, kruskal_test, etc.}
 
+\item{...}{arguments passed to the test used.}
+
 \item{data}{a tibble or a dataframe}
 }
 \description{
