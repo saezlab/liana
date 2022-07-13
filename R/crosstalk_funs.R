@@ -61,7 +61,8 @@ cytotalk_score <- function(lr_res,
            # ligand.pem, receptor.pem,
            # es, Nes,
            # source.nst, target.nst, nst, Nnst,
-           !!score_col) %>%
+           !!score_col,
+           ends_with("prop")) %>%
     filter(.data[[score_col]] > 0)
 }
 

@@ -195,7 +195,13 @@ liana_scores <- function(score_object,
     exec(score_object@score_fun, !!!args) %>%
         ungroup() %>%
         select(everything(), ends_with("prop")) %>%
-        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop) %>%
+        # ensure that there are no duplicates (edge cases where multiple subunits
+        # have the same expr. - note that we also include method score to ensure
+        # that no information is being lost + there are no issues)
+        distinct_at(c("source", "target",
+                      "ligand.complex", "receptor.complex",
+                      score_object@method_score), .keep_all = TRUE)
 }
 
 

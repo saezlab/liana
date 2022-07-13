@@ -1,3 +1,23 @@
+# LIANA 0.1.6 (XXX.07.22)
+
+## Changes
+- Fixed an issue where interactions with complexes will not filtered be according to
+`expr_prop` for some methods. I now filter twice - once via `.filt_liana_pipe`
+for computational speed, and once after `recomplexify` to also remove the 
+complexes with `expr_prop` <= X. Will now also filter `crosstalk_scores` to `expr_prop`.
+
+- In the edgecase of complexes with subunits with equal expression, LIANA's internal
+methods will not arbitrarily discard duplicate complex interactions.
+
+- Will now return `expr_prop` for each method. Note that this information is
+discarded by `liana_aggregate`.
+
+## New Implementations
+- Untargeted between-condition (context/sample) decomposition
+of  cell-cell communication latent patterns /w `tensor_cell2cell`. Makes use
+of `basilisk` to automatically set-up a conda env for liana.
+
+
 # LIANA 0.1.5 (04.07.22)
 
 ## Changes

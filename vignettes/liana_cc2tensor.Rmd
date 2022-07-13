@@ -1,0 +1,246 @@
+---
+title: "Context Factorisation with tensor-cell2cell"
+author:
+  - name: Daniel Dimitrov
+    affiliation:
+        - Saezlab, Heidelberg University
+    email: daniel.dimitrov@uni-heidelberg.de
+date: "`r Sys.Date()`"
+output: 
+  BiocStyle::html_document:
+      self_contained: true
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      code_folding: show
+vignette: >
+  %\VignetteIndexEntry{Contex Factorization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse, quietly = TRUE)
+library(SingleCellExperiment, quietly = TRUE)
+library(reticulate, quietly = TRUE)
+library(magrittr, quietly = TRUE)
+library(liana, quietly = TRUE)
+```
+
+## Introduction
+Tensor decomposition as proposed in the [tensor_cell2cell](https://www.nature.com/articles/s41467-022-31369-2#ref-CR5) paper, 
+enables us to decipher context-driven intercellular communication by simultaneously
+accounting for an unlimited number of "contexts". These contexts could represent
+samples coming from longtidinal sampling points, multiple conditions, or cellular niches.
+
+The power of tensor-cell2cell is in its ability to decompose latent patterns of
+intercellular communication in an untargeted manner, in theory being able to handle
+cell-cell communication results coming from any experimental design, irregardless
+of its complexity.
+
+Simply put, tensor_cell2cell uses LIANA's output `by sample` to build a 4D tensor,
+represented by 1) contexts, 2) interactions, 3) sender, and 4) receiver cell types.
+This tensor is then decomposed into a set of factors, which can be interpreted as
+low dimensionality latent variables that capture the CCC patterns across contexts.
+  
+
+Here, we will combine `LIANA` with `tensor_cell2cell` to decipher the ligand-receptor
+interaction changes, which occur in ~14000 PBMCs from 8 donors, each before and after IFN-beta stimulation (GSE96583; obtained from: https://scelvis.readthedocs.io/en/latest/tutorial_analysis.html.
+
+
+This tutorial was heavily influenced by the [tutorials of tensor_cell2cell](https://earmingol.github.io/cell2cell/tutorials/ASD/01-Tensor-Factorization-ASD/).
+
+Any usage of `liana` x `tensor_cell2cell` should logically cite both articles,
+and in particular `tensor_cell2cell` (see reference at the bottom).
+
+
+Load required libraries and data.
+```{r loadstuff, message=FALSE, warning=FALSE}
+sce <- readRDS(url("https://zenodo.org/record/6826420/files/pbmc_sce.RDS?download=1"))
+```
+
+
+### Run liana for on each individual sample.
+
+In order to construct the tensor, we first need to obtain CCC predictions for 
+each sample. In this case, we use SingleCellSignalR scores, as they are
+regularized, and theory directly comparable between any dataset.
+```{r runliana, eval=FALSE, message=FALSE, warning=FALSE}
+# Run LIANA by sample
+context_df_dict <- liana_bysample(sce = sce,
+                                  sample_col = "Donor", 
+                                  condition_col = "stim",
+                                  idents_col = "cluster",
+                                  method="sca")
+
+saveRDS(context_df_dict, file = "~/Repos/liana2/data/pbmcs_lrs.RDS")
+```
+
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+### Load liana results by sample
+context_df_dict <- readRDS(url("https://zenodo.org/record/6826420/files/pbmcs_lrs.RDS?download=1"))
+```
+
+
+## Cell-cell Communication Tensor Decomposition
+Here, we call tensor_cell2cell.
+
+This function will first format the ligand-receptor scores per sample into a 
+4 Dimensional tensor.
+
+It will then estimate the number of factors to which the tensor
+will be decomposed (set rank is `NULL`, for the sake of computational speed,
+I have pre-calculated the `rank` and I explicitly set it to 8 here). 
+
+Finally, the function will finally decompose the tensor into a set of factors, 
+each with four loadings vectors corresponding to the initial dimensions of the tensor.
+
+One can think of this as a higher-order non-negative matrix factorization where
+the factors can be used to reconstruct the tensor. We refer the user to the
+publication of [tensor-cell2cell](https://www.nature.com/articles/s41467-022-31369-2) for further information.
+
+Note that by default LIANA will set up a conda environment with `basilisk`
+(if conda_env is NULL), the user can alternatively specify the name of the conda env
+to be called via reticulate.
+```{r}
+tensor <- liana_tensor_c2c(context_df_dict = context_df_dict,
+                           score_col = 'LRscore',
+                           rank = 8) # set to None to estimate! 8 was estimated!
+```
+
+
+### Results Overview
+
+Here, we examine the behavior of the different dimensions across the factors.
+When we look at the contexts (samples) loadings `Factor 5` seems to be notably
+different between the groups. We also see that the loadings for the "Sender" and
+"Receiver" cells have a relatively uniform distribution, suggesting that these most
+cell types involved in the interactions that distinguish the conditions.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=12}
+# First we format the factors
+factors <- format_c2c_factors(tensor$factors)
+
+# Plot overview
+plot_c2c_overview(factors)
+```
+
+### Contexts UMAP
+
+Here, we will represent the contexts loadings in UMAP space. We again
+observe a separation with regards to condition.
+```{r}
+plot_contexts_umap(factors)
+```
+
+### Statistical comparison of Communication Patterns
+Here, we see that the communication patterns (or context loadings) identified 
+statistically significant patterns before and after stimulation.
+
+These factors thus represent differences in the ligand-receptor interactions
+as well as cell types participating in cell-cell communication before
+and after IFN-beta stimulation.
+
+
+```{r, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+# Get all boxplots
+all_facts_boxes <- plot_context_boxplot(factors$contexts, paired=TRUE)
+
+# Combine all boxplots
+require(patchwork)
+wrap_plots(
+    all_facts_boxes,
+    ncol=4) +
+    plot_layout(guides = "collect") & theme(legend.position = 'bottom') +
+    theme(plot.tag = element_text(face = 'bold', size = 16))
+
+```
+
+
+
+### Contexts Heatmap
+
+Again, we see a clear seperation between STIM and CTRL, further suggesting the
+relevance of the changes in the inferred interactions.
+```{r, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+
+plot_contexts_heat(factors)
+
+```
+
+
+### Cell-cell pairs with high potential of interaction
+
+Here we use the product of the `source` and `target` loadings to generate the
+heatmap of potential celltype-celltype pair relationships, which contribute to
+`Factor.6`.
+```{r ccpairs, echo=FALSE, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+
+plot_c2c_cells(factors, factor_of_int = "Factor.6",
+               name = "Loadings \nProduct")
+```
+
+   
+
+### LR loadings Heatmap
+We can see the LRs involved across contexts.
+In particular, those associated with high loadings for factors 6.
+```{r, echo=FALSE, fig.width=9, fig.height=13, message=FALSE, warning=FALSE}
+plot_lr_heatmap(factors)
+```
+  
+### LR loadings Funcomics
+< TO BE INCLUDED >
+(Need to write the LIANA x OmniPath x DecoupleR funcomics helper functions,
+then use the LR loadings across factors for some enrichment analyses)
+
+
+## Gini Coefficients of Factor-specific Communicating Sender and Receiver cell types
+
+Gini coefficients range from 0 to 1, and are measures of dispersion,
+typically used to measure inequality.
+
+Here, the Gini coefficient is used to measure the imbalance of communication 
+in terms of the cell types.
+
+Gini coefficient of 1 would suggests that there is a single cell type contributing
+to the communication patterns within a factor, while a value of 0 suggest perfect
+equality between the cell type.
+
+We will now check the contributions of Sender and Receiver cell types across
+the factors.
+```{r}
+# Get loadings for source/sender Cell types
+calculate_gini(factors$senders)
+```
+When we focus on factor 6, we see that the source/sender cell types have almost
+uniform contributions
+
+
+```{r}
+# Get loadings for target/receiver Cell types
+calculate_gini(factors$receivers)
+```
+On the contrary, we see that few target cell types are driving the communication
+patterns observed in factor 6, also visible in the Overview plot.
+
+
+## Citation
+
+To Cite tensor_cell2cell:
+Armingol, E., Baghdassarian, H.M., Martino, C., Perez-Lopez, A., Aamodt, C., Knight, R. and Lewis, N.E., 2022. Context-aware deconvolution of cell–cell communication with Tensor-cell2cell. Nature Communications, 13(1), pp.1-15.
+
+To Cite LIANA:
+```{r liana citation, message = FALSE, echo=FALSE}
+citation("liana")
+```
+
+## Session information
+```{r session_info, echo=FALSE}
+options(width = 120)
+sessioninfo::session_info()
+```
+

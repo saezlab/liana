@@ -16,6 +16,11 @@ test_that("Test liana wrapper", {
 
 # Test with Default ----
 test_that("Test liana wrapper", {
+    if(!exists("test_external")){
+        skip("Not testing externals")
+    } else{
+        if(!test_external) skip("Not testing externals")
+    }
     exp2 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_def_res.RDS"))
     skip_on_ci()

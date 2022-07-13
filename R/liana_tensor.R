@@ -199,7 +199,7 @@ liana_tensor_c2c <- function(context_df_dict,
 
         # Set up basilisk
         liana_env <- basilisk::BasiliskEnvironment(envname="liana_tensor",
-                                                   pkgname="liana2", ### !!!! to liana!!!
+                                                   pkgname="liana",
                                                    packages=.lianapy_packages,
                                                    pip=.liana_pips)
         basilisk::basiliskStart(liana_env)
@@ -433,6 +433,8 @@ plot_c2c_overview <- function(factors){
 #' @param test test to be performed (t_test - default) or any others from the
 #' `rstatix` package, others include anova_test, wilcox_test, kruskal_test, etc.
 #'
+#' @param ... arguments passed to the test used.
+#'
 #' @export
 #'
 #' @import rstatix
@@ -454,7 +456,7 @@ plot_context_boxplot <- function(contexts,
         mutate(t_test = map(data, function(.x) exec(test,
                                                     formula=loadings~condition,
                                                     data=.x,
-                                                    paired = TRUE))) %>%
+                                                    ...))) %>%
         unnest(t_test) %>%
         mutate(p.adj = p.adjust(p))
 
@@ -506,9 +508,10 @@ plot_contexts_umap <- function(factors,
                    shape = sample)) +
         scale_shape_manual(values=rep(seq(0, 15),
                                       length.out=nlevels(factors$contexts[[1]]))) +
-        geom_point() +
+        geom_point(size=3) +
         labs(x = "UMAP1",
-             y = "UMAP2")
+             y = "UMAP2") +
+        theme_minimal()
 }
 
 #' Function to plot a UMAP of context loadings

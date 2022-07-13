@@ -121,9 +121,7 @@ In order to convert a human resource to any other organism, we need a dictionary
 which maps human gene symbols to their orthologs from another species, which 
 might not be available via OmniPath. 
 
-An alternative widely used database for this purpose is [BioMart](https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81)
-and we show how one could use it to obtain mouse orthologs 
-which one can then convert to a dictionary format.
+An alternative widely used database for this purpose is [BioMart](https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81).
 
 
 ## An example dictionary (generated /w homologene) for murine symbols is included in liana
