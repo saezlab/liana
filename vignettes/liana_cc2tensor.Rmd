@@ -214,16 +214,14 @@ the factors.
 # Get loadings for source/sender Cell types
 calculate_gini(factors$senders)
 ```
-When we focus on factor 6, we see that the source/sender cell types have almost
-uniform contributions
+When we focus on factor 6, we see that the both source/sender and target/receiver
+cell types have almost uniform contributions
 
 
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get loadings for target/receiver Cell types
 calculate_gini(factors$receivers)
 ```
-On the contrary, we see that few target cell types are driving the communication
-patterns observed in factor 6, also visible in the Overview plot.
 
 
 ## Citation
