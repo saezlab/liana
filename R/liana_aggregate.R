@@ -79,12 +79,9 @@ liana_aggregate <- function(liana_res,
                                  "ligand", "receptor"))
     } else{
         # Default/internal-only liana runs
-        join_cols %<>% `%||%`  (c("source", "target",
-                                  "ligand.complex", "receptor.complex"))
+        join_cols %<>% `%||%` (c("source", "target",
+                                 "ligand.complex", "receptor.complex"))
     }
-
-    #
-
 
     cap %<>% `%||%`(.select_cap(liana_res, set_cap))
 

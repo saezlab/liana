@@ -39,10 +39,12 @@ liana_pipe <- function(sce,
     # Resource Format
     transmitters <- op_resource$source_genesymbol %>%
         as_tibble() %>%
-        select(gene = value)
+        select(gene = value) %>%
+        distinct()
     receivers <- op_resource$target_genesymbol %>%
         as_tibble() %>%
-        select(gene = value)
+        select(gene = value) %>%
+        distinct()
 
     # calculate global_mean required for SCA
     global_mean <- fast_mean(exec(assay.type, sce))
@@ -111,16 +113,20 @@ liana_pipe <- function(sce,
         pmap(function(source, target){
             source_stats <- ligrec_degformat(cluster_markers[[source]],
                                              entity = transmitters,
-                                             source_target = "source")
+                                             ligand_receptor = "ligand")
             target_stats <- ligrec_degformat(cluster_markers[[target]],
                                              entity = receivers,
-                                             source_target = "target")
+                                             ligand_receptor = "receptor")
 
             op_resource %>%
                 select(ligand = source_genesymbol,
                        receptor = target_genesymbol) %>%
                 left_join(source_stats, by = "ligand") %>%
                 left_join(target_stats, by = "receptor") %>%
+                rename_with(~gsub(x = .x,
+                                  pattern = "p.value",
+                                  replacement = "pval"),
+                            ends_with("p.value")) %>%
                 na.omit() %>%
                 distinct() %>%
                 mutate(source = source,
@@ -211,38 +217,21 @@ liana_pipe <- function(sce,
 #'
 #' @param cluster_markers dataframe with DE stats for a cluster
 #' @param entity Transmitter or Receiver vector passed as tibble
-#' @param source_target whether this is the source or target cluster
+#' @param ligand_receptor whether this is the source or target cluster
 #'
 #' @return A tibble with stats for receivers or transmitters per cluster
 #'
 #' @noRd
 ligrec_degformat <- function(cluster_markers,
                              entity,
-                             source_target){
+                             ligand_receptor,
+                             columns=c("gene", "p.value", "FDR", "stat")){
     cluster_markers %>%
         left_join(entity, ., by = "gene") %>%
         na.omit() %>%
-        {
-            if(source_target=="source"){
-                dplyr::select(
-                    .,
-                    ligand = gene,
-                    ligand.pval = p.value,
-                    ligand.FDR = FDR,
-                    ligand.stat = stat
-                )
-            }else if(source_target=="target"){
-                dplyr::select(
-                    .,
-                    receptor = gene,
-                    receptor.pval = p.value,
-                    receptor.FDR = FDR,
-                    receptor.stat = stat
-                )
-            } else{
-                stop("Incorrect entity!")
-            }
-        } %>%
+        select(columns) %>%
+        rename_with(~paste(ligand_receptor, .x, sep = "."), -gene) %>%
+        dplyr::rename({{ligand_receptor}} := gene) %>%
         distinct() %>%
         na.omit()
 }
