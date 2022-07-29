@@ -124,7 +124,6 @@ groups_of_interest <- colData(sce) %>%
     as_tibble(rownames="barcodes") %>%
     filter(Group %in% c("IgA", "CTRL")) %>%
     pull("barcodes")
-
 sce <- sce[,groups_of_interest]
 
 
