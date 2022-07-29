@@ -129,8 +129,8 @@ muscat:::.n_cells(pb)
 # this function is modified for now should install muscat from saezlab
 t_res <- muscat::pbDS(pb,
                       method = "limma-voom",
-                      design = design,
-                      contrast = cont_matrix,
+                      # design = design,
+                      # contrast = cont_matrix,
                       filter = "both",
                       min_cells = 10,
                       # edgeR args
