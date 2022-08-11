@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
       </span>
     </div>
 
@@ -99,16 +99,18 @@
 
       
 
-      </header><script src="liana_ortho_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LIANA Orhology Conversion</h1>
-                        <h4 data-toc-skip class="author">Daniel Dimitrov</h4>
+                        <h4 data-toc-skip class="author">Daniel
+Dimitrov</h4>
             <address class="author_afil">
-      Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
+      Saezlab, Heidelberg
+University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2022-07-04</h4>
+            <h4 data-toc-skip class="date">2022-08-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_ortho.Rmd" class="external-link"><code>vignettes/liana_ortho.Rmd</code></a></small>
       <div class="hidden name"><code>liana_ortho.Rmd</code></div>
@@ -117,9 +119,16 @@
 
     
     
-<p>LIANA’s OmniPath resource was largely compiled from CCC databases with a human focus, as such LIANA works with human gene symbols by default.</p>
-<p>Nevertheless, one could run LIANA with any other organism, provided a dictionary is available to map human genesymbols to those of species X.</p>
-<p>In this vignette, we provide an example how this could be achieved using the <a href="https://www.ncbi.nlm.nih.gov/homologene" class="external-link"><code>HomoloGene</code></a> database via OmnipathR with LIANA’s <code>generate_homologs</code> function.</p>
+<p>LIANA’s OmniPath resource was largely compiled from CCC databases
+with a human focus, as such LIANA works with human gene symbols by
+default.</p>
+<p>Nevertheless, one could run LIANA with any other organism, provided a
+dictionary is available to map human genesymbols to those of species
+X.</p>
+<p>In this vignette, we provide an example how this could be achieved
+using the <a href="https://www.ncbi.nlm.nih.gov/homologene" class="external-link"><code>HomoloGene</code></a>
+database via OmnipathR with LIANA’s <code>generate_homologs</code>
+function.</p>
 <div class="section level2">
 <h2 id="loading-prerequisites">Loading prerequisites<a class="anchor" aria-label="anchor" href="#loading-prerequisites"></a>
 </h2>
@@ -138,16 +147,21 @@
 <span><span class="co"># We simply do this here to provide an example</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>It is also recommended to ensure that you have the latest OmnipathR version installed:</p>
+<p>It is also recommended to ensure that you have the latest OmnipathR
+version installed:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saezlab/OmnipathR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="internally-available-organisms">Internally available organisms<a class="anchor" aria-label="anchor" href="#internally-available-organisms"></a>
 </h2>
-<p>LIANA’s <code>generate_homologs</code> function uses OmnipathR’s <code>homologene_download</code> function to obtain a human to x species dictionary.</p>
+<p>LIANA’s <code>generate_homologs</code> function uses OmnipathR’s
+<code>homologene_download</code> function to obtain a human to x species
+dictionary.</p>
 <p>Here, we check the organisms which are currently available.</p>
-<p>One must simply choose the <code>ncbi_taxid</code> and pass it as <code>target_organism</code> parameter to the <code>generate_homologs</code> function below.</p>
+<p>One must simply choose the <code>ncbi_taxid</code> and pass it as
+<code>target_organism</code> parameter to the
+<code>generate_homologs</code> function below.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/show_homologene.html">show_homologene</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
@@ -192,30 +206,44 @@
 <span><span class="va">liana_res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">source</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">target</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">15</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># simply keep the highest 15 interactions according to aggregate rank</span></span>
 <span>    <span class="fu"><a href="../reference/liana_dotplot.html">liana_dotplot</a></span><span class="op">(</span>source_groups <span class="op">=</span> <span class="st">"B"</span>,</span>
-<span>                  target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>                  target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span>,</span>
+<span>                  ntop <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></code></pre></div>
 <p><img src="liana_ortho_files/figure-html/orthology-1.png" width="1056"></p>
-<p>Conversion is trickier than anticipated. In the sense that, there will be genes without matching homologs, while others will have multiple matching homologs. These issues are further complicated when working with complexes, as is the case for the interactions in LIANA. Some ligand–receptor interactions can also be species-specific.</p>
-<p>Thus, we suggest that if possible to check literature for support of the predicted edges when using orthology conversion.</p>
-<p>Notably, the <code>generate_homologs</code> function was designed to be very flexible, but by default will be relatively conservative. So, please refer to its documentation for more information.</p>
+<p>Conversion is trickier than anticipated. In the sense that, there
+will be genes without matching homologs, while others will have multiple
+matching homologs. These issues are further complicated when working
+with complexes, as is the case for the interactions in LIANA. Some
+ligand–receptor interactions can also be species-specific.</p>
+<p>Thus, we suggest that if possible to check literature for support of
+the predicted edges when using orthology conversion.</p>
+<p>Notably, the <code>generate_homologs</code> function was designed to
+be very flexible, but by default will be relatively conservative. So,
+please refer to its documentation for more information.</p>
 </div>
 <div class="section level2">
 <h2 id="generating-an-external-dictionary">Generating an External Dictionary<a class="anchor" aria-label="anchor" href="#generating-an-external-dictionary"></a>
 </h2>
-<p>In order to convert a human resource to any other organism, we need a dictionary which maps human gene symbols to their orthologs from another species, which might not be available via OmniPath.</p>
-<p>An alternative widely used database for this purpose is <a href="https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81" class="external-link">BioMart</a> and we show how one could use it to obtain mouse orthologs which one can then convert to a dictionary format.</p>
+<p>In order to convert a human resource to any other organism, we need a
+dictionary which maps human gene symbols to their orthologs from another
+species, which might not be available via OmniPath.</p>
+<p>An alternative widely used database for this purpose is <a href="https://www.ensembl.org/biomart/martview/ef9109352b17a0704bd49683fe42ac81" class="external-link">BioMart</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="an-example-dictionary-generated-w-homologene-for-murine-symbols-is-included-in-liana">An example dictionary (generated /w homologene) for murine symbols is included in liana<a class="anchor" aria-label="anchor" href="#an-example-dictionary-generated-w-homologene-for-murine-symbols-is-included-in-liana"></a>
+<h2 id="an-example-dictionary-generated-w-homologene-for-murine-symbols-is-included-in-liana">An example dictionary (generated /w homologene) for murine symbols
+is included in liana<a class="anchor" aria-label="anchor" href="#an-example-dictionary-generated-w-homologene-for-murine-symbols-is-included-in-liana"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">symbols_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span>, <span class="st">"human_mouse_orthologues.RDS"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">symbols_dict</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      ACVR1        AGT        FAS         AR   SERPING1       CD3G </span></span>
 <span><span class="co">##    "Acvr1"      "Agt"      "Fas"       "Ar" "Serping1"     "Cd3g"</span></span></code></pre>
-<p>One can then simply pass the <code>symbols_dict</code> to the <code>symbols_dict</code> param to <code>generate_homologs</code>, instead of specifying a tax id in <code>target_organism</code>.</p>
-<p>Automatic conversion comes with some limitation, we thus also refer the user to external curated databases (e.g. murine CellChatDB), which can also be used with LIANA.</p>
+<p>One can then simply pass the <code>symbols_dict</code> to the
+<code>symbols_dict</code> param to <code>generate_homologs</code>,
+instead of specifying a tax id in <code>target_organism</code>.</p>
+<p>Automatic conversion comes with some limitation, we thus also refer
+the user to external curated databases (e.g. murine CellChatDB), which
+can also be used with LIANA.</p>
 </div>
   </div>
 
@@ -236,7 +264,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
       </span>
     </div>
 
@@ -82,6 +82,18 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.1.6" id="liana-016-110822">LIANA 0.1.6 (11.08.22)<a class="anchor" aria-label="anchor" href="#liana-016-110822"></a></h2>
+<div class="section level3">
+<h3 id="changes-0-1-6">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-6"></a></h3>
+<ul><li><p>Fixed an issue where interactions with complexes will not filtered be according to <code>expr_prop</code> for some methods. I now filter twice - once via <code>.filt_liana_pipe</code> for computational speed, and once after <code>recomplexify</code> to also remove the complexes with <code>expr_prop</code> &lt;= X. Will now also filter <code>crosstalk_scores</code> to <code>expr_prop</code>.</p></li>
+<li><p>In the edgecase of complexes with subunits with equal expression, LIANA’s internal methods will not arbitrarily discard duplicate complex interactions.</p></li>
+<li><p>Will now return <code>expr_prop</code> for each method. Note that this information is discarded by <code>liana_aggregate</code>.</p></li>
+<li><p><code>liana_doplot</code> function is now more explicit in the way interactions are selected. Will now take <code>topn</code> and return the highest ranked interactions.</p></li>
+<li><p>Added a <code>rank_method</code> helper function to rank single methods according to <code>specificity</code> and magnitude.</p></li>
+<li><p>Removed ~20 bad quality interactions from the <code>Consensus</code> resource.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.5" id="liana-015-040722">LIANA 0.1.5 (04.07.22)<a class="anchor" aria-label="anchor" href="#liana-015-040722"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-5">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-5"></a></h3>
@@ -117,16 +129,19 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-implementations-0-1-3">New implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-3"></a></h3>
-<ul><li>A chord plot for interaction frequncies was included.</li></ul></div>
+<ul><li>A chord plot for interaction frequncies was included.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.2" id="liana-012-030522">LIANA 0.1.2 (03.05.22)<a class="anchor" aria-label="anchor" href="#liana-012-030522"></a></h2>
 <div class="section level3">
 <h3 id="new-implementations-0-1-2">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-2"></a></h3>
-<ul><li>Frequency Heatmap available via the <code>heat_freq</code> functions, added due to being common requests. This heatmap was inspired by CellPhoneDB and CellChat.</li></ul></div>
+<ul><li>Frequency Heatmap available via the <code>heat_freq</code> functions, added due to being common requests. This heatmap was inspired by CellPhoneDB and CellChat.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="changes-0-1-2">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-2"></a></h3>
-<ul><li>Extended basic tutorial to accommodate new heatmap plots.</li></ul></div>
+<ul><li>Extended basic tutorial to accommodate new heatmap plots.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-2"></a></h3>
 <ul><li>Allow labels to be passed to <code>liana_dotplot</code>
@@ -138,7 +153,8 @@
 <h2 class="page-header" data-toc-text="0.1.1" id="liana-011-260422">LIANA 0.1.1 (26.04.22)<a class="anchor" aria-label="anchor" href="#liana-011-260422"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-1">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-1"></a></h3>
-<ul><li>Change the order of non-expressed genes and empty droplet filtering. I now appropriately filter cells in the <code>sce</code> object <em>after</em> limiting the gene universe to ligands and receptors in the resource.</li></ul></div>
+<ul><li>Change the order of non-expressed genes and empty droplet filtering. I now appropriately filter cells in the <code>sce</code> object <em>after</em> limiting the gene universe to ligands and receptors in the resource.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-1"></a></h3>
 <ul><li><p>Appropriately pass <code>verbose</code> to <code>.filter_sce</code></p></li>
@@ -149,7 +165,8 @@
 <h2 class="page-header" data-toc-text="0.1.0" id="liana-010-200422">LIANA 0.1.0 (20.04.22)<a class="anchor" aria-label="anchor" href="#liana-010-200422"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-0"></a></h3>
-<ul><li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li></ul></div>
+<ul><li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-0">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-0"></a></h3>
 <ul><li><p>Flipped <code>x</code> and <code>y</code> axes dotplot according to feedback.</p></li>
@@ -165,7 +182,8 @@
 <h2 class="page-header" data-toc-text="0.0.9" id="liana-009-23032022">LIANA 0.0.9 (23.03.2022)<a class="anchor" aria-label="anchor" href="#liana-009-23032022"></a></h2>
 <div class="section level3">
 <h3 id="new-implementations-0-0-9">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-0-9"></a></h3>
-<ul><li>We now provide a tutorial dedicated to <code>orthology conversion</code> of the resources in LIANA</li></ul></div>
+<ul><li>We now provide a tutorial dedicated to <code>orthology conversion</code> of the resources in LIANA</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-0-9">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-0-9"></a></h3>
 <p>LIANA will now check if: - There is enough of a gene intesect between the resource and the data (i.e. if they are both for human)</p>
@@ -178,7 +196,8 @@
 <h2 class="page-header" data-toc-text="0.0.8" id="liana-008-05032022">LIANA 0.0.8 (05.03.2022)<a class="anchor" aria-label="anchor" href="#liana-008-05032022"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-0-8">Changes<a class="anchor" aria-label="anchor" href="#changes-0-0-8"></a></h3>
-<ul><li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li></ul></div>
+<ul><li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-0-8">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-0-8"></a></h3>
 <ul><li>testthat tests external methods only if requested explicitly</li>
@@ -236,10 +255,12 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-6">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-6"></a></h3>
-<ul><li>Fixed a bug where incorrectly passing method names in different cases results in an error.</li></ul></div>
+<ul><li>Fixed a bug where incorrectly passing method names in different cases results in an error.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="deprecated-0-0-6">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-0-6"></a></h3>
-<ul><li>External LIANA methods (i.e. <code>call_</code>) are now deprecated. The pipelines will be maintained solely for power users, who intend to benchmark the original implementations, but will not be the focus of any downstream analyses. These will be solely developed for the internal (or re-implemented methods). These still rely on a <code>SeuratObject</code> as interface, but will now accept both sce and seurat as input.</li></ul></div>
+<ul><li>External LIANA methods (i.e. <code>call_</code>) are now deprecated. The pipelines will be maintained solely for power users, who intend to benchmark the original implementations, but will not be the focus of any downstream analyses. These will be solely developed for the internal (or re-implemented methods). These still rely on a <code>SeuratObject</code> as interface, but will now accept both sce and seurat as input.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.5" id="liana-005">LIANA 0.0.5<a class="anchor" aria-label="anchor" href="#liana-005"></a></h2>
@@ -265,14 +286,16 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-3"></a></h3>
-<ul><li>Fixed an issue where logFC was assigned only the value of the ligand</li></ul></div>
+<ul><li>Fixed an issue where logFC was assigned only the value of the ligand</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.2" id="liana-002">LIANA 0.0.2<a class="anchor" aria-label="anchor" href="#liana-002"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-0-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-0-2"></a></h3>
 <ul><li>
-<code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)" class="external-link">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li></ul></div>
+<code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)" class="external-link">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="changes-0-0-2">Changes<a class="anchor" aria-label="anchor" href="#changes-0-0-2"></a></h3>
 <ul><li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br></li>
@@ -327,7 +350,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
