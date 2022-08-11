@@ -95,9 +95,9 @@ liana_res <- liana_res %>%
 liana_res %>%
     filter(source=="B") %>%
     filter(target %in% c("NK", "CD8 T")) %>%
-    slice_head(n=15) %>% # simply keep the highest 15 interactions according to aggregate rank
     liana_dotplot(source_groups = "B",
-                  target_groups = c("NK", "CD8 T"))
+                  target_groups = c("NK", "CD8 T"),
+                  ntop = 15)
 ```
 
 

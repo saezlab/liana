@@ -59,7 +59,8 @@ used to the prioritize interactions.
 
 We also need to pass the function that we wish to use to account for heteromeric complexes
 ```{r lr_get, message=FALSE, warning=FALSE}
-get_sca(lr_res, complex_policy="mean") %>% glimpse
+get_sca(lr_res, complex_policy="mean",
+        expr_prop=liana_defaults()[["expr_prop"]]) %>% glimpse
 ```
 `get_*` functions refer to `liana_call` and `liana_score` functions behind the scenes, so please refer to those for more info.
 
