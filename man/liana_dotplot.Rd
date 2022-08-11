@@ -8,6 +8,7 @@ liana_dotplot(
   liana_res,
   source_groups = NULL,
   target_groups = NULL,
+  ntop = NULL,
   specificity = "natmi.edge_specificity",
   magnitude = "sca.LRscore",
   y.label = "Interactions (Ligand -> Receptor)",

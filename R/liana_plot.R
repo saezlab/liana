@@ -30,6 +30,7 @@
 #' Yet, one could also use CellChat's probabilities or CellPhoneDB's means, etc.
 #'
 #' @import ggplot2 dplyr
+#' @importFrom magrittr %<>%
 #'
 #' @return a ggplot2 object
 #'
@@ -37,6 +38,7 @@
 liana_dotplot <- function(liana_res,
                           source_groups = NULL,
                           target_groups = NULL,
+                          ntop = NULL,
                           specificity = "natmi.edge_specificity",
                           magnitude = "sca.LRscore",
                           y.label = "Interactions (Ligand -> Receptor)",
@@ -58,7 +60,17 @@ liana_dotplot <- function(liana_res,
              .) %>%
         `if`(!is.null(target_groups),
              filter(., target %in% target_groups),
-             .) %>%
+             .)
+
+
+    if(!is.null(ntop)){
+        # Subset to the X top interactions
+        top_int <- liana_mod %>% distinct_at(entities) %>% head(ntop)
+        liana_mod %<>% inner_join(top_int, by=entities)
+    }
+
+
+    liana_mod %<>%
         rename(magnitude = !!magnitude) %>%
         rename(specificity = !!specificity) %>%
         unite(entities, col = "interaction", sep = " -> ") %>%

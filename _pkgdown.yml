@@ -43,7 +43,7 @@ reference:
       - starts_with("select_")
 
   - title: Others
-    desc: "Potentially relevant others"
+    desc: "Other potentially relevant functions"
     contents:
       - chord_freq
       - heat_freq
@@ -52,4 +52,5 @@ reference:
       - decomplexify
       - generate_orthologs
       - generate_homologs
+      - rank_method
 

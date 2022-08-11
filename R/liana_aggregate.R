@@ -22,7 +22,7 @@
 #' (if available), if not e.g. the case of SCA we use it's sole scoring function.
 #' This aggregation is by default done on the basis of the list returns by
 #' `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
-#' aggragate of the housekeeping interactions of each `external` LIANA++ method.
+#' aggragate of the housekeeping interactions of each method.
 #' @param join_cols columns by which different method results will be joined.
 #' NULL by default, and automatically will handle the columns depending on the
 #' methods used.
@@ -116,7 +116,8 @@ liana_aggregate <- function(liana_res,
                                 cap,
                                 -cap),
                       wt=!!sym(method_score)) %>%
-                mutate( {{ .rank_col }} := .rank_enh(.data[[method_score]], desc_order)) %>%
+                mutate( {{ .rank_col }} := .rank_enh(.data[[method_score]],
+                                                     desc_order)) %>%
                 arrange(!!.rank_col) %>%
                 rename( {{ .method }} := method_score) %>%
                 select(!!join_cols,
@@ -152,7 +153,7 @@ liana_aggregate <- function(liana_res,
 #'
 #' @noRd
 .select_cap <- function(liana_res, fun){
-    nums <- liana_res %>% map(function(res) nrow(res)) %>% as.numeric
+    nums <- liana_res %>% map(function(res) nrow(res)) %>% as.numeric()
     exec(fun, nums)
 }
 
@@ -329,5 +330,42 @@ liana_aggregate <- function(liana_res,
 
 
 
+#' Helper function to rank each method
+#'
+#' @param liana_res liana_results for a single method
+#' @param method_name name of the method
+#' @param mode ranking to be carried out. Accepted modes are `specificity`
+#' and `magnitude`. The first is meant to reflect the specificity of interactions
+#' across all cell types, while the latter typically reflects how highly expressed
+#' is a given interaction.
+#'
+#' @details this function makes use of liana's `liana:::.score_specs` and
+#' `liana:::.score_housekeep` functions.
+#'
+#' @export
+rank_method <- function(liana_res,
+                        method_name,
+                        mode="specificity"){
+
+    if(mode=="specificity"){
+        .score_mode <- liana:::.score_specs
+    } else if(mode=="magnitude"){
+        .score_mode <- liana:::.score_housekeep
+    } else {
+        stop("Passed `mode` not found!")
+    }
+
+    if(is.null(.score_mode()[[method_name]])){
+        stop("Score-method combination not found!")
+    }
+
+    method_score <- .score_mode()[[method_name]]@method_score
+    desc_order <- .score_mode()[[method_name]]@descending_order
+
+    liana_res %>%
+        mutate(rank_col = .rank_enh(.data[[method_score]],
+                                    desc_order)) %>%
+        arrange(rank_col)
+}
 
 

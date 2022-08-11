@@ -1,4 +1,4 @@
-# LIANA 0.1.6 (XXX.07.22)
+# LIANA 0.1.6 (11.08.22)
 
 ## Changes
 - Fixed an issue where interactions with complexes will not filtered be according to
@@ -12,10 +12,13 @@ methods will not arbitrarily discard duplicate complex interactions.
 - Will now return `expr_prop` for each method. Note that this information is
 discarded by `liana_aggregate`.
 
-## New Implementations
-- Untargeted between-condition (context/sample) decomposition
-of  cell-cell communication latent patterns /w `tensor_cell2cell`. Makes use
-of `basilisk` to automatically set-up a conda env for liana.
+- `liana_doplot` function is now more explicit in the way interactions are
+selected. Will now take `topn` and return the highest ranked interactions.
+
+- Added a `rank_method` helper function to rank single methods according to
+`specificity` and magnitude.
+
+- Removed ~20 bad quality interactions from the `Consensus` resource.
 
 
 # LIANA 0.1.5 (04.07.22)

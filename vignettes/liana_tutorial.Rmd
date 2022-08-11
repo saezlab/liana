@@ -132,15 +132,21 @@ We will now plot the results. By default, we use the `LRscore` from SingleCellSi
 to represent the magnitude of expression of the ligand and receptor, and NATMI's `specificity weights`
 to show how specific a given interaction is to the `source`(L) and `target`(R) cell types.
 
-In this case, we plot the top 25 interactions with the lowest aggregate_rank scores, 
-and we plot interactions in which B cells are the `source` (express the ~ligands) and
-the other 3 cell types in this toy dataset are the `target` (express the ~receptors).
+Note that the top 20 interactions (`ntop`), are defined as unique ligand-receptors 
+ordered consequentially, regardless of the cell types. Done subsequent to filtering to the `source_groups` and `target_groups` of interest. In this case, we plot interactions in which B cells are the `source` (express the ~ligands) and the other 3 cell types are the `target` cell types (those which express the ~receptors).
+
+By default, `liana_aggregate` would order LIANA's 
+output according to `rank_aggregate` in ascending order. 
+
+Note that using `liana_dotplot` /w `ntop` assumes that liana's results are 
+ranked accordingly! Refer to `rank_method`, if you wish to easily rank
+interactions for a single method (see example below).
+
 ```{r liana_dotplot, warning=FALSE, fig.width=11, fig.height=8}
-liana_test %>% 
-  dplyr::filter(source =="B") %>%
-  dplyr::top_n(25, desc(aggregate_rank)) %>%
+liana_test %>%
   liana_dotplot(source_groups = c("B"),
-                target_groups = c("NK", "CD8 T", "B"))
+                target_groups = c("NK", "CD8 T", "B"),
+                ntop = 20)
 ```
 
 Note that missing dots are interactions which are not expressed in at least 10% of the cells (by default)
@@ -188,7 +194,8 @@ Here, we will generate a chord diagram equivalent to the frequencies heatmap.
 First, make sure you have the `circlize` package installed.
 ```{r cricl, eval=TRUE, message=TRUE}
 if(!require("circlize")){
-  install.packages("circlize", quiet = TRUE, repos = "http://cran.us.r-project.org")
+  install.packages("circlize", quiet = TRUE,
+                   repos = "http://cran.us.r-project.org")
 }
 ```
 
@@ -221,11 +228,22 @@ cpdb_test <- liana_wrap(sce,
                         resource = c('CellPhoneDB'),
                         permutation.params = list(nperms=100,
                                                   parallelize=FALSE,
-                                                  workers=4))
+                                                  workers=4),
+                        expr_prop=0.05)
+
+
+# Filter to interactions of interest
+cpdb_test <- cpdb_test %>%
+  # only keep interactions with p-val <= 0.01
+  filter(pvalue <= 0.01) %>% # this reflects interactions `specificity`
+  # then rank according to `magnitude`
+  rank_method(method_name = "cellphonedb",
+              mode = "magnitude")
+
+
 
 # Plot toy results
 cpdb_test %>%
-  # filter(pvalue <= 0.05) %>% # only keep interactions with p-val <= 0.05
   # invert size (low p-value/high specificity = larger dot size)
   # + add a small value to avoid Infinity for 0s
   mutate(pvalue = -log10(pvalue + 1e-10)) %>% 

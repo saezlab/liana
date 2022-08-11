@@ -46,7 +46,7 @@ By default, we use the score of each method which reflects specificity
 (if available), if not e.g. the case of SCA we use it's sole scoring function.
 This aggregation is by default done on the basis of the list returns by
 `.score_mode`. Alternatively, one could pass `.score_housekeep` to obtain an
-aggragate of the housekeeping interactions of each `external` LIANA++ method.}
+aggragate of the housekeeping interactions of each method.}
 
 \item{join_cols}{columns by which different method results will be joined.
 NULL by default, and automatically will handle the columns depending on the
