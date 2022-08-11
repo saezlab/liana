@@ -82,8 +82,6 @@ Suggests:
     furrr (>= 0.2.0),
     future,
     tidyverse,
-    rstatix,
-    patchwork,
     devtools
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat, saezlab/OmnipathR
