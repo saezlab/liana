@@ -14,6 +14,8 @@ discarded by `liana_aggregate`.
 
 - `liana_doplot` function is now more explicit in the way interactions are
 selected. Will now take `topn` and return the highest ranked interactions.
+Size of dots is also more distinguishable by default and the user can now 
+pass a customizable value for the size range.
 
 - Added a `rank_method` helper function to rank single methods according to
 `specificity` and magnitude.

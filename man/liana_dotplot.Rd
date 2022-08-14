@@ -14,7 +14,8 @@ liana_dotplot(
   y.label = "Interactions (Ligand -> Receptor)",
   size.label = "Interaction\\nSpecificity",
   colour.label = "Expression\\nMagnitude",
-  show_complex = TRUE
+  show_complex = TRUE,
+  size_range = c(2, 10)
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ specific interactions, etc).}
 \item{source_groups}{names of the source (sender) cell types (NULL = no filter)}
 
 \item{target_groups}{names of the target cell types (NULL = no filter)}
+
+\item{ntop}{number of interactions to return. Note that this assumes
+that the tibble is sorted in descending order of interaction importance!}
 
 \item{specificity}{column to represent the dot-size of the interaction
 (by default `natmi.edge_specificity`)}

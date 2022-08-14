@@ -8,6 +8,9 @@
 #' @param source_groups names of the source (sender) cell types (NULL = no filter)
 #' @param target_groups names of the target cell types (NULL = no filter)
 #'
+#' @param ntop number of interactions to return. Note that this assumes
+#' that the tibble is sorted in descending order of interaction importance!
+#'
 #' @param magnitude column to represent interactions expression magnitude
 #' (by default `sca.LRscore`)
 #'
@@ -44,7 +47,8 @@ liana_dotplot <- function(liana_res,
                           y.label = "Interactions (Ligand -> Receptor)",
                           size.label = "Interaction\nSpecificity",
                           colour.label = "Expression\nMagnitude",
-                          show_complex = TRUE){
+                          show_complex = TRUE,
+                          size_range = c(2, 10)){
 
     if(show_complex){
         entities <- c("ligand.complex", "receptor.complex")
@@ -92,7 +96,7 @@ liana_dotplot <- function(liana_res,
                )) +
             geom_point() +
             scale_color_gradientn(colours = viridis::viridis(20)) +
-            scale_size_continuous(range = c(5, 9)) +
+            scale_size_continuous(range = size_range) +
             facet_grid(. ~ source,
                        space = "free",
                        scales ="free",
