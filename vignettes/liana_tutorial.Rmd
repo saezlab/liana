@@ -217,7 +217,6 @@ as this would only make sense when working with large datasets).
 Also, here we will use a `SingleCellExperiment` object as input. In reality, LIANA converts `Seurat` objects
 to SingleCellExperiment and is to a large extend based on the BioConductor single-cell infrastructure.
 
-Finally, in this scenario we decide to show the names of the complexes, rather than the subunit with the lowest ~expression.
 ```{r cpdb_test, message = FALSE, print = FALSE, warning=FALSE, fig.width=11, fig.height=9}
 # Load Sce testdata
 sce <- readRDS(file.path(liana_path , "testdata", "input", "testsce.rds"))
@@ -231,19 +230,24 @@ cpdb_test <- liana_wrap(sce,
                                                   workers=4),
                         expr_prop=0.05)
 
-
-# Filter to interactions of interest
-cpdb_test <- cpdb_test %>%
-  # only keep interactions with p-val <= 0.01
-  filter(pvalue <= 0.01) %>% # this reflects interactions `specificity`
-  # then rank according to `magnitude`
+# identify interactions of interest
+cpdb_int <- cpdb_test %>%
+  # only keep interactions with p-val <= 0.05
+  filter(pvalue <= 0.05) %>% # this reflects interactions `specificity`
+  # then rank according to `magnitude` (lr_mean in this case)
   rank_method(method_name = "cellphonedb",
-              mode = "magnitude")
+              mode = "magnitude") %>%
+  # keep top 20 interactions (regardless of cell type)
+  distinct_at(c("ligand.complex", "receptor.complex")) %>%
+  head(20)
 
 
 
 # Plot toy results
 cpdb_test %>%
+  # keep only the interactions of interest
+  inner_join(cpdb_int, 
+             by = c("ligand.complex", "receptor.complex")) %>%
   # invert size (low p-value/high specificity = larger dot size)
   # + add a small value to avoid Infinity for 0s
   mutate(pvalue = -log10(pvalue + 1e-10)) %>% 
@@ -251,7 +255,8 @@ cpdb_test %>%
                 target_groups = c("c", "a", "b"),
                 specificity = "pvalue",
                 magnitude = "lr.mean",
-                show_complex = TRUE)
+                show_complex = TRUE,
+                size.label = "-log10(p-value)")
 ```
 
 
