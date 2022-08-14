@@ -88,7 +88,7 @@
 <ul><li><p>Fixed an issue where interactions with complexes will not filtered be according to <code>expr_prop</code> for some methods. I now filter twice - once via <code>.filt_liana_pipe</code> for computational speed, and once after <code>recomplexify</code> to also remove the complexes with <code>expr_prop</code> &lt;= X. Will now also filter <code>crosstalk_scores</code> to <code>expr_prop</code>.</p></li>
 <li><p>In the edgecase of complexes with subunits with equal expression, LIANA’s internal methods will not arbitrarily discard duplicate complex interactions.</p></li>
 <li><p>Will now return <code>expr_prop</code> for each method. Note that this information is discarded by <code>liana_aggregate</code>.</p></li>
-<li><p><code>liana_doplot</code> function is now more explicit in the way interactions are selected. Will now take <code>topn</code> and return the highest ranked interactions.</p></li>
+<li><p><code>liana_doplot</code> function is now more explicit in the way interactions are selected. Will now take <code>topn</code> and return the highest ranked interactions. Size of dots is also more distinguishable by default and the user can now pass a customizable value for the size range.</p></li>
 <li><p>Added a <code>rank_method</code> helper function to rank single methods according to <code>specificity</code> and magnitude.</p></li>
 <li><p>Removed ~20 bad quality interactions from the <code>Consensus</code> resource.</p></li>
 </ul></div>

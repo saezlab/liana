@@ -110,7 +110,7 @@ Dimitrov</h4>
 University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2022-08-11</h4>
+            <h4 data-toc-skip class="date">2022-08-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_tutorial.Rmd" class="external-link"><code>vignettes/liana_tutorial.Rmd</code></a></small>
       <div class="hidden name"><code>liana_tutorial.Rmd</code></div>
@@ -408,8 +408,6 @@ would only make sense when working with large datasets).</p>
 input. In reality, LIANA converts <code>Seurat</code> objects to
 SingleCellExperiment and is to a large extend based on the BioConductor
 single-cell infrastructure.</p>
-<p>Finally, in this scenario we decide to show the names of the
-complexes, rather than the subunit with the lowest ~expression.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load Sce testdata</span></span>
 <span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">liana_path</span> , <span class="st">"testdata"</span>, <span class="st">"input"</span>, <span class="st">"testsce.rds"</span><span class="op">)</span><span class="op">)</span></span>
@@ -423,19 +421,24 @@ complexes, rather than the subunit with the lowest ~expression.</p>
 <span>                                                  workers<span class="op">=</span><span class="fl">4</span><span class="op">)</span>,</span>
 <span>                        expr_prop<span class="op">=</span><span class="fl">0.05</span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co"># Filter to interactions of interest</span></span>
-<span><span class="va">cpdb_test</span> <span class="op">&lt;-</span> <span class="va">cpdb_test</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="co"># only keep interactions with p-val &lt;= 0.01</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">&lt;=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># this reflects interactions `specificity`</span></span>
-<span>  <span class="co"># then rank according to `magnitude`</span></span>
+<span><span class="co"># identify interactions of interest</span></span>
+<span><span class="va">cpdb_int</span> <span class="op">&lt;-</span> <span class="va">cpdb_test</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># only keep interactions with p-val &lt;= 0.05</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">&lt;=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># this reflects interactions `specificity`</span></span>
+<span>  <span class="co"># then rank according to `magnitude` (lr_mean in this case)</span></span>
 <span>  <span class="fu"><a href="../reference/rank_method.html">rank_method</a></span><span class="op">(</span>method_name <span class="op">=</span> <span class="st">"cellphonedb"</span>,</span>
-<span>              mode <span class="op">=</span> <span class="st">"magnitude"</span><span class="op">)</span></span>
+<span>              mode <span class="op">=</span> <span class="st">"magnitude"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># keep top 20 interactions (regardless of cell type)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct_all.html" class="external-link">distinct_at</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ligand.complex"</span>, <span class="st">"receptor.complex"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span></span>
 <span><span class="co"># Plot toy results</span></span>
 <span><span class="va">cpdb_test</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># keep only the interactions of interest</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">cpdb_int</span>, </span>
+<span>             by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ligand.complex"</span>, <span class="st">"receptor.complex"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># invert size (low p-value/high specificity = larger dot size)</span></span>
 <span>  <span class="co"># + add a small value to avoid Infinity for 0s</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pvalue <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">+</span> <span class="fl">1e-10</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -443,7 +446,8 @@ complexes, rather than the subunit with the lowest ~expression.</p>
 <span>                target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>,</span>
 <span>                specificity <span class="op">=</span> <span class="st">"pvalue"</span>,</span>
 <span>                magnitude <span class="op">=</span> <span class="st">"lr.mean"</span>,</span>
-<span>                show_complex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                show_complex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                size.label <span class="op">=</span> <span class="st">"-log10(p-value)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="liana_tutorial_files/figure-html/cpdb_test-1.png" width="1056"></p>
 </div>
 <div class="section level3">
@@ -582,7 +586,7 @@ can obtain a list with all default parameters by calling the
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Europe/Berlin</span></span>
-<span><span class="co">#&gt;  date     2022-08-11</span></span>
+<span><span class="co">#&gt;  date     2022-08-14</span></span>
 <span><span class="co">#&gt;  pandoc   2.18 @ /home/dbdimitrov/anaconda3/envs/liana4.1/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
@@ -679,7 +683,7 @@ can obtain a list with all default parameters by calling the
 <span><span class="co">#&gt;  lattice                0.20-45  <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.1)</span></span></span>
 <span><span class="co">#&gt;  lazyeval               0.2.2    <span style="color: #555555;">2019-03-15</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span></span>
 <span><span class="co">#&gt;  leiden                 0.4.2    <span style="color: #555555;">2022-05-09</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span></span>
-<span><span class="co">#&gt;  liana                * 0.1.6    <span style="color: #555555;">2022-08-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  liana                * 0.1.6    <span style="color: #555555;">2022-08-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  lifecycle              1.0.1    <span style="color: #555555;">2021-09-24</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span></span>
 <span><span class="co">#&gt;  limma                  3.50.3   <span style="color: #555555;">2022-04-07</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  listenv                0.8.0    <span style="color: #555555;">2019-12-05</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span></span>
@@ -792,7 +796,7 @@ can obtain a list with all default parameters by calling the
 <span><span class="co">#&gt;  zlibbioc               1.40.0   <span style="color: #555555;">2021-10-26</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  zoo                    1.8-10   <span style="color: #555555;">2022-04-15</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [1] /tmp/Rtmp2YRv9l/temp_libpath189c232b37743</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> [1] /tmp/Rtmp1tna17/temp_libpath37d801632348e</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [2] /home/dbdimitrov/anaconda3/envs/liana4.1/lib/R/library</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre>
