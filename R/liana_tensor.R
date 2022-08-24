@@ -1,74 +1,3 @@
-
-#' Wrapper around `liana_wrap` to run liana for each sample.
-#'
-#' @param idents_col name of the cluster column
-#'
-#' @param sample_col name of the sample column
-#'
-#' @param condition_col name of the condition/group column
-#'
-#' @param key_sep separates the `condition_col` and' `sample_col` (| by default)
-#'
-#' @param verbose verbosity logical
-#'
-#' @details takes a Seurat/SCE object and runs LIANA by sample/condition. The
-#' key by which the samples are separated is build from the `condition_col` and
-#' `sample_col`, separated by the `key_sep`.
-#'
-#' @inheritDotParams liana_wrap
-#'
-#' @export
-#'
-liana_bysample <- function(sce,
-                           idents_col,
-                           sample_col,
-                           condition_col,
-                           key_sep = "|",
-                           verbose = TRUE,
-                           assay=NULL,
-                           ...){
-
-    # Format whole object (needed if Seurat - will also reduce RAM reqs)
-    sce <- liana_prep(sce,
-                      idents_col = idents_col,
-                      assay = assay,
-                      verbose = verbose)
-
-    # Extract metadata in an object specific way? then do this thing
-
-    # Build Key col
-    sce$key_col <- as.factor(paste(sce[[condition_col]],
-                                   sce[[sample_col]],
-                                   sep = key_sep))
-
-
-    # Map over key col
-    sample_ccc <- map(levels(sce$key_col),
-                      function(key){
-
-                          liana_message(str_glue("Current sample: {key}"),
-                                        output = "message",
-                                        verbose = verbose
-                                        )
-
-                          # Subset to current sample
-                          sce_temp <- subset(sce,
-                                             ,
-                                             sce$key_col==key)
-
-                          # Set cluster
-                          colLabels(sce_temp) <- sce_temp[[idents_col]]
-
-                          # Run LIANA on each
-                          liana_wrap(sce=sce_temp, ...)
-
-                      }) %>%
-        setNames(levels(sce$key_col))
-
-}
-
-
-
 #' Wrapper function to run `cell2cell_tensor` with LIANA output.
 #'
 #' @details This function servers as a one-liner wrapper to the tensor factorisation
@@ -160,7 +89,7 @@ liana_tensor_c2c <- function(context_df_dict,
                              receiver_col = "target",
                              ligand_col = "ligand.complex",
                              receptor_col = "receptor.complex",
-                             score_col = 'sca.lrcore',
+                             score_col = 'LRscore',
                              how='inner',
                              lr_fill=NaN,
                              cell_fill=NaN,

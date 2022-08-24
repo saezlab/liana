@@ -8,7 +8,7 @@
 #' @param lr_delim Delimiter that separates ligands and receptors in the
 #' ligand-receptor pair in the edgelists (score matrices)
 #'
-#' @param lr_prop minimum proportions
+#' @param lr_prop minimum proportion across samples
 #'
 #' @param lr_fill value to fill in missing interactions across contexts
 #' (0 by default)
@@ -30,8 +30,12 @@ liana_cc2mofa <- function(context_df_dict,
                           lr_min = 15,
                           cell_delim = "&",
                           lr_cell_delim = ";",
-                          key_sep = "|"){
+                          key_sep = "|",
+                          verbose = TRUE){
 
+    liana_message("Converting scores to MOFA format...",
+                  output = "message",
+                  verbose = verbose)
 
     # Bind all samples scores
     scores <- context_df_dict %>%

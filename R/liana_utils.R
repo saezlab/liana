@@ -1,16 +1,87 @@
+#' Wrapper around `liana_wrap` to run liana for each sample.
+#'
+#' @param idents_col name of the cluster column
+#'
+#' @param sample_col name of the sample column
+#'
+#' @param condition_col name of the condition/group column
+#'
+#' @param key_sep separates the `condition_col` and' `sample_col` (| by default)
+#'
+#' @param verbose verbosity logical
+#'
+#' @details takes a Seurat/SCE object and runs LIANA by sample/condition. The
+#' key by which the samples are separated is build from the `condition_col` and
+#' `sample_col`, separated by the `key_sep`.
+#'
+#' @inheritDotParams liana_wrap
+#'
+#' @export
+#'
+liana_bysample <- function(sce,
+                           idents_col,
+                           sample_col,
+                           condition_col,
+                           key_sep = "|",
+                           verbose = TRUE,
+                           assay=NULL,
+                           ...){
+#
+#     # Format whole object (needed if Seurat - will also reduce RAM reqs)
+#     sce <- liana_prep(sce,
+#                       idents_col = idents_col,
+#                       assay = assay,
+#                       verbose = verbose)
+
+    # Extract metadata in an object specific way? then do this thing
+
+    # Build Key col
+    sce$key_col <- as.factor(paste(sce[[condition_col]],
+                                   sce[[sample_col]],
+                                   sep = key_sep))
+
+
+    # Map over key col
+    sample_ccc <- map(levels(sce$key_col),
+                      function(key){
+
+                          liana_message(str_glue("Current sample: {key}"),
+                                        output = "message",
+                                        verbose = verbose
+                          )
+
+                          # Subset to current sample
+                          sce_temp <- subset(sce,
+                                             ,
+                                             sce$key_col==key)
+
+                          # Set cluster
+                          colLabels(sce_temp) <- sce_temp[[idents_col]]
+
+                          # Run LIANA on each
+                          liana_wrap(sce=sce_temp, ...)
+
+                      }) %>%
+        setNames(levels(sce$key_col))
+
+}
+
+
 #' Filter nun-abundant cell types
 #'
 #' @inheritParams get_abundance_summary
 #' @inheritParams plot_abundance_summary
 #'
+#' @export
+#'
 #' @return a filtered SingleCellExperiment Object
 filter_nonabundant_celltypes <- function(sce,
-                                         ctqc = NULL,
                                          sample_col,
                                          idents_col,
                                          min_cells = 10,
                                          min_samples = 3,
-                                         min_prop = 0.2){
+                                         min_prop = 0.2,
+                                         ctqc = NULL){
 
     # Calculate QC
     if(is.null(ctqc)){
@@ -22,6 +93,8 @@ filter_nonabundant_celltypes <- function(sce,
                                       min_prop = min_prop
         )
     }
+
+    plot_abundance_summary(ctqc)
 
     # Filter lowly-abundant celltypes from each sample
     keep_abundant <- ctqc %>%
@@ -51,6 +124,8 @@ filter_nonabundant_celltypes <- function(sce,
 #' present (with at least `min_cells`)
 #'
 #' @returns a tibble
+#'
+#' @export
 #'
 #' @keywords internal
 get_abundance_summary <- function(sce,
@@ -84,16 +159,20 @@ get_abundance_summary <- function(sce,
         mutate(keep_celltype = if_else((keep_sum > min_samples) &
                                            (sample_prop > min_prop),
                                        TRUE,
-                                       FALSE))
+                                       FALSE)) %>%
+        ungroup()
 }
 
 #' Function to Plot Abundance Summary
+#'
 #' @param ctqc cell type quality control summary obtained from
 #' `get_abundance_summary`
 #'
 #' @param ncol number of columns for the facet wrap
 #'
 #' @return a ggplot2 object
+#'
+#' @export
 #'
 #' @keywords internal
 plot_abundance_summary <- function(ctqc, ncol = 3){
