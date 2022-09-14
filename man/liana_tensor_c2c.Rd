@@ -10,7 +10,7 @@ liana_tensor_c2c(
   receiver_col = "target",
   ligand_col = "ligand.complex",
   receptor_col = "receptor.complex",
-  score_col = "sca.lrcore",
+  score_col = "LRscore",
   how = "inner",
   lr_fill = NaN,
   cell_fill = NaN,

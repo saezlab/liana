@@ -59,6 +59,14 @@ and in particular `tensor_cell2cell` (see reference at the bottom).
 Load required libraries and data.
 ```{r loadstuff, message=FALSE, warning=FALSE}
 sce <- readRDS(url("https://zenodo.org/record/6826420/files/pbmc_sce.RDS?download=1"))
+
+# Change this BS to:
+# library(ExperimentHub)
+# eh <- ExperimentHub()
+# query(eh, "Kang")
+# 
+# # Get Data
+# (sce <- eh[["EH2259"]])
 ```
 
 

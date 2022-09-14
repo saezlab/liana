@@ -65,7 +65,7 @@ as an assumptions of these method is that communication is coordinated at the cl
     \item{\code{signaling}}{a character vector giving the name of signaling pathways of interest}
     \item{\code{pairLR.use}}{a data frame consisting of one column named either "interaction_name" or "pathway_name", defining the interactions of interest}
     \item{\code{datasets}}{select the inferred cell-cell communications from a particular `datasets` when inputing a data frame `net`}
-    \item{\code{ligand.pvalues}}{set threshold for ligand genes
+    \item{\code{ligand.pvalues,ligand.logFC,ligand.pct.1,ligand.pct.2}}{set threshold for ligand genes
 
 ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
 
@@ -74,37 +74,7 @@ ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC
 ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
 
 ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
-    \item{\code{ligand.logFC}}{set threshold for ligand genes
-
-ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
-
-ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
-
-ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
-
-ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
-    \item{\code{ligand.pct.1}}{set threshold for ligand genes
-
-ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
-
-ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
-
-ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
-
-ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
-    \item{\code{ligand.pct.2}}{set threshold for ligand genes
-
-ligand.pvalues: threshold for pvalues in the differential expression gene analysis (DEG)
-
-ligand.logFC: threshold for logFoldChange in the DEG analysis; When ligand.logFC > 0, keep upgulated genes; otherwise, kepp downregulated genes
-
-ligand.pct.1: threshold for the percent of expressed genes in the defined 'positive' cell group. keep genes with percent greater than ligand.pct.1
-
-ligand.pct.2: threshold for the percent of expressed genes in the cells except for the defined 'positive' cell group}
-    \item{\code{receptor.pvalues}}{set threshold for receptor genes}
-    \item{\code{receptor.logFC}}{set threshold for receptor genes}
-    \item{\code{receptor.pct.1}}{set threshold for receptor genes}
-    \item{\code{receptor.pct.2}}{set threshold for receptor genes}
+    \item{\code{receptor.pvalues,receptor.logFC,receptor.pct.1,receptor.pct.2}}{set threshold for receptor genes}
   }}
 }
 \value{

@@ -90,7 +90,7 @@ plot_lr_heatmap(factors, lr_sep = "^", ...)
     \item{\code{heatmap_legend_param}}{A list contains parameters for the heatmap legends. See \code{\link[ComplexHeatmap]{color_mapping_legend,ColorMapping-method}} for all available parameters.}
     \item{\code{use_raster}}{Whether render the heatmap body as a raster image. It helps to reduce file size when the matrix is huge. If number of rows or columns is more than 2000, it is by default turned on. Note if \code{cell_fun} is set, \code{use_raster} is enforced to be \code{FALSE}.}
     \item{\code{raster_device}}{Graphic device which is used to generate the raster image.}
-    \item{\code{raster_quality}}{Ignored now.}
+    \item{\code{raster_quality}}{A value larger than 1.}
     \item{\code{raster_device_param}}{A list of further parameters for the selected graphic device. For raster image support, please check \url{https://jokergoo.github.io/ComplexHeatmap-reference/book/a-single-heatmap.html#heatmap-as-raster-image} .}
     \item{\code{raster_resize_mat}}{Whether resize the matrix to let the dimension of the matrix the same as the dimension of the raster image? The value can be logical. If it is \code{TRUE}, \code{\link[base]{mean}} is used to summarize the sub matrix which corresponds to a single pixel. The value can also be a summary function, e.g. \code{\link[base:Extremes]{max}}.}
     \item{\code{raster_by_magick}}{Whether to use \code{\link[magick:transform]{image_resize}} to scale the image.}

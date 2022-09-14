@@ -119,7 +119,6 @@ liana_tensor_c2c <- function(context_df_dict,
         reticulate::use_condaenv(condaenv = conda_env,
                                  conda = "auto",
                                  required = TRUE)
-        reticulate::py_set_seed(seed)
     } else{
         # load basilisk env
         liana_message(str_glue("Setting up Conda Environment with Basilisk"),
@@ -127,12 +126,13 @@ liana_tensor_c2c <- function(context_df_dict,
                       output = "message")
 
         # Set up basilisk
-        liana_env <- basilisk::BasiliskEnvironment(envname="liana_tensor",
+        liana_env <- basilisk::BasiliskEnvironment(envname="liana_cell2cell",
                                                    pkgname="liana",
                                                    packages=.lianapy_packages,
                                                    pip=.liana_pips)
         basilisk::basiliskStart(liana_env)
     }
+    reticulate::py_set_seed(seed)
 
     # Import c2c
     c2c <- reticulate::import(module = "cell2cell", as="c2c")
