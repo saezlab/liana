@@ -1,5 +1,5 @@
 ---
-title: " LIANA Orhology Conversion"
+title: " LIANA Orthology Conversion"
 author:
   - name: Daniel Dimitrov
     affiliation:
