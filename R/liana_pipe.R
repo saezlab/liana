@@ -35,25 +35,28 @@ liana_pipe <- function(sce,
                        base,
                        cell.adj = NULL){
 
+    # calculate global_mean required for SCA
+    global_mean <- fast_mean(exec(assay.type, sce))
+
     ### this whole chunk needs to move to liana_wrap
     # Resource Format
     transmitters <- op_resource$source_genesymbol %>%
         as_tibble() %>%
         select(gene = value) %>%
+        separate_rows(gene, sep="[_]") %>%
         distinct()
     receivers <- op_resource$target_genesymbol %>%
         as_tibble() %>%
         select(gene = value) %>%
+        separate_rows(gene, sep="[_]") %>%
         distinct()
-
-    # calculate global_mean required for SCA
-    global_mean <- fast_mean(exec(assay.type, sce))
+    entity_genes <- union(transmitters$gene,
+                          receivers$gene)
 
     # Filter `sce` to only include ligand receptor genes
     # and exclude any cells with 0 counts of LR genes
     sce <- .prep_universe(sce,
-                          entity_genes = union(transmitters$gene,
-                                               receivers$gene),
+                          entity_genes = entity_genes,
                           verbose)
 
     # Get Log2FC (done after non-expr. cell and gene filter from `liana_prep`)

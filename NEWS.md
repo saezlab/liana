@@ -22,6 +22,9 @@ pass a customizable value for the size range.
 
 - Removed ~20 bad quality interactions from the `Consensus` resource.
 
+- Minor changes on filtering SCE object in `liana_pipe` to ensure all
+complex subunits are present in the sce
+
 
 # LIANA 0.1.5 (04.07.22)
 

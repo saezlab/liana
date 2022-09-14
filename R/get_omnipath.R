@@ -767,9 +767,13 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                             "TNFRSF18", "CTLA4",
                             "KLRB1", "KLRF1", "KLRF2",
                             "PTPRC", "PVR", "SIGLEC1",
-                            "SIGLEC9", "TNFRSF14", "ITGAD_ITGB2",
-                            "ITGA4_ITGB1", "ITGA9_ITGB1", "ITGA4_ITGB7",
-                            "TYK2", "SYK")
+                            "SIGLEC9", "TNFRSF14",
+                            "ITGAD_ITGB2",
+                            "ITGA4_ITGB1", "ITGA9_ITGB1",
+                            "ITGA4_ITGB7",
+                            "TYK2", "SYK",
+                            "MT-RNR2"
+    )
 
     # # Identify wrongly annotated interactions
     duplicated_omni %<>%
@@ -802,6 +806,16 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
         #                                    target_genesymbol)) %>%
         distinct_at(.vars=c("source_genesymbol", "target_genesymbol"),
                     .keep_all=TRUE)
+
+    ## Recode odd aliases
+    complex_omni %<>%
+        mutate(source_genesymbol =
+                   recode(source_genesymbol,
+                          !!!list(
+                              "C4B_2"="C4B"
+                              )
+                          )
+               )
 
     # Return the final Curated OmniPath Resource
     return(complex_omni)
