@@ -25,9 +25,6 @@
     <loc>/articles/liana_ortho.html</loc>
   </url>
   <url>
-    <loc>/articles/liana_remethod.html</loc>
-  </url>
-  <url>
     <loc>/articles/liana_tutorial.html</loc>
   </url>
   <url>
@@ -52,13 +49,7 @@
     <loc>/reference/FormatiTALK.html</loc>
   </url>
   <url>
-    <loc>/reference/RankSpecifics-class.html</loc>
-  </url>
-  <url>
     <loc>/reference/ScoreSpecifics-class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/account_missing.html</loc>
   </url>
   <url>
     <loc>/reference/assign_ligrecs.html</loc>
@@ -112,64 +103,22 @@
     <loc>/reference/conn_formatDB.html</loc>
   </url>
   <url>
-    <loc>/reference/cpdb_permute.html</loc>
-  </url>
-  <url>
     <loc>/reference/cytotalk_score.html</loc>
   </url>
   <url>
     <loc>/reference/decomplexify.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-aggregate_rank.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-antilog1m.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-filt_liana_pipe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-filter_sce.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-format_idents.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-generate_complex_dict.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-get_freq.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-get_invcounts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-prep_universe.html</loc>
   </url>
   <url>
     <loc>/reference/dot-rank_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-score_housekeep.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-select_cap.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-sp_costrain.html</loc>
   </url>
   <url>
-    <loc>/reference/fast_mean.html</loc>
-  </url>
-  <url>
-    <loc>/reference/geneid_to_uniprot.html</loc>
-  </url>
-  <url>
     <loc>/reference/generate_homologs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/generate_omni.html</loc>
   </url>
   <url>
     <loc>/reference/generate_orthologs.html</loc>
@@ -190,9 +139,6 @@
     <loc>/reference/get_curated_omni.html</loc>
   </url>
   <url>
-    <loc>/reference/get_global_mean.html</loc>
-  </url>
-  <url>
     <loc>/reference/get_homologene_dict.html</loc>
   </url>
   <url>
@@ -211,9 +157,6 @@
     <loc>/reference/get_permutations.html</loc>
   </url>
   <url>
-    <loc>/reference/get_pseudobulk.html</loc>
-  </url>
-  <url>
     <loc>/reference/get_sca.html</loc>
   </url>
   <url>
@@ -223,22 +166,10 @@
     <loc>/reference/get_up_dict.html</loc>
   </url>
   <url>
-    <loc>/reference/grapes-slash-times-slash-grapes.html</loc>
-  </url>
-  <url>
     <loc>/reference/heat_freq.html</loc>
   </url>
   <url>
-    <loc>/reference/heat_spec.html</loc>
-  </url>
-  <url>
     <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/intercell_connections.html</loc>
-  </url>
-  <url>
-    <loc>/reference/italk_formatDB.html</loc>
   </url>
   <url>
     <loc>/reference/join_means.html</loc>
@@ -248,9 +179,6 @@
   </url>
   <url>
     <loc>/reference/liana_call.html</loc>
-  </url>
-  <url>
-    <loc>/reference/liana_cytokines.html</loc>
   </url>
   <url>
     <loc>/reference/liana_defaults.html</loc>
@@ -274,16 +202,7 @@
     <loc>/reference/liana_scores.html</loc>
   </url>
   <url>
-    <loc>/reference/liana_signatures.html</loc>
-  </url>
-  <url>
     <loc>/reference/liana_wrap.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ligand_pipe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/load_cytosig.html</loc>
   </url>
   <url>
     <loc>/reference/logg.html</loc>
@@ -304,25 +223,10 @@
     <loc>/reference/minmax.html</loc>
   </url>
   <url>
-    <loc>/reference/missing_subunits_to0.html</loc>
-  </url>
-  <url>
-    <loc>/reference/omni_to_NATMI.html</loc>
-  </url>
-  <url>
-    <loc>/reference/omnipath_intercell.html</loc>
-  </url>
-  <url>
     <loc>/reference/omnipath_partners.html</loc>
   </url>
   <url>
-    <loc>/reference/pems_from_means.html</loc>
-  </url>
-  <url>
     <loc>/reference/rank_method.html</loc>
-  </url>
-  <url>
-    <loc>/reference/reassign_params.html</loc>
   </url>
   <url>
     <loc>/reference/recode.character2.html</loc>
@@ -331,16 +235,10 @@
     <loc>/reference/recomplexify.html</loc>
   </url>
   <url>
-    <loc>/reference/reform_omni.html</loc>
-  </url>
-  <url>
     <loc>/reference/sca_formatDB.html</loc>
   </url>
   <url>
     <loc>/reference/select_resource.html</loc>
-  </url>
-  <url>
-    <loc>/reference/seurat_to_sce.html</loc>
   </url>
   <url>
     <loc>/reference/show_homologene.html</loc>
@@ -350,8 +248,5 @@
   </url>
   <url>
     <loc>/reference/show_resources.html</loc>
-  </url>
-  <url>
-    <loc>/reference/shuffle_omnipath.html</loc>
   </url>
 </urlset>

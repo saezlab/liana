@@ -62,7 +62,7 @@
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
     </li>
     <li>
-      <a href="../articles/liana_ortho.html"> LIANA Orhology Conversion</a>
+      <a href="../articles/liana_ortho.html"> LIANA Orthology Conversion</a>
     </li>
     <li>
       <a href="../articles/liana_tutorial.html">LIANA Tutorial</a>
@@ -99,14 +99,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="liana_nichenet_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LIANA - NicheNet</h1>
-                        <h4 data-toc-skip class="author">Martin Garrido
-Rodriguez-Cordoba</h4>
+                        <h4 data-toc-skip class="author">Martin Garrido Rodriguez-Cordoba</h4>
             
-            <h4 data-toc-skip class="date">2022-08-14</h4>
+            <h4 data-toc-skip class="date">2022-09-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_nichenet.Rmd" class="external-link"><code>vignettes/liana_nichenet.Rmd</code></a></small>
       <div class="hidden name"><code>liana_nichenet.Rmd</code></div>
@@ -118,40 +117,14 @@ Rodriguez-Cordoba</h4>
 <div class="section level2">
 <h2 id="before-you-start">Before you start<a class="anchor" aria-label="anchor" href="#before-you-start"></a>
 </h2>
-<p>This vignette is an example of how to combine LIANA’s hypotheses with
-those produced by NicheNet. The biological results that are obtained
-here are highly dependent on the hypothesis in mind, which is described
-in <a href="https://www.nature.com/articles/s41592-019-0667-5" class="external-link">NicheNet’s
-original article</a>. Before you start, we strongly recommend to have a
-look to the <a href="https://github.com/saeyslab/nichenetr" class="external-link">NicheNet’s
-repository</a>, as the data and the analyses that are run here were
-extracted from its vignettes. We acknowledge NicheNet’s authors for the
-extensive and reproducible documentation that they provide in this
-repository.</p>
+<p>This vignette is an example of how to combine LIANA’s hypotheses with those produced by NicheNet. The biological results that are obtained here are highly dependent on the hypothesis in mind, which is described in <a href="https://www.nature.com/articles/s41592-019-0667-5" class="external-link">NicheNet’s original article</a>. Before you start, we strongly recommend to have a look to the <a href="https://github.com/saeyslab/nichenetr" class="external-link">NicheNet’s repository</a>, as the data and the analyses that are run here were extracted from its vignettes. We acknowledge NicheNet’s authors for the extensive and reproducible documentation that they provide in this repository.</p>
 </div>
 <div class="section level2">
 <h2 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
 </h2>
-<p><a href="https://saezlab.github.io/liana/index.html" class="external-link">LIANA</a>
-(LIgand-receptor ANalysis frAmework) is a framework able to prioritize
-ligand-receptor interactions from single-cell transcriptomics using
-different resources and methods. It allows users to systematically
-generate hypotheses about which ligands from a given cell type is
-binding receptors on another. In contrast to LIANA, NicheNet aims to
-deepen in the intra-cellular mechanisms that connect a ligand with a set
-of transcriptional targets, making an extensive usage of prior knowledge
-from multiple sources. <strong>LIANA and NicheNet are not mutually
-exclusive, but in certain scenarios could be rather complementary, given
-that they aim to explore different aspects of inter- and intra-cellular
-communication</strong>.</p>
+<p><a href="https://saezlab.github.io/liana/index.html" class="external-link">LIANA</a> (LIgand-receptor ANalysis frAmework) is a framework able to prioritize ligand-receptor interactions from single-cell transcriptomics using different resources and methods. It allows users to systematically generate hypotheses about which ligands from a given cell type is binding receptors on another. In contrast to LIANA, NicheNet aims to deepen in the intra-cellular mechanisms that connect a ligand with a set of transcriptional targets, making an extensive usage of prior knowledge from multiple sources. <strong>LIANA and NicheNet are not mutually exclusive, but in certain scenarios could be rather complementary, given that they aim to explore different aspects of inter- and intra-cellular communication</strong>.</p>
 <p><img src="liana_nichenet.svg"></p>
-<p>Because of this, in this vignette, we show how to use LIANA in
-combination with NicheNet using the data and the biological scenario
-described in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s
-vignette</a>. Briefly, the biological question here is: Which ligands
-expressed by cancer-associated fibroblasts (CAFs) can induce a specific
-gene program in neighboring malignant cells? (Using data from Puram et
-al. 2017).</p>
+<p>Because of this, in this vignette, we show how to use LIANA in combination with NicheNet using the data and the biological scenario described in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>. Briefly, the biological question here is: Which ligands expressed by cancer-associated fibroblasts (CAFs) can induce a specific gene program in neighboring malignant cells? (Using data from Puram et al. 2017).</p>
 </div>
 <div class="section level2">
 <h2 id="load-packages-and-data">Load packages and data<a class="anchor" aria-label="anchor" href="#load-packages-and-data"></a>
@@ -171,19 +144,13 @@ al. 2017).</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/slowkow/ggrepel" class="external-link">ggrepel</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">300</span><span class="op">)</span> <span class="co"># required to download expression data /w slow connection</span></span></code></pre></div>
-<p>Then, we load and prepare the single-cell data, NicheNet’s model
-weights, and the gene set of interest. The latest is composed by genes
-that are known to participate in the partial epithelial-mesenchymal
-transition (p-EMT) program, as defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s
-vignette</a>.</p>
+<p>Then, we load and prepare the single-cell data, NicheNet’s model weights, and the gene set of interest. The latest is composed by genes that are known to participate in the partial epithelial-mesenchymal transition (p-EMT) program, as defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># single-cell expression matrix described in Puram et al. 2017</span></span>
 <span><span class="va">hnscc_expression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/hnscc_expression.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># model weights</span></span>
 <span><span class="va">ligand_target_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/3260758/files/ligand_target_matrix.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Furthermore, we restrict the single-cell data to the two cell types
-of interest for this example, which are the cancer associated
-fibroblasts (CAFs) and the tumor cells.</p>
+<p>Furthermore, we restrict the single-cell data to the two cell types of interest for this example, which are the cancer associated fibroblasts (CAFs) and the tumor cells.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expression</span> <span class="op">&lt;-</span> <span class="va">hnscc_expression</span><span class="op">$</span><span class="va">expression</span></span>
 <span><span class="va">sample_info</span> <span class="op">&lt;-</span> <span class="va">hnscc_expression</span><span class="op">$</span><span class="va">sample_info</span></span>
@@ -211,10 +178,7 @@ fibroblasts (CAFs) and the tumor cells.</p>
 <div class="section level2">
 <h2 id="run-liana">Run LIANA<a class="anchor" aria-label="anchor" href="#run-liana"></a>
 </h2>
-<p>In the first step, we run LIANA to systematically score all the
-ligand-receptor interactions between all the cell types included in the
-dataset. To do so, we first need to create a Seurat object from
-data:</p>
+<p>In the first step, we run LIANA to systematically score all the ligand-receptor interactions between all the cell types included in the dataset. To do so, we first need to create a Seurat object from data:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># create seurat object</span></span>
 <span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateAssayObject.html" class="external-link">CreateAssayObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">expm1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -223,21 +187,11 @@ data:</p>
 <span></span>
 <span><span class="co"># set cell identity to cell type</span></span>
 <span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Idents.html" class="external-link">Idents</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">cell_type</span></span></code></pre></div>
-<p>And then we can execute LIANA using default parameters. After LIANA
-execution, we employ the function <code><a href="../reference/liana_aggregate.html">liana_aggregate()</a></code> to
-summarize the output of different methods and to obtain a single score
-for each interaction.</p>
+<p>And then we can execute LIANA using default parameters. After LIANA execution, we employ the function <code><a href="../reference/liana_aggregate.html">liana_aggregate()</a></code> to summarize the output of different methods and to obtain a single score for each interaction.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/liana_aggregate.html">liana_aggregate</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>By default, LIANA will score the ligand-receptor interactions in all
-the possible directions within the two cell types of interest. This
-includes: Autocrine signaling (e.g. CAFs -&gt; CAFs), CAFs -&gt; Tumor
-cells and Tumor cells -&gt; CAFs. As we are only interested in the CAFs
--&gt; Tumor cell direction, we filter the results and visualize the top
-50 interactions according to the consensus/aggregate rank across
-methods. The aggregate rank itself can be interpreted as the
-significance of preferential enrichment for the interactions.</p>
+<p>By default, LIANA will score the ligand-receptor interactions in all the possible directions within the two cell types of interest. This includes: Autocrine signaling (e.g. CAFs -&gt; CAFs), CAFs -&gt; Tumor cells and Tumor cells -&gt; CAFs. As we are only interested in the CAFs -&gt; Tumor cell direction, we filter the results and visualize the top 50 interactions according to the consensus/aggregate rank across methods. The aggregate rank itself can be interpreted as the significance of preferential enrichment for the interactions.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># filter results to cell types of interest</span></span>
 <span><span class="va">caf_tumor_results</span> <span class="op">&lt;-</span> <span class="va">liana_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -263,13 +217,7 @@ significance of preferential enrichment for the interactions.</p>
 <div class="section level2">
 <h2 id="run-nichenet-using-lianas-ligands">Run NicheNet using LIANA’s ligands<a class="anchor" aria-label="anchor" href="#run-nichenet-using-lianas-ligands"></a>
 </h2>
-<p>The key aspect of combining LIANA with NicheNet is that we can use
-the ligands prioritized by LIANA as the set of potential ligands for
-NicheNet. Instead of evaluating all the expressed ligands for which the
-receptor is also expressed in the receiver cell type, we will only
-explore those that were prioritized by the methods included in LIANA.
-Hence, we select the ligands that form the interactions previously
-shown.</p>
+<p>The key aspect of combining LIANA with NicheNet is that we can use the ligands prioritized by LIANA as the set of potential ligands for NicheNet. Instead of evaluating all the expressed ligands for which the receptor is also expressed in the receiver cell type, we will only explore those that were prioritized by the methods included in LIANA. Hence, we select the ligands that form the interactions previously shown.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get ligands and filter to those included in NicheNet's ligand-target matrix</span></span>
 <span><span class="va">ligands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">top_n_caf_tumor</span><span class="op">$</span><span class="va">ligand</span><span class="op">)</span></span>
@@ -277,27 +225,21 @@ shown.</p>
 <span><span class="va">ligands</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "COL1A1" "FN1"    "THBS2"  "CXCL12" "COL4A1" "THBS1"  "THBS4"  "LAMB1" </span></span>
 <span><span class="co">##  [9] "LAMA2"  "COMP"   "LAMB2"</span></span></code></pre>
-<p>Before running NicheNet, we also need to define a list of background
-genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s
-vignette</a>.</p>
+<p>Before running NicheNet, we also need to define a list of background genes. To do so, we employ the threshold defined in <a href="https://github.com/saeyslab/nichenetr/blob/master/vignettes/ligand_activity_geneset.md" class="external-link">NicheNet’s vignette</a>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">background_genes</span> <span class="op">&lt;-</span> <span class="va">expression</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="va">sample_info</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">==</span> <span class="st">"Tumor"</span><span class="op">]</span>, <span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fl">10</span><span class="op">*</span><span class="op">(</span><span class="fl">2</span><span class="op">**</span><span class="va">x</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="va">.</span><span class="op">[</span><span class="va">.</span> <span class="op">&gt;=</span> <span class="fl">4</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>And execute NicheNet to predict the ligand activities using the pEMT
-gene set previously mentioned</p>
+<p>And execute NicheNet to predict the ligand activities using the pEMT gene set previously mentioned</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nichenet_activities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nichenetr/man/predict_ligand_activities.html" class="external-link">predict_ligand_activities</a></span><span class="op">(</span></span>
 <span>  geneset <span class="op">=</span> <span class="va">geneset_oi</span>,</span>
 <span>  background_expressed_genes <span class="op">=</span> <span class="va">background_genes</span>,</span>
 <span>  ligand_target_matrix <span class="op">=</span> <span class="va">ligand_target_matrix</span>, potential_ligands <span class="op">=</span> <span class="va">ligands</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>As a result, we obtain the NicheNet’s activity predictions for the
-ligands previously prioritized using LIANA. In a final step, we will
-visualize the ligand-receptor scores of LIANA and the ligand activity
-score of NicheNet in a single figure.</p>
+<p>As a result, we obtain the NicheNet’s activity predictions for the ligands previously prioritized using LIANA. In a final step, we will visualize the ligand-receptor scores of LIANA and the ligand activity score of NicheNet in a single figure.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># prepare data for visualization</span></span>
 <span><span class="va">vis_liana_nichenet</span> <span class="op">&lt;-</span> <span class="va">top_n_caf_tumor</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -341,163 +283,153 @@ score of NicheNet in a single figure.</p>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>In this vignette, we exemplify how to use LIANA’s predictions as
-NicheNet’s input. Although both methods are complementary, there is one
-point that should not be forgotten: LIANA predicts ligand-receptor
-interaction pairs. However, NicheNet score for a given ligand comes from
-how likely is to reach a set of given targets from it. A ligand can have
-a great Pearson correlation score to regulate a given set of targets,
-but we do not actually know if it is mediated by the receptor that we
-predicted using LIANA. Given this, <strong>the combination of methods to
-predict cell-cell communication (like LIANA) with tools that are able to
-model intracellular signaling using prior knowledge (e.g. NicheNet)
-constitute a promising approach to deepen in the signaling mechanisms
-implicated in the biological process under study.</strong></p>
+<p>In this vignette, we exemplify how to use LIANA’s predictions as NicheNet’s input. Although both methods are complementary, there is one point that should not be forgotten: LIANA predicts ligand-receptor interaction pairs. However, NicheNet score for a given ligand comes from how likely is to reach a set of given targets from it. A ligand can have a great Pearson correlation score to regulate a given set of targets, but we do not actually know if it is mediated by the receptor that we predicted using LIANA. Given this, <strong>the combination of methods to predict cell-cell communication (like LIANA) with tools that are able to model intracellular signaling using prior knowledge (e.g. NicheNet) constitute a promising approach to deepen in the signaling mechanisms implicated in the biological process under study.</strong></p>
 </div>
 <div class="section level2">
 <h2 id="r-session-information">R Session information<a class="anchor" aria-label="anchor" href="#r-session-information"></a>
 </h2>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.1.2 (2021-11-01)</span></span>
-<span><span class="co">## Platform: x86_64-conda-linux-gnu (64-bit)</span></span>
-<span><span class="co">## Running under: Ubuntu 20.04.4 LTS</span></span>
+<pre><code><span><span class="co">## R version 4.2.1 (2022-06-23)</span></span>
+<span><span class="co">## Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
+<span><span class="co">## Running under: Ubuntu 20.04.5 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
-<span><span class="co">## BLAS/LAPACK: /home/dbdimitrov/anaconda3/envs/liana4.1/lib/libopenblasp-r0.3.18.so</span></span>
+<span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0</span></span>
+<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
-<span><span class="co">##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
-<span><span class="co">##  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
-<span><span class="co">##  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
-<span><span class="co">##  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 </span></span>
-<span><span class="co">##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
-<span><span class="co">## [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       </span></span>
+<span><span class="co">##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## attached base packages:</span></span>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] sp_1.5-0           SeuratObject_4.1.0 Seurat_4.1.1       liana_0.1.6       </span></span>
-<span><span class="co">##  [5] forcats_0.5.1      stringr_1.4.0      dplyr_1.0.9        purrr_0.3.4       </span></span>
-<span><span class="co">##  [9] readr_2.1.2        tidyr_1.2.0        tibble_3.1.8       tidyverse_1.3.2   </span></span>
-<span><span class="co">## [13] nichenetr_1.1.0    remotes_2.4.2      cowplot_1.1.1      ggrepel_0.9.1     </span></span>
-<span><span class="co">## [17] ggpubr_0.4.0       ggplot2_3.3.6      BiocStyle_2.22.0  </span></span>
+<span><span class="co">##  [1] sp_1.5-0           SeuratObject_4.1.1 Seurat_4.1.1       nichenetr_1.1.1   </span></span>
+<span><span class="co">##  [5] liana_0.1.6        forcats_0.5.2      stringr_1.4.1      dplyr_1.0.10      </span></span>
+<span><span class="co">##  [9] purrr_0.3.4        readr_2.1.2        tidyr_1.2.1        tibble_3.1.8      </span></span>
+<span><span class="co">## [13] tidyverse_1.3.2    remotes_2.4.2      cowplot_1.1.1      ggrepel_0.9.1     </span></span>
+<span><span class="co">## [17] ggpubr_0.4.0       ggplot2_3.3.6      BiocStyle_2.24.0  </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] rsvd_1.0.5                  Hmisc_4.7-0                </span></span>
+<span><span class="co">##   [1] rsvd_1.0.5                  Hmisc_4.7-1                </span></span>
 <span><span class="co">##   [3] ica_1.0-3                   class_7.3-20               </span></span>
-<span><span class="co">##   [5] foreach_1.5.2               lmtest_0.9-40              </span></span>
-<span><span class="co">##   [7] rprojroot_2.0.3             crayon_1.5.1               </span></span>
-<span><span class="co">##   [9] spatstat.core_2.4-4         MASS_7.3-58                </span></span>
-<span><span class="co">##  [11] nlme_3.1-158                backports_1.4.1            </span></span>
-<span><span class="co">##  [13] reprex_2.0.1                rlang_1.0.4                </span></span>
-<span><span class="co">##  [15] XVector_0.34.0              caret_6.0-92               </span></span>
-<span><span class="co">##  [17] ROCR_1.0-11                 readxl_1.4.0               </span></span>
-<span><span class="co">##  [19] irlba_2.3.5                 limma_3.50.3               </span></span>
-<span><span class="co">##  [21] scater_1.22.0               BiocParallel_1.28.3        </span></span>
-<span><span class="co">##  [23] rjson_0.2.21                bit64_4.0.5                </span></span>
-<span><span class="co">##  [25] glue_1.6.2                  sctransform_0.3.3          </span></span>
-<span><span class="co">##  [27] vipor_0.4.5                 parallel_4.1.2             </span></span>
-<span><span class="co">##  [29] spatstat.sparse_2.1-1       BiocGenerics_0.40.0        </span></span>
-<span><span class="co">##  [31] spatstat.geom_2.4-0         haven_2.5.0                </span></span>
-<span><span class="co">##  [33] tidyselect_1.1.2            SummarizedExperiment_1.24.0</span></span>
-<span><span class="co">##  [35] fitdistrplus_1.1-8          zoo_1.8-10                 </span></span>
-<span><span class="co">##  [37] xtable_1.8-4                magrittr_2.0.3             </span></span>
-<span><span class="co">##  [39] evaluate_0.15               scuttle_1.4.0              </span></span>
-<span><span class="co">##  [41] cli_3.3.0                   zlibbioc_1.40.0            </span></span>
-<span><span class="co">##  [43] rstudioapi_0.13             miniUI_0.1.1.1             </span></span>
-<span><span class="co">##  [45] bslib_0.4.0                 logger_0.2.2               </span></span>
-<span><span class="co">##  [47] rpart_4.1.16                shiny_1.7.2                </span></span>
-<span><span class="co">##  [49] BiocSingular_1.10.0         xfun_0.31                  </span></span>
-<span><span class="co">##  [51] clue_0.3-61                 cluster_2.1.3              </span></span>
-<span><span class="co">##  [53] caTools_1.18.2              listenv_0.8.0              </span></span>
-<span><span class="co">##  [55] png_0.1-7                   future_1.27.0              </span></span>
-<span><span class="co">##  [57] ipred_0.9-13                withr_2.5.0                </span></span>
-<span><span class="co">##  [59] bitops_1.0-7                plyr_1.8.7                 </span></span>
-<span><span class="co">##  [61] cellranger_1.1.0            hardhat_1.2.0              </span></span>
-<span><span class="co">##  [63] e1071_1.7-11                dqrng_0.3.0                </span></span>
-<span><span class="co">##  [65] pROC_1.18.0                 pillar_1.8.0               </span></span>
-<span><span class="co">##  [67] GlobalOptions_0.1.2         cachem_1.0.6               </span></span>
-<span><span class="co">##  [69] fs_1.5.2                    GetoptLong_1.0.5           </span></span>
-<span><span class="co">##  [71] DelayedMatrixStats_1.16.0   vctrs_0.4.1                </span></span>
-<span><span class="co">##  [73] ellipsis_0.3.2              generics_0.1.3             </span></span>
-<span><span class="co">##  [75] lava_1.6.10                 tools_4.1.2                </span></span>
-<span><span class="co">##  [77] foreign_0.8-82              beeswarm_0.4.0             </span></span>
-<span><span class="co">##  [79] munsell_0.5.0               proxy_0.4-27               </span></span>
-<span><span class="co">##  [81] DelayedArray_0.20.0         fastmap_1.1.0              </span></span>
-<span><span class="co">##  [83] compiler_4.1.2              abind_1.4-5                </span></span>
-<span><span class="co">##  [85] httpuv_1.6.5                plotly_4.10.0              </span></span>
-<span><span class="co">##  [87] rgeos_0.5-9                 GenomeInfoDbData_1.2.7     </span></span>
-<span><span class="co">##  [89] prodlim_2019.11.13          gridExtra_2.3              </span></span>
-<span><span class="co">##  [91] edgeR_3.36.0                lattice_0.20-45            </span></span>
-<span><span class="co">##  [93] deldir_1.0-6                visNetwork_2.1.0           </span></span>
-<span><span class="co">##  [95] utf8_1.2.2                  later_1.3.0                </span></span>
-<span><span class="co">##  [97] recipes_1.0.1               jsonlite_1.8.0             </span></span>
-<span><span class="co">##  [99] scales_1.2.0                ScaledMatrix_1.2.0         </span></span>
-<span><span class="co">## [101] pbapply_1.5-0               carData_3.0-5              </span></span>
-<span><span class="co">## [103] sparseMatrixStats_1.6.0     lazyeval_0.2.2             </span></span>
-<span><span class="co">## [105] promises_1.2.0.1            car_3.1-0                  </span></span>
-<span><span class="co">## [107] doParallel_1.0.17           latticeExtra_0.6-30        </span></span>
-<span><span class="co">## [109] goftest_1.2-3               spatstat.utils_2.3-1       </span></span>
-<span><span class="co">## [111] reticulate_1.25             checkmate_2.1.0            </span></span>
-<span><span class="co">## [113] rmarkdown_2.14              pkgdown_2.0.6              </span></span>
-<span><span class="co">## [115] textshaping_0.3.6           statmod_1.4.36             </span></span>
-<span><span class="co">## [117] Rtsne_0.16                  Biobase_2.54.0             </span></span>
-<span><span class="co">## [119] uwot_0.1.11                 igraph_1.3.0               </span></span>
-<span><span class="co">## [121] survival_3.3-1              yaml_2.3.5                 </span></span>
-<span><span class="co">## [123] systemfonts_1.0.4           htmltools_0.5.3            </span></span>
-<span><span class="co">## [125] memoise_2.0.1               locfit_1.5-9.6             </span></span>
-<span><span class="co">## [127] IRanges_2.28.0              viridisLite_0.4.0          </span></span>
-<span><span class="co">## [129] digest_0.6.29               assertthat_0.2.1           </span></span>
-<span><span class="co">## [131] mime_0.12                   rappdirs_0.3.3             </span></span>
-<span><span class="co">## [133] future.apply_1.9.0          data.table_1.14.2          </span></span>
-<span><span class="co">## [135] S4Vectors_0.32.4            ragg_1.2.2                 </span></span>
-<span><span class="co">## [137] DiagrammeR_1.0.9            labeling_0.4.2             </span></span>
-<span><span class="co">## [139] splines_4.1.2               Formula_1.2-4              </span></span>
-<span><span class="co">## [141] googledrive_2.0.0           RCurl_1.98-1.7             </span></span>
-<span><span class="co">## [143] broom_1.0.0                 hms_1.1.1                  </span></span>
-<span><span class="co">## [145] modelr_0.1.8                colorspace_2.0-3           </span></span>
-<span><span class="co">## [147] base64enc_0.1-3             BiocManager_1.30.18        </span></span>
-<span><span class="co">## [149] ggbeeswarm_0.6.0            GenomicRanges_1.46.1       </span></span>
-<span><span class="co">## [151] shape_1.4.6                 nnet_7.3-17                </span></span>
-<span><span class="co">## [153] sass_0.4.2                  Rcpp_1.0.8.3               </span></span>
-<span><span class="co">## [155] bookdown_0.27               RANN_2.6.1                 </span></span>
-<span><span class="co">## [157] circlize_0.4.15             fansi_1.0.3                </span></span>
-<span><span class="co">## [159] tzdb_0.3.0                  parallelly_1.32.1          </span></span>
-<span><span class="co">## [161] ModelMetrics_1.2.2.2        R6_2.5.1                   </span></span>
-<span><span class="co">## [163] grid_4.1.2                  ggridges_0.5.3             </span></span>
-<span><span class="co">## [165] lifecycle_1.0.1             bluster_1.4.0              </span></span>
-<span><span class="co">## [167] curl_4.3.2                  ggsignif_0.6.3             </span></span>
-<span><span class="co">## [169] googlesheets4_1.0.0         leiden_0.4.2               </span></span>
-<span><span class="co">## [171] jquerylib_0.1.4             Matrix_1.4-1               </span></span>
-<span><span class="co">## [173] desc_1.4.1                  RcppAnnoy_0.0.19           </span></span>
-<span><span class="co">## [175] RColorBrewer_1.1-3          iterators_1.0.14           </span></span>
-<span><span class="co">## [177] gower_1.0.0                 htmlwidgets_1.5.4          </span></span>
-<span><span class="co">## [179] beachmat_2.10.0             polyclip_1.10-0            </span></span>
-<span><span class="co">## [181] rvest_1.0.2                 ComplexHeatmap_2.10.0      </span></span>
-<span><span class="co">## [183] mgcv_1.8-40                 globals_0.15.1             </span></span>
-<span><span class="co">## [185] htmlTable_2.4.1             patchwork_1.1.1            </span></span>
-<span><span class="co">## [187] spatstat.random_2.2-0       progressr_0.10.1           </span></span>
-<span><span class="co">## [189] codetools_0.2-18            matrixStats_0.62.0         </span></span>
-<span><span class="co">## [191] lubridate_1.8.0             metapod_1.2.0              </span></span>
-<span><span class="co">## [193] randomForest_4.7-1.1        prettyunits_1.1.1          </span></span>
-<span><span class="co">## [195] SingleCellExperiment_1.16.0 dbplyr_2.2.1               </span></span>
-<span><span class="co">## [197] GenomeInfoDb_1.30.1         gtable_0.3.0               </span></span>
-<span><span class="co">## [199] DBI_1.1.3                   stats4_4.1.2               </span></span>
-<span><span class="co">## [201] highr_0.9                   tensor_1.5                 </span></span>
-<span><span class="co">## [203] httr_1.4.3                  KernSmooth_2.23-20         </span></span>
-<span><span class="co">## [205] stringi_1.7.6               vroom_1.5.7                </span></span>
-<span><span class="co">## [207] progress_1.2.2              farver_2.1.1               </span></span>
-<span><span class="co">## [209] reshape2_1.4.4              viridis_0.6.2              </span></span>
-<span><span class="co">## [211] fdrtool_1.2.17              timeDate_4021.104          </span></span>
-<span><span class="co">## [213] xml2_1.3.3                  BiocNeighbors_1.12.0       </span></span>
-<span><span class="co">## [215] OmnipathR_3.5.5             interp_1.1-3               </span></span>
-<span><span class="co">## [217] scattermore_0.8             scran_1.22.1               </span></span>
-<span><span class="co">## [219] bit_4.0.4                   jpeg_0.1-9                 </span></span>
-<span><span class="co">## [221] MatrixGenerics_1.6.0        spatstat.data_2.2-0        </span></span>
-<span><span class="co">## [223] pkgconfig_2.0.3             gargle_1.2.0               </span></span>
-<span><span class="co">## [225] rstatix_0.7.0               knitr_1.39</span></span></code></pre>
+<span><span class="co">##   [5] ps_1.7.1                    foreach_1.5.2              </span></span>
+<span><span class="co">##   [7] lmtest_0.9-40               rprojroot_2.0.3            </span></span>
+<span><span class="co">##   [9] crayon_1.5.1                spatstat.core_2.4-4        </span></span>
+<span><span class="co">##  [11] MASS_7.3-58.1               nlme_3.1-159               </span></span>
+<span><span class="co">##  [13] backports_1.4.1             reprex_2.0.2               </span></span>
+<span><span class="co">##  [15] rlang_1.0.5                 XVector_0.36.0             </span></span>
+<span><span class="co">##  [17] caret_6.0-93                ROCR_1.0-11                </span></span>
+<span><span class="co">##  [19] readxl_1.4.1                irlba_2.3.5                </span></span>
+<span><span class="co">##  [21] callr_3.7.2                 limma_3.52.3               </span></span>
+<span><span class="co">##  [23] scater_1.24.0               BiocParallel_1.30.3        </span></span>
+<span><span class="co">##  [25] rjson_0.2.21                bit64_4.0.5                </span></span>
+<span><span class="co">##  [27] glue_1.6.2                  sctransform_0.3.4          </span></span>
+<span><span class="co">##  [29] vipor_0.4.5                 parallel_4.2.1             </span></span>
+<span><span class="co">##  [31] processx_3.7.0              spatstat.sparse_2.1-1      </span></span>
+<span><span class="co">##  [33] BiocGenerics_0.42.0         spatstat.geom_2.4-0        </span></span>
+<span><span class="co">##  [35] haven_2.5.1                 tidyselect_1.1.2           </span></span>
+<span><span class="co">##  [37] SummarizedExperiment_1.26.1 fitdistrplus_1.1-8         </span></span>
+<span><span class="co">##  [39] zoo_1.8-10                  xtable_1.8-4               </span></span>
+<span><span class="co">##  [41] magrittr_2.0.3              evaluate_0.16              </span></span>
+<span><span class="co">##  [43] scuttle_1.6.3               cli_3.4.0                  </span></span>
+<span><span class="co">##  [45] zlibbioc_1.42.0             rstudioapi_0.14            </span></span>
+<span><span class="co">##  [47] miniUI_0.1.1.1              logger_0.2.2               </span></span>
+<span><span class="co">##  [49] bslib_0.4.0                 rpart_4.1.16               </span></span>
+<span><span class="co">##  [51] shiny_1.7.2                 BiocSingular_1.12.0        </span></span>
+<span><span class="co">##  [53] xfun_0.33                   clue_0.3-61                </span></span>
+<span><span class="co">##  [55] pkgbuild_1.3.1              cluster_2.1.4              </span></span>
+<span><span class="co">##  [57] caTools_1.18.2              listenv_0.8.0              </span></span>
+<span><span class="co">##  [59] png_0.1-7                   future_1.28.0              </span></span>
+<span><span class="co">##  [61] ipred_0.9-13                withr_2.5.0                </span></span>
+<span><span class="co">##  [63] bitops_1.0-7                plyr_1.8.7                 </span></span>
+<span><span class="co">##  [65] cellranger_1.1.0            hardhat_1.2.0              </span></span>
+<span><span class="co">##  [67] e1071_1.7-11                dqrng_0.3.0                </span></span>
+<span><span class="co">##  [69] pROC_1.18.0                 pillar_1.8.1               </span></span>
+<span><span class="co">##  [71] GlobalOptions_0.1.2         cachem_1.0.6               </span></span>
+<span><span class="co">##  [73] fs_1.5.2                    GetoptLong_1.0.5           </span></span>
+<span><span class="co">##  [75] DelayedMatrixStats_1.18.0   vctrs_0.4.1                </span></span>
+<span><span class="co">##  [77] ellipsis_0.3.2              generics_0.1.3             </span></span>
+<span><span class="co">##  [79] lava_1.6.10                 tools_4.2.1                </span></span>
+<span><span class="co">##  [81] foreign_0.8-82              beeswarm_0.4.0             </span></span>
+<span><span class="co">##  [83] munsell_0.5.0               proxy_0.4-27               </span></span>
+<span><span class="co">##  [85] DelayedArray_0.22.0         fastmap_1.1.0              </span></span>
+<span><span class="co">##  [87] compiler_4.2.1              abind_1.4-5                </span></span>
+<span><span class="co">##  [89] httpuv_1.6.6                plotly_4.10.0              </span></span>
+<span><span class="co">##  [91] rgeos_0.5-9                 GenomeInfoDbData_1.2.8     </span></span>
+<span><span class="co">##  [93] prodlim_2019.11.13          gridExtra_2.3              </span></span>
+<span><span class="co">##  [95] edgeR_3.38.4                lattice_0.20-45            </span></span>
+<span><span class="co">##  [97] deldir_1.0-6                visNetwork_2.1.0           </span></span>
+<span><span class="co">##  [99] utf8_1.2.2                  later_1.3.0                </span></span>
+<span><span class="co">## [101] recipes_1.0.1               jsonlite_1.8.0             </span></span>
+<span><span class="co">## [103] scales_1.2.1                ScaledMatrix_1.4.1         </span></span>
+<span><span class="co">## [105] pbapply_1.5-0               carData_3.0-5              </span></span>
+<span><span class="co">## [107] sparseMatrixStats_1.8.0     lazyeval_0.2.2             </span></span>
+<span><span class="co">## [109] promises_1.2.0.1            car_3.1-0                  </span></span>
+<span><span class="co">## [111] doParallel_1.0.17           latticeExtra_0.6-30        </span></span>
+<span><span class="co">## [113] goftest_1.2-3               spatstat.utils_2.3-1       </span></span>
+<span><span class="co">## [115] reticulate_1.26             checkmate_2.1.0            </span></span>
+<span><span class="co">## [117] rmarkdown_2.16              pkgdown_2.0.6              </span></span>
+<span><span class="co">## [119] textshaping_0.3.6           statmod_1.4.37             </span></span>
+<span><span class="co">## [121] Rtsne_0.16                  Biobase_2.56.0             </span></span>
+<span><span class="co">## [123] uwot_0.1.14                 igraph_1.3.4               </span></span>
+<span><span class="co">## [125] survival_3.4-0              yaml_2.3.5                 </span></span>
+<span><span class="co">## [127] systemfonts_1.0.4           htmltools_0.5.3            </span></span>
+<span><span class="co">## [129] memoise_2.0.1               locfit_1.5-9.6             </span></span>
+<span><span class="co">## [131] IRanges_2.30.1              viridisLite_0.4.1          </span></span>
+<span><span class="co">## [133] digest_0.6.29               assertthat_0.2.1           </span></span>
+<span><span class="co">## [135] mime_0.12                   rappdirs_0.3.3             </span></span>
+<span><span class="co">## [137] future.apply_1.9.1          data.table_1.14.2          </span></span>
+<span><span class="co">## [139] S4Vectors_0.34.0            ragg_1.2.2                 </span></span>
+<span><span class="co">## [141] DiagrammeR_1.0.9            labeling_0.4.2             </span></span>
+<span><span class="co">## [143] splines_4.2.1               Formula_1.2-4              </span></span>
+<span><span class="co">## [145] googledrive_2.0.0           RCurl_1.98-1.8             </span></span>
+<span><span class="co">## [147] broom_1.0.1                 hms_1.1.2                  </span></span>
+<span><span class="co">## [149] modelr_0.1.9                colorspace_2.0-3           </span></span>
+<span><span class="co">## [151] base64enc_0.1-3             BiocManager_1.30.18        </span></span>
+<span><span class="co">## [153] ggbeeswarm_0.6.0            GenomicRanges_1.48.0       </span></span>
+<span><span class="co">## [155] shape_1.4.6                 nnet_7.3-17                </span></span>
+<span><span class="co">## [157] sass_0.4.2                  Rcpp_1.0.9                 </span></span>
+<span><span class="co">## [159] bookdown_0.29               RANN_2.6.1                 </span></span>
+<span><span class="co">## [161] circlize_0.4.15             fansi_1.0.3                </span></span>
+<span><span class="co">## [163] tzdb_0.3.0                  parallelly_1.32.1          </span></span>
+<span><span class="co">## [165] ModelMetrics_1.2.2.2        R6_2.5.1                   </span></span>
+<span><span class="co">## [167] grid_4.2.1                  ggridges_0.5.3             </span></span>
+<span><span class="co">## [169] lifecycle_1.0.2             bluster_1.6.0              </span></span>
+<span><span class="co">## [171] curl_4.3.2                  ggsignif_0.6.3             </span></span>
+<span><span class="co">## [173] googlesheets4_1.0.1         leiden_0.4.3               </span></span>
+<span><span class="co">## [175] jquerylib_0.1.4             Matrix_1.5-1               </span></span>
+<span><span class="co">## [177] desc_1.4.2                  RcppAnnoy_0.0.19           </span></span>
+<span><span class="co">## [179] RColorBrewer_1.1-3          iterators_1.0.14           </span></span>
+<span><span class="co">## [181] gower_1.0.0                 htmlwidgets_1.5.4          </span></span>
+<span><span class="co">## [183] beachmat_2.12.0             polyclip_1.10-0            </span></span>
+<span><span class="co">## [185] rvest_1.0.3                 ComplexHeatmap_2.12.1      </span></span>
+<span><span class="co">## [187] mgcv_1.8-40                 globals_0.16.1             </span></span>
+<span><span class="co">## [189] htmlTable_2.4.1             patchwork_1.1.2            </span></span>
+<span><span class="co">## [191] spatstat.random_2.2-0       progressr_0.11.0           </span></span>
+<span><span class="co">## [193] codetools_0.2-18            matrixStats_0.62.0         </span></span>
+<span><span class="co">## [195] lubridate_1.8.0             metapod_1.4.0              </span></span>
+<span><span class="co">## [197] randomForest_4.7-1.1        prettyunits_1.1.1          </span></span>
+<span><span class="co">## [199] SingleCellExperiment_1.18.0 dbplyr_2.2.1               </span></span>
+<span><span class="co">## [201] GenomeInfoDb_1.32.4         gtable_0.3.1               </span></span>
+<span><span class="co">## [203] DBI_1.1.3                   stats4_4.2.1               </span></span>
+<span><span class="co">## [205] highr_0.9                   tensor_1.5                 </span></span>
+<span><span class="co">## [207] httr_1.4.4                  KernSmooth_2.23-20         </span></span>
+<span><span class="co">## [209] stringi_1.7.8               vroom_1.5.7                </span></span>
+<span><span class="co">## [211] progress_1.2.2              farver_2.1.1               </span></span>
+<span><span class="co">## [213] reshape2_1.4.4              viridis_0.6.2              </span></span>
+<span><span class="co">## [215] fdrtool_1.2.17              timeDate_4021.104          </span></span>
+<span><span class="co">## [217] xml2_1.3.3                  BiocNeighbors_1.14.0       </span></span>
+<span><span class="co">## [219] OmnipathR_3.5.6             interp_1.1-3               </span></span>
+<span><span class="co">## [221] scattermore_0.8             bit_4.0.4                  </span></span>
+<span><span class="co">## [223] scran_1.24.1                jpeg_0.1-9                 </span></span>
+<span><span class="co">## [225] MatrixGenerics_1.8.1        spatstat.data_2.2-0        </span></span>
+<span><span class="co">## [227] pkgconfig_2.0.3             gargle_1.2.1               </span></span>
+<span><span class="co">## [229] rstatix_0.7.0               knitr_1.40</span></span></code></pre>
 </div>
   </div>
 
