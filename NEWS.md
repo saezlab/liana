@@ -1,3 +1,8 @@
+# LIANA 0.1.7 (XX.10.22)
+- Changed the way ties are handles in liana_aggregate. Namely, I previously
+assigned the minimum rank, but this resulted in ties getting lower p-values
+than they should, particularly for scores with a lot of ties (e.g. CPDB p-value).
+
 # LIANA 0.1.6 (11.08.22)
 
 ## Changes

@@ -70,10 +70,10 @@ The tools implemented in this repository are:
 - [iTALK](https://github.com/Coolgenome/iTALK)-inspired *1-vs-rest* LogFC score (`logfc_comb`) (*, $)
 - [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
   
-- `consensus_rank` of the predictions is also provided using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) package
+- `consensus_rank` of the predictions is also provided using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) method
   
   
-*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
+*The scoring systems from these methods were re-implemented in LIANA in order to account for multi-meric complexes, simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
 $ Default methods in LIANA.
 

@@ -192,9 +192,9 @@ liana_aggregate <- function(liana_res,
 #' @noRd
 .rank_enh <- function(vec, descending_order){
     if(descending_order){
-        min_rank(desc(vec))
+        rank(desc(vec), ties.method = "average")
     } else{
-        min_rank(vec)
+        rank(vec, ties.method = "average")
     }
 }
 
@@ -202,8 +202,6 @@ liana_aggregate <- function(liana_res,
 #'
 #' @param liana_mlist liana list with method tibbles
 #' @param join_cols columns to be concatenated to create entity to be ranked
-#'
-#' @inheritDotParams RobustRankAggreg::aggregateRanks
 #'
 #' @noRd
 .aggregate_rank <- function(liana_mlist, join_cols, verbose, ...){
