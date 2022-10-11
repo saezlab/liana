@@ -1,7 +1,17 @@
 # LIANA 0.1.7 (XX.10.22)
+## Changes
+
 - Changed the way ties are handles in liana_aggregate. Namely, I previously
 assigned the minimum rank, but this resulted in ties getting lower p-values
 than they should, particularly for scores with a lot of ties (e.g. CPDB p-value).
+
+- Fixed an issue where some subunits of 0 `expr_prop` would not get filtered.
+This was observed due to previous changes to `.filt_liana_pipe` in 0.1.6, where
+some subunits were filtered before `recomplexifying`.
+
+## Minor changes
+
+- I now refer to SCpubr in the tutorial for more advanced plots.
 
 # LIANA 0.1.6 (11.08.22)
 

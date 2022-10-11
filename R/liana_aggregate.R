@@ -305,7 +305,7 @@ liana_aggregate <- function(liana_res,
 #' @noRd
 .rho_scores <- function(r){
     r <- sort(r)
-    n <- length(r)
+    n <- length(r) #length is sometimes larger than max -> over-inflates FPs
 
     # Calc beta p-vals
     p <- pbeta(q=r,
