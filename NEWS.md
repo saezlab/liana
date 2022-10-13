@@ -14,6 +14,9 @@ being done on both .expr and .sum columns. These are now seperated into `columns
 are the ones for which I account for complexes, and `add_cols`, the ones that
 are additional - no need to account for complexes (e.g. also `global_mean`).
 
+## Minor Changes
+- I now refer to [SCPubr](https://enblacar.github.io/SCpubr-book/index.html) in liana's tutorial.
+
 
 ## Minor changes
 

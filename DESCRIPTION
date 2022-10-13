@@ -75,7 +75,6 @@ Suggests:
     markdown,
     testthat (>= 3.0.0),
     sessioninfo,
-    logger,
     Seurat,
     entropy,
     circlize,

@@ -258,4 +258,3 @@ setClass("ScoreSpecifics",
             )
     )
 }
-

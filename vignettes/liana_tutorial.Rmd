@@ -159,8 +159,6 @@ and receptor are uniquely expressed in a given pair of cells.
 Expression magnitude, represented by [SingleCellExperiment's LRScore](https://academic.oup.com/nar/article/48/10/e55/5810485), is on the other hand, 
 meant to represent a non-negative regularized score, comparable between datasets.
 
-For more advanced visualization options, we refer the user to [SCPubr](https://enblacar.github.io/SCpubr-book/ligand-receptor-analysis.html).
-
 
 ## Frequency Heatmap
 We will now plot the frequencies of interactions for each pair of *potentially* communicating cell types.
@@ -208,6 +206,9 @@ p <- chord_freq(liana_trunc,
                 source_groups = c("CD8 T", "NK", "B"),
                 target_groups = c("CD8 T", "NK", "B"))
 ```
+
+
+For more advanced visualization options, we kindly refer the user to [SCPubr](https://enblacar.github.io/SCpubr-book/ligand-receptor-analysis.html).
 
 
 ## Run any method of choice.
