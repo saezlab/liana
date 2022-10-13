@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
       </span>
     </div>
 
@@ -81,6 +81,21 @@
       <small>Source: <a href="https://github.com/saezlab/liana/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.1.7" id="liana-017-131022">LIANA 0.1.7 (13.10.22)<a class="anchor" aria-label="anchor" href="#liana-017-131022"></a></h2>
+<div class="section level3">
+<h3 id="changes-0-1-7">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-7"></a></h3>
+<ul><li><p>Changed the way ties are handles in liana_aggregate. Namely, I previously assigned the minimum rank, but this resulted in ties getting lower p-values than they should, particularly for scores with a lot of ties (e.g. CPDB p-value).</p></li>
+<li><p>Fixed an issue where some subunits of 0 <code>expr_prop</code> would not get filtered. This was observed due to previous changes to <code>.filt_liana_pipe</code> in 0.1.6, where some subunits were filtered before <code>recomplexifying</code>.</p></li>
+<li><p>Fixed an issue in which some NATMI complexes would be missing due to <code>recomplexify</code> being done on both .expr and .sum columns. These are now seperated into <code>columns</code>, which are the ones for which I account for complexes, and <code>add_cols</code>, the ones that are additional - no need to account for complexes (e.g. also <code>global_mean</code>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-0-1-7">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-7"></a></h3>
+<ul><li>I now refer to <a href="https://enblacar.github.io/SCpubr-book/index.html" class="external-link">SCPubr</a> in liana’s tutorial.</li></ul></div>
+<div class="section level3">
+<h3 id="minor-changes-0-1-7-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-7-1"></a></h3>
+<ul><li>I now refer to SCpubr in the tutorial for more advanced plots.</li></ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.6" id="liana-016-110822">LIANA 0.1.6 (11.08.22)<a class="anchor" aria-label="anchor" href="#liana-016-110822"></a></h2>
 <div class="section level3">
