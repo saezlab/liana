@@ -772,7 +772,11 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                             "ITGA4_ITGB1", "ITGA9_ITGB1",
                             "ITGA4_ITGB7",
                             "TYK2", "SYK",
-                            "MT-RNR2"
+                            "MT-RNR2",
+                            "IL13_IL13RA1_IL4R",
+                            "IL22_IL22RA1",
+                            "IL18BP"
+
     )
 
     # # Identify wrongly annotated interactions
