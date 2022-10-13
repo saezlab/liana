@@ -186,6 +186,7 @@ liana_scores <- function(score_object,
         recomplexify(
             lr_res = .,
             columns = score_object@columns,
+            add_columns = score_object@add_columns,
             ...)  %>%
         # Select only the relevant columns
         select(source, target,
