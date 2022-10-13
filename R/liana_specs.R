@@ -20,7 +20,8 @@ setClass("ScoreSpecifics",
                     method_score = "character",
                     descending_order= "logical",
                     score_fun = "function",
-                    columns = "character"
+                    columns = "character",
+                    add_columns = 'character'
                     )
 )
 
@@ -43,7 +44,8 @@ setClass("ScoreSpecifics",
                 method_score = "weight_sc",
                 descending_order = TRUE,
                 score_fun = connectome_score,
-                columns = c("ligand.scaled", "receptor.scaled")
+                columns = c("ligand.scaled", "receptor.scaled"),
+                add_columns = NA_character_
             ),
         "logfc" =
             methods::new(
@@ -52,7 +54,8 @@ setClass("ScoreSpecifics",
                 method_score = "logfc_comb",
                 descending_order = TRUE,
                 score_fun = logfc_score,
-                columns = c("ligand.log2FC", "receptor.log2FC")
+                columns = c("ligand.log2FC", "receptor.log2FC"),
+                add_columns = NA_character_
             ),
         "natmi" =
             methods::new(
@@ -64,8 +67,8 @@ setClass("ScoreSpecifics",
                 # Note that passing both .sum and .expr results the means
                 # being returned for both of them (i.e. recomplexify will
                 # account for both)
-                columns = c("ligand.expr", "receptor.expr",
-                            "ligand.sum", "receptor.sum")
+                columns = c("ligand.expr", "receptor.expr"),
+                add_columns = c("ligand.sum", "receptor.sum")
             ),
         "sca" =
             methods::new(
@@ -74,7 +77,8 @@ setClass("ScoreSpecifics",
                 method_score = "LRscore",
                 descending_order = TRUE,
                 score_fun = sca_score,
-                columns = c("ligand.expr", "receptor.expr", "global_mean")
+                columns = c("ligand.expr", "receptor.expr"),
+                add_columns = c("global_mean")
             ),
         "cellphonedb" =
             methods::new(
@@ -83,7 +87,8 @@ setClass("ScoreSpecifics",
                 method_score = "pvalue",
                 descending_order = FALSE,
                 score_fun = cellphonedb_score,
-                columns = c("ligand.expr", "receptor.expr")
+                columns = c("ligand.expr", "receptor.expr"),
+                add_columns = NA_character_
             ),
         "cytotalk" =
             methods::new(
@@ -92,7 +97,8 @@ setClass("ScoreSpecifics",
                 method_score = "crosstalk_score",
                 descending_order = TRUE,
                 score_fun = cytotalk_score,
-                columns = c("receptor.pem", "ligand.pem")
+                columns = c("receptor.pem", "ligand.pem"),
+                add_columns = NA_character_
             ),
 
         # External
@@ -103,7 +109,8 @@ setClass("ScoreSpecifics",
                 method_score = "pvalue",
                 descending_order = FALSE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "call_cellchat" =
             methods::new(
@@ -112,7 +119,8 @@ setClass("ScoreSpecifics",
                 method_score = "pval",
                 descending_order = FALSE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
 
         "call_connectome" =
@@ -122,7 +130,8 @@ setClass("ScoreSpecifics",
                 method_score = "weight_sc",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "call_sca" = methods::new(
             "ScoreSpecifics",
@@ -130,7 +139,8 @@ setClass("ScoreSpecifics",
             method_score = "LRscore",
             descending_order = TRUE,
             score_fun = function(){},
-            columns = ""
+            columns = "",
+            add_columns = NA_character_
         ),
         "call_italk" =
             methods::new(
@@ -139,7 +149,8 @@ setClass("ScoreSpecifics",
                 method_score = "logfc_comb",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "call_natmi" =
             methods::new(
@@ -148,7 +159,8 @@ setClass("ScoreSpecifics",
                 method_score = "edge_specificity",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             )
     )
 }
@@ -173,7 +185,8 @@ setClass("ScoreSpecifics",
                 method_score = "means",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "cellphonedb" =
             methods::new(
@@ -182,7 +195,8 @@ setClass("ScoreSpecifics",
                 method_score = "lr.mean",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "natmi" =
             methods::new(
@@ -191,7 +205,8 @@ setClass("ScoreSpecifics",
                 method_score = "prod_weight",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "cellchat" =
             methods::new(
@@ -200,7 +215,8 @@ setClass("ScoreSpecifics",
                 method_score = "prob",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "call_connectome" =
             methods::new(
@@ -209,7 +225,8 @@ setClass("ScoreSpecifics",
                 method_score = "weight_norm",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             ),
         "call_sca" = methods::new(
             "ScoreSpecifics",
@@ -217,7 +234,8 @@ setClass("ScoreSpecifics",
             method_score = "LRscore",
             descending_order = TRUE,
             score_fun = function(){},
-            columns = ""
+            columns = "",
+            add_columns = NA_character_
         ),
         "sca" = methods::new(
             "ScoreSpecifics",
@@ -225,7 +243,8 @@ setClass("ScoreSpecifics",
             method_score = "LRscore",
             descending_order = TRUE,
             score_fun = function(){},
-            columns = ""
+            columns = "",
+            add_columns = NA_character_
         ),
         "call_natmi" =
             methods::new(
@@ -234,7 +253,8 @@ setClass("ScoreSpecifics",
                 method_score = "edge_avg_expr",
                 descending_order = TRUE,
                 score_fun = function(){},
-                columns = ""
+                columns = "",
+                add_columns = NA_character_
             )
     )
 }

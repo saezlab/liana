@@ -58,13 +58,7 @@ recomplexify <- function(lr_res,
         filter(if_all(ends_with("flag"))) %>%
         # Group for the subsequent scoring functions
         group_by(across(all_of(c("source", "target",
-                                 "ligand", "receptor")))) %>%
-        # Select only the relevant columns
-        select(source, target,
-               ligand.complex, ligand,
-               receptor.complex, receptor,
-               ends_with("prop"),
-               !!columns)
+                                 "ligand", "receptor"))))
 
     return(lr_cmplx)
 }

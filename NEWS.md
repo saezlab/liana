@@ -1,4 +1,4 @@
-# LIANA 0.1.7 (XX.10.22)
+# LIANA 0.1.7 (13.10.22)
 ## Changes
 
 - Changed the way ties are handles in liana_aggregate. Namely, I previously
@@ -8,6 +8,12 @@ than they should, particularly for scores with a lot of ties (e.g. CPDB p-value)
 - Fixed an issue where some subunits of 0 `expr_prop` would not get filtered.
 This was observed due to previous changes to `.filt_liana_pipe` in 0.1.6, where
 some subunits were filtered before `recomplexifying`.
+
+- Fixed an issue in which some NATMI complexes would be missing due to `recomplexify`
+being done on both .expr and .sum columns. These are now seperated into `columns`, which
+are the ones for which I account for complexes, and `add_cols`, the ones that
+are additional - no need to account for complexes (e.g. also `global_mean`).
+
 
 ## Minor changes
 
