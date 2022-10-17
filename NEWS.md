@@ -16,7 +16,8 @@ are additional - no need to account for complexes (e.g. also `global_mean`).
 
 ## Minor Changes
 - I now refer to [SCPubr](https://enblacar.github.io/SCpubr-book/index.html) in liana's tutorial.
-
+- Throw exception for NAs in cell idents
+` Remove duplicated rows from orthologous resource
 
 ## Minor changes
 
