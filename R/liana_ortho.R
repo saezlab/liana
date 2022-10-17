@@ -172,7 +172,9 @@ generate_homologs <- function(op_resource,
     # Bind 1to1 and 1tomany
     or_resource <- bind_rows(or_notmany, or_many) %>%
         select(-ends_with("complex")) %>%
-        select(!!columns, everything())
+        select(!!columns, everything()) %>%
+        distinct_at(c("source_genesymbol", "target_genesymbol"),
+                    .keep_all = TRUE)
 
     return(or_resource)
 

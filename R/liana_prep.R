@@ -82,6 +82,10 @@ liana_prep.Seurat <- function(sce,
 #' @noRd
 .filter_sce <- function(sce, verbose){
     # EXTEND QUALITY CONTROL STEPS
+    if(any(is.na(colLabels(sce)))){
+        stop("NAs found in Idents/Labels!")
+    }
+
     nonzero_genes <- rowSums(counts(sce)) > 0
     nonzero_cells <- colSums(counts(sce)) > 0
 
