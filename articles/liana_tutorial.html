@@ -277,7 +277,7 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">liana_trunc</span> <span class="op">&lt;-</span> <span class="va">liana_test</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="co"># only keep interactions concordant between methods</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">aggregate_rank</span> <span class="op">&lt;=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="co"># this can be FDR-corr if n is too high</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">aggregate_rank</span> <span class="op">&lt;=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="co"># note that these pvals are already corrected</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/heat_freq.html">heat_freq</a></span><span class="op">(</span><span class="va">liana_trunc</span><span class="op">)</span></span></code></pre></div>
 <p><img src="liana_tutorial_files/figure-html/heatfreq-1.png" width="672"></p>
@@ -452,18 +452,7 @@
 <div class="section level3">
 <h3 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h3>
-<pre><code><span><span class="co">#&gt; Warning in person1(given = given[[i]], family = family[[i]], middle =</span></span>
-<span><span class="co">#&gt; middle[[i]], : It is recommended to use 'given' instead of 'middle'.</span></span>
-<span></span>
-<span><span class="co">#&gt; Warning in person1(given = given[[i]], family = family[[i]], middle =</span></span>
-<span><span class="co">#&gt; middle[[i]], : It is recommended to use 'given' instead of 'middle'.</span></span>
-<span></span>
-<span><span class="co">#&gt; Warning in person1(given = given[[i]], family = family[[i]], middle =</span></span>
-<span><span class="co">#&gt; middle[[i]], : It is recommended to use 'given' instead of 'middle'.</span></span>
-<span></span>
-<span><span class="co">#&gt; Warning in person1(given = given[[i]], family = family[[i]], middle =</span></span>
-<span><span class="co">#&gt; middle[[i]], : It is recommended to use 'given' instead of 'middle'.</span></span>
-<span><span class="co">#&gt; </span></span>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; To cite liana in publications use:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Dimitrov, D., Türei, D., Garrido-Rodriguez M., Burmedi P.L., Nagai,</span></span>
