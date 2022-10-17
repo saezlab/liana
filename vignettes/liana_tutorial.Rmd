@@ -311,7 +311,7 @@ Please refer to the `?liana_wrap` documentation for more information on all the 
   
 
 ## Citation
-```{r liana citation, warning=False, message = FALSE, echo=FALSE}
+```{r liana citation, warning=FALSE, message = FALSE, echo=FALSE}
 citation("liana")
 ```
 
