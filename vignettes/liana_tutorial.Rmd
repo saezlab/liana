@@ -173,7 +173,7 @@ Nevertheless, one can also filter according to [CPDB's p-value](https://www.natu
 ```{r heatfreq, warning=FALSE, fig.width=7, fig.height=5}
 liana_trunc <- liana_test %>%
    # only keep interactions concordant between methods
-  filter(aggregate_rank <= 0.01) # this can be FDR-corr if n is too high
+  filter(aggregate_rank <= 0.01) # note that these pvals are already corrected
 
 heat_freq(liana_trunc)
 ```
@@ -311,7 +311,7 @@ Please refer to the `?liana_wrap` documentation for more information on all the 
   
 
 ## Citation
-```{r liana citation, message = FALSE, echo=FALSE}
+```{r liana citation, warning=False, message = FALSE, echo=FALSE}
 citation("liana")
 ```
 
