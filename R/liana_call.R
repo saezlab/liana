@@ -169,18 +169,31 @@ liana_scores <- function(score_object,
                          lr_res,
                          ...){
 
+    # join all columns
+    all_columns <- c(score_object@columns, score_object@add_columns)
+    # Remove NAs for methods that don't have additional columns
+    all_columns <- as.character(na.omit(all_columns))
+
+
     lr_res %<>%
         select(ligand, receptor,
                ends_with("complex"),
                source, target,
                ends_with("prop"),
-               !!score_object@columns)
+               !!all_columns)
 
     lr_res %<>%
         recomplexify(
             lr_res = .,
             columns = score_object@columns,
-            ...)
+            add_columns = score_object@add_columns,
+            ...)  %>%
+        # Select only the relevant columns
+        select(source, target,
+               ligand.complex, ligand,
+               receptor.complex, receptor,
+               ends_with("prop"),
+               !!all_columns)
 
     args <-
         append(

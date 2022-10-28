@@ -75,17 +75,14 @@ Suggests:
     markdown,
     testthat (>= 3.0.0),
     sessioninfo,
-    logger,
     Seurat,
     entropy,
     circlize,
     furrr (>= 0.2.0),
     future,
     tidyverse,
-    rstatix,
-    patchwork,
     devtools
-biocViews: OmnipathR, scater, scran, SingleCellExperiment, ComplexHeatmap
+biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
 Remotes: sqjin/CellChat, saezlab/OmnipathR
 RoxygenNote: 7.2.1
 Config/testthat/edition: 3

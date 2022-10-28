@@ -8,6 +8,9 @@
 #' @param source_groups names of the source (sender) cell types (NULL = no filter)
 #' @param target_groups names of the target cell types (NULL = no filter)
 #'
+#' @param ntop number of interactions to return. Note that this assumes
+#' that the tibble is sorted in descending order of interaction importance!
+#'
 #' @param magnitude column to represent interactions expression magnitude
 #' (by default `sca.LRscore`)
 #'
@@ -30,6 +33,7 @@
 #' Yet, one could also use CellChat's probabilities or CellPhoneDB's means, etc.
 #'
 #' @import ggplot2 dplyr
+#' @importFrom magrittr %<>%
 #'
 #' @return a ggplot2 object
 #'
@@ -37,12 +41,14 @@
 liana_dotplot <- function(liana_res,
                           source_groups = NULL,
                           target_groups = NULL,
+                          ntop = NULL,
                           specificity = "natmi.edge_specificity",
                           magnitude = "sca.LRscore",
                           y.label = "Interactions (Ligand -> Receptor)",
                           size.label = "Interaction\nSpecificity",
                           colour.label = "Expression\nMagnitude",
-                          show_complex = TRUE){
+                          show_complex = TRUE,
+                          size_range = c(2, 10)){
 
     if(show_complex){
         entities <- c("ligand.complex", "receptor.complex")
@@ -58,7 +64,17 @@ liana_dotplot <- function(liana_res,
              .) %>%
         `if`(!is.null(target_groups),
              filter(., target %in% target_groups),
-             .) %>%
+             .)
+
+
+    if(!is.null(ntop)){
+        # Subset to the X top interactions
+        top_int <- liana_mod %>% distinct_at(entities) %>% head(ntop)
+        liana_mod %<>% inner_join(top_int, by=entities)
+    }
+
+
+    liana_mod %<>%
         rename(magnitude = !!magnitude) %>%
         rename(specificity = !!specificity) %>%
         unite(entities, col = "interaction", sep = " -> ") %>%
@@ -80,7 +96,7 @@ liana_dotplot <- function(liana_res,
                )) +
             geom_point() +
             scale_color_gradientn(colours = viridis::viridis(20)) +
-            scale_size_continuous(range = c(5, 9)) +
+            scale_size_continuous(range = size_range) +
             facet_grid(. ~ source,
                        space = "free",
                        scales ="free",

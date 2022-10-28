@@ -4,7 +4,7 @@
 \alias{recomplexify}
 \title{Helper function to account for complexes in the resources}
 \usage{
-recomplexify(lr_res, columns, ...)
+recomplexify(lr_res, columns, add_columns, ...)
 }
 \arguments{
 \item{lr_res}{decomplexified* lr_res}

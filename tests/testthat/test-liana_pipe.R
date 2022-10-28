@@ -27,6 +27,7 @@ test_that("Test liana pipe", {
                                        "output", "recomplex.RDS"))
     recomplex <- recomplexify(lr_cmplx,
                               .score_specs()[["sca"]]@columns,
+                              .score_specs()[["sca"]]@add_columns,
                               complex_policy ='mean0')
 
     expect_equal(recomplex, recomplex_exp)

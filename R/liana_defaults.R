@@ -141,7 +141,7 @@ liana_defaults <- function(
     ## the cell-cluster-pair level -> We don't apply prop filtering to those
     # Connectome
     connectome.defaults <- list(
-        prop_filt = FALSE
+        prop_filt = TRUE
     )
 
     # CytoTalk

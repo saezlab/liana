@@ -70,10 +70,10 @@ The tools implemented in this repository are:
 - [iTALK](https://github.com/Coolgenome/iTALK)-inspired *1-vs-rest* LogFC score (`logfc_comb`) (*, $)
 - [CytoTalk](https://advances.sciencemag.org/content/7/16/eabf1356)-inspired `cross-talk` scores (*)
   
-- `consensus_rank` of the predictions is also provided using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) package
+- `consensus_rank` of the predictions is also provided using the [RobustRankAggregate](https://pubmed.ncbi.nlm.nih.gov/22247279/) method
   
   
-*The scoring systems from these methods were re-implemented in LIANA in order to account for multimeric complexes, to simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
+*The scoring systems from these methods were re-implemented in LIANA in order to account for multi-meric complexes, simplify the calls to the individual pipelines, or reduce any possible inconsistencies and redundancies in their downstream integration. If you wish to run LIANA with the original tools please see [LIANA++](https://saezlab.github.io/liana/articles/liana_devel.html).
   
 $ Default methods in LIANA.
 
@@ -137,8 +137,8 @@ We appreciate any feedback, so please do not hesitate to open an issue on the [l
   
 ## NEWS
 
-<strong> We are commited to the further developments of LIANA and we refer the users to 
-check the [NEWS](https://github.com/saezlab/liana/blob/master/NEWS.md) page after very update! </strong>
+<strong> We are commited to the further development of LIANA and we refer the users to 
+the [NEWS page](https://github.com/saezlab/liana/blob/master/NEWS.md)! </strong>
   
   
 ### Citing `LIANA`:
@@ -149,4 +149,4 @@ Dimitrov, D., Türei, D., Garrido-Rodriguez M., Burmedi P.L., Nagai, J.S., Boys,
 Türei, D., Valdeolivas, A., Gul, L., Palacio‐Escat, N., Klein, M., Ivanova, O., Ölbei, M., Gábor, A., Theis, F., Módos, D. and Korcsmáros, T., 2021. Integrated intra‐and intercellular signaling knowledge for multicellular omics analysis. Molecular systems biology, 17(3), p.e9923.
 https://doi.org/10.15252/msb.20209923
   
-#### Similarly, please consider appropriately citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!
+#### Similarly, please consider citing any of the methods and/or resources implemented in liana, that were particularly relevant for your research!

@@ -102,17 +102,15 @@ call_natmi <- function(
     .csv_path = file.path(.input_path, expr_file)
 
     if(!dir.exists(file.path(.input_path))){
-        log_success(str_glue("Input path created: {.input_path}"))
+        print(str_glue("Input path created: {.input_path}"))
         dir.create(file.path(.input_path), recursive = TRUE)
     }
 
-        log_success(str_glue("Output path created: {.output_path}"))
+        print(str_glue("Output path created: {.output_path}"))
         dir.create(file.path(.output_path), recursive = TRUE)
 
-        print(.csv_path)
-
     if(.overwrite_data || !file.exists(.csv_path)){
-        log_info(str_glue("Writing EM to {.csv_path}"))
+        print(str_glue("Writing EM to {.csv_path}"))
         if(assay.type=="counts"){
             write.csv(GetAssayData(object = sce,
                                    assay = "RNA",
@@ -129,13 +127,13 @@ call_natmi <- function(
         }
     }
 
-    log_info(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
+    print(str_glue("Writing Annotations to {.input_path}/{meta_file}"))
     write.csv(Idents(sce) %>%
                   enframe(name="barcode", value="annotation"),
               file = file.path(.input_path, meta_file),
               row.names = FALSE)
 
-    log_info(str_glue("Saving resource to {.natmi_path}/lrdbs/{reso_name}"))
+    print(str_glue("Saving resource to {.natmi_path}/lrdbs/{reso_name}"))
     # Deal with Default (i.e. NULL)
     if(is.null(op_resource)){
         reso_name <- "lrc2p"

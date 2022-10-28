@@ -743,7 +743,8 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
         mutate(across(everything(), ~replace_na(.x, "")))
 
     # 6. Check for duplicated/ambigous interactions
-    # These include examples such as L1_R1 and R1_L1 -> in genral, we want to remove these,
+    # These include examples such as L1_R1 and R1_L1 ->
+    # in general, we want to remove these,
     # unless they are in the context of cell-cell adhesion.
     duplicated_omni <- complex_omni %>%
         # check if any ambiguous/duplicated interactions exist
@@ -757,32 +758,51 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                               FALSE)) %>%
         # ligands which are targets in OmniPath
         mutate(ambigous_transmitters = (source %in% target)) %>%
-        # filter to ambiguously annotated transmitters from duplicates interactions alone
+        # filter to ambiguously annotated transmitters from duplicates
+        # interactions alone
         filter((ambigous_transmitters & dups))
 
-    wrong_transmitters <- c("ADGRE5", "BTLA", "CD160",
+    wrong_transmitters <- c("ADGRE5", "CD160",
                             "CD226", "EGFR",
-                            "CLEC1B", "TNFRSF18", "CTLA4",
+                            "TNFRSF18", "CTLA4",
                             "KLRB1", "KLRF1", "KLRF2",
                             "PTPRC", "PVR", "SIGLEC1",
-                            "SIGLEC9", "TNFRSF14", "ITGAD_ITGB2",
-                            "ITGA4_ITGB1", "ITGA9_ITGB1", "ITGA4_ITGB7",
-                            "TYK2", "SYK")
+                            "SIGLEC9", "TNFRSF14",
+                            "ITGAD_ITGB2",
+                            "ITGA4_ITGB1", "ITGA9_ITGB1",
+                            "ITGA4_ITGB7",
+                            "TYK2", "SYK",
+                            "MT-RNR2",
+                            "IL13_IL13RA1_IL4R",
+                            "IL22_IL22RA1",
+                            "IL18BP"
 
-    # Identify wrongly annotated interactions
+    )
+
+    # # Identify wrongly annotated interactions
     duplicated_omni %<>%
         filter(source_genesymbol %in% wrong_transmitters)
 
     # Blocklist certain receivers
     block_receivers <- c("IFNG_IFNGR1", # include a ligand in the complex
                          "CNTN2_CNTNAP2",
-                         "IL2_IL2RA_IL2RB_IL2RG")
+                         "IL2_IL2RA_IL2RB_IL2RG",
+                         "IL15_IL15RA_IL2RB_IL2RG",
+                         "IL6_IL6R_IL6ST",
+                         "IL1B_IL1R1_IL1RAP",
+                         "IL1B_IL1R2_IL1RAP",
+                         "IFNA2_IFNAR1_IFNAR2",
+                         "ACVR1C_ACVR2B_CFC1",
+                         "CSF2_CSF2RA_CSF2RB",
+                         "GP1BA_GP1BB_GP5_GP9")
 
 
     # Remove those from our curated omnipath
     complex_omni %<>%
-        anti_join(duplicated_omni) %>%
+        anti_join(duplicated_omni, by=c("source_genesymbol",
+                                        "target_genesymbol")) %>%
         filter(!target_genesymbol %in% block_receivers) %>%
+        filter(!source_genesymbol %in% wrong_transmitters) %>%
         # # Recomplexify CD8 complex?
         # mutate(target_genesymbol = if_else(target_genesymbol=="CD8A" |
         #                                        target_genesymbol=="CD8B",
@@ -790,6 +810,16 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
         #                                    target_genesymbol)) %>%
         distinct_at(.vars=c("source_genesymbol", "target_genesymbol"),
                     .keep_all=TRUE)
+
+    ## Recode odd aliases
+    complex_omni %<>%
+        mutate(source_genesymbol =
+                   recode(source_genesymbol,
+                          !!!list(
+                              "C4B_2"="C4B"
+                              )
+                          )
+               )
 
     # Return the final Curated OmniPath Resource
     return(complex_omni)

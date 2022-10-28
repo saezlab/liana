@@ -349,8 +349,17 @@ show_resources <- function(){
   expr_prop <- liana_defaults(...)$expr_prop * filt_or_not
 
   if(expr_prop > 0){
+    # If we filter missing subunits here, they are
+    # then not aggregated in the method
+    # hence we should filter the complexes, not the subunits
+    non_expressed <- liana_res %>%
+      group_by(ligand.complex, receptor.complex, source, target) %>%
+      summarize(prop_min = min(ligand.prop, receptor.prop)) %>%
+      filter(prop_min < expr_prop)
+
     liana_res %>%
-      filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop)
+      anti_join(non_expressed, by=c("ligand.complex", "receptor.complex",
+                                    "source", "target"))
   } else if(expr_prop == 0){
     liana_res
   } else{ # shouldn't happen (sanity check)

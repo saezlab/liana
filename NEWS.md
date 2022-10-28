@@ -1,4 +1,36 @@
-# LIANA 0.1.6 (XXX.07.22)
+# LIANA 0.1.8 (XX.11.22)
+## New Implementations 
+- Untargeted between-condition (context/sample) decomposition of cell-cell 
+communication latent patterns /w `tensor_cell2cell`. Makes use of `basilisk` to
+automatically set-up a conda env for liana.
+
+
+# LIANA 0.1.7 (13.10.22)
+## Changes
+
+- Changed the way ties are handles in liana_aggregate. Namely, I previously
+assigned the minimum rank, but this resulted in ties getting lower p-values
+than they should, particularly for scores with a lot of ties (e.g. CPDB p-value).
+
+- Fixed an issue where some subunits of 0 `expr_prop` would not get filtered.
+This was observed due to previous changes to `.filt_liana_pipe` in 0.1.6, where
+some subunits were filtered before `recomplexifying`.
+
+- Fixed an issue in which some NATMI complexes would be missing due to `recomplexify`
+being done on both .expr and .sum columns. These are now seperated into `columns`, which
+are the ones for which I account for complexes, and `add_cols`, the ones that
+are additional - no need to account for complexes (e.g. also `global_mean`).
+
+## Minor Changes
+- I now refer to [SCPubr](https://enblacar.github.io/SCpubr-book/index.html) in liana's tutorial.
+- Throw exception for NAs in cell idents
+` Remove duplicated rows from orthologous resource
+
+## Minor changes
+
+- I now refer to SCpubr in the tutorial for more advanced plots.
+
+# LIANA 0.1.6 (11.08.22)
 
 ## Changes
 - Fixed an issue where interactions with complexes will not filtered be according to
@@ -12,10 +44,18 @@ methods will not arbitrarily discard duplicate complex interactions.
 - Will now return `expr_prop` for each method. Note that this information is
 discarded by `liana_aggregate`.
 
-## New Implementations
-- Untargeted between-condition (context/sample) decomposition
-of  cell-cell communication latent patterns /w `tensor_cell2cell`. Makes use
-of `basilisk` to automatically set-up a conda env for liana.
+- `liana_doplot` function is now more explicit in the way interactions are
+selected. Will now take `topn` and return the highest ranked interactions.
+Size of dots is also more distinguishable by default and the user can now 
+pass a customizable value for the size range.
+
+- Added a `rank_method` helper function to rank single methods according to
+`specificity` and magnitude.
+
+- Removed ~20 bad quality interactions from the `Consensus` resource.
+
+- Minor changes on filtering SCE object in `liana_pipe` to ensure all
+complex subunits are present in the sce
 
 
 # LIANA 0.1.5 (04.07.22)

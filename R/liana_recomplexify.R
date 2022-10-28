@@ -24,6 +24,7 @@
 #' @importFrom stringr str_split
 recomplexify <- function(lr_res,
                          columns,
+                         add_columns,
                          ...){
 
     # Get Complex policy from elipses
@@ -53,18 +54,25 @@ recomplexify <- function(lr_res,
                 mutate( {{ col }} := exec(complex_policy, .data[[col]]) )
         })
 
+    # ad-hoc fix for NATMI
+    if("ligand.sum" %in% add_columns){
+        corrected_sums <- lr_res %>%
+            # Keep only the min-expressed subunits
+            group_by(across(all_of(grps))) %>%
+            summarise(ligand.sum = exec(complex_policy, ligand.sum),
+                      receptor.sum = exec(complex_policy, receptor.sum))
+
+        lr_res %<>%
+            select(-c("ligand.sum", "receptor.sum")) %>%
+            left_join(corrected_sums, by = grps)
+    }
+
     lr_cmplx <- lr_res %>%
         # Keep only the min-expressed subunits
         filter(if_all(ends_with("flag"))) %>%
         # Group for the subsequent scoring functions
         group_by(across(all_of(c("source", "target",
-                                 "ligand", "receptor")))) %>%
-        # Select only the relevant columns
-        select(source, target,
-               ligand.complex, ligand,
-               receptor.complex, receptor,
-               ends_with("prop"),
-               !!columns)
+                                 "ligand", "receptor"))))
 
     return(lr_cmplx)
 }
