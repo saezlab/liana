@@ -81,8 +81,9 @@ Suggests:
     furrr (>= 0.2.0),
     future,
     tidyverse,
-    devtools
-biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
+    devtools,
+    basilisk
+biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, basilisk
 Remotes: sqjin/CellChat, saezlab/OmnipathR
 RoxygenNote: 7.2.1
 Config/testthat/edition: 3
