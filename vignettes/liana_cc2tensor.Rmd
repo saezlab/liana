@@ -40,8 +40,10 @@ This tensor is then decomposed into a set of factors, which can be interpreted a
 low dimensionality latent variables that capture the CCC patterns across contexts.
   
 
-Here, we will combine `LIANA` with `tensor_cell2cell` to decipher the ligand-receptor
-interaction changes, which occur in ~14000 PBMCs from 8 donors, each before and after IFN-beta stimulation (GSE96583; obtained from: https://scelvis.readthedocs.io/en/latest/tutorial_analysis.html.
+Here, we will combine `LIANA` with `tensor_cell2cell` to decipher potential ligand-receptor
+interaction changes.
+As a simple (possibly overoptimistic) example, we will look at ~14000 PBMCs from 8 donors,
+each before and after IFN-beta stimulation (GSE96583; obtained from: https://scelvis.readthedocs.io/en/latest/tutorial_analysis.html).
 
 
 This tutorial was heavily influenced by the [tutorials of tensor_cell2cell](https://earmingol.github.io/cell2cell/tutorials/ASD/01-Tensor-Factorization-ASD/).
@@ -120,7 +122,7 @@ to be called via reticulate.
 sce@metadata$tensor_res <-
   liana_tensor_c2c(context_df_dict = sce@metadata$liana_res,
                    score_col = 'LRscore',
-                   rank = 8,  # set to None to estimate! 8 was estimated!
+                   # rank = 8,  # set to None to estimate! 8 was estimated!
                    how='inner'  #  defines how the tensor is built
                    )
 ```
@@ -208,7 +210,9 @@ plot_c2c_cells(factors, factor_of_int = "Factor.4",
 
 ### LR loadings Heatmap
 We can see the LRs involved across contexts.
-In particular, those associated with high loadings for factors 4.
+
+Though, perhaps since in this case Factors 4 and 5 are those associated with
+the stimulation, perhaps it's best to focus on those.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 plot_lr_heatmap(factors,
                 loadings_thresh = 0.2,

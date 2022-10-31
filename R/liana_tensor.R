@@ -130,7 +130,7 @@ liana_tensor_c2c <- function(context_df_dict,
                                                    pkgname="liana",
                                                    packages=.lianapy_packages,
                                                    pip=.liana_pips)
-        basilisk::basiliskStart(liana_env)
+        basilisk::basiliskStart(liana_env, testload="scipy.optimize")
     }
     reticulate::py_set_seed(seed)
 
@@ -693,43 +693,12 @@ plot_c2c_cells <- function(factors,
 
 # Env vars ----
 .lianapy_packages <- c("python==3.8.8",
-                       "chardet==4.0.0",
-                       "click==7.1.2",
-                       "dask==2022.5.0",
-                       "dask-image==0.6.0",
-                       "fasteners==0.16",
-                       "fonttools==4.33.3",
-                       "greenlet==1.1.1",
-                       "idna==2.10",
-                       "kneed==0.7.0",
-                       "markupsafe==2.0.0",
-                       "metpy==1.0.1",
-                       "nose==1.3.7",
-                       "openpyxl==3.0.9",
-                       "packaging==21.3",
                        "pandas==1.4.2",
-                       "patsy==0.5.2",
-                       "pexpect==4.8.0",
-                       "pillow==8.2.0",
-                       "pint==0.17",
-                       "pooch==1.4.0",
-                       "pyproj==3.1.0",
-                       "python-dateutil==2.8.1",
-                       "python-igraph==0.9.1",
-                       "pytz==2021.1",
-                       "rpy2==3.4.5",
-                       "scanpy==1.8.1",
-                       "seaborn==0.11.2",
-                       "six==1.16.0",
-                       "sqlalchemy==1.4.25",
-                       "tensorly==0.5.1",
-                       "tzlocal==3.0",
-                       "xarray==0.18.2",
-                       "zipp==3.4.1")
+                       "rpy2==3.4.5")
 
-.liana_pips <- c("cell2cell==0.5.11",
-                 "et-xmlfile==1.1.0",
-                 "importlib-resources==5.1.4",
-                 "backports-zoneinfo==0.2.1",
-                 "statannotations==0.4.4",
+.liana_pips <- c("cell2cell==0.6.1",
+                 # "et-xmlfile==1.1.0",
+                 # "importlib-resources==5.1.4",
+                 # "backports-zoneinfo==0.2.1",
+                 # "statannotations==0.4.4",
                  "anndata2ri==1.0.6")

@@ -84,7 +84,7 @@ Suggests:
     devtools,
     basilisk,
     decoupleR
-biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, basilisk
-Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR
+biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
+Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk
 RoxygenNote: 7.2.1
 Config/testthat/edition: 3
