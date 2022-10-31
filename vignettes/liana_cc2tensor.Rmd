@@ -77,7 +77,7 @@ regularized, and theory directly comparable between any dataset.
 
 Note that `liana_bysample` works with `SingleCellExperiment` alone, if you 
 wish to use Seurat, please use the `as.SingleCellExperiment` function.
-```{r runliana, eval=FALSE, message=FALSE, warning=FALSE}
+```{r runliana, eval=TRUE, message=FALSE, warning=FALSE}
 # Run LIANA by sample
 sce <- liana_bysample(sce = sce,
                       sample_col = "Donor", 
@@ -89,9 +89,9 @@ sce <- liana_bysample(sce = sce,
 
 
 
-```{r, include=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r, include=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 ### Load liana results by sample
-sce <- readRDS(file = "sce_with_factors.RDS")
+# sce <- readRDS(file = "sce_with_factors.RDS")
 # sce@metadata$liana_res <- readRDS(url("https://zenodo.org/record/6826420/files/pbmcs_lrs.RDS?download=1"))
 ```
 
@@ -141,7 +141,6 @@ cell types involved in the interactions that distinguish the conditions.
 # First we format the factors
 sce@metadata$tensor_res <- format_c2c_factors(sce@metadata$tensor_res)
 factors <- sce@metadata$tensor_res
-saveRDS(sce, "sce_with_factors.RDS")
 
 # Plot overview
 plot_c2c_overview(factors)
