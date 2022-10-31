@@ -82,9 +82,10 @@ Suggests:
     future,
     tidyverse,
     devtools,
+    basilisk.utils,
     basilisk,
     decoupleR
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
-Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk
+Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
 RoxygenNote: 7.2.1
 Config/testthat/edition: 3
