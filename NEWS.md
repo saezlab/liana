@@ -4,6 +4,9 @@
 communication latent patterns /w `tensor_cell2cell`. Makes use of `basilisk` to
 automatically set-up a conda env for liana.
 
+## Changes
+- Mouse Consensus resource is now provided by default.
+
 
 # LIANA 0.1.7 (13.10.22)
 ## Changes

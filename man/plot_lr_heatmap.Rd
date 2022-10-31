@@ -4,7 +4,7 @@
 \alias{plot_lr_heatmap}
 \title{Function to plot a UMAP of context loadings}
 \usage{
-plot_lr_heatmap(factors, lr_sep = "^", ...)
+plot_lr_heatmap(factors, lr_sep = "^", loadings_thresh = 0.25, ...)
 }
 \arguments{
 \item{factors}{factors output from tensor-cell2cel formatted with

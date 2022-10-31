@@ -103,7 +103,7 @@ liana_tensor_c2c <- function(context_df_dict,
                              runs = 1,
                              init = 'svd',
                              build_only = FALSE,
-                             factors_only = FALSE,
+                             factors_only = TRUE,
                              conda_env=NULL,
                              verbose = TRUE,
                              ...){
@@ -495,13 +495,13 @@ plot_contexts_heat <- function(factors,
 #'
 #' @export
 #'
-plot_lr_heatmap <- function(factors, lr_sep="^", ...){
+plot_lr_heatmap <- function(factors, lr_sep="^", loadings_thresh = 0.25, ...){
     # Top n Interactions per factor heatmap
     top_lrs <- factors$interactions %>%
         pivot_longer(-lr,
                      names_to = "factor",
                      values_to = "loadings") %>%
-        filter(loadings > 0.25) %>%
+        filter(loadings >= loadings_thresh) %>%
         group_by(factor) %>%
         pull(lr)
 
@@ -518,6 +518,102 @@ plot_lr_heatmap <- function(factors, lr_sep="^", ...){
                                 ...)
 }
 
+
+#' Generate a geneset resource for each LR
+#' @param lrs lrs a tibble with `lr`
+#' @param resource resource with `source`, `target`, `weight` columns
+#'
+#' @export
+#'
+#' @returns a tibble in decoupleR format
+generate_lr_geneset <- function(lrs, resource, lr_sep="^"){
+
+    lrs <- factors$interactions %>%
+        separate(lr, sep=str_glue("\\{lr_sep}"), into=c("ligand", "receptor"))
+
+    ligand_weights <- assign_lr_weights(lrs,
+                                        resource = resource,
+                                        entity = "ligand")
+    receptor_weights <- assign_lr_weights(lrs,
+                                          resource = resource,
+                                          entity = "receptor")
+
+
+    lrs <- lrs %>%
+        select(ligand, receptor) %>%
+        inner_join(ligand_weights, by="ligand") %>%
+        inner_join(receptor_weights, by="receptor") %>%
+        rowwise() %>%
+        mutate(mor = .set_coh_mean(ligand_weight, receptor_weight,
+                                   ligand_source, receptor_source)
+        ) %>%
+        na.omit() %>%
+        dplyr::rename(set=ligand_source) %>%
+        select(-receptor_source, -ligand_weight, -receptor_weight) %>%
+        ungroup() %>%
+        unite(col="lr", sep=lr_sep, ligand, receptor)
+
+    return(lrs)
+}
+
+
+#' Helper function to assign weights
+#' @param lrs ligand_receptor tibble
+#' @param resource resource
+#' @param entity name of the entity
+assign_lr_weights <- function(lrs,
+                              resource,
+                              entity="ligand"){
+
+    entity_weight <- str_glue("{entity}_weight")
+    entity_source <- str_glue("{entity}_source")
+
+    entity_df <- lrs %>%
+        pull(entity) %>%
+        enframe(value="entity") %>%
+        select(entity) %>%
+        distinct() %>%
+        liana::decomplexify("entity")
+
+    entity_weights <- entity_df %>%
+        left_join(resource, by = c("entity"="target")) %>%
+        group_by(source, entity_complex) %>%
+        # count number of subunits
+        mutate(n_found = n()) %>%
+        # count number of expected subunits x_y = 1 (+ 1)
+        mutate(n_expected = str_count(entity_complex, "_") + 1) %>%
+        filter(n_found==n_expected) %>%
+        # only keep subunits which are sign-consistent
+        summarise(weight = .sign_coh_mean(weight), .groups = "keep") %>%
+        na.omit() %>%
+        ungroup() %>%
+        select({{ entity }} := entity_complex,
+               {{ entity_source }} := source,
+               {{ entity_weight }} := weight
+        )
+
+
+    return(entity_weights)
+}
+
+
+# check for sign coherency
+.sign_coh_mean <- function(vec){
+    if(length(unique(sign(vec))) > 1){
+        return(NA)
+    } else {
+        return(mean(vec))
+    }
+}
+
+#' Check for sign and gene-set coherency
+.set_coh_mean <- function(x, y, x_set, y_set){
+    if(x_set!=y_set){
+        return(NA)
+    } else{
+        weight = .sign_coh_mean(c(x, y))
+    }
+}
 
 
 #' Function to calculate gini coefficients for source and target loadings

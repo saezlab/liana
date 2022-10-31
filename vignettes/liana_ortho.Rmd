@@ -32,6 +32,9 @@ is available to map human genesymbols to those of species X.
 In this vignette, we provide an example how this could be achieved using the [`HomoloGene`](https://www.ncbi.nlm.nih.gov/homologene)
 database via OmnipathR with LIANA's `generate_homologs` function. 
 
+Note that LIANA provides a mouse Consensus (MouseConsensus) resource, using the 
+homology-conversion approach described here.
+
 
 ## Loading prerequisites
 ```{r load_prereq, message=FALSE, warning=FALSE}

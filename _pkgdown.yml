@@ -41,7 +41,19 @@ reference:
     contents:
       - starts_with("show_")
       - starts_with("select_")
-
+  - title: Show_ or Select_ Functions
+    desc: "Functions related to tensor decomposition with cell2cell"
+    contents:
+      - liana_tensor_c2c
+      - format_c2c_factors
+      - plot_c2c_overview
+      - plot_context_boxplot
+      - plot_contexts_umap
+      - plot_contexts_heat
+      - plot_lr_heatmap
+      - generate_lr_geneset
+      - calculate_gini
+      - plot_c2c_cells
   - title: Others
     desc: "Other potentially relevant functions"
     contents:

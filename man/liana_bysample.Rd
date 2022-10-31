@@ -7,24 +7,28 @@
 liana_bysample(
   sce,
   idents_col,
-  sample_col,
   condition_col,
+  sample_col,
   key_sep = "|",
+  context_col = NULL,
   verbose = TRUE,
-  assay = NULL,
+  inplace = TRUE,
   ...
 )
 }
 \arguments{
 \item{idents_col}{name of the cluster column}
 
-\item{sample_col}{name of the sample column}
-
 \item{condition_col}{name of the condition/group column}
+
+\item{sample_col}{name of the sample column}
 
 \item{key_sep}{separates the `condition_col` and' `sample_col` (| by default)}
 
 \item{verbose}{verbosity logical}
+
+\item{inplace}{logical (TRUE by default) if liana results are to be saved
+to the SingleCellExperiment object (`sce@metadata$liana_res`)}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_wrap]{liana_wrap}}
@@ -52,6 +56,11 @@ This ensure that all methods' score will be meaningfully weighed without
 changing the interpretation of their scores, thus allow one to filter SCA,
 rank NATMI, etc.}
   }}
+}
+\value{
+If inplace is true returns a sce object with `liana_res` in
+`sce@metadata`, else it returns a named list of tibble with liana results
+per sample.
 }
 \description{
 Wrapper around `liana_wrap` to run liana for each sample.

@@ -174,7 +174,11 @@ compile_ligrec <- function(lr_pipeline = TRUE){
                 ligrec_interactions %<>%
                     assign_ligrecs()
                 })
-        }
+    }
+
+    # Generate also Mouse Consensus
+    ligrec$MouseConsensus <- ligrec$Consensus %>%
+        liana::generate_orthologs(target_organism = 10090)
 
     return(ligrec)
 }
@@ -458,7 +462,7 @@ genesymbol_to_uniprot <- function(st){
         arrange(desc(UNIPROT)) %>%
         distinct_at(c("SYMBOL"), .keep_all = TRUE) %>%
         pluck("UNIPROT") %>%
-        glue::collapse(sep = "_")
+        glue::glue_collapse(sep = "_")
 }
 
 

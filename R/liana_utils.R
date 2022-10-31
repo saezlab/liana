@@ -10,6 +10,9 @@
 #'
 #' @param verbose verbosity logical
 #'
+#' @param inplace logical (TRUE by default) if liana results are to be saved
+#'  to the SingleCellExperiment object (`sce@metadata$liana_res`)
+#'
 #' @details takes a Seurat/SCE object and runs LIANA by sample/condition. The
 #' key by which the samples are separated is build from the `condition_col` and
 #' `sample_col`, separated by the `key_sep`.
@@ -18,52 +21,73 @@
 #'
 #' @export
 #'
+#' @returns If inplace is true returns a sce object with `liana_res` in
+#' `sce@metadata`, else it returns a named list of tibble with liana results
+#' per sample.
+#'
 liana_bysample <- function(sce,
                            idents_col,
-                           sample_col,
                            condition_col,
+                           sample_col,
                            key_sep = "|",
+                           context_col=NULL,
                            verbose = TRUE,
-                           assay=NULL,
+                           inplace=TRUE,
                            ...){
-#
-#     # Format whole object (needed if Seurat - will also reduce RAM reqs)
-#     sce <- liana_prep(sce,
-#                       idents_col = idents_col,
-#                       assay = assay,
-#                       verbose = verbose)
 
-    # Extract metadata in an object specific way? then do this thing
+    if(!is.null(context_col)){
+        if(!is.factor(colData(sce)[[context_col]])){
+            liana_message(
+                str_glue(
+                    "`{context_col}` was converted to a factor!"
+                ), output = "message",
+                verbose = verbose)
+            sce[[context_col]] <- as.factor(sce[[context_col]])
+        }
+    } else{
 
-    # Build Key col
-    sce$key_col <- as.factor(paste(sce[[condition_col]],
-                                   sce[[sample_col]],
-                                   sep = key_sep))
+        context_col <- "context_col"
+        liana_message(
+            str_glue(
+                "`{context_col}` was created!"
+            ), output = "message",
+            verbose = verbose)
 
+
+        sce[[context_col]] <- as.factor(paste(sce[[condition_col]],
+                                              sce[[sample_col]],
+                                              sep = key_sep)
+        )
+    }
 
     # Map over key col
-    sample_ccc <- map(levels(sce$key_col),
-                      function(key){
+    liana_res <- map(levels(sce[[context_col]]),
+                     function(context){
 
-                          liana_message(str_glue("Current sample: {key}"),
-                                        output = "message",
-                                        verbose = verbose
-                          )
+                         liana_message(str_glue("Current sample: {context}"),
+                                       output = "message",
+                                       verbose = verbose)
 
-                          # Subset to current sample
-                          sce_temp <- subset(sce,
-                                             ,
-                                             sce$key_col==key)
+                         # Subset to current sample
+                         sce_temp <- subset(sce,
+                                            ,
+                                            sce$context_col==context)
 
-                          # Set cluster
-                          colLabels(sce_temp) <- sce_temp[[idents_col]]
+                         # Set cluster
+                         colLabels(sce_temp) <- sce_temp[[idents_col]]
 
-                          # Run LIANA on each
-                          liana_wrap(sce=sce_temp, ...)
+                         # Run LIANA on each
+                         liana_wrap(sce=sce_temp, ...)
 
-                      }) %>%
-        setNames(levels(sce$key_col))
+                     }) %>%
+        setNames(levels(sce[[context_col]]))
 
+    if(!inplace){
+        return(liana_res)
+    } else{
+        sce@metadata$liana_res <- liana_res
+        return(sce)
+    }
 }
 
 
@@ -156,8 +180,8 @@ get_abundance_summary <- function(sce,
         group_by(idents_col) %>%
         mutate(keep_sum = sum(keep_min)) %>%
         mutate(sample_prop = keep_sum/sample_n) %>%
-        mutate(keep_celltype = if_else((keep_sum > min_samples) &
-                                           (sample_prop > min_prop),
+        mutate(keep_celltype = if_else((keep_sum >= min_samples) &
+                                           (sample_prop >= min_prop),
                                        TRUE,
                                        FALSE)) %>%
         ungroup()
@@ -187,7 +211,8 @@ plot_abundance_summary <- function(ctqc, ncol = 3){
             mapping = aes(x = -Inf,
                           y = Inf,
                           label = str_glue("Prevalence: ",
-                                           "{round(sample_prop, digits = 3)}"),
+                                           "{round(sample_prop, digits = 3)} ",
+                                           "(N = {keep_sum})"),
                           color=keep_celltype),
             vjust=1.5, hjust=-0.1
         ) +

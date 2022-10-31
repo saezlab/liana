@@ -24,7 +24,7 @@ liana_tensor_c2c(
   runs = 1,
   init = "svd",
   build_only = FALSE,
-  factors_only = FALSE,
+  factors_only = TRUE,
   conda_env = NULL,
   verbose = TRUE,
   ...

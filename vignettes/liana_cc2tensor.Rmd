@@ -19,14 +19,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=TRUE}
+```{r setup, include=TRUE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-library(tidyverse, quietly = TRUE)
-library(SingleCellExperiment, quietly = TRUE)
-library(reticulate, quietly = TRUE)
-library(magrittr, quietly = TRUE)
-library(liana, quietly = TRUE)
 ```
 
 ## Introduction
@@ -55,16 +49,21 @@ This tutorial was heavily influenced by the [tutorials of tensor_cell2cell](http
 Any usage of `liana` x `tensor_cell2cell` should logically cite both articles,
 and in particular `tensor_cell2cell` (see reference at the bottom).
 
+Load required libraries
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse, quietly = TRUE)
+library(SingleCellExperiment, quietly = TRUE)
+library(reticulate, quietly = TRUE)
+library(magrittr, quietly = TRUE)
+library(liana, quietly = TRUE)
+```
 
-Load required libraries and data.
+Load processed data.
 ```{r loadstuff, message=FALSE, warning=FALSE}
 sce <- readRDS(url("https://zenodo.org/record/6826420/files/pbmc_sce.RDS?download=1"))
 
-# Change this BS to:
 # library(ExperimentHub)
 # eh <- ExperimentHub()
-# query(eh, "Kang")
-# 
 # # Get Data
 # (sce <- eh[["EH2259"]])
 ```
@@ -75,19 +74,25 @@ sce <- readRDS(url("https://zenodo.org/record/6826420/files/pbmc_sce.RDS?downloa
 In order to construct the tensor, we first need to obtain CCC predictions for 
 each sample. In this case, we use SingleCellSignalR scores, as they are
 regularized, and theory directly comparable between any dataset.
+
+Note that `liana_bysample` works with `SingleCellExperiment` alone, if you 
+wish to use Seurat, please use the `as.SingleCellExperiment` function.
 ```{r runliana, eval=FALSE, message=FALSE, warning=FALSE}
 # Run LIANA by sample
-context_df_dict <- liana_bysample(sce = sce,
-                                  sample_col = "Donor", 
-                                  condition_col = "stim",
-                                  idents_col = "cluster",
-                                  method="sca")
+sce <- liana_bysample(sce = sce,
+                      sample_col = "Donor", 
+                      condition_col = "stim",
+                      idents_col = "cluster",
+                      method = "sca",
+                      expr_prop = 0) # here, we lower liana's filtering
 ```
 
 
-```{r, include=FALSE, message=FALSE, warning=FALSE}
+
+```{r, include=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 ### Load liana results by sample
-context_df_dict <- readRDS(url("https://zenodo.org/record/6826420/files/pbmcs_lrs.RDS?download=1"))
+sce <- readRDS(file = "sce_with_factors.RDS")
+# sce@metadata$liana_res <- readRDS(url("https://zenodo.org/record/6826420/files/pbmcs_lrs.RDS?download=1"))
 ```
 
 
@@ -109,14 +114,20 @@ the factors can be used to reconstruct the tensor. We refer the user to the
 publication of [tensor-cell2cell](https://www.nature.com/articles/s41467-022-31369-2) for further information.
 
 Note that by default LIANA will set up a conda environment with `basilisk`
-(if conda_env is NULL), the user can alternatively specify the name of the conda env
+(if conda_env is NULL), the user can alternatively specify the name of the conda_env
 to be called via reticulate.
 ```{r}
-tensor <- liana_tensor_c2c(context_df_dict = context_df_dict,
-                           score_col = 'LRscore',
-                           rank = 8) # set to None to estimate! 8 was estimated!
+sce@metadata$tensor_res <-
+  liana_tensor_c2c(context_df_dict = sce@metadata$liana_res,
+                   score_col = 'LRscore',
+                   rank = 8,  # set to None to estimate! 8 was estimated!
+                   how='inner'  #  defines how the tensor is built
+                   )
 ```
 
+`cell2cell_tensor` accepts additional parameters to further tune 
+tensor decomposition, but these are out of scope for this tutorial.
+Stay tuned for a set of tutorials with comprehensive application of liana with tensor!
 
 ### Results Overview
 
@@ -128,7 +139,9 @@ cell types involved in the interactions that distinguish the conditions.
 
 ```{r, message=FALSE, warning=FALSE, fig.width=16, fig.height=12}
 # First we format the factors
-factors <- format_c2c_factors(tensor$factors)
+sce@metadata$tensor_res <- format_c2c_factors(sce@metadata$tensor_res)
+factors <- sce@metadata$tensor_res
+saveRDS(sce, "sce_with_factors.RDS")
 
 # Plot overview
 plot_c2c_overview(factors)
@@ -185,10 +198,10 @@ plot_contexts_heat(factors)
 
 Here we use the product of the `source` and `target` loadings to generate the
 heatmap of potential celltype-celltype pair relationships, which contribute to
-`Factor.6`.
+`Factor.4`.
 ```{r ccpairs, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 
-plot_c2c_cells(factors, factor_of_int = "Factor.6",
+plot_c2c_cells(factors, factor_of_int = "Factor.4",
                name = "Loadings \nProduct")
 ```
 
@@ -196,16 +209,64 @@ plot_c2c_cells(factors, factor_of_int = "Factor.6",
 
 ### LR loadings Heatmap
 We can see the LRs involved across contexts.
-In particular, those associated with high loadings for factors 6.
+In particular, those associated with high loadings for factors 4.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
-plot_lr_heatmap(factors)
+plot_lr_heatmap(factors,
+                loadings_thresh = 0.2,
+                cluster_columns=FALSE)
 ```
   
 ### LR loadings Funcomics
-< TO BE INCLUDED >
-(Need to write the LIANA x OmniPath x DecoupleR funcomics helper functions,
-then use the LR loadings across factors for some enrichment analyses)
 
+Here, we will use [PROGENy](), together with [decoupleR](), to run an 
+enrichment analysis on the LR loadings.
+
+Since PROGENy is intended to be used with genes, we need to reformat it to match 
+ligand-receptor predictions. Namely, `generate_lr_geneset` will assign a LR
+to a specific pathway, only if both the ligand and receptor, as well as all
+their subunits, are associated with the same pathway. And also in the case of
+weighted gene sets (like progeny), all entities have the same weight sign.
+
+```{r}
+progeny <- decoupleR::get_progeny(organism = 'human', top=5000) %>%
+    select(-p_value)
+progeny_lr <- generate_lr_geneset(factors$interactions,
+                                  resource = progeny)
+
+progeny_lr
+```
+
+
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+# interaction loadings to matrix
+mat <- factors$interactions %>%
+    column_to_rownames("lr") %>%
+  as.matrix()
+
+# run enrichment analysis with decoupler
+# We don't consider genesets with minsize < 10
+res <- decoupleR::run_ulm(mat = mat,
+                          network = progeny_lr,
+                          .source = "set",
+                          .target = "lr",
+                          minsize=10)
+
+res %>% # sig/isnig flag
+  mutate(significant = if_else(p_value <= 0.05, "signif.", "insig.")) %>%
+  ggplot(aes(x=source, y=condition, shape=significant,
+             colour=score, size=-log10(p_value+1e-36))) +
+  geom_point() +
+  scale_colour_gradient2(high = "red", low="blue") +
+  scale_size_continuous(range = c(3, 12)) +
+  scale_shape_manual(values=c(21, 16)) +
+  theme_bw(base_size = 15) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Pathway",
+       y="Factor",
+       colour="Activity"
+       )
+
+```
 
 ## Gini Coefficients of Factor-specific Communicating Sender and Receiver cell types
 
