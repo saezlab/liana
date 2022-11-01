@@ -118,6 +118,7 @@ publication of [tensor-cell2cell](https://www.nature.com/articles/s41467-022-313
 Note that by default LIANA will set up a conda environment with `basilisk`
 (if conda_env is NULL), the user can alternatively specify the name of a `conda_env`
 with cell2cell to be called via reticulate.
+
 ```{r}
 sce@metadata$tensor_res <-
   liana_tensor_c2c(context_df_dict = sce@metadata$liana_res,
@@ -129,6 +130,12 @@ sce@metadata$tensor_res <-
 
 Optimal rank estimation can be a RAM demanding process, here the number of
 ranks was pre-determined.
+
+The `how` parameter plays is essential in how we treat missing cell types and
+interactions. In this scenario, we use `inner`, which will only decompose CCC
+patterns across cell identities & interactions shared between *all* samples. Alternatively,
+one could change it to 'outer' CCC paterns will be decomposed across *any*
+cell identities and interactions in the dataset.
 
 `cell2cell_tensor` also accepts additional parameters to further tune 
 tensor decomposition, but these are out of scope for this tutorial.
@@ -151,13 +158,13 @@ factors <- sce@metadata$tensor_res
 plot_c2c_overview(factors)
 ```
 
-### Contexts UMAP
+<!-- ### Contexts UMAP -->
 
-Here, we will represent the contexts loadings in UMAP space. We again
-observe a separation with regards to condition.
-```{r}
-plot_contexts_umap(factors)
-```
+<!-- Here, we will represent the contexts loadings in UMAP space. We again -->
+<!-- observe a separation with regards to condition. -->
+<!-- ```{r} -->
+<!-- plot_contexts_umap(factors) -->
+<!-- ``` -->
 
 ### Statistical comparison of Communication Patterns
 Here, we see that the communication patterns (or context loadings) identified 

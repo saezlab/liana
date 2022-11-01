@@ -56,171 +56,171 @@ signalink_pathways <-
   select(genesymbol, pathway)
 ```
 
-Then we obtain our resource of choice and run liana.
-The resource can also be customized, to do so please refer to  
- [LIANA's Customize CCC OmniPath tutorial](https://saezlab.github.io/liana/articles/liana_custom_op.html) 
+<!-- Then we obtain our resource of choice and run liana. -->
+<!-- The resource can also be customized, to do so please refer to   -->
+<!--  [LIANA's Customize CCC OmniPath tutorial](https://saezlab.github.io/liana/articles/liana_custom_op.html)  -->
 
-```{r liana_omni, message = FALSE, print = FALSE}
-# Obtain resource and format it
-liana_omni <- select_resource("OmniPath")[[1]] %>%
-    liana:::decomplexify()
+<!-- ```{r liana_omni, message = FALSE, print = FALSE} -->
+<!-- # Obtain resource and format it -->
+<!-- liana_omni <- select_resource("OmniPath")[[1]] %>% -->
+<!--     liana:::decomplexify() -->
 
-# Run liana with our resource
-liana_res <- liana_wrap(testdata,
-                        resource='custom',
-                        external_resource = liana_omni) %>%
-  # Note! here we work with the 'minimum' subunits
-  liana_aggregate(join_cols = c("source", "target",
-                                "ligand", "receptor")) # aggregate
-```
+<!-- # Run liana with our resource -->
+<!-- liana_res <- liana_wrap(testdata, -->
+<!--                         resource='custom', -->
+<!--                         external_resource = liana_omni) %>% -->
+<!--   # Note! here we work with the 'minimum' subunits -->
+<!--   liana_aggregate(join_cols = c("source", "target", -->
+<!--                                 "ligand", "receptor")) # aggregate -->
+<!-- ``` -->
 
-### Filter LIANA output to only RTK interactions
-Here, we assume that we only are only interested in from the RTK pathway.
-```{r filter_by_liana}
-liana_rtk <- liana_res %>% 
-  left_join(signalink_pathways, by=c("ligand"="genesymbol")) %>%
-  rename(ligand_pathway = pathway) %>% 
-  left_join(signalink_pathways, by=c("receptor"="genesymbol")) %>%
-  rename(receptor_pathway = pathway) %>%
-  filter(ligand_pathway == "Receptor tyrosine kinase") %>%
-  filter(receptor_pathway == "Receptor tyrosine kinase")
+<!-- ### Filter LIANA output to only RTK interactions -->
+<!-- Here, we assume that we only are only interested in from the RTK pathway. -->
+<!-- ```{r filter_by_liana} -->
+<!-- liana_rtk <- liana_res %>%  -->
+<!--   left_join(signalink_pathways, by=c("ligand"="genesymbol")) %>% -->
+<!--   dplyr::rename(ligand_pathway = pathway) %>%  -->
+<!--   left_join(signalink_pathways, by=c("receptor"="genesymbol")) %>% -->
+<!--   dplyr::rename(receptor_pathway = pathway) %>% -->
+<!--   filter(ligand_pathway == "Receptor tyrosine kinase") %>% -->
+<!--   filter(receptor_pathway == "Receptor tyrosine kinase") -->
 
-# Show only interactions in which BOTH the ligand and the receptor
-# are associated with the RTK pathway
-liana_rtk
-```
+<!-- # Show only interactions in which BOTH the ligand and the receptor -->
+<!-- # are associated with the RTK pathway -->
+<!-- liana_rtk -->
+<!-- ``` -->
 
-### Run LIANA with only specific interactions
-One could also do the reverse - i.e. filter the resource in regards to a given
-functional annotation terms (e.g. JAK/STAT, WNT, and RTK), and then run LIANA
-```{r filter_by_op}
-pathways_of_interest <- c("JAK/STAT", "Receptor tyrosine kinase", "WNT")
+<!-- ### Run LIANA with only specific interactions -->
+<!-- One could also do the reverse - i.e. filter the resource in regards to a given -->
+<!-- functional annotation terms (e.g. JAK/STAT, WNT, and RTK), and then run LIANA -->
+<!-- ```{r filter_by_op} -->
+<!-- pathways_of_interest <- c("JAK/STAT", "Receptor tyrosine kinase", "WNT") -->
 
-# We join the functional annotations to OmniPath
-# and retain ONLY interactions in which BOTH the ligand and receptor 
-# are associated with RTK pathways
-rkt_omni <- liana_omni %>% 
-  left_join(signalink_pathways, by=c("source_genesymbol"="genesymbol")) %>%
-  rename(source_geneset = pathway) %>%
-  left_join(signalink_pathways, by=c("target_genesymbol"="genesymbol")) %>%
-  rename(target_geneset = pathway) %>%
-  filter(source_geneset %in% pathways_of_interest) %>%
-  filter(target_geneset %in% pathways_of_interest)
+<!-- # We join the functional annotations to OmniPath -->
+<!-- # and retain ONLY interactions in which BOTH the ligand and receptor  -->
+<!-- # are associated with RTK pathways -->
+<!-- rkt_omni <- liana_omni %>%  -->
+<!--   left_join(signalink_pathways, by=c("source_genesymbol"="genesymbol")) %>% -->
+<!--   rename(source_geneset = pathway) %>% -->
+<!--   left_join(signalink_pathways, by=c("target_genesymbol"="genesymbol")) %>% -->
+<!--   rename(target_geneset = pathway) %>% -->
+<!--   filter(source_geneset %in% pathways_of_interest) %>% -->
+<!--   filter(target_geneset %in% pathways_of_interest) -->
 
-# We can then again run LIANA with the RKT-associated interactions alone
-liana_rtk_omni <- liana_wrap(testdata,
-                             resource='custom',
-                             external_resource = rkt_omni) %>%
-  liana_aggregate(join_cols = c("source", "target",
-                                "ligand", "receptor"))
+<!-- # We can then again run LIANA with the RKT-associated interactions alone -->
+<!-- liana_rtk_omni <- liana_wrap(testdata, -->
+<!--                              resource='custom', -->
+<!--                              external_resource = rkt_omni) %>% -->
+<!--   liana_aggregate(join_cols = c("source", "target", -->
+<!--                                 "ligand", "receptor")) -->
 
-liana_rtk_omni
-```
-
-
-## Perform an over-representation representation analysis (ORA) on predicted LR interactions 
-Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB  
-gene sets in preferentially ranked ligand-receptor interactions from LIANA.
-
-### First, format LIANA's output
-```{r liana_wrap, message = FALSE, print = FALSE}
-# we take liana from above and keep only the columns that we need
-# in this case we will use the aggragate for all methods
-liana_form <- liana_res %>%
-  select(source, ligand, target,
-         receptor, aggregate_rank) %>%
-  # one could treat the aggragate rank as 
-  # the probability to observe an interaction
-  # as preferentially highly ranked
-  # one could also p.adjust
-  # mutate(aggregate_rank = p.adjust(aggregate_rank)) %>%
-  filter(aggregate_rank <= 0.05)
-liana_form
-
-```
-
-### Obtain MSigDB Genesets via OmniPathR - takes a while :)
-Here we focus on the [Hallmarks gene set](http://www.gsea-msigdb.org/gsea/msigdb/collection_details.jsp#H)
-```{r load_msig}
-msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB",
-                                                 wide = TRUE) %>%
-  filter(collection=="hallmark") %>%
-  select(genesymbol, geneset)
-```
-
-### Establish the Resource as the background/universe
-```{r establish_universe}
-# Here, we join pathways associated with ligand and receptors, separately
-# Note that here we consider only matches to ligands and receptors from OmniPath as the background universe
-omni_universe <- liana_omni %>% 
-  select(source_genesymbol, target_genesymbol) %>%
-  left_join(msigdb, by=c("source_genesymbol"="genesymbol")) %>%
-  rename(source_geneset = geneset) %>%
-  left_join(msigdb, by=c("target_genesymbol"="genesymbol")) %>%
-  rename(target_geneset = geneset)
-
-# Establish Ligand Universe
-entity_total <- length(unique(omni_universe$source_genesymbol))
-ligand_universe <- omni_universe %>%
-  select(ligand = source_genesymbol, geneset = source_geneset) %>%
-  na.omit() %>%
-  distinct() %>%
-  group_by(geneset) %>%
-  mutate(geneset_n = n()) %>%
-  ungroup() %>%
-  arrange(desc(geneset_n)) %>%
-  mutate(background = entity_total)
+<!-- liana_rtk_omni -->
+<!-- ``` -->
 
 
-# Bind Distinct liana ligand hits to the universe
-# Get Distinct Ligands in top hits
-liana_ligands <- liana_form %>%
-  select(source, ligand) %>%
-  distinct() %>%
-  mutate(distinct_hits = n())
+<!-- ## Perform an over-representation representation analysis (ORA) on predicted LR interactions  -->
+<!-- Here, (a bit more advanced) we will attempt to obtain over-represented MSigDB   -->
+<!-- gene sets in preferentially ranked ligand-receptor interactions from LIANA. -->
 
-# Perform hypergeometric test
-liana_hyperenrich <- ligand_universe %>%
-  left_join(liana_ligands, by=c("ligand")) %>%
-  na.omit() %>%
-  group_by(source, geneset) %>%
-  # count ligands in geneset
-  mutate(ligands_in_gs = n()) %>% # aka x/q
-  rowwise() %>%
-  mutate(pval = phyper(q = ligands_in_gs, 
-                       m = geneset_n,
-                       n = background-geneset_n,
-                       k = distinct_hits, lower.tail = FALSE)) %>%
-  ungroup() %>%
-  arrange(pval)
+<!-- ### First, format LIANA's output -->
+<!-- ```{r liana_wrap, message = FALSE, print = FALSE} -->
+<!-- # we take liana from above and keep only the columns that we need -->
+<!-- # in this case we will use the aggragate for all methods -->
+<!-- liana_form <- liana_res %>% -->
+<!--   select(source, ligand, target, -->
+<!--          receptor, aggregate_rank) %>% -->
+<!--   # one could treat the aggragate rank as  -->
+<!--   # the probability to observe an interaction -->
+<!--   # as preferentially highly ranked -->
+<!--   # one could also p.adjust -->
+<!--   # mutate(aggregate_rank = p.adjust(aggregate_rank)) %>% -->
+<!--   filter(aggregate_rank <= 0.05) -->
+<!-- liana_form -->
 
-# Note that the ligand coverage of some gene sets is simply too limited
-# So, one could consider not limiting the results to the ligands alone
-liana_hyperenrich
-```
-### Format Hypergeometric test results
-```{r ora_res}
-liana_hyperenrich %>%
-  select(geneset, source, pval) %>%
-  distinct() %>%
-  mutate(adj_pval = p.adjust(pval, method = "fdr")) %>%
-  arrange(adj_pval)
-```
+<!-- ``` -->
 
-Done! Check whether any categories are over-represented (by celltype) in our dataset.
+<!-- ### Obtain MSigDB Genesets via OmniPathR - takes a while :) -->
+<!-- Here we focus on the [Hallmarks gene set](http://www.gsea-msigdb.org/gsea/msigdb/collection_details.jsp#H) -->
+<!-- ```{r load_msig} -->
+<!-- msigdb <- OmnipathR::import_omnipath_annotations(resources = "MSigDB", -->
+<!--                                                  wide = TRUE) %>% -->
+<!--   filter(collection=="hallmark") %>% -->
+<!--   select(genesymbol, geneset) -->
+<!-- ``` -->
 
-Kind reminder that this analysis is intended for representation purposes alone. 
-We usually favour the use of the whole genome for any enrichment and pathway analyses,
-and kindly refer to the user to the rest of [our tools](https://saezlab.org/?#tools), which can be highly complementary
-when interpretting the ligand-receptor predictions from LIANA.
+<!-- ### Establish the Resource as the background/universe -->
+<!-- ```{r establish_universe} -->
+<!-- # Here, we join pathways associated with ligand and receptors, separately -->
+<!-- # Note that here we consider only matches to ligands and receptors from OmniPath as the background universe -->
+<!-- omni_universe <- liana_omni %>%  -->
+<!--   select(source_genesymbol, target_genesymbol) %>% -->
+<!--   left_join(msigdb, by=c("source_genesymbol"="genesymbol")) %>% -->
+<!--   rename(source_geneset = geneset) %>% -->
+<!--   left_join(msigdb, by=c("target_genesymbol"="genesymbol")) %>% -->
+<!--   rename(target_geneset = geneset) -->
+
+<!-- # Establish Ligand Universe -->
+<!-- entity_total <- length(unique(omni_universe$source_genesymbol)) -->
+<!-- ligand_universe <- omni_universe %>% -->
+<!--   select(ligand = source_genesymbol, geneset = source_geneset) %>% -->
+<!--   na.omit() %>% -->
+<!--   distinct() %>% -->
+<!--   group_by(geneset) %>% -->
+<!--   mutate(geneset_n = n()) %>% -->
+<!--   ungroup() %>% -->
+<!--   arrange(desc(geneset_n)) %>% -->
+<!--   mutate(background = entity_total) -->
 
 
-We also kindly refer the user to [OmniPathR](https://github.com/saezlab/OmnipathR), and the [OmniPath website](https://omnipathdb.org/#about) for
-more information how to make full use of OmniPath!
+<!-- # Bind Distinct liana ligand hits to the universe -->
+<!-- # Get Distinct Ligands in top hits -->
+<!-- liana_ligands <- liana_form %>% -->
+<!--   select(source, ligand) %>% -->
+<!--   distinct() %>% -->
+<!--   mutate(distinct_hits = n()) -->
+
+<!-- # Perform hypergeometric test -->
+<!-- liana_hyperenrich <- ligand_universe %>% -->
+<!--   left_join(liana_ligands, by=c("ligand")) %>% -->
+<!--   na.omit() %>% -->
+<!--   group_by(source, geneset) %>% -->
+<!--   # count ligands in geneset -->
+<!--   mutate(ligands_in_gs = n()) %>% # aka x/q -->
+<!--   rowwise() %>% -->
+<!--   mutate(pval = phyper(q = ligands_in_gs,  -->
+<!--                        m = geneset_n, -->
+<!--                        n = background-geneset_n, -->
+<!--                        k = distinct_hits, lower.tail = FALSE)) %>% -->
+<!--   ungroup() %>% -->
+<!--   arrange(pval) -->
+
+<!-- # Note that the ligand coverage of some gene sets is simply too limited -->
+<!-- # So, one could consider not limiting the results to the ligands alone -->
+<!-- liana_hyperenrich -->
+<!-- ``` -->
+<!-- ### Format Hypergeometric test results -->
+<!-- ```{r ora_res} -->
+<!-- liana_hyperenrich %>% -->
+<!--   select(geneset, source, pval) %>% -->
+<!--   distinct() %>% -->
+<!--   mutate(adj_pval = p.adjust(pval, method = "fdr")) %>% -->
+<!--   arrange(adj_pval) -->
+<!-- ``` -->
+
+<!-- Done! Check whether any categories are over-represented (by celltype) in our dataset. -->
+
+<!-- Kind reminder that this analysis is intended for representation purposes alone.  -->
+<!-- We usually favour the use of the whole genome for any enrichment and pathway analyses, -->
+<!-- and kindly refer to the user to the rest of [our tools](https://saezlab.org/?#tools), which can be highly complementary -->
+<!-- when interpretting the ligand-receptor predictions from LIANA. -->
 
 
-## Session information
-```{r session_info, echo=TRUE}
-options(width = 120)
-sessioninfo::session_info()
-```
+<!-- We also kindly refer the user to [OmniPathR](https://github.com/saezlab/OmnipathR), and the [OmniPath website](https://omnipathdb.org/#about) for -->
+<!-- more information how to make full use of OmniPath! -->
+
+
+<!-- ## Session information -->
+<!-- ```{r session_info, echo=TRUE} -->
+<!-- options(width = 120) -->
+<!-- sessioninfo::session_info() -->
+<!-- ``` -->

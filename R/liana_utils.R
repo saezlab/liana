@@ -127,7 +127,7 @@ filter_nonabundant_celltypes <- function(sce,
         ungroup()
     keep_abundant <- colData(sce) %>%
         as_tibble(rownames = "barcode") %>%
-        select(barcode, sample_col = sample_col,idents_col =  idents_col) %>%
+        select(barcode, sample_col = sample_col,idents_col = idents_col) %>%
         inner_join(keep_abundant, by = c("sample_col", "idents_col")) %>%
         pull(barcode)
     # Remove those cells which belong to cells not shared in enough samples
