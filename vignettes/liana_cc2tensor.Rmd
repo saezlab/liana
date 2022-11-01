@@ -116,18 +116,21 @@ the factors can be used to reconstruct the tensor. We refer the user to the
 publication of [tensor-cell2cell](https://www.nature.com/articles/s41467-022-31369-2) for further information.
 
 Note that by default LIANA will set up a conda environment with `basilisk`
-(if conda_env is NULL), the user can alternatively specify the name of the conda_env
-to be called via reticulate.
+(if conda_env is NULL), the user can alternatively specify the name of a `conda_env`
+with cell2cell to be called via reticulate.
 ```{r}
 sce@metadata$tensor_res <-
   liana_tensor_c2c(context_df_dict = sce@metadata$liana_res,
                    score_col = 'LRscore',
-                   # rank = 8,  # set to None to estimate! 8 was estimated!
+                   rank = 8,  # set to None to estimate!
                    how='inner'  #  defines how the tensor is built
                    )
 ```
 
-`cell2cell_tensor` accepts additional parameters to further tune 
+Optimal rank estimation can be a RAM demanding process, here the number of
+ranks was pre-determined.
+
+`cell2cell_tensor` also accepts additional parameters to further tune 
 tensor decomposition, but these are out of scope for this tutorial.
 Stay tuned for a set of tutorials with comprehensive application of liana with tensor!
 
