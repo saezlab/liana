@@ -42,8 +42,8 @@ liana_bysample <- function(sce,
                     "`{context_col}` was converted to a factor!"
                 ), output = "message",
                 verbose = verbose)
-            sce[[context_col]] <- as.factor(sce[[context_col]])
         }
+        sce[[context_col]] <- as.factor(sce[[context_col]])
     } else{
 
         context_col <- "context_col"
@@ -53,10 +53,9 @@ liana_bysample <- function(sce,
             ), output = "message",
             verbose = verbose)
 
-
-        sce[[context_col]] <- as.factor(paste(sce[[condition_col]],
-                                              sce[[sample_col]],
-                                              sep = key_sep)
+        sce@colData[[context_col]] <- as.factor(paste(sce[[condition_col]],
+                                                      sce[[sample_col]],
+                                                      sep = key_sep)
         )
     }
 
@@ -67,11 +66,8 @@ liana_bysample <- function(sce,
                          liana_message(str_glue("Current sample: {context}"),
                                        output = "message",
                                        verbose = verbose)
-
                          # Subset to current sample
-                         sce_temp <- subset(sce,
-                                            ,
-                                            sce$context_col==context)
+                         sce_temp <- sce[, sce[[context_col]]==context]
 
                          # Set cluster
                          colLabels(sce_temp) <- sce_temp[[idents_col]]

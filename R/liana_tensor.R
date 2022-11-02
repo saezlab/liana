@@ -227,7 +227,7 @@ format_c2c_factors <- function(factors,
                   .name_repair = "universal") %>%
         separate(sample_condition,
                  into=c("condition", "sample"),
-                 sep = "[|]",
+                 sep = key_sep,
                  remove = FALSE) %>%
         arrange(condition) %>%
         mutate(sample_condition = factor(sample_condition,
@@ -365,8 +365,6 @@ plot_c2c_overview <- function(factors){
 #' @param ... arguments passed to the test used.
 #'
 #' @export
-#'
-#' @import rstatix
 plot_context_boxplot <- function(contexts,
                                  test="t_test",
                                  ...){
@@ -382,7 +380,7 @@ plot_context_boxplot <- function(contexts,
         mutate(fact = as.factor(fact)) %>%
         group_by(fact) %>%
         group_nest(keep = TRUE) %>%
-        mutate(t_test = map(data, function(.x) exec(test,
+        mutate(t_test = map(data, function(.x) exec(rstatix::test,
                                                     formula=loadings~condition,
                                                     data=.x,
                                                     ...))) %>%
@@ -453,15 +451,15 @@ plot_contexts_umap <- function(factors,
 #'
 #' @export
 #'
-plot_contexts_heat <- function(factors,
+plot_contexts_heat <- function(contexts,
                                key_sep = "[|]",
                                ...){
     # Samples dictionary
-    meta_dict <- factors$contexts %>%
+    meta_dict <- contexts %>%
         select(sample_condition, sample) %>%
         deframe()
 
-    contexts_mat <- factors$contexts %>%
+    contexts_mat <- contexts %>%
         column_to_rownames("sample_condition") %>%
         select(starts_with("Factor")) %>%
         t()
@@ -634,7 +632,7 @@ calculate_gini <- function(loadings){
                                                        quiet = TRUE)) %>%
         pivot_longer(-celltype, names_to = "factor", values_to = "loadings") %>%
         group_by(factor) %>%
-        summarise(gini = DescTools::Gini(loadings))
+        summarise(gini = .gini(loadings))
 }
 
 #' Plot the product of loadings between the source and target loadings
@@ -689,6 +687,21 @@ plot_c2c_cells <- function(factors,
     # plot(commat_g, vertex.size = 2, edge.width=E(commat_g)$weight)
 }
 
+#' Gini Coefficient Estimate
+#' @param x vector
+#'
+#' @details adapted from DescTools::Gini
+.gini <- function(x){
+    if (any(is.na(x)) || any(x < 0)) return(NA_real_)
+
+    n <- length(x)
+    x <- sort(x)
+
+    res <- 2 * sum(x * 1:n) / (n*sum(x)) - 1 - (1/n)
+    res <- n / (n - 1) * res
+
+    return(max(0, res))
+}
 
 
 # Env vars ----

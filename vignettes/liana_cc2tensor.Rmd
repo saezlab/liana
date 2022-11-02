@@ -178,7 +178,8 @@ and after IFN-beta stimulation.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get all boxplots
 all_facts_boxes <- plot_context_boxplot(factors$contexts,
-                                        # paired=TRUE #! Is this the case for your data?
+                                        test="t_test", # applicable only to two groups
+                                        paired=TRUE #! Is this the case for your data?
                                         )
 
 # Combine all boxplots
@@ -200,7 +201,7 @@ Again, we see a clear seperation between STIM and CTRL, further suggesting the
 relevance of the changes in the inferred interactions.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 
-plot_contexts_heat(factors)
+plot_contexts_heat(factors$contexts)
 
 ```
 

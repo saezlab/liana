@@ -20,7 +20,7 @@ liana_tensor_c2c(
   device = NULL,
   rank = NULL,
   seed = 1337,
-  upper_rank = 50,
+  upper_rank = 25,
   runs = 1,
   init = "svd",
   build_only = FALSE,

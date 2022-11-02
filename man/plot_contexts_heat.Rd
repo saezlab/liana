@@ -4,12 +4,9 @@
 \alias{plot_contexts_heat}
 \title{Function to plot a UMAP of context loadings}
 \usage{
-plot_contexts_heat(factors, key_sep = "[|]", ...)
+plot_contexts_heat(contexts, key_sep = "[|]", ...)
 }
 \arguments{
-\item{factors}{factors output from tensor-cell2cel formatted with
-`format_c2c_factors`}
-
 \item{key_sep}{separator for the sample and condition names. These are
 used to jointly name the contexts - technically the names of the
 `context_df_dict` list passed to the `liana_tensor_c2c` function.}
