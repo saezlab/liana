@@ -28,8 +28,6 @@ Additional tutorials:
 
 * [How to make use of OmniPathR's intracellular component](https://saezlab.github.io/liana/articles/liana_intracell.html)  
 
-* [How to customize OmniPath's intercellular resource](https://saezlab.github.io/liana/articles/liana_intracell.html)  
-
 * [How to convert the resources in LIANA to orthologs from other species](https://saezlab.github.io/liana/articles/liana_ortho.html)
 
 * [LIANA for developers and benchmarks](https://saezlab.github.io/liana/articles/liana_devel.html)  
