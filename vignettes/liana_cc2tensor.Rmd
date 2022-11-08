@@ -195,7 +195,7 @@ Stay tuned for a set of tutorials with comprehensive application of liana with t
 Upon a seccusseful run cell2cell_tensor will decompose the tensor into a set of factors, 
 or four vectors corresponding to the initial dimensions of the tensor.
 
-* `contexts` - the factor scores assigned to each sample
+* `contexts` - the factor scores assigned to each sample/context
 * `interactions` - the interaction loadings per factor
 * `senders` - loadings for sender/source cell identities
 * `receivers` - loadings for receivers/target cell identities

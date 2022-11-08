@@ -2,7 +2,7 @@
 [![R-CMD-check](https://github.com/saezlab/liana/workflows/R-CMD-check/badge.svg)](https://github.com/saezlab/liana/actions)
 <!-- badges: end -->
 
-# LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/ids30isr8jysz59/liana_logo.png?raw=1" align="right" height="100">
+# LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/ecrxuy5f6ccdvl0/liana_small.png?raw=1" align="right">
     
 ## Install LIANA  
 ```{r}
