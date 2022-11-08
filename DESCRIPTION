@@ -67,6 +67,9 @@ Imports:
     ggplot2,
     ComplexHeatmap,
     RColorBrewer,
+    basilisk.utils,
+    basilisk,
+    methods
 Suggests:
     CellChat,
     knitr,
@@ -82,8 +85,6 @@ Suggests:
     future,
     tidyverse,
     devtools,
-    basilisk.utils,
-    basilisk,
     decoupleR,
     ExperimentHub,
     muscData,

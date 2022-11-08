@@ -1,4 +1,4 @@
-# LIANA 0.1.8 (XX.11.22)
+# LIANA 0.1.8 (08.11.22)
 ## New Implementations 
 - Untargeted between-condition (context/sample) decomposition of cell-cell 
 communication latent patterns /w `tensor_cell2cell`. Makes use of `basilisk` to

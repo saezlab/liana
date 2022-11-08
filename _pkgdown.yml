@@ -48,11 +48,8 @@ reference:
       - get_c2c_factors
       - plot_c2c_overview
       - plot_context_boxplot
-      - plot_contexts_umap
-      - plot_contexts_heat
+      - plot_context_heat
       - plot_lr_heatmap
-      - generate_lr_geneset
-      - assign_lr_weights
       - plot_c2c_cells
   - title: Others
     desc: "Other potentially relevant functions"
@@ -65,4 +62,7 @@ reference:
       - generate_orthologs
       - generate_homologs
       - rank_method
+      - filter_nonabundant_celltypes
+      - generate_lr_geneset
+      - assign_lr_weights
 

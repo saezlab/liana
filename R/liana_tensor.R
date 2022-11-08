@@ -568,7 +568,9 @@ generate_lr_geneset <- function(lrs, resource, lr_sep="^"){
 
 
 
-# check for sign coherency
+#' check for sign coherency
+#' @noRd
+#' @keywords internal
 .sign_coh_mean <- function(vec){
     if(length(unique(sign(vec))) > 1){
         return(NA)
@@ -578,6 +580,8 @@ generate_lr_geneset <- function(lrs, resource, lr_sep="^"){
 }
 
 #' Check for sign and gene-set coherency
+#' @noRd
+#' @keywords internal
 .set_coh_mean <- function(x, y, x_set, y_set){
     if(x_set!=y_set){
         return(NA)

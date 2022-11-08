@@ -128,8 +128,7 @@ sce <- liana::filter_nonabundant_celltypes(sce,
 In order to construct the tensor, we first need to obtain CCC predictions for 
 each sample. In this case, we use SingleCellSignalR scores, as they are
 regularized, and theory directly comparable between any dataset. One can use any
-method in LIANA /w tensor as they were previously shown to yield consistent
-results (Armingol & Baghdassarian, 2022).
+method with **non-negative scores** from LIANA /w cell2cell_tensor as they were previously shown to yield consistent results (Armingol & Baghdassarian, 2022).
 
 Note that `liana_bysample` works with `SingleCellExperiment` alone, if you 
 wish to use Seurat, please use the `as.SingleCellExperiment` function.

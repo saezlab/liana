@@ -70,6 +70,8 @@ liana_bysample <- function(sce,
 #' @param right (df) to join to colData per sample
 #' @param sample_col unique identifier column from colData
 #' @param group_col sample_col descriptor column
+#'
+#' @noRd
 .join_meta <- function(sce, right, sample_col, group_col){
 
     meta <- colData(sce) %>%
