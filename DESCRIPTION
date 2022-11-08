@@ -66,7 +66,7 @@ Imports:
     tidyselect,
     ggplot2,
     ComplexHeatmap,
-    RColorBrewer
+    RColorBrewer,
 Suggests:
     CellChat,
     knitr,
@@ -84,8 +84,11 @@ Suggests:
     devtools,
     basilisk.utils,
     basilisk,
-    decoupleR
-biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap
+    decoupleR,
+    ExperimentHub,
+    muscData,
+    broom
+biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, muscData, ExperimentHub
 Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
 RoxygenNote: 7.2.1
 Config/testthat/edition: 3

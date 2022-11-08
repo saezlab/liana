@@ -6,10 +6,14 @@
 #' made by the authors. Logically, one should cite cell2cell's paper if their
 #' method was used via LIANA.
 #'
+#' @param sce SingleCellExperiment with `context_df_dict` - i.e. liana results
+#' per context (sample) stored at `sce@metadata$liana_res`
+#'
 #' @param context_df_dict Dictionary (named list) containing a dataframe for
 #' each context. The dataframe must contain columns containing sender (source) cells,
 #' receiver (target) cells, ligands, receptors, and communication scores, separately.
-#' Keys are context names and values are dataframes.
+#' Keys are context names and values are dataframes. NULL by default.
+#' If not NULL will be used instead of `sce@metadata$liana_res`.
 #'
 #' @param sender_col Name of the column containing the sender cells in all context
 #' dataframes.
@@ -73,6 +77,9 @@
 #'
 #' @param verbose verbosity logical
 #'
+#' @param inplace logical (TRUE by default) if liana results are to be saved
+#'  to the SingleCellExperiment object (`sce@metadata$liana_res`)
+#'
 #' @param ... Dictionary containing keyword arguments for the c2c.compute_tensor_factorization function.
 #' The function deals with `random_state` (seed) and `rank` internally.
 #'
@@ -84,11 +91,8 @@
 #'
 #' @export
 #'
-liana_tensor_c2c <- function(context_df_dict,
-                             sender_col = "source",
-                             receiver_col = "target",
-                             ligand_col = "ligand.complex",
-                             receptor_col = "receptor.complex",
+liana_tensor_c2c <- function(sce=NULL,
+                             context_df_dict = NULL,
                              score_col = 'LRscore',
                              how='inner',
                              lr_fill=NaN,
@@ -106,7 +110,27 @@ liana_tensor_c2c <- function(context_df_dict,
                              factors_only = TRUE,
                              conda_env=NULL,
                              verbose = TRUE,
+                             inplace=TRUE,
+                             sender_col = "source",
+                             receiver_col = "target",
+                             ligand_col = "ligand.complex",
+                             receptor_col = "receptor.complex",
                              ...){
+
+    if(is.null(context_df_dict)){
+        context_df_dict <- sce@metadata$liana_res
+    }
+
+    if(is.null(context_df_dict) & is.null(sce)){
+        stop("Please provide a valid `sce` OR `context_df_dict` object")
+    }
+
+    if(!is.null(context_df_dict) & !is.null(sce)){
+        liana_message("`sce` was superseded by `context_df_dict`!",
+                      output = "warning",
+                      verbose = verbose
+                      )
+    }
 
     # Deal with rank
     rank <- if(is.null(rank)){ NULL } else {as.integer(rank)}
@@ -186,9 +210,18 @@ liana_tensor_c2c <- function(context_df_dict,
                                         random_state=as.integer(seed),
                                         ...)
 
-    if(factors_only){ return(tensor$factors) }
+    if(factors_only){
+        res <- format_c2c_factors(tensor$factors)
+    } else{
+         res <- tensor
+        }
 
-    return(tensor)
+    if(!inplace){
+        return(res)
+    } else{
+        sce@metadata$tensor_res <- res
+        return(sce)
+    }
 }
 
 
@@ -211,7 +244,7 @@ liana_tensor_c2c <- function(context_df_dict,
 #' used to jointly name the contexts - technically the names of the
 #' `context_df_dict` list passed to the `liana_tensor_c2c` function.
 #'
-#' @export
+#' @noRd
 #'
 #' @keywords internal
 #'
@@ -219,61 +252,72 @@ format_c2c_factors <- function(factors,
                                contexts="contexts",
                                interactions="interactions",
                                senders="senders",
-                               receivers="receivers",
-                               key_sep = "[|]"){
+                               receivers="receivers"){
     # Format contexts
     factors[[contexts]] %<>%
-        as_tibble(rownames="sample_condition",
-                  .name_repair = "universal") %>%
-        separate(sample_condition,
-                 into=c("condition", "sample"),
-                 sep = key_sep,
-                 remove = FALSE) %>%
-        arrange(condition) %>%
-        mutate(sample_condition = factor(sample_condition,
-                                         .data[["sample_condition"]]))
+        set_tidy_names(syntactic = TRUE, quiet = TRUE) %>%
+        as_tibble(rownames="context") %>%
+        mutate(across(where(is.character), ~as.factor(.x)))
 
     # Format interactions
     factors[[interactions]] %<>%
-        as_tibble(rownames="lr",
-                  .name_repair = "universal") %>%
+        set_tidy_names(syntactic = TRUE, quiet = TRUE) %>%
+        as_tibble(rownames="lr") %>%
         arrange(lr) %>%
         mutate(lr = factor(lr, lr))
 
     # Format senders
     factors[[senders]] %<>%
-        as_tibble(rownames="celltype",
-                  .name_repair = "universal") %>%
+        set_tidy_names(syntactic = TRUE, quiet = TRUE) %>%
+        as_tibble(rownames="celltype") %>%
         mutate(celltype=factor(celltype, celltype))
 
     # Format receivers
-    suppressMessages(
-        factors[[receivers]] %<>%
-            as_tibble(rownames="celltype",
-                      .name_repair = "universal") %>%
-            mutate(celltype=factor(celltype, celltype))
-    )
-
+    factors[[receivers]] %<>%
+        set_tidy_names(syntactic = TRUE, quiet = TRUE) %>%
+        as_tibble(rownames="celltype") %>%
+        mutate(celltype=factor(celltype, celltype))
 
     return(factors)
 }
 
+
+#' Returns tensor cell2cell results
+#' @param sce SingleCellExperiment with factors output from tensor-cell2cell
+#' @param group_col context descriptor - to be obtained from `colData(sce)`
+#'
+#' @export
+get_c2c_factors <- function(sce, group_col=NULL){
+    factors <- sce@metadata$tensor_res
+
+    if(is.null(group_col)) return(factors)
+
+    factors$contexts <- .join_meta(sce,
+                                   factors$contexts,
+                                   sample_col = "context",
+                                   group_col = group_col)
+    return(factors)
+
+}
+
+
 #' Function to plot an Overview of tensor-c2c results
 #'
-#' @param factors factors output from tensor-cell2cel formatted with
-#' `format_c2c_factors`
+#' @param sce SingleCellExperiment with factors output from tensor-cell2cell
+#' @inheritParams get_c2c_factors
 #'
 #' @export
 #'
-plot_c2c_overview <- function(factors){
+plot_c2c_overview <- function(sce, group_col){
+
+    factors <- get_c2c_factors(sce, group_col)
 
     # Contexts
     contexts <- factors$contexts %>%
-        pivot_longer(cols = -c("sample", "condition", "sample_condition"),
+        pivot_longer(cols = -c("context", group_col),
                      names_to = "factor", values_to = "loadings"
         ) %>%
-        ggplot(aes(x=sample_condition, y=loadings,
-                   fill=condition)) +
+        ggplot(aes(x=context, y=loadings, fill=.data[[group_col]])) +
         geom_bar(stat="identity") +
         facet_grid(factor ~ .) +
         theme_bw(base_size = 14) +
@@ -339,7 +383,6 @@ plot_c2c_overview <- function(factors){
               plot.title = element_text(hjust = 0.5)) +
         ylab(NULL) +
         ggtitle('Receivers')
-    # saveRDS(factors, file = "data/tensor_factors_test.RDS")
 
     # Assemble overview plot
     overview <- patchwork::wrap_plots(list(contexts,
@@ -355,43 +398,49 @@ plot_c2c_overview <- function(factors){
 }
 
 
-#' Function to get boxplots with significance
+#' @title Generate boxplots with significance
 #'
-#' @param data a tibble or a dataframe
-#'
-#' @param test test to be performed (t_test - default) or any others from the
-#' `rstatix` package, others include anova_test, wilcox_test, kruskal_test, etc.
+#' @param sce SingleCellExperiment with factors output from tensor-cell2cell
+#' @inheritParams get_c2c_factors
 #'
 #' @param ... arguments passed to the test used.
 #'
 #' @export
-plot_context_boxplot <- function(contexts,
-                                 test="t_test",
+plot_context_boxplot <- function(sce,
+                                 group_col,
+                                 test="t.test",
                                  ...){
 
+    factors <- get_c2c_factors(sce, group_col)
+
     ### Alternative
-    contexts_data <- # format df
-        contexts_long <- contexts %>%
-        select(condition, starts_with("Factor")) %>%
-        pivot_longer(-condition,
+    contexts_data <- factors$contexts %>%
+        select(!!group_col, starts_with("Factor")) %>%
+        pivot_longer(-group_col,
                      names_to = "fact",
                      values_to = "loadings") %>%
-        mutate(condition = as.factor(condition)) %>%
         mutate(fact = as.factor(fact)) %>%
         group_by(fact) %>%
         group_nest(keep = TRUE) %>%
-        mutate(t_test = map(data, function(.x) exec(rstatix::test,
-                                                    formula=loadings~condition,
-                                                    data=.x,
-                                                    ...))) %>%
-        unnest(t_test) %>%
-        mutate(p.adj = p.adjust(p))
+        mutate(test = map(data,
+                            function(.x) broom::tidy(
+                                exec(test,
+                                     formula=loadings~.x[[group_col]],
+                                     data=.x,
+                                     ...
+                                     ))
+                            )
+               ) %>%
+        unnest(test) %>%
+        mutate(p.adj = p.adjust(p.value, method = "fdr")) %>%
+        mutate(across(where(is.numeric), ~round(.x, digits = 4)))
 
     all_facts_boxes <- pmap(contexts_data, function(data=data,
                                                     p.adj=p.adj,
                                                     fact=fact,
                                                     ...){
-        ggplot(data, aes(x=condition, y=loadings, color=condition)) +
+        data %>%
+        ggplot(aes(x=.data[[group_col]], y=loadings, color=.data[[group_col]])) +
             geom_boxplot() +
             theme_minimal() +
             ggtitle(fact, str_glue("{str_to_title(test)}, adj.p = {p.adj}"))
@@ -401,79 +450,34 @@ plot_context_boxplot <- function(contexts,
 
 }
 
-
-#' Function to plot a UMAP of context loadings
+#' @title Plot a Heatmap of context loadings
 #'
-#' @param factors factors output from tensor-cell2cel formatted with
-#' `format_c2c_factors`
-#'
-#' @inheritParams format_c2c_factors
-#'
-#' @returns a ggplot2 object
-#'
-#' @export
-#'
-plot_contexts_umap <- function(factors,
-                               key_sep = "[|]",
-                               ...){
-    ### Contexts
-    umap_fit <- factors$contexts %>%
-        column_to_rownames("sample_condition") %>%
-        select(starts_with("Factor")) %>%
-        scale() %>%
-        umap::umap()
-
-    umap_fit$layout %>%
-        as.data.frame() %>%
-        dplyr::rename(UMAP1="V1",
-                      UMAP2="V2") %>%
-        mutate(context=rownames(.)) %>%
-        separate(context, into=c("condition", "sample"), sep = "[|]") %>%
-        ggplot(aes(x = UMAP1,
-                   y = UMAP2,
-                   color = condition,
-                   shape = sample)) +
-        scale_shape_manual(values=rep(seq(0, 15),
-                                      length.out=nlevels(factors$contexts[[1]]))) +
-        geom_point(size=3) +
-        labs(x = "UMAP1",
-             y = "UMAP2") +
-        theme_minimal()
-}
-
-#' Function to plot a UMAP of context loadings
-#'
-#' @inheritParams plot_contexts_umap
-#'
+#' @inheritParams plot_context_boxplot
 #' @inheritDotParams ComplexHeatmap::Heatmap
 #'
 #' @returns a ComplexHeatmap object
 #'
 #' @export
-#'
-plot_contexts_heat <- function(contexts,
-                               key_sep = "[|]",
-                               ...){
+plot_context_heat <- function(sce,
+                              group_col,
+                              ...){
+
+    factors <- get_c2c_factors(sce, group_col)
+
     # Samples dictionary
-    meta_dict <- contexts %>%
-        select(sample_condition, sample) %>%
+    meta_dict <- factors$contexts %>%
+        select(context, !!group_col) %>%
         deframe()
 
-    contexts_mat <- contexts %>%
-        column_to_rownames("sample_condition") %>%
+    contexts_mat <- factors$contexts %>%
+        column_to_rownames("context") %>%
         select(starts_with("Factor")) %>%
         t()
-
-    # samples
-    conditions <- gsub(pattern = paste0(key_sep, ".*"),
-                       x = colnames(contexts_mat),
-                       replacement = "")
-    colnames(contexts_mat) <- recode(colnames(contexts_mat), !!!meta_dict)
 
     contexts_mat %>%
         ComplexHeatmap::Heatmap(
             top_annotation = ComplexHeatmap::HeatmapAnnotation(
-                condition = stringr::str_to_title(conditions),
+                condition = stringr::str_to_title(meta_dict),
                 show_annotation_name = FALSE,
                 simple_anno_size = grid::unit(0.3, "cm")
                 ),
@@ -485,7 +489,8 @@ plot_contexts_heat <- function(contexts,
 
 #' Function to plot a UMAP of context loadings
 #'
-#' @inheritParams plot_contexts_umap
+#' @inheritParams plot_context_heat
+#' @inheritParams dplyr::top_n
 #'
 #' @inheritDotParams ComplexHeatmap::Heatmap
 #'
@@ -493,14 +498,20 @@ plot_contexts_heat <- function(contexts,
 #'
 #' @export
 #'
-plot_lr_heatmap <- function(factors, lr_sep="^", loadings_thresh = 0.25, ...){
+plot_lr_heatmap <- function(sce,
+                            lr_sep="^",
+                            n = 5,
+                            ...){
+
+    factors <- get_c2c_factors(sce)
+
     # Top n Interactions per factor heatmap
     top_lrs <- factors$interactions %>%
         pivot_longer(-lr,
-                     names_to = "factor",
+                     names_to = "fact",
                      values_to = "loadings") %>%
-        filter(loadings >= loadings_thresh) %>%
-        group_by(factor) %>%
+        group_by(fact) %>%
+        top_n(wt=loadings, n=n) %>%
         pull(lr)
 
     lrs_mat <- factors$interactions %>%
@@ -555,44 +566,6 @@ generate_lr_geneset <- function(lrs, resource, lr_sep="^"){
 }
 
 
-#' Helper function to assign weights
-#' @param lrs ligand_receptor tibble
-#' @param resource resource
-#' @param entity name of the entity
-assign_lr_weights <- function(lrs,
-                              resource,
-                              entity="ligand"){
-
-    entity_weight <- str_glue("{entity}_weight")
-    entity_source <- str_glue("{entity}_source")
-
-    entity_df <- lrs %>%
-        pull(entity) %>%
-        enframe(value="entity") %>%
-        select(entity) %>%
-        distinct() %>%
-        liana::decomplexify("entity")
-
-    entity_weights <- entity_df %>%
-        left_join(resource, by = c("entity"="target")) %>%
-        group_by(source, entity_complex) %>%
-        # count number of subunits
-        mutate(n_found = n()) %>%
-        # count number of expected subunits x_y = 1 (+ 1)
-        mutate(n_expected = str_count(entity_complex, "_") + 1) %>%
-        filter(n_found==n_expected) %>%
-        # only keep subunits which are sign-consistent
-        summarise(weight = .sign_coh_mean(weight), .groups = "keep") %>%
-        na.omit() %>%
-        ungroup() %>%
-        select({{ entity }} := entity_complex,
-               {{ entity_source }} := source,
-               {{ entity_weight }} := weight
-        )
-
-
-    return(entity_weights)
-}
 
 
 # check for sign coherency
@@ -635,6 +608,7 @@ calculate_gini <- function(loadings){
         summarise(gini = .gini(loadings))
 }
 
+
 #' Plot the product of loadings between the source and target loadings
 #' within a factor
 #'
@@ -645,9 +619,10 @@ calculate_gini <- function(loadings){
 #' @inheritDotParams ComplexHeatmap::Heatmap
 #'
 #' @export
-plot_c2c_cells <- function(factors,
+plot_c2c_cells <- function(sce,
                            factor_of_int,
                            ...){
+    factors <- get_c2c_factors(sce)
 
     sender <- factors$senders %>%
         select(celltype, sender_loadings = !!factor_of_int)
@@ -671,26 +646,17 @@ plot_c2c_cells <- function(factors,
         as.matrix()
 
     commat %>%
-        ComplexHeatmap::Heatmap(cluster_rows = FALSE,
-                                cluster_columns = FALSE,
-                                row_title = "Sender",
+        ComplexHeatmap::Heatmap(row_title = "Sender",
                                 row_names_side = "left",
                                 column_title = "Receiver",
                                 ...)
-
-    # # # Igraph
-    # commat_g <- comm %>%
-    #   select(from=sender, to=receiver, weight=loadings) %>%
-    #   igraph::graph_from_data_frame()
-    #
-    #
-    # plot(commat_g, vertex.size = 2, edge.width=E(commat_g)$weight)
 }
 
 #' Gini Coefficient Estimate
 #' @param x vector
 #'
 #' @details adapted from DescTools::Gini
+#' @noRd
 .gini <- function(x){
     if (any(is.na(x)) || any(x < 0)) return(NA_real_)
 
@@ -710,8 +676,4 @@ plot_c2c_cells <- function(factors,
                        "rpy2==3.4.5")
 
 .liana_pips <- c("cell2cell==0.6.1",
-                 # "et-xmlfile==1.1.0",
-                 # "importlib-resources==5.1.4",
-                 # "backports-zoneinfo==0.2.1",
-                 # "statannotations==0.4.4",
                  "anndata2ri==1.0.6")

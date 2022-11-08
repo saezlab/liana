@@ -5,11 +5,9 @@
 \title{Plot the product of loadings between the source and target loadings
 within a factor}
 \usage{
-plot_c2c_cells(factors, factor_of_int, ...)
+plot_c2c_cells(sce, factor_of_int, ...)
 }
 \arguments{
-\item{factors}{factors as formatted by `format_c2c_factors`}
-
 \item{factor_of_int}{factor of interest e.g. Factor.8}
 
 \item{...}{
@@ -99,6 +97,8 @@ plot_c2c_cells(factors, factor_of_int, ...)
     \item{\code{raster_magick_filter}}{Pass to \code{filter} argument of \code{\link[magick:transform]{image_resize}}. A character scalar and all possible values are in \code{\link[magick:options]{filter_types}}. The default is \code{"Lanczos"}.}
     \item{\code{post_fun}}{A function which will be executed after the heatmap list is drawn.}
   }}
+
+\item{factors}{factors as formatted by `format_c2c_factors`}
 }
 \description{
 Plot the product of loadings between the source and target loadings

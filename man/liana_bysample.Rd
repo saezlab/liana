@@ -7,10 +7,7 @@
 liana_bysample(
   sce,
   idents_col,
-  condition_col,
   sample_col,
-  key_sep = "|",
-  context_col = NULL,
   verbose = TRUE,
   inplace = TRUE,
   ...
@@ -19,11 +16,7 @@ liana_bysample(
 \arguments{
 \item{idents_col}{name of the cluster column}
 
-\item{condition_col}{name of the condition/group column}
-
-\item{sample_col}{name of the sample column}
-
-\item{key_sep}{separates the `condition_col` and' `sample_col` (| by default)}
+\item{sample_col}{name of the sample/context column}
 
 \item{verbose}{verbosity logical}
 

@@ -2,18 +2,17 @@
 % Please edit documentation in R/liana_tensor.R
 \name{plot_context_boxplot}
 \alias{plot_context_boxplot}
-\title{Function to get boxplots with significance}
+\title{Generate boxplots with significance}
 \usage{
-plot_context_boxplot(contexts, test = "t_test", ...)
+plot_context_boxplot(sce, group_col, test = "t.test", ...)
 }
 \arguments{
-\item{test}{test to be performed (t_test - default) or any others from the
-`rstatix` package, others include anova_test, wilcox_test, kruskal_test, etc.}
+\item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
+
+\item{group_col}{context descriptor - to be obtained from `colData(sce)`}
 
 \item{...}{arguments passed to the test used.}
-
-\item{data}{a tibble or a dataframe}
 }
 \description{
-Function to get boxplots with significance
+Generate boxplots with significance
 }

@@ -5,11 +5,8 @@
 \title{Wrapper function to run `cell2cell_tensor` with LIANA output.}
 \usage{
 liana_tensor_c2c(
-  context_df_dict,
-  sender_col = "source",
-  receiver_col = "target",
-  ligand_col = "ligand.complex",
-  receptor_col = "receptor.complex",
+  sce = NULL,
+  context_df_dict = NULL,
   score_col = "LRscore",
   how = "inner",
   lr_fill = NaN,
@@ -27,26 +24,23 @@ liana_tensor_c2c(
   factors_only = TRUE,
   conda_env = NULL,
   verbose = TRUE,
+  inplace = TRUE,
+  sender_col = "source",
+  receiver_col = "target",
+  ligand_col = "ligand.complex",
+  receptor_col = "receptor.complex",
   ...
 )
 }
 \arguments{
+\item{sce}{SingleCellExperiment with `context_df_dict` - i.e. liana results
+per context (sample) stored at `sce@metadata$liana_res`}
+
 \item{context_df_dict}{Dictionary (named list) containing a dataframe for
 each context. The dataframe must contain columns containing sender (source) cells,
 receiver (target) cells, ligands, receptors, and communication scores, separately.
-Keys are context names and values are dataframes.}
-
-\item{sender_col}{Name of the column containing the sender cells in all context
-dataframes.}
-
-\item{receiver_col}{Name of the column containing the receiver cells in all context
-dataframes.}
-
-\item{ligand_col}{Name of the column containing the ligands in all context
-dataframes.}
-
-\item{receptor_col}{Name of the column containing the receptors in all context
-dataframes.}
+Keys are context names and values are dataframes. NULL by default.
+If not NULL will be used instead of `sce@metadata$liana_res`.}
 
 \item{score_col}{Name of the column containing the communication scores in
 all context dataframes.}
@@ -97,6 +91,21 @@ selection and no factorization.}
 \item{factors_only}{whether to return only the factors after factorization}
 
 \item{verbose}{verbosity logical}
+
+\item{inplace}{logical (TRUE by default) if liana results are to be saved
+to the SingleCellExperiment object (`sce@metadata$liana_res`)}
+
+\item{sender_col}{Name of the column containing the sender cells in all context
+dataframes.}
+
+\item{receiver_col}{Name of the column containing the receiver cells in all context
+dataframes.}
+
+\item{ligand_col}{Name of the column containing the ligands in all context
+dataframes.}
+
+\item{receptor_col}{Name of the column containing the receptors in all context
+dataframes.}
 
 \item{...}{Dictionary containing keyword arguments for the c2c.compute_tensor_factorization function.
 The function deals with `random_state` (seed) and `rank` internally.}

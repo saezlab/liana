@@ -2,11 +2,7 @@
 #'
 #' @param idents_col name of the cluster column
 #'
-#' @param sample_col name of the sample column
-#'
-#' @param condition_col name of the condition/group column
-#'
-#' @param key_sep separates the `condition_col` and' `sample_col` (| by default)
+#' @param sample_col name of the sample/context column
 #'
 #' @param verbose verbosity logical
 #'
@@ -27,47 +23,30 @@
 #'
 liana_bysample <- function(sce,
                            idents_col,
-                           condition_col,
                            sample_col,
-                           key_sep = "|",
-                           context_col=NULL,
                            verbose = TRUE,
                            inplace=TRUE,
                            ...){
 
-    if(!is.null(context_col)){
-        if(!is.factor(colData(sce)[[context_col]])){
+    if(!is.factor(colData(sce)[[sample_col]])){
             liana_message(
                 str_glue(
-                    "`{context_col}` was converted to a factor!"
+                    "`{sample_col}` was converted to a factor!"
                 ), output = "message",
                 verbose = verbose)
         }
-        sce[[context_col]] <- as.factor(sce[[context_col]])
-    } else{
+    sce[[sample_col]] <- as.factor(sce[[sample_col]])
 
-        context_col <- "context_col"
-        liana_message(
-            str_glue(
-                "`{context_col}` was created!"
-            ), output = "message",
-            verbose = verbose)
-
-        sce@colData[[context_col]] <- as.factor(paste(sce[[condition_col]],
-                                                      sce[[sample_col]],
-                                                      sep = key_sep)
-        )
-    }
 
     # Map over key col
-    liana_res <- map(levels(sce[[context_col]]),
-                     function(context){
+    liana_res <- map(levels(sce[[sample_col]]),
+                     function(sample){
 
-                         liana_message(str_glue("Current sample: {context}"),
+                         liana_message(str_glue("Current sample: {sample}"),
                                        output = "message",
                                        verbose = verbose)
                          # Subset to current sample
-                         sce_temp <- sce[, sce[[context_col]]==context]
+                         sce_temp <- sce[, sce[[sample_col]]==sample]
 
                          # Set cluster
                          colLabels(sce_temp) <- sce_temp[[idents_col]]
@@ -76,7 +55,7 @@ liana_bysample <- function(sce,
                          liana_wrap(sce=sce_temp, ...)
 
                      }) %>%
-        setNames(levels(sce[[context_col]]))
+        setNames(levels(sce[[sample_col]]))
 
     if(!inplace){
         return(liana_res)
@@ -84,6 +63,64 @@ liana_bysample <- function(sce,
         sce@metadata$liana_res <- liana_res
         return(sce)
     }
+}
+
+#' Join sample descriptor column from SCE to another table
+#' @param sce SingleCellExperiment
+#' @param right (df) to join to colData per sample
+#' @param sample_col unique identifier column from colData
+#' @param group_col sample_col descriptor column
+.join_meta <- function(sce, right, sample_col, group_col){
+
+    meta <- colData(sce) %>%
+        as_tibble() %>%
+        dplyr::select(!!sample_col, !!group_col) %>%
+        distinct() %>%
+        mutate( {{ group_col }} := as.factor(.data[[group_col]]))
+
+    left_join(right, meta, by=sample_col)
+}
+
+
+#' Helper function to assign weights
+#' @param lrs ligand_receptor tibble
+#' @param resource resource
+#' @param entity name of the entity
+#'
+#' @export
+assign_lr_weights <- function(lrs,
+                              resource,
+                              entity="ligand"){
+
+    entity_weight <- str_glue("{entity}_weight")
+    entity_source <- str_glue("{entity}_source")
+
+    entity_df <- lrs %>%
+        pull(entity) %>%
+        enframe(value="entity") %>%
+        select(entity) %>%
+        distinct() %>%
+        liana::decomplexify("entity")
+
+    entity_weights <- entity_df %>%
+        left_join(resource, by = c("entity"="target")) %>%
+        group_by(source, entity_complex) %>%
+        # count number of subunits
+        mutate(n_found = n()) %>%
+        # count number of expected subunits x_y = 1 (+ 1)
+        mutate(n_expected = str_count(entity_complex, "_") + 1) %>%
+        filter(n_found==n_expected) %>%
+        # only keep subunits which are sign-consistent
+        summarise(weight = .sign_coh_mean(weight), .groups = "keep") %>%
+        na.omit() %>%
+        ungroup() %>%
+        select({{ entity }} := entity_complex,
+               {{ entity_source }} := source,
+               {{ entity_weight }} := weight
+        )
+
+
+    return(entity_weights)
 }
 
 

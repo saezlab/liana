@@ -4,11 +4,16 @@
 \alias{plot_lr_heatmap}
 \title{Function to plot a UMAP of context loadings}
 \usage{
-plot_lr_heatmap(factors, lr_sep = "^", loadings_thresh = 0.25, ...)
+plot_lr_heatmap(sce, lr_sep = "^", n = 5, ...)
 }
 \arguments{
-\item{factors}{factors output from tensor-cell2cel formatted with
-`format_c2c_factors`}
+\item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
+
+\item{n}{Number of rows to return for \code{top_n()}, fraction of rows to
+return for \code{top_frac()}. If \code{n} is positive, selects the top rows.
+If negative, selects the bottom rows.
+If \code{x} is grouped, this is the number (or fraction) of rows per group.
+Will include more rows if there are ties.}
 
 \item{...}{
   Arguments passed on to \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}}
