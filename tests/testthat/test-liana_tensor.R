@@ -5,6 +5,7 @@ context_df_dict <- readRDS(file.path(liana_path, "testdata",
 
 
 test_that("Test tensor wrapper", {
+    skip_on_ci()
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "decomp.RDS"))
     res1 <- liana_tensor_c2c(context_df_dict = context_df_dict,
