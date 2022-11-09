@@ -5,7 +5,7 @@ context_df_dict <- readRDS(file.path(liana_path, "testdata",
 
 
 test_that("Test tensor wrapper", {
-    skip_on_ci()
+    # skip_on_ci()
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "decomp.RDS"))
     res1 <- liana_tensor_c2c(context_df_dict = context_df_dict,
@@ -15,9 +15,12 @@ test_that("Test tensor wrapper", {
                              inplace = FALSE
                              )
 
-    # fix random bs exception
-    exp1$interactions$lr <- as.character(exp1$interactions$lr)
-    res1$interactions$lr <- as.character(res1$interactions$lr)
+    # fix random bs exceptions
+    exp1 <- map(exp1, ~.x %>% mutate(across(where(is.factor), ~as.character(.x))))
+    res1 <- map(res1, ~.x %>% mutate(across(where(is.factor), ~as.character(.x))))
 
-    expect_true(all(map2_lgl(res1, exp1, ~all_equal(.x, .y))))
+    expect_true(all_equal(res1$contexts, exp1$contexts))
+    expect_true(all_equal(res1$interactions, exp1$interactions))
+    expect_true(all_equal(res1$senders, exp1$senders))
+    expect_true(all_equal(res1$receivers, exp1$receivers))
 })
