@@ -208,7 +208,7 @@ p <- chord_freq(liana_trunc,
 ```
 
 
-For more advanced visualization options, we kindly refer the user to [SCPubr](https://enblacar.github.io/SCpubr-book/ligand-receptor-analysis.html).
+For more advanced visualization options, we kindly refer the user to [SCPubr](https://enblacar.github.io/SCpubr-book/21-LigandReceptorPlot.html).
 
 
 ## Run any method of choice.

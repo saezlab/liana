@@ -9,7 +9,7 @@ automatically set-up a conda env for liana.
 - The intracellular OmniPath vignette was removed. An updated and more user-friendly one 
 will be provided in next updates. In the meantime, the old one can still be downloaded
 from [drive](https://drive.google.com/file/d/1lqxHhmz0Jq7eIuQAe0SxvInGgo2U-RlC/view?usp=share_link)
-
+- Source and Target titles are now plotted by the `liana_dotplot`
 
 # LIANA 0.1.7 (13.10.22)
 ## Changes
