@@ -3,7 +3,6 @@ liana_path <- system.file(package = "liana")
 context_df_dict <- readRDS(file.path(liana_path, "testdata",
                                      "output", "context_df_test.RDS"))
 
-
 test_that("Test tensor wrapper", {
     # skip_on_ci()
     exp1 <- readRDS(file.path(liana_path, "testdata",
