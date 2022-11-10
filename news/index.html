@@ -85,7 +85,9 @@
 <h2 class="page-header" data-toc-text="0.1.8" id="liana-018-081122">LIANA 0.1.8 (08.11.22)<a class="anchor" aria-label="anchor" href="#liana-018-081122"></a></h2>
 <div class="section level3">
 <h3 id="new-implementations-0-1-8">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-8"></a></h3>
-<ul><li>Untargeted between-condition (context/sample) decomposition of cell-cell communication latent patterns /w <code>tensor_cell2cell</code>. Makes use of <code>basilisk</code> to automatically set-up a conda env for liana.</li></ul></div>
+<ul><li>Untargeted between-condition (context/sample) decomposition of cell-cell communication latent patterns /w <code>tensor_cell2cell</code>. Makes use of <code>basilisk</code> to automatically set-up a conda env for liana.</li>
+<li>added <code>min_cells</code> parameter to <code>liana_wrap</code>, to exclude any cell identity which does not pass a minimum cells threshold.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="changes-0-1-8">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-8"></a></h3>
 <ul><li>Mouse Consensus resource is now provided by default.</li>
@@ -93,6 +95,7 @@
 </li>
 <li>Source and Target titles are now plotted by the <code>liana_dotplot</code>
 </li>
+<li>added explicit error if <code>idents_col</code> was not found in metadata/colData</li>
 </ul></div>
 </div>
     <div class="section level2">
