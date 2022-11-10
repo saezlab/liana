@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -32,13 +32,13 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/liana_cc2tensor.html">Context Factorisation with tensor-cell2cell</a>
+    </li>
+    <li>
       <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
-    </li>
-    <li>
-      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
     </li>
     <li>
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
@@ -89,6 +89,10 @@
         </td>
         <td><p>Function to Aggregate CCC Method Results</p></td>
       </tr><tr><td>
+          <p><code><a href="liana_bysample.html">liana_bysample()</a></code> </p>
+        </td>
+        <td><p>Wrapper around `liana_wrap` to run liana for each sample.</p></td>
+      </tr><tr><td>
           <p><code><a href="liana_call.html">liana_call()</a></code> </p>
         </td>
         <td><p>Wrapper Function to obtain scores via liana_pipe</p></td>
@@ -120,6 +124,10 @@
           <p><code><a href="liana_scores.html">liana_scores()</a></code> </p>
         </td>
         <td><p>Function to obtain different scoring schemes</p></td>
+      </tr><tr><td>
+          <p><code><a href="liana_tensor_c2c.html">liana_tensor_c2c()</a></code> </p>
+        </td>
+        <td><p>Wrapper function to run `cell2cell_tensor` with LIANA output.</p></td>
       </tr><tr><td>
           <p><code><a href="liana_wrap.html">liana_wrap()</a></code> </p>
         </td>
@@ -157,6 +165,10 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="get_c2c_factors.html">get_c2c_factors()</a></code> </p>
+        </td>
+        <td><p>Returns tensor cell2cell results</p></td>
+      </tr><tr><td>
           <p><code><a href="get_connectome.html">get_connectome()</a></code> </p>
         </td>
         <td><p>Function to obtain connectome-like weights</p></td>
@@ -242,6 +254,39 @@ one ligand-receptor resource.</p></td>
         </td>
         <td><p>Helper Function to Handle resource choices</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="show-or-select-functions">Show_ or Select_ Functions <a href="#show-or-select-functions" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions related to tensor decomposition with cell2cell</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="liana_tensor_c2c.html">liana_tensor_c2c()</a></code> </p>
+        </td>
+        <td><p>Wrapper function to run `cell2cell_tensor` with LIANA output.</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_c2c_factors.html">get_c2c_factors()</a></code> </p>
+        </td>
+        <td><p>Returns tensor cell2cell results</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_c2c_overview.html">plot_c2c_overview()</a></code> </p>
+        </td>
+        <td><p>Function to plot an Overview of tensor-c2c results</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_context_boxplot.html">plot_context_boxplot()</a></code> </p>
+        </td>
+        <td><p>Generate boxplots with significance</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_context_heat.html">plot_context_heat()</a></code> </p>
+        </td>
+        <td><p>Plot a Heatmap of context loadings</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_lr_heatmap.html">plot_lr_heatmap()</a></code> </p>
+        </td>
+        <td><p>Function to plot a UMAP of context loadings</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_c2c_cells.html">plot_c2c_cells()</a></code> </p>
+        </td>
+        <td><p>Plot the product of loadings between the source and target loadings
+within a factor</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="others">Others <a href="#others" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Other potentially relevant functions</p>
         </th>
@@ -277,6 +322,18 @@ one ligand-receptor resource.</p></td>
           <p><code><a href="rank_method.html">rank_method()</a></code> </p>
         </td>
         <td><p>Helper function to rank each method</p></td>
+      </tr><tr><td>
+          <p><code><a href="filter_nonabundant_celltypes.html">filter_nonabundant_celltypes()</a></code> </p>
+        </td>
+        <td><p>Filter nun-abundant cell types</p></td>
+      </tr><tr><td>
+          <p><code><a href="generate_lr_geneset.html">generate_lr_geneset()</a></code> </p>
+        </td>
+        <td><p>Generate a geneset resource for each LR</p></td>
+      </tr><tr><td>
+          <p><code><a href="assign_lr_weights.html">assign_lr_weights()</a></code> </p>
+        </td>
+        <td><p>Helper function to assign weights</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -10,13 +10,13 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/liana_cc2tensor.html</loc>
+  </url>
+  <url>
     <loc>/articles/liana_custom_op.html</loc>
   </url>
   <url>
     <loc>/articles/liana_devel.html</loc>
-  </url>
-  <url>
-    <loc>/articles/liana_intracell.html</loc>
   </url>
   <url>
     <loc>/articles/liana_nichenet.html</loc>
@@ -53,6 +53,12 @@
   </url>
   <url>
     <loc>/reference/assign_ligrecs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/assign_lr_weights.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calculate_gini.html</loc>
   </url>
   <url>
     <loc>/reference/call_cellchat.html</loc>
@@ -118,13 +124,25 @@
     <loc>/reference/dot-sp_costrain.html</loc>
   </url>
   <url>
+    <loc>/reference/filter_nonabundant_celltypes.html</loc>
+  </url>
+  <url>
     <loc>/reference/generate_homologs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/generate_lr_geneset.html</loc>
   </url>
   <url>
     <loc>/reference/generate_orthologs.html</loc>
   </url>
   <url>
     <loc>/reference/genesymbol_to_uniprot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_abundance_summary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_c2c_factors.html</loc>
   </url>
   <url>
     <loc>/reference/get_cellcall.html</loc>
@@ -178,6 +196,9 @@
     <loc>/reference/liana_aggregate.html</loc>
   </url>
   <url>
+    <loc>/reference/liana_bysample.html</loc>
+  </url>
+  <url>
     <loc>/reference/liana_call.html</loc>
   </url>
   <url>
@@ -202,6 +223,9 @@
     <loc>/reference/liana_scores.html</loc>
   </url>
   <url>
+    <loc>/reference/liana_tensor_c2c.html</loc>
+  </url>
+  <url>
     <loc>/reference/liana_wrap.html</loc>
   </url>
   <url>
@@ -221,6 +245,24 @@
   </url>
   <url>
     <loc>/reference/omnipath_partners.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_abundance_summary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_c2c_cells.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_c2c_overview.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_context_boxplot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_context_heat.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_lr_heatmap.html</loc>
   </url>
   <url>
     <loc>/reference/rank_method.html</loc>

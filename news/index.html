@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -32,13 +32,13 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/liana_cc2tensor.html">Context Factorisation with tensor-cell2cell</a>
+    </li>
+    <li>
       <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
-    </li>
-    <li>
-      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
     </li>
     <li>
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
@@ -81,6 +81,20 @@
       <small>Source: <a href="https://github.com/saezlab/liana/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.1.8" id="liana-018-081122">LIANA 0.1.8 (08.11.22)<a class="anchor" aria-label="anchor" href="#liana-018-081122"></a></h2>
+<div class="section level3">
+<h3 id="new-implementations-0-1-8">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-8"></a></h3>
+<ul><li>Untargeted between-condition (context/sample) decomposition of cell-cell communication latent patterns /w <code>tensor_cell2cell</code>. Makes use of <code>basilisk</code> to automatically set-up a conda env for liana.</li></ul></div>
+<div class="section level3">
+<h3 id="changes-0-1-8">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-8"></a></h3>
+<ul><li>Mouse Consensus resource is now provided by default.</li>
+<li>The intracellular OmniPath vignette was removed. An updated and more user-friendly one will be provided in next updates. In the meantime, the old one can still be downloaded from <a href="https://drive.google.com/file/d/1lqxHhmz0Jq7eIuQAe0SxvInGgo2U-RlC/view?usp=share_link" class="external-link">drive</a>
+</li>
+<li>Source and Target titles are now plotted by the <code>liana_dotplot</code>
+</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.7" id="liana-017-131022">LIANA 0.1.7 (13.10.22)<a class="anchor" aria-label="anchor" href="#liana-017-131022"></a></h2>
 <div class="section level3">

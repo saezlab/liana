@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">liana</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -50,13 +50,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/liana_cc2tensor.html">Context Factorisation with tensor-cell2cell</a>
+    </li>
+    <li>
       <a href="../articles/liana_custom_op.html">LIANA Custom literature and database knowledge from OmniPath</a>
     </li>
     <li>
       <a href="../articles/liana_devel.html">LIANA++ for Benchmarks and Developers</a>
-    </li>
-    <li>
-      <a href="../articles/liana_intracell.html">LIANA with Intracellular Omnipath</a>
     </li>
     <li>
       <a href="../articles/liana_nichenet.html">LIANA - NicheNet</a>
@@ -108,7 +108,7 @@
       Saezlab, Heidelberg University<br><a class="author_email" href="mailto:#"></a><a href="mailto:daniel.dimitrov@uni-heidelberg.de" class="email">daniel.dimitrov@uni-heidelberg.de</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2022-10-17</h4>
+            <h4 data-toc-skip class="date">2022-11-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_ortho.Rmd" class="external-link"><code>vignettes/liana_ortho.Rmd</code></a></small>
       <div class="hidden name"><code>liana_ortho.Rmd</code></div>
@@ -120,6 +120,7 @@
 <p>LIANA’s OmniPath resource was largely compiled from CCC databases with a human focus, as such LIANA works with human gene symbols by default.</p>
 <p>Nevertheless, one could run LIANA with any other organism, provided a dictionary is available to map human genesymbols to those of species X.</p>
 <p>In this vignette, we provide an example how this could be achieved using the <a href="https://www.ncbi.nlm.nih.gov/homologene" class="external-link"><code>HomoloGene</code></a> database via OmnipathR with LIANA’s <code>generate_homologs</code> function.</p>
+<p>Note that LIANA provides a mouse Consensus (MouseConsensus) resource, using the homology-conversion approach described here.</p>
 <div class="section level2">
 <h2 id="loading-prerequisites">Loading prerequisites<a class="anchor" aria-label="anchor" href="#loading-prerequisites"></a>
 </h2>
@@ -136,8 +137,8 @@
 <span><span class="co"># Convert testdata to putative mouse symbols</span></span>
 <span><span class="co"># Note that we explicitly provide this tutorial to avoid any such conversions when working with real data</span></span>
 <span><span class="co"># We simply do this here to provide an example</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>It is also recommended to ensure that you have the latest OmnipathR version installed:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saezlab/OmnipathR"</span><span class="op">)</span></span></code></pre></div>
@@ -154,7 +155,7 @@
 <span><span class="co">##    ncbi_taxid name                                latin                  </span></span>
 <span><span class="co">##         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">6</span>239 Caenorhabditis elegans (PRJNA13758) Caenorhabditis elegans </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">9</span>031 Chicken (Red Jungle fowl)           Gallus gallus          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">9</span>031 Chicken                             Gallus gallus          </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">9</span>598 Chimpanzee                          Pan troglodytes        </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">9</span>913 Cow                                 Bos taurus             </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">7</span>227 D. melanogaster                     Drosophila melanogaster</span></span>
@@ -191,7 +192,7 @@
 <span><span class="co"># Plot example</span></span>
 <span><span class="va">liana_res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">source</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">target</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">target</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/liana_dotplot.html">liana_dotplot</a></span><span class="op">(</span>source_groups <span class="op">=</span> <span class="st">"B"</span>,</span>
 <span>                  target_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK"</span>, <span class="st">"CD8 T"</span><span class="op">)</span>,</span>
 <span>                  ntop <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></code></pre></div>
