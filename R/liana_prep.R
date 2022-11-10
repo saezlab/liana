@@ -102,7 +102,7 @@ liana_prep.Seurat <- function(sce,
                 "Cell identities with less ",
                 "than {min_cells} cells: {remove_labels} were removed!"
                 ),
-            output="warning",
+            output="message",
             verbose=verbose
         )
         sce <- sce[,!colLabels(sce) %in% remove_labels]
