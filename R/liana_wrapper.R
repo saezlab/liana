@@ -12,6 +12,8 @@
 #'
 #' @param external_resource external resource in OmniPath tibble format
 #'
+#' @param min_cells minimum cell per cell identity to be considered for analysis
+#'
 #' @param verbose logical whether to output messages and warnings (`TRUE` by default)
 #'
 #' @param assay assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.
@@ -61,6 +63,7 @@ liana_wrap <- function(sce,
                        resource = c('Consensus'),
                        idents_col = NULL,
                        external_resource,
+                       min_cells = 5,
                        verbose = TRUE,
                        assay = NULL,
                        .simplify = TRUE,
@@ -72,6 +75,7 @@ liana_wrap <- function(sce,
   sce <- liana_prep(sce,
                     idents_col = idents_col,
                     assay = assay,
+                    min_cells = min_cells,
                     verbose = verbose)
   # If base is not passed use default base of Seurat or SingleCellExperiment
   base %<>% `%||%` (sce@int_metadata$base)

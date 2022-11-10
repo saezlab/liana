@@ -3,6 +3,8 @@
 - Untargeted between-condition (context/sample) decomposition of cell-cell 
 communication latent patterns /w `tensor_cell2cell`. Makes use of `basilisk` to
 automatically set-up a conda env for liana.
+- added `min_cells` parameter to `liana_wrap`, to exclude any cell identity
+which does not pass a minimum cells threshold.
 
 ## Changes
 - Mouse Consensus resource is now provided by default.
@@ -10,6 +12,7 @@ automatically set-up a conda env for liana.
 will be provided in next updates. In the meantime, the old one can still be downloaded
 from [drive](https://drive.google.com/file/d/1lqxHhmz0Jq7eIuQAe0SxvInGgo2U-RlC/view?usp=share_link)
 - Source and Target titles are now plotted by the `liana_dotplot`
+- added explicit error if `idents_col` was not found in metadata/colData
 
 # LIANA 0.1.7 (13.10.22)
 ## Changes

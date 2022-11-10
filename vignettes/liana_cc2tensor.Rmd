@@ -377,7 +377,7 @@ res %>% # sig/isnig flag
 
 ##### LRs driving enrichment of JAK-STAT in Factor.4
 
-```{r, echo=FALSE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7}
+```{r, message=FALSE, warning=FALSE, fig.width=12, fig.height=7}
 # Plot LRs associated with Estrogen
 lrs <-  factors$interactions %>%
   left_join(progeny_lr, by="lr") %>%

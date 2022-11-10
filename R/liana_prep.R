@@ -13,6 +13,7 @@ liana_prep <- function (sce, ...) {
 liana_prep.SingleCellExperiment <- function(sce,
                                             idents_col = NULL,
                                             verbose = TRUE,
+                                            min_cells = 0,
                                             ...){
 
     if(!all(c("counts", "logcounts") %in% SummarizedExperiment::assayNames(sce))){
@@ -31,7 +32,7 @@ liana_prep.SingleCellExperiment <- function(sce,
     SingleCellExperiment::colLabels(sce) <- idents
     sce@int_metadata$base <- 2 # save base for logFC conv
 
-    return(.filter_sce(sce, verbose))
+    return(.filter_sce(sce, min_cells, verbose))
 }
 
 #' @export
@@ -39,6 +40,7 @@ liana_prep.Seurat <- function(sce,
                               idents_col = NULL,
                               verbose = TRUE,
                               assay = NULL,
+                              min_cells = 0,
                               ...){
 
     assay %<>% `%||%`(SeuratObject::DefaultAssay(sce))
@@ -68,7 +70,7 @@ liana_prep.Seurat <- function(sce,
     SingleCellExperiment::colLabels(sce) <- idents
     sce@int_metadata$base <- exp(1) # save base for logFC conv
 
-    return(.filter_sce(sce, verbose))
+    return(.filter_sce(sce, min_cells, verbose))
 }
 
 
@@ -80,10 +82,31 @@ liana_prep.Seurat <- function(sce,
 #' @return SingleCellExperiment object
 #'
 #' @noRd
-.filter_sce <- function(sce, verbose){
+.filter_sce <- function(sce, min_cells, verbose){
     # EXTEND QUALITY CONTROL STEPS
     if(any(is.na(colLabels(sce)))){
         stop("NAs found in Idents/Labels!")
+    }
+
+    # Remove any cell types with less than X cells
+    remove_labels <- colData(sce) %>%
+        as_tibble() %>%
+        mutate(label = as.character(label)) %>%
+        group_by(label) %>%
+        summarise(remove=n() < min_cells) %>%
+        filter(remove) %>%
+        pull(label)
+    if(length(remove_labels) > 0){
+        liana_message(
+            stringr::str_glue(
+                "Cell identities with less ",
+                "than {min_cells} cells: {remove_labels} were removed!"
+                ),
+            output="warning",
+            verbose=verbose
+        )
+        sce <- sce[,!colLabels(sce) %in% remove_labels]
+        colLabels(sce) <- as.factor(as.character(colLabels(sce)))
     }
 
     nonzero_genes <- rowSums(counts(sce)) > 0
@@ -146,6 +169,9 @@ liana_prep.Seurat <- function(sce,
 
     if(!is_null(idents_col)){
         # If idents_col is not null set it that one
+        if(!idents_col %in% colnames(metadata)){
+            stop(str_glue("`{idents_col}` was not found!"))
+        }
         idents <- metadata[[idents_col]]
         liana_message(str_glue("Running LIANA with `{idents_col}` as labels!"),
                       verbose = verbose)

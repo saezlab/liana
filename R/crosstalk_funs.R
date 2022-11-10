@@ -143,7 +143,9 @@ compute_nst_from_matrix <- function(mat,
 
   # add noise
   is_zero <- rowSums(mat) == 0
-  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)), .gen_noise, seed=seed))
+  mat[is_zero,] <- do.call(rbind, lapply(rep(n_cols, sum(is_zero)),
+                                         .gen_noise,
+                                         seed = seed))
 
   # filter ligand-receptor pairs
   keep <- pmap(ligand_receptor_df,
