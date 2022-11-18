@@ -4,6 +4,8 @@
 
 # LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/ecrxuy5f6ccdvl0/liana_small.png?raw=1" align="right">
     
+LIANA enables the use of any LR method with any resource, and their consensus. A faster and memory efficient Python implementation is available [here](https://github.com/saezlab/liana-py).
+    
 ## Install LIANA  
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
