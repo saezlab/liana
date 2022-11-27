@@ -27,11 +27,11 @@ plot_c2c_cells(sce, factor_of_int, ...)
     \item{\code{row_title}}{Title on the row.}
     \item{\code{row_title_side}}{Will the title be put on the left or right of the heatmap?}
     \item{\code{row_title_gp}}{Graphic parameters for row title.}
-    \item{\code{row_title_rot}}{Rotation of row title. Only 0, 90, 270 are allowed to set.}
+    \item{\code{row_title_rot}}{Rotation of row title.}
     \item{\code{column_title}}{Title on the column.}
     \item{\code{column_title_side}}{Will the title be put on the top or bottom of the heatmap?}
     \item{\code{column_title_gp}}{Graphic parameters for column title.}
-    \item{\code{column_title_rot}}{Rotation of column titles. Only 0, 90, 270 are allowed to set.}
+    \item{\code{column_title_rot}}{Rotation of column titles.}
     \item{\code{cluster_rows}}{If the value is a logical, it controls whether to make cluster on rows. The value can also be a \code{\link[stats]{hclust}} or a \code{\link[stats]{dendrogram}} which already contains clustering. Check \url{https://jokergoo.github.io/ComplexHeatmap-reference/book/a-single-heatmap.html#clustering} .}
     \item{\code{cluster_row_slices}}{If rows are split into slices, whether perform clustering on the slice means?}
     \item{\code{clustering_distance_rows}}{It can be a pre-defined character which is in  ("euclidean", "maximum", "manhattan", "canberra", "binary",  "minkowski", "pearson", "spearman", "kendall"). It can also be a function. If the function has one argument, the input argument should be a matrix and  the returned value should be a \code{\link[stats]{dist}} object. If the function has two arguments, the input arguments are two vectors and the function calculates distance between these two vectors.}
