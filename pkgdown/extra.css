@@ -12,7 +12,11 @@ body {
 }
 
 .bg-primary {
-    background-color: #285FA9!important;
+    background-color: #77B170!important;
+}
+
+.navbar-brand {
+    font-size: 166%!important;
 }
 
 nav[data-toggle="toc"] .nav > li > a {
@@ -134,12 +138,12 @@ code span.ss, code span.ss a:any-link {
  }/* Warning */
 
  .nav-text.text-muted {
-     color: #ffffff!important;
+     color: #000000!important;
  }
 
  .nav-item.active > .nav-link {
      background-color: #e9ecef!important;
-     color: #285FA9!important;
+     color: #538C4D!important;
  }
 
  .navbar-dark input[type="search"] {

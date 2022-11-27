@@ -22,7 +22,7 @@ template:
   bootstrap: 5
   bootswatch: cosmo
   bslib:
-    primary: "#285FA9"
+    primary: "#77B170"
 
 reference:
   - title: LIANA
