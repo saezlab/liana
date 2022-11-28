@@ -10,6 +10,7 @@ liana_wrap(
   resource = c("Consensus"),
   idents_col = NULL,
   external_resource,
+  min_cells = 5,
   verbose = TRUE,
   assay = NULL,
   .simplify = TRUE,
@@ -30,6 +31,8 @@ or `custom` to run liana_wrap with an appropriately formatted custom resource, p
 Idents or colLabels from the seurat_object or SCE, respectively.}
 
 \item{external_resource}{external resource in OmniPath tibble format}
+
+\item{min_cells}{minimum cell per cell identity to be considered for analysis}
 
 \item{verbose}{logical whether to output messages and warnings (`TRUE` by default)}
 

@@ -31,6 +31,7 @@ to the SingleCellExperiment object (`sce@metadata$liana_res`)}
     \item{\code{resource}}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
     \item{\code{external_resource}}{external resource in OmniPath tibble format}
+    \item{\code{min_cells}}{minimum cell per cell identity to be considered for analysis}
     \item{\code{assay}}{assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.}
     \item{\code{.simplify}}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with
