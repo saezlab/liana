@@ -14,6 +14,13 @@
 #'
 #' @param min_cells minimum cell per cell identity to be considered for analysis
 #'
+#' @param return_all whether to return all possible interactions. Any
+#' interaction with `expr_prop` below the specific threshold will be
+#' assigned to the *worst* possible score in the results. For example, p-values
+#' from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
+#' will be assigned to min(lr_means). Note that this might results in slower
+#' computation speed, as all interactions scores need to be first calculated.
+#'
 #' @param verbose logical whether to output messages and warnings (`TRUE` by default)
 #'
 #' @param assay assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.
@@ -64,6 +71,7 @@ liana_wrap <- function(sce,
                        idents_col = NULL,
                        external_resource,
                        min_cells = 5,
+                       return_all = FALSE,
                        verbose = TRUE,
                        assay = NULL,
                        .simplify = TRUE,
@@ -133,7 +141,8 @@ liana_wrap <- function(sce,
                args <- append(
                  list("sce" = sce,
                       "op_resource" = reso),
-                 liana_defaults(...)[[method_name]]
+                 liana_defaults(...)[[method_name]],
+                 return_all = return_all
                  )
                rlang::invoke(.method, args)
 
@@ -143,7 +152,8 @@ liana_wrap <- function(sce,
                args <- append(
                  list(sce = sce,
                       "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
-                 liana_defaults(...)[[method_name]]
+                 liana_defaults(...)[[method_name]],
+                 return_all = return_all
                )
                rlang::invoke(.method, args)
 
@@ -151,6 +161,7 @@ liana_wrap <- function(sce,
                # get lr_res for this specific resource
                lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
                                           method_name,
+                                          return_all=return_all,
                                           ...)
 
                # permutation-based approaches
@@ -170,9 +181,11 @@ liana_wrap <- function(sce,
                    list(
                      list(lr_res = lr_res,
                           perm_means = perm_means,
-                          verbose = verbose),
+                          verbose = verbose,
+                          return_all = return_all),
                      liana_defaults(...)[[method_name]],
-                     liana_defaults(...)[["liana_call"]]
+                     liana_defaults(...)[["liana_call"]],
+                     return_all = return_all
                      )
                    ), c) %>%
                  flatten
@@ -182,6 +195,7 @@ liana_wrap <- function(sce,
              } else if(method_name == "cytotalk"){
                lr_res <- .filt_liana_pipe(lr_results[[reso_name]],
                                           method_name,
+                                          return_all=return_all,
                                           ...)
 
                args <- pmap( # append multiple lists
@@ -189,7 +203,8 @@ liana_wrap <- function(sce,
                    list(
                      list(
                        lr_res = lr_res,
-                       sce = sce
+                       sce = sce,
+                       return_all = return_all
                      ),
                      liana_defaults(...)[[method_name]],
                      liana_defaults(...)[["liana_call"]]
@@ -206,7 +221,9 @@ liana_wrap <- function(sce,
                   "sce" = sce,
                   lr_res = .filt_liana_pipe(lr_results[[reso_name]],
                                             method_name,
-                                            ...)
+                                            return_all=return_all,
+                                            ...),
+                  return_all = return_all
                   ),
                 liana_defaults(...)[["liana_call"]]
                 )
@@ -343,6 +360,7 @@ show_resources <- function(){
 #' @noRd
 .filt_liana_pipe <- function(liana_res,
                              method,
+                             return_all=FALSE,
                              ...){
 
   # Convert prop_filt logical to 0 or 1
@@ -361,13 +379,18 @@ show_resources <- function(){
       summarize(prop_min = min(ligand.prop, receptor.prop)) %>%
       filter(prop_min < expr_prop)
 
-    liana_res %>%
-      anti_join(non_expressed, by=c("ligand.complex", "receptor.complex",
-                                    "source", "target"))
+    if(!return_all){
+      liana_res %>%
+        anti_join(non_expressed, by=c("ligand.complex", "receptor.complex",
+                                      "source", "target"))
+    } else if(return_all){
+      liana_res
+    }
+
   } else if(expr_prop == 0){
     liana_res
   } else{ # shouldn't happen (sanity check)
-    stop("Expression Proportion is Negative")
+    stop("Expression Proportion is not a positive number")
   }
 
 }

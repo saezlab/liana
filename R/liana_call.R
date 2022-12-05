@@ -193,7 +193,8 @@ liana_scores <- function(score_object,
                ligand.complex, ligand,
                receptor.complex, receptor,
                ends_with("prop"),
-               !!all_columns)
+               !!all_columns) %>%
+        ungroup()
 
     args <-
         append(
@@ -205,10 +206,20 @@ liana_scores <- function(score_object,
     # Get expr prop from defaults/kwargs
     expr_prop <- list(...)[["expr_prop"]]
 
-    exec(score_object@score_fun, !!!args) %>%
+    # TODO Need to change this
+    # Here, I get the newly assigned columns and according to those
+    # I set the mins and max...
+    # Would require to rework the classes as in Python
+    old_columns <- colnames(lr_res)
+    lr_res <- exec(score_object@score_fun, !!!args)
+    new_columns <- setdiff(colnames(lr_res), old_columns)
+
+    lr_res %>%
         ungroup() %>%
-        select(everything(), ends_with("prop")) %>%
-        filter(receptor.prop >= expr_prop & ligand.prop >= expr_prop) %>%
+        .assign_to_filter(lr_res=.,
+                          columns = new_columns,
+                          expr_prop=expr_prop,
+                          return_all = args$return_all) %>%
         # ensure that there are no duplicates (edge cases where multiple subunits
         # have the same expr. - note that we also include method score to ensure
         # that no information is being lost + there are no issues)
@@ -216,5 +227,39 @@ liana_scores <- function(score_object,
                       "ligand.complex", "receptor.complex",
                       score_object@method_score), .keep_all = TRUE)
 }
+
+
+
+.assign_to_filter <- function(lr_res,
+                              columns,
+                              expr_prop,
+                              return_all){
+    if(!return_all){
+        return(lr_res %>%
+                   filter(receptor.prop >= expr_prop &
+                              ligand.prop >= expr_prop)
+               )
+    } else{
+        lr_res <- lr_res %>%
+            mutate(to_filter = (ligand.prop < expr_prop) | (receptor.prop < expr_prop))
+
+        map(columns,function(col){
+
+            # deal with descending
+            if(col %in% c("pvalue", "pval")){
+                fun <- "max"
+            } else{ # ascending
+                fun <- "min"
+            }
+
+            set_to <- exec(.fn=fun, lr_res[[col]]) # TODO change to min or max
+            lr_res <<- lr_res %>%
+                mutate({{ col }} := ifelse(!to_filter, lr_res[[col]], set_to))
+        })
+
+        return(lr_res)
+    }
+}
+
 
 
