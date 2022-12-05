@@ -37,9 +37,8 @@ and `call_connectome`}
 (logcounts by default), available options are: "counts" and "logcounts"}
 
 \item{expr_prop}{minimum proportion of gene expression per cell type (0.1 by default).
-This is further applied at a method-specific level - it is not applied to
- Connectome and Cytotalk, as these methods calculate/normalize the score (or
- statistics used in their scores) across all cell types or cell type pairs.}
+Note that when working with complexes, the minimum subunit proportion will
+be used for filtering.}
 
 \item{seed}{random seed integer}
 

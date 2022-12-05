@@ -15,7 +15,7 @@ test_that("Test liana wrapper", {
 })
 
 # Test with Default ----
-test_that("Test liana wrapper", {
+test_that("Test liana wrapper with default resource", {
     if(!exists("test_external")){
         skip("Not testing externals")
     } else{
@@ -29,6 +29,22 @@ test_that("Test liana wrapper", {
                        resource = "Default")
 
     expect_equal(res2, exp2)
+})
+
+
+test_that("Test liana wrapper return all", {
+    res3 <- liana_wrap(seurat_object,
+                       method = c('logfc','natmi', 'connectome'),
+                       resource = c('Consensus'),
+                       return_all=TRUE)
+    row_number <- res3 %>% map_dbl(function(x) nrow(x)) %>% mean()
+    expect_equal(4770, row_number)
+
+    row_number_filt <- res3 %>% map_dbl(function(x)
+        x %>% filter(!to_filter) %>%
+        nrow()) %>%
+        mean()
+    expect_equal(735, row_number_filt)
 })
 
 

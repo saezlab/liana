@@ -31,6 +31,13 @@ to the SingleCellExperiment object (`sce@metadata$liana_res`)}
     \item{\code{resource}}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
     \item{\code{external_resource}}{external resource in OmniPath tibble format}
+    \item{\code{min_cells}}{minimum cell per cell identity to be considered for analysis}
+    \item{\code{return_all}}{whether to return all possible interactions. Any
+interaction with `expr_prop` below the specific threshold will be
+assigned to the *worst* possible score in the results. For example, p-values
+from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
+will be assigned to min(lr_means). Note that this might results in slower
+computation speed, as all interactions scores need to be first calculated.}
     \item{\code{assay}}{assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.}
     \item{\code{.simplify}}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with

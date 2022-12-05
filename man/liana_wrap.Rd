@@ -10,6 +10,8 @@ liana_wrap(
   resource = c("Consensus"),
   idents_col = NULL,
   external_resource,
+  min_cells = 5,
+  return_all = FALSE,
   verbose = TRUE,
   assay = NULL,
   .simplify = TRUE,
@@ -30,6 +32,15 @@ or `custom` to run liana_wrap with an appropriately formatted custom resource, p
 Idents or colLabels from the seurat_object or SCE, respectively.}
 
 \item{external_resource}{external resource in OmniPath tibble format}
+
+\item{min_cells}{minimum cell per cell identity to be considered for analysis}
+
+\item{return_all}{whether to return all possible interactions. Any
+interaction with `expr_prop` below the specific threshold will be
+assigned to the *worst* possible score in the results. For example, p-values
+from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
+will be assigned to min(lr_means). Note that this might results in slower
+computation speed, as all interactions scores need to be first calculated.}
 
 \item{verbose}{logical whether to output messages and warnings (`TRUE` by default)}
 
@@ -57,6 +68,13 @@ base that was used for log-tranformation.}
 \item{...}{
   Arguments passed on to \code{\link[=liana_defaults]{liana_defaults}}
   \describe{
+    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
+Note that when working with complexes, the minimum subunit proportion will
+be used for filtering.}
+    \item{\code{complex_policy}}{policy how to account for the presence of complexes.}
+    \item{\code{seed}}{random seed integer}
+    \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
+    \item{\code{workers}}{number of workers to be called}
     \item{\code{liana_pipe.params}}{list of Parameters passed to NATMI \code{\link{liana_pipe}}}
     \item{\code{liana_call.params}}{list of Parameters passed to NATMI \code{\link{liana_call}}}
     \item{\code{cellchat.params}}{list of Parameters passed to CellChat \code{\link{call_cellchat}}}
@@ -78,14 +96,6 @@ crosstalk scores implementation \code{\link{cytotalk_score}}}
     \item{\code{logfc.params}}{list of Parameters passed to liana's internal
 logFC implementation \code{\link{logfc_score}}}
     \item{\code{permutation.params}}{list of parameters passed to permutation methods}
-    \item{\code{expr_prop}}{minimum proportion of gene expression per cell type (0.1 by default).
-This is further applied at a method-specific level - it is not applied to
- Connectome and Cytotalk, as these methods calculate/normalize the score (or
- statistics used in their scores) across all cell types or cell type pairs.}
-    \item{\code{complex_policy}}{policy how to account for the presence of complexes.}
-    \item{\code{seed}}{random seed integer}
-    \item{\code{parallelize}}{whether to parallelize cellphonedb-like}
-    \item{\code{workers}}{number of workers to be called}
     \item{\code{assay.type}}{- the type of data to be used to calculate the means
 (logcounts by default), available options are: "counts" and "logcounts"}
   }}

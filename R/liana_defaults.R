@@ -1,5 +1,15 @@
 #' Function to pass Default Arguments for each method
 #'
+#'
+#' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
+#' Note that when working with complexes, the minimum subunit proportion will
+#' be used for filtering.
+#' @param complex_policy policy how to account for the presence of complexes.
+#'
+#' @param seed random seed integer
+#' @param parallelize whether to parallelize cellphonedb-like
+#' @param workers number of workers to be called
+#'
 #' @param liana_pipe.params list of Parameters passed to NATMI \code{\link{liana_pipe}}
 #' @param liana_call.params list of Parameters passed to NATMI \code{\link{liana_call}}
 #' @param cellchat.params list of Parameters passed to CellChat \code{\link{call_cellchat}}
@@ -23,17 +33,6 @@
 #' @param logfc.params list of Parameters passed to liana's internal
 #' logFC implementation \code{\link{logfc_score}}
 #' @param permutation.params list of parameters passed to permutation methods
-#'
-#' @param expr_prop minimum proportion of gene expression per cell type (0.1 by default).
-#'  This is further applied at a method-specific level - it is not applied to
-#'   Connectome and Cytotalk, as these methods calculate/normalize the score (or
-#'   statistics used in their scores) across all cell types or cell type pairs.
-#' @param complex_policy policy how to account for the presence of complexes.
-#'
-#' @param seed random seed integer
-#' @param parallelize whether to parallelize cellphonedb-like
-#' @param workers number of workers to be called
-#'
 #' @inheritParams liana_pipe
 #'
 #' @details The default parameters for each method can also be overwritten by
@@ -49,6 +48,7 @@
 #' non-nested parameters of this function (i.e. excluding `.params`),
 #' unless a very specific reason requires any of LIANA's internal parameters
 #' to be changed.
+#'
 #'
 #' @return A list of the default parameters for each method
 #'

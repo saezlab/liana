@@ -229,7 +229,10 @@ liana_scores <- function(score_object,
 }
 
 
-
+#' Don't filter but assign as worst, and add `to_filter`
+#'
+#' @keywords internal
+#' @noRd
 .assign_to_filter <- function(lr_res,
                               columns,
                               expr_prop,
@@ -240,8 +243,14 @@ liana_scores <- function(score_object,
                               ligand.prop >= expr_prop)
                )
     } else{
-        lr_res <- lr_res %>%
-            mutate(to_filter = (ligand.prop < expr_prop) | (receptor.prop < expr_prop))
+        non_expressed <- lr_res %>%
+            group_by(ligand.complex, receptor.complex, source, target) %>%
+            summarize(prop_min = min(ligand.prop, receptor.prop)) %>%
+            mutate(to_filter = prop_min < expr_prop) %>%
+            select(-prop_min)
+        lr_res %<>%
+            left_join(non_expressed,
+                      by=c("ligand.complex", "receptor.complex", "source", "target"))
 
         map(columns,function(col){
 

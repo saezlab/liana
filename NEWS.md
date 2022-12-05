@@ -1,3 +1,19 @@
+# LIANA 0.1.9 (05.12.22)
+
+## Changes
+- `return_all` parameter was included to `liana_wrap`. `return_all` enables
+the return of all interactions by liana, not only the ones that pass the
+`expr_prop` threshold.
+
+## Minor changes
+- Min prop for complexes is now explicitly assigned to the min_prop, this deals
+with edge cases with non-expression ligand/receptor scores (e.g. z-score) where
+the lower score subunit is the one with higher expression proportion. Hence,
+this is intended to make all methods consistent according to which interactions
+are returned, regardless of which subunit has the lower score.
+
+
+
 # LIANA 0.1.8 (08.11.22)
 ## New Implementations 
 - Untargeted between-condition (context/sample) decomposition of cell-cell 

@@ -38,6 +38,11 @@ recomplexify <- function(lr_res,
     grps <- c("source", "target",
               "ligand.complex", "receptor.complex")
 
+    lr_res <- lr_res %>%
+        group_by(across(all_of(grps))) %>%
+        mutate(ligand.prop = min(ligand.prop),
+               receptor.prop = min(receptor.prop))
+
     columns %>%
         map(function(col){
 
