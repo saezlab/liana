@@ -232,7 +232,7 @@ liana_scores <- function(score_object,
 }
 
 
-#' Don't filter but assign as worst, and add `to_filter`
+#' Don't filter but assign as worst, and add `to.filter`
 #'
 #' @keywords internal
 #' @noRd
@@ -249,7 +249,7 @@ liana_scores <- function(score_object,
         non_expressed <- lr_res %>%
             group_by(ligand.complex, receptor.complex, source, target) %>%
             summarize(prop_min = min(ligand.prop, receptor.prop)) %>%
-            mutate(to_filter = prop_min < expr_prop) %>%
+            mutate(to.filter = prop_min < expr_prop) %>%
             select(-prop_min)
         lr_res %<>%
             left_join(non_expressed,
@@ -266,7 +266,7 @@ liana_scores <- function(score_object,
 
             set_to <- exec(.fn=fun, lr_res[[col]]) # TODO change to min or max
             lr_res <<- lr_res %>%
-                mutate({{ col }} := ifelse(!to_filter, lr_res[[col]], set_to))
+                mutate({{ col }} := ifelse(!to.filter, lr_res[[col]], set_to))
         })
 
         return(lr_res)

@@ -43,7 +43,7 @@ test_that("Test liana wrapper return all & supp cols", {
     expect_equal(4770, row_number)
 
     row_number_filt <- res3 %>% map_dbl(function(x)
-        x %>% filter(!to_filter) %>%
+        x %>% filter(!to.filter) %>%
         nrow()) %>%
         mean()
     expect_equal(735, row_number_filt)
