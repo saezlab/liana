@@ -32,11 +32,13 @@ test_that("Test liana wrapper with default resource", {
 })
 
 
-test_that("Test liana wrapper return all", {
+test_that("Test liana wrapper return all & supp cols", {
     res3 <- liana_wrap(seurat_object,
                        method = c('logfc','natmi', 'connectome'),
                        resource = c('Consensus'),
-                       return_all=TRUE)
+                       return_all = TRUE,
+                       supp_columns = c("ligand.expr", "receptor.expr",
+                                        "ligand.pval", "receptor.FDR"))
     row_number <- res3 %>% map_dbl(function(x) nrow(x)) %>% mean()
     expect_equal(4770, row_number)
 

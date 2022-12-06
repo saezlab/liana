@@ -38,6 +38,10 @@ assigned to the *worst* possible score in the results. For example, p-values
 from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
 will be assigned to min(lr_means). Note that this might results in slower
 computation speed, as all interactions scores need to be first calculated.}
+    \item{\code{supp_columns}}{any supplementary/additional columns which are to be
+returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"
+"ligand.stat", "receptor.stat", "ligand.pval", "receptor.pval",
+"ligand.FDR", "receptor.FDR", etc)}
     \item{\code{assay}}{assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.}
     \item{\code{.simplify}}{if methods are run with only 1 resource, return a list
 of tibbles for each method (default), rather than a list of lists with

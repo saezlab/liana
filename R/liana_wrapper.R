@@ -21,6 +21,11 @@
 #' will be assigned to min(lr_means). Note that this might results in slower
 #' computation speed, as all interactions scores need to be first calculated.
 #'
+#' @param supp_columns any supplementary/additional columns which are to be
+#' returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"
+#' "ligand.stat", "receptor.stat", "ligand.pval", "receptor.pval",
+#' "ligand.FDR", "receptor.FDR", etc)
+#'
 #' @param verbose logical whether to output messages and warnings (`TRUE` by default)
 #'
 #' @param assay assay to be used by Seurat, by default set to `NULL` and will use the DefaultAssay.
@@ -72,6 +77,7 @@ liana_wrap <- function(sce,
                        external_resource,
                        min_cells = 5,
                        return_all = FALSE,
+                       supp_columns=NULL,
                        verbose = TRUE,
                        assay = NULL,
                        .simplify = TRUE,
@@ -182,7 +188,8 @@ liana_wrap <- function(sce,
                      list(lr_res = lr_res,
                           perm_means = perm_means,
                           verbose = verbose,
-                          return_all = return_all),
+                          return_all = return_all,
+                          supp_columns = supp_columns),
                      liana_defaults(...)[[method_name]],
                      liana_defaults(...)[["liana_call"]],
                      return_all = return_all
@@ -204,7 +211,8 @@ liana_wrap <- function(sce,
                      list(
                        lr_res = lr_res,
                        sce = sce,
-                       return_all = return_all
+                       return_all = return_all,
+                       supp_columns = supp_columns
                      ),
                      liana_defaults(...)[[method_name]],
                      liana_defaults(...)[["liana_call"]]
@@ -223,7 +231,8 @@ liana_wrap <- function(sce,
                                             method_name,
                                             return_all=return_all,
                                             ...),
-                  return_all = return_all
+                  return_all = return_all,
+                  supp_columns = supp_columns
                   ),
                 liana_defaults(...)[["liana_call"]]
                 )

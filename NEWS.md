@@ -5,6 +5,10 @@
 the return of all interactions by liana, not only the ones that pass the
 `expr_prop` threshold.
 
+- `supp_columns` was included to `liana_wrap`, which allows additional
+columns to be added to the output of any method.
+
+
 ## Minor changes
 - Min prop for complexes is now explicitly assigned to the min_prop, this deals
 with edge cases with non-expression ligand/receptor scores (e.g. z-score) where

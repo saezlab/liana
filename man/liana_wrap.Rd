@@ -12,6 +12,7 @@ liana_wrap(
   external_resource,
   min_cells = 5,
   return_all = FALSE,
+  supp_columns = NULL,
   verbose = TRUE,
   assay = NULL,
   .simplify = TRUE,
@@ -41,6 +42,11 @@ assigned to the *worst* possible score in the results. For example, p-values
 from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
 will be assigned to min(lr_means). Note that this might results in slower
 computation speed, as all interactions scores need to be first calculated.}
+
+\item{supp_columns}{any supplementary/additional columns which are to be
+returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"
+"ligand.stat", "receptor.stat", "ligand.pval", "receptor.pval",
+"ligand.FDR", "receptor.FDR", etc)}
 
 \item{verbose}{logical whether to output messages and warnings (`TRUE` by default)}
 
