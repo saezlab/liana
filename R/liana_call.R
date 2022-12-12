@@ -170,8 +170,15 @@ liana_scores <- function(score_object,
                          ...){
 
 
+    # Get expr prop from defaults/kwargs
+    expr_prop <- list(...)[["expr_prop"]]
+    return_all <- list(...)[["return_all"]]
+
     supp_columns <- list(...) %>% pluck("supp_columns")
     supp_columns <- union(score_object@add_columns, supp_columns)
+    if(return_all){
+        supp_columns <- union(supp_columns, c("lrs.to.keep"))
+    }
 
     # join all columns
     all_columns <- c(score_object@columns, supp_columns)
@@ -199,6 +206,20 @@ liana_scores <- function(score_object,
                any_of(all_columns)) %>%
         ungroup()
 
+    if(return_all){
+        lr_res <- lr_res %>%
+            mutate(lrs.to.keep = (receptor.prop >= expr_prop &
+                       ligand.prop >= expr_prop))
+        rest <- lr_res %>%
+            filter(!lrs.to.keep)
+        if(score_object@method_name!="cytotalk"){
+            lr_res <- lr_res %>%
+                filter(lrs.to.keep)
+        }
+    } else if(!return_all){
+        rest <- NULL
+    }
+
     args <-
         append(
             list(lr_res = lr_res,
@@ -206,13 +227,6 @@ liana_scores <- function(score_object,
             list(...)
         )
 
-    # Get expr prop from defaults/kwargs
-    expr_prop <- list(...)[["expr_prop"]]
-
-    # TODO Need to change this
-    # Here, I get the newly assigned columns and according to those
-    # I set the mins and max...
-    # Would require to rework the classes as in Python
     old_columns <- colnames(lr_res)
     lr_res <- exec(score_object@score_fun, !!!args)
     new_columns <- setdiff(colnames(lr_res), old_columns)
@@ -222,7 +236,8 @@ liana_scores <- function(score_object,
         .assign_to_filter(lr_res=.,
                           columns = new_columns,
                           expr_prop=expr_prop,
-                          return_all = args$return_all) %>%
+                          return_all = args$return_all,
+                          rest=rest) %>%
         # ensure that there are no duplicates (edge cases where multiple subunits
         # have the same expr. - note that we also include method score to ensure
         # that no information is being lost + there are no issues)
@@ -232,31 +247,29 @@ liana_scores <- function(score_object,
 }
 
 
-#' Don't filter but assign as worst, and add `to.filter`
+#' Don't filter but assign as worst, and add `lrs.to.keep`
 #'
 #' @keywords internal
 #' @noRd
 .assign_to_filter <- function(lr_res,
                               columns,
                               expr_prop,
-                              return_all){
+                              return_all,
+                              rest){
     if(!return_all){
         return(lr_res %>%
                    filter(receptor.prop >= expr_prop &
                               ligand.prop >= expr_prop)
                )
     } else{
-        non_expressed <- lr_res %>%
-            group_by(ligand.complex, receptor.complex, source, target) %>%
-            summarize(prop_min = min(ligand.prop, receptor.prop)) %>%
-            mutate(to.filter = prop_min < expr_prop) %>%
-            select(-prop_min)
-        lr_res %<>%
-            left_join(non_expressed,
-                      by=c("ligand.complex", "receptor.complex", "source", "target"))
+        lr_res <- bind_rows(lr_res, rest)
 
         map(columns,function(col){
 
+            # TODO Need to change this
+            # Here, I get the newly assigned columns and according to those
+            # I set the mins and max...
+            # Would require to rework the classes as in Python
             # deal with descending
             if(col %in% c("pvalue", "pval")){
                 fun <- "max"
@@ -264,9 +277,9 @@ liana_scores <- function(score_object,
                 fun <- "min"
             }
 
-            set_to <- exec(.fn=fun, lr_res[[col]]) # TODO change to min or max
+            set_to <- exec(.fn=fun, lr_res[[col]], na.rm=TRUE)
             lr_res <<- lr_res %>%
-                mutate({{ col }} := ifelse(!to.filter, lr_res[[col]], set_to))
+                mutate({{ col }} := ifelse(lrs.to.keep, lr_res[[col]], set_to))
         })
 
         return(lr_res)

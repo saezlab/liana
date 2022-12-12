@@ -40,13 +40,13 @@ test_that("Test liana wrapper return all & supp cols", {
                        supp_columns = c("ligand.expr", "receptor.expr",
                                         "ligand.pval", "receptor.FDR"))
     row_number <- res3 %>% map_dbl(function(x) nrow(x)) %>% mean()
-    expect_equal(4770, row_number)
+    expect_equal(row_number, 4770)
 
     row_number_filt <- res3 %>% map_dbl(function(x)
-        x %>% filter(!to.filter) %>%
+        x %>% filter(lrs.to.keep) %>%
         nrow()) %>%
         mean()
-    expect_equal(735, row_number_filt)
+    expect_equal(row_number_filt, 735)
 })
 
 

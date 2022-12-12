@@ -1,4 +1,4 @@
-#' Compute cross-talk score from a Seurat Object
+#' Compute cross-talk score from a Seurat Object (DEPRECATED)
 #'
 #' @details This function executes all the required functions to extract
 #' and compute the cross-talk scores as defined by the Cytotalk authors.

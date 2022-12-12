@@ -3,7 +3,9 @@
 ## Changes
 - `return_all` parameter was included to `liana_wrap`. `return_all` enables
 the return of all interactions by liana, not only the ones that pass the
-`expr_prop` threshold.
+`expr_prop` threshold. Those that don't pass the threshold are assigned the
+worst possible score, and a `lrs.to.keep` flag that indicates whether the
+interaction passed the threshold.
 
 - `supp_columns` was included to `liana_wrap`, which allows additional
 columns to be added to the output of any method.
