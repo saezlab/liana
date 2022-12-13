@@ -2,7 +2,7 @@
 % Please edit documentation in R/crosstalk_funs.R
 \name{cytotalk_score}
 \alias{cytotalk_score}
-\title{Compute cross-talk score from a Seurat Object}
+\title{Compute cross-talk score from a Seurat Object (DEPRECATED)}
 \usage{
 cytotalk_score(lr_res, sce, score_col, assay.type, seed, ...)
 }
@@ -20,7 +20,7 @@ cytotalk_score(lr_res, sce, score_col, assay.type, seed, ...)
 \item{...}{placeholder}
 }
 \description{
-Compute cross-talk score from a Seurat Object
+Compute cross-talk score from a Seurat Object (DEPRECATED)
 }
 \details{
 This function executes all the required functions to extract

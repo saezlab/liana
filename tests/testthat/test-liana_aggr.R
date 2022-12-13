@@ -23,7 +23,7 @@ test_that("Test liana aggregate (housekeep)", {
     testthat::expect_warning(
         res2 <- readRDS(file.path(liana_path, "testdata",
                                   "output", "liana_res_plus.RDS")) %>%
-            liana_aggregate(.score_mode = .score_housekeep)
+            liana_aggregate(aggregate_how = "magnitude")
     )
 
 

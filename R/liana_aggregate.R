@@ -1,6 +1,9 @@
 #' Function to Aggregate CCC Method Results
 #'
 #' @param liana_res LIANA results
+#' @param aggregate_how way to aggregate, by default (NULL) will aggregate
+#'  all passed methods with the approach specified in `liana:::..score_specs`.
+#'  Alternative options are `magnitude` and `specificity`.
 #' @param set_cap Function used to set ranked cap (i.e. the value that is
 #'    assigned to interactions with NA for scores);
 #'    By default, this is set to "max", which is the maximum number of interactions
@@ -49,6 +52,7 @@
 #' # aggregate results from multiple methods
 #' liana_res <- liana_aggregate(liana_res)
 liana_aggregate <- function(liana_res,
+                            aggregate_how=NULL,
                             resource = NULL,
                             set_cap = "max",
                             cap = NULL,
@@ -58,6 +62,21 @@ liana_aggregate <- function(liana_res,
                             verbose = TRUE,
                             join_cols = NULL,
                             ...){
+
+    # define approach to aggregate
+    if(!is.null(aggregate_how)){
+        if(aggregate_how=="magnitude"){
+            score_mode = liana:::.score_housekeep()
+        } else if(aggregate_how=="specificity"){
+            specs <- liana:::.score_specs()
+            specs$sca <- NULL # remove SingleCellSignalR score
+            score_mode = specs
+        } else{
+            stop("Please specify an existing aggregate approach!")
+        }
+    } else{
+        score_mode <- .score_mode()
+    }
 
     if(!is_tibble(liana_res[[1]]) && is.null(resource)){
         stop("Please provide provide a name for the resource ",
@@ -88,7 +107,7 @@ liana_aggregate <- function(liana_res,
     liana_mlist <- liana_res %>%
         map2(names(.), function(res, method_name){
 
-            if(is.null(.score_mode()[[method_name]])){
+            if(is.null(score_mode[[method_name]])){
                 liana_message(
                     str_glue(
                         "Unknown method name or missing specifics for: {method_name}"
@@ -100,8 +119,8 @@ liana_aggregate <- function(liana_res,
                               verbose = verbose)
             }
 
-            method_score <- .score_mode()[[method_name]]@method_score
-            desc_order <- .score_mode()[[method_name]]@descending_order
+            method_score <- score_mode[[method_name]]@method_score
+            desc_order <- score_mode[[method_name]]@descending_order
 
             .method = sym(as.character(str_glue("{method_name}.{method_score}")))
             .rank_col = sym(as.character(str_glue("{method_name}.rank")))

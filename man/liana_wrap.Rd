@@ -38,10 +38,9 @@ Idents or colLabels from the seurat_object or SCE, respectively.}
 
 \item{return_all}{whether to return all possible interactions. Any
 interaction with `expr_prop` below the specific threshold will be
-assigned to the *worst* possible score in the results. For example, p-values
-from CellPhoneDB will be assigned to max(pvalue) - likely 1, and lr_means
-will be assigned to min(lr_means). Note that this might results in slower
-computation speed, as all interactions scores need to be first calculated.}
+assigned to the *worst* possible score in those that pass the threshold.
+ For example, p-values from CellPhoneDB will be assigned to max(pvalue)
+  - likely 1, and lr_means will be assigned to min(lr_means).}
 
 \item{supp_columns}{any supplementary/additional columns which are to be
 returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"

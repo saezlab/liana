@@ -1,4 +1,4 @@
-# LIANA 0.1.9 (05.12.22)
+# LIANA 0.1.9 (13.12.22)
 
 ## Changes
 - `return_all` parameter was included to `liana_wrap`. `return_all` enables
@@ -17,7 +17,8 @@ This deals with edge cases with non-expression ligand/receptor scores (e.g. z-sc
 the lower score subunit is the one with higher expression proportion. Hence,
 this is intended to make all methods consistent according to which interactions
 are returned, regardless of which subunit has the lower score.
-
+- `aggregate_how` parameter added to `liana_aggregate` to allow the aggregation
+by specificity and magnitude scores.
 
 
 # LIANA 0.1.8 (08.11.22)
