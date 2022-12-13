@@ -70,6 +70,7 @@ liana_aggregate <- function(liana_res,
         } else if(aggregate_how=="specificity"){
             specs <- liana:::.score_specs()
             specs$sca <- NULL # remove SingleCellSignalR score
+            specs$call_sca <- NULL # remove SingleCellSignalR score
             score_mode = specs
         } else{
             stop("Please specify an existing aggregate approach!")
