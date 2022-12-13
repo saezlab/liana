@@ -12,8 +12,8 @@ columns to be added to the output of any method.
 
 
 ## Minor changes
-- Min prop for complexes is now explicitly assigned to the min_prop, this deals
-with edge cases with non-expression ligand/receptor scores (e.g. z-score) where
+- Min prop for complexes is now explicitly assigned to the minimum expr. prop. across all subunits
+This deals with edge cases with non-expression ligand/receptor scores (e.g. z-score) where
 the lower score subunit is the one with higher expression proportion. Hence,
 this is intended to make all methods consistent according to which interactions
 are returned, regardless of which subunit has the lower score.
