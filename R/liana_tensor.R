@@ -529,14 +529,16 @@ plot_lr_heatmap <- function(sce,
 
 
 #' Generate a geneset resource for each LR
-#' @param lrs lrs a tibble with `lr`
+#' @param sce SingleCellExperiment object with liana_tensor_c2c computed
 #' @param resource resource with `source`, `target`, `weight` columns
 #'
 #' @export
 #'
 #' @returns a tibble in decoupleR format
-generate_lr_geneset <- function(lrs, resource, lr_sep="^"){
+generate_lr_geneset <- function(sce, resource, lr_sep="^"){
 
+    # Take SingleCellExperiment object as param instead of lrs to avoid the conflict of declaring 'factors' as global variable
+    factors <- get_c2c_factors(sce)
     lrs <- factors$interactions %>%
         separate(lr, sep=str_glue("\\{lr_sep}"), into=c("ligand", "receptor"))
 
