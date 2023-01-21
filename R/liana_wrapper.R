@@ -19,6 +19,7 @@
 #' assigned to the *worst* possible score in those that pass the threshold.
 #'  For example, p-values from CellPhoneDB will be assigned to max(pvalue)
 #'   - likely 1, and lr_means will be assigned to min(lr_means).
+#'  Note that this applies only to the internal methods of liana.
 #'
 #' @param supp_columns any supplementary/additional columns which are to be
 #' returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"
@@ -146,8 +147,7 @@ liana_wrap <- function(sce,
                args <- append(
                  list("sce" = sce,
                       "op_resource" = reso),
-                 liana_defaults(...)[[method_name]],
-                 return_all = return_all
+                 liana_defaults(...)[[method_name]]
                  )
                rlang::invoke(.method, args)
 
@@ -157,8 +157,7 @@ liana_wrap <- function(sce,
                args <- append(
                  list(sce = sce,
                       "op_resource" = reso %>% {if (!is.null(reso)) decomplexify(.) else .}),
-                 liana_defaults(...)[[method_name]],
-                 return_all = return_all
+                 liana_defaults(...)[[method_name]]
                )
                rlang::invoke(.method, args)
 

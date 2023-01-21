@@ -40,7 +40,8 @@ Idents or colLabels from the seurat_object or SCE, respectively.}
 interaction with `expr_prop` below the specific threshold will be
 assigned to the *worst* possible score in those that pass the threshold.
  For example, p-values from CellPhoneDB will be assigned to max(pvalue)
-  - likely 1, and lr_means will be assigned to min(lr_means).}
+  - likely 1, and lr_means will be assigned to min(lr_means).
+ Note that this applies only to the internal methods of liana.}
 
 \item{supp_columns}{any supplementary/additional columns which are to be
 returned by liana. Possibilities include: c("ligand.expr", "receptor.expr"

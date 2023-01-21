@@ -65,7 +65,8 @@
 #' @param upper_rank Upper bound of ranks to explore with the elbow analysis.
 #'
 #' @param runs Number of tensor factorization performed for a given rank.
-#' Each factorization varies in the seed of initialization.
+#' Each factorization varies in the seed of initialization. Consider increasing
+#' the number of runs, in order to obtain a more robust rank estimate.
 #'
 #' @param init Initialization method for computing the Tensor Factorization.
 #' {‘svd’, ‘random’}
@@ -74,6 +75,11 @@
 #'   selection and no factorization.
 #'
 #' @param factors_only whether to return only the factors after factorization
+#'
+#' @param conda_env name of existing conda environment
+#'
+#' @param use_available whether to use c2c if available in current env.
+#' False by default.
 #'
 #' @param verbose verbosity logical
 #'
@@ -104,11 +110,12 @@ liana_tensor_c2c <- function(sce=NULL,
                              rank=NULL,
                              seed = 1337,
                              upper_rank = 25,
-                             runs = 1,
+                             runs = 3,
                              init = 'svd',
                              build_only = FALSE,
                              factors_only = TRUE,
                              conda_env=NULL,
+                             use_available=FALSE,
                              verbose = TRUE,
                              inplace=TRUE,
                              sender_col = "source",
@@ -135,14 +142,23 @@ liana_tensor_c2c <- function(sce=NULL,
     # Deal with rank
     rank <- if(is.null(rank)){ NULL } else {as.integer(rank)}
 
+
+    c2c_available <-
     # Load correct conda env
     if(!is.null(conda_env)){
+        print(0)
         liana_message(str_glue("Loading `{conda_env}` Conda Environment"),
                       verbose = verbose,
                       output = "message")
         reticulate::use_condaenv(condaenv = conda_env,
                                  conda = "auto",
                                  required = TRUE)
+
+    # check if c2c is available, if not create env with basilisk
+    } else if(use_available){
+        if(!reticulate::py_module_available("cell2cell")){
+            stop("cell2cell was not found")
+        }
     } else{
         # load basilisk env
         liana_message(str_glue("Setting up Conda Environment with Basilisk"),
@@ -188,6 +204,8 @@ liana_tensor_c2c <- function(sce=NULL,
 
     if(build_only) return(tensor)
 
+    elbow_metric_raw <- NULL
+
     # estimate factor rank
     if(is.null(rank)){
         liana_message(str_glue("Estimating ranks..."),
@@ -198,6 +216,9 @@ liana_tensor_c2c <- function(sce=NULL,
                                                init=init,
                                                automatic_elbow=TRUE,
                                                random_state=as.integer(seed))
+
+        elbow_metric_raw <- tensor$elbow_metric_raw
+
         rank <- as.integer(tensor$rank)
     }
 
@@ -212,6 +233,11 @@ liana_tensor_c2c <- function(sce=NULL,
 
     if(factors_only){
         res <- format_c2c_factors(tensor$factors)
+
+        if(!is.null(elbow_metric_raw)){
+            res$elbow_metric_raw <- elbow_metric_raw
+        }
+
     } else{
          res <- tensor
         }
@@ -287,14 +313,14 @@ format_c2c_factors <- function(factors,
 #' @param group_col context descriptor - to be obtained from `colData(sce)`
 #'
 #' @export
-get_c2c_factors <- function(sce, group_col=NULL){
+get_c2c_factors <- function(sce, group_col=NULL, sample_col="context"){
     factors <- sce@metadata$tensor_res
 
     if(is.null(group_col)) return(factors)
 
     factors$contexts <- .join_meta(sce,
                                    factors$contexts,
-                                   sample_col = "context",
+                                   sample_col = sample_col,
                                    group_col = group_col)
     return(factors)
 
@@ -681,5 +707,5 @@ plot_c2c_cells <- function(sce,
                        "pandas==1.4.2",
                        "rpy2==3.4.5")
 
-.liana_pips <- c("cell2cell==0.6.1",
+.liana_pips <- c("cell2cell==0.6.3",
                  "anndata2ri==1.0.6")

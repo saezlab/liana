@@ -139,10 +139,17 @@ sce <- liana_bysample(sce = sce,
                       idents_col = "cell",
                       method = "sca", # we use SingleCellSignalR's score alone
                       expr_prop = 0, # expression proportion threshold
-                      inplace=TRUE # saves to sce
+                      inplace=TRUE, # saves to sce
+                      return_all = FALSE # whether to return non-expressed interactions 
                       )
 ```
 
+Note that in this case, we don't apply the `expr_prop` threshold and we keep
+the values of all interactions as they are. Alternatively, one could be more
+restrictive with the communication events thought to be occurring, and increase
+`expr_prop` to a higher value, and `return_all` interactions with those below
+`expr_prop` being assigned to the worst inferred value. That value can also
+be manually replaced with e.g 0.
 
 
 We expect to see a successful LIANA run for each sample/context.
@@ -160,8 +167,10 @@ This function will first format the ligand-receptor scores per sample into a
 It will then estimate the number of factors to which the tensor
 will be decomposed (set rank to `NULL`, for the sake of computational speed,
 I have pre-calculated the `rank` and I explicitly set it to 7 here). 
-Optimal rank estimation can be computationally demanding, thus in this case
-the number ranks was pre-determined.
+Optimal rank estimation can be computationally demanding, but required
+to ensure robust results, one could consider increasing the `runs` parameter.
+See below an elbow plot example, calculated if rank is set to NULL.
+
 
 One can think of this as a higher-order non-negative matrix factorization where
 the factors can be used to reconstruct the tensor. We refer the user to the
@@ -174,8 +183,10 @@ with cell2cell to be called via reticulate.
 ```{r, warning=FALSE}
 sce <- liana_tensor_c2c(sce = sce,
                         score_col = 'LRscore',
-                        rank = 7,  # set to None to estimate!
-                        how='outer'  #  defines how the tensor is built
+                        rank = 7,  # set to None to estimate for you data!
+                        how='outer',  #  defines how the tensor is built
+                        conda_env = NULL, # used to pass an existing conda env with cell2cell
+                        use_available = FALSE # detect & load cell2cell if available
                         )
 ```
 
@@ -185,10 +196,57 @@ interactions. In this scenario, we use `outer`, which will only decompose CCC
 across *any* cell identities and interactions in the dataset. Alternatively,
 one could change it to 'inner' then CCC paterns will be decomposed patterns
 across cell identities & interactions shared between *all* samples/contexts. 
+Similarly, one could consider how to fill missing values across the samples,
+namely missing interactions cell types via the `lr_fill` and `cell_fill`
+parameters, respecitvely. These are set to NaN by default and are thus imputed.
+For example, setting them to 0 would suggest that missing values are
+biologically-relevant.
 
 `cell2cell_tensor` also accepts additional parameters to further tune 
 tensor decomposition, but these are out of scope for this tutorial.
 Stay tuned for a set of tutorials with comprehensive application of liana with tensor!
+
+
+### Rank Estimation Example
+
+Upon Rank estimation, an optimal rank will be estimated and returned according
+to the elbow of the normalized reconstruction error.
+
+This error measures how different is the original tensor from the sum of R rank-1
+tensors used to approximate it. We want to pick a rank that provides a good
+trade-off that minimizes the number of factors (ranks) and the error.
+
+```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+# load pre-computed results 
+# these would be assigned to this element, if computed
+sce@metadata$tensor_res$elbow_metric_raw <- 
+  read.csv(file.path(system.file(package = "liana"), "example_elbow.csv"))
+
+# Estimate standard error
+error_average <- sce@metadata$tensor_res$elbow_metric_raw %>%
+    t() %>%
+    as.data.frame() %>%
+    mutate(rank=row_number()) %>% 
+    pivot_longer(-rank, names_to = "run_no", values_to = "error") %>%
+    group_by(rank) %>%
+    summarize(average = mean(error),
+              N = n(),
+              SE.low = average - (sd(error)/sqrt(N)),
+              SE.high = average + (sd(error)/sqrt(N))
+           )
+
+# plot
+error_average %>%
+    ggplot(aes(x=rank, y=average), group=1) +
+    geom_line(col='red') + 
+    geom_ribbon(aes(ymin = SE.low, ymax = SE.high), alpha = 0.1) +
+    geom_vline(xintercept = 7, colour='darkblue') + # rank of interest
+    theme_bw() +
+    labs(y="Error", x="Rank")
+```
+
+
+
 
 ### Results Overview
 
@@ -331,7 +389,7 @@ progeny <- decoupleR::get_progeny(organism = 'human', top=5000) %>%
     select(-p_value)
 
 # convert to LR sets
-progeny_lr <- generate_lr_geneset(factors$interactions,
+progeny_lr <- generate_lr_geneset(sce,
                                   resource = progeny)
 
 progeny_lr
@@ -382,7 +440,7 @@ res %>% # sig/isnig flag
 lrs <-  factors$interactions %>%
   left_join(progeny_lr, by="lr") %>%
   filter(set=="JAK-STAT") %>%
-  select(lr, set, mor, loading = Factor.3) %>%
+  select(lr, set, mor, loading = Factor.4) %>%
   mutate(lr = gsub(as.character(str_glue("\\^")), " -> ", lr)) %>%
   mutate(weight = if_else(mor >= 0, "positive", "negative"))
 lrs %>%

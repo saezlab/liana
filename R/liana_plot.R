@@ -81,6 +81,14 @@ liana_dotplot <- function(liana_res,
         unite(entities, col = "interaction", sep = " -> ") %>%
         unite(c("source", "target"), col = "source_target", remove = FALSE)
 
+
+
+    # ensure levels & order is kept the plot
+    interactions_order <- liana_mod %>% pull("interaction") %>% unique()
+    liana_mod %<>%
+        mutate(interaction = factor(interaction, levels=rev(interactions_order))) %>%
+        mutate(across(where(is.character), as.factor))
+
     # colour blind palette from http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
     cbPalette <- c("#E69F00", "#56B4E9",
                    "#009E73", "#F0E442", "#0072B2",
@@ -101,7 +109,7 @@ liana_dotplot <- function(liana_res,
             facet_grid(. ~ source,
                        space = "free",
                        scales ="free",
-                       switch="y")  +
+                       switch = "y")  +
             # scale_x_discrete(position = "right") +
             labs(y = y.label,
                  colour = colour.label,

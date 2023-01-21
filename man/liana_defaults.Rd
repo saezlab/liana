@@ -26,7 +26,8 @@ liana_defaults(
   call_sca.params = NULL,
   call_natmi.params = NULL,
   call_connectome.params = NULL,
-  call_italk.params = NULL
+  call_italk.params = NULL,
+  ...
 )
 }
 \arguments{

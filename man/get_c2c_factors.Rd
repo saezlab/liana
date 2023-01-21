@@ -4,7 +4,7 @@
 \alias{get_c2c_factors}
 \title{Returns tensor cell2cell results}
 \usage{
-get_c2c_factors(sce, group_col = NULL)
+get_c2c_factors(sce, group_col = NULL, sample_col = "context")
 }
 \arguments{
 \item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}

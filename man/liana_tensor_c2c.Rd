@@ -18,11 +18,12 @@ liana_tensor_c2c(
   rank = NULL,
   seed = 1337,
   upper_rank = 25,
-  runs = 1,
+  runs = 3,
   init = "svd",
   build_only = FALSE,
   factors_only = TRUE,
   conda_env = NULL,
+  use_available = FALSE,
   verbose = TRUE,
   inplace = TRUE,
   sender_col = "source",
@@ -80,7 +81,8 @@ If NULL, then rank selection is performed using the `elbow_rank_selection` funct
 \item{upper_rank}{Upper bound of ranks to explore with the elbow analysis.}
 
 \item{runs}{Number of tensor factorization performed for a given rank.
-Each factorization varies in the seed of initialization.}
+Each factorization varies in the seed of initialization. Consider increasing
+the number of runs, in order to obtain a more robust rank estimate.}
 
 \item{init}{Initialization method for computing the Tensor Factorization.
 {‘svd’, ‘random’}}
@@ -89,6 +91,11 @@ Each factorization varies in the seed of initialization.}
 selection and no factorization.}
 
 \item{factors_only}{whether to return only the factors after factorization}
+
+\item{conda_env}{name of existing conda environment}
+
+\item{use_available}{whether to use c2c if available in current env.
+False by default.}
 
 \item{verbose}{verbosity logical}
 

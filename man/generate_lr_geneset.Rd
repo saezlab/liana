@@ -4,10 +4,10 @@
 \alias{generate_lr_geneset}
 \title{Generate a geneset resource for each LR}
 \usage{
-generate_lr_geneset(lrs, resource, lr_sep = "^")
+generate_lr_geneset(sce, resource, lr_sep = "^")
 }
 \arguments{
-\item{lrs}{lrs a tibble with `lr`}
+\item{sce}{SingleCellExperiment object with liana_tensor_c2c computed}
 
 \item{resource}{resource with `source`, `target`, `weight` columns}
 }

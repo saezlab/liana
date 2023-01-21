@@ -1,3 +1,17 @@
+# LIANA 0.1.10
+
+- Fixed issues in the `generate_lr_geneset` function, and other typos and
+by mistake hardcoded values.
+- Bumped up the version of Tensor-cell2cell to the latest one, and it will now
+return error values that could be used to estimate the elbow curve.
+- Added an example of the elbow plot used to guide the number of ranks to be
+considered.
+- Extended options by which the cell2cell module can be loaded.
+- Fixed an issue where `return_all` was being passed to external methods
+- Added an example elbow curve in the tensor tutorial.
+- LIANA's doplot will now keep the order of the original dataframe passed to it.
+
+
 # LIANA 0.1.9 (13.12.22)
 
 ## Changes

@@ -88,7 +88,8 @@ liana_defaults <- function(
     call_sca.params = NULL,
     call_natmi.params = NULL,
     call_connectome.params = NULL,
-    call_italk.params = NULL){
+    call_italk.params = NULL,
+    ...){
 
     # Internal ----
     # LIANA_pipe defaults
@@ -261,10 +262,10 @@ liana_defaults <- function(
             reassign_params(., scconnect.defaults),
 
         # external methods
-        "cellchat" = cellchat.params %<>%
+        "call_cellchat" = cellchat.params %<>%
             reassign_params(., cellchat.defaults),
 
-        'squidpy' = squidpy.params %<>%
+        'call_squidpy' = squidpy.params %<>%
             reassign_params(., squidpy.defaults),
 
         # call_* functions/pipes
