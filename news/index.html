@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,16 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.10" id="liana-0110">LIANA 0.1.10<a class="anchor" aria-label="anchor" href="#liana-0110"></a></h2>
+<ul><li>Fixed issues in the <code>generate_lr_geneset</code> function, and other typos and by mistake hardcoded values.</li>
+<li>Bumped up the version of Tensor-cell2cell to the latest one, and it will now return error values that could be used to estimate the elbow curve.</li>
+<li>Added an example of the elbow plot used to guide the number of ranks to be considered.</li>
+<li>Extended options by which the cell2cell module can be loaded.</li>
+<li>Fixed an issue where <code>return_all</code> was being passed to external methods</li>
+<li>Added an example elbow curve in the tensor tutorial.</li>
+<li>LIANA’s doplot will now keep the order of the original dataframe passed to it.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.9" id="liana-019-131222">LIANA 0.1.9 (13.12.22)<a class="anchor" aria-label="anchor" href="#liana-019-131222"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-9">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-9"></a></h3>
@@ -110,7 +120,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-7-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-7-1"></a></h3>
-<ul><li>I now refer to SCpubr in the tutorial for more advanced plots.</li></ul></div>
+<ul><li>I now refer to SCpubr in the tutorial for more advanced plots.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.6" id="liana-016-110822">LIANA 0.1.6 (11.08.22)<a class="anchor" aria-label="anchor" href="#liana-016-110822"></a></h2>
@@ -161,16 +172,19 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-implementations-0-1-3">New implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-3"></a></h3>
-<ul><li>A chord plot for interaction frequncies was included.</li></ul></div>
+<ul><li>A chord plot for interaction frequncies was included.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="liana-012-030522">LIANA 0.1.2 (03.05.22)<a class="anchor" aria-label="anchor" href="#liana-012-030522"></a></h2>
 <div class="section level3">
 <h3 id="new-implementations-0-1-2">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-1-2"></a></h3>
-<ul><li>Frequency Heatmap available via the <code>heat_freq</code> functions, added due to being common requests. This heatmap was inspired by CellPhoneDB and CellChat.</li></ul></div>
+<ul><li>Frequency Heatmap available via the <code>heat_freq</code> functions, added due to being common requests. This heatmap was inspired by CellPhoneDB and CellChat.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="changes-0-1-2">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-2"></a></h3>
-<ul><li>Extended basic tutorial to accommodate new heatmap plots.</li></ul></div>
+<ul><li>Extended basic tutorial to accommodate new heatmap plots.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-2"></a></h3>
 <ul><li>Allow labels to be passed to <code>liana_dotplot</code>
@@ -182,7 +196,8 @@
 <h2 class="pkg-version" data-toc-text="0.1.1" id="liana-011-260422">LIANA 0.1.1 (26.04.22)<a class="anchor" aria-label="anchor" href="#liana-011-260422"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-1">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-1"></a></h3>
-<ul><li>Change the order of non-expressed genes and empty droplet filtering. I now appropriately filter cells in the <code>sce</code> object <em>after</em> limiting the gene universe to ligands and receptors in the resource.</li></ul></div>
+<ul><li>Change the order of non-expressed genes and empty droplet filtering. I now appropriately filter cells in the <code>sce</code> object <em>after</em> limiting the gene universe to ligands and receptors in the resource.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-1"></a></h3>
 <ul><li><p>Appropriately pass <code>verbose</code> to <code>.filter_sce</code></p></li>
@@ -193,7 +208,8 @@
 <h2 class="pkg-version" data-toc-text="0.1.0" id="liana-010-200422">LIANA 0.1.0 (20.04.22)<a class="anchor" aria-label="anchor" href="#liana-010-200422"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-1-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-1-0"></a></h3>
-<ul><li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li></ul></div>
+<ul><li>For <code>logFC_mean</code>, rather than normalizing the counts by library size, I instead inverse log the counts and use those to calculate log2FC. This is to preserve any prior correction of the counts, i.e. mainly for consistency with the rest of the methods.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-1-0">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-0"></a></h3>
 <ul><li><p>Flipped <code>x</code> and <code>y</code> axes dotplot according to feedback.</p></li>
@@ -209,7 +225,8 @@
 <h2 class="pkg-version" data-toc-text="0.0.9" id="liana-009-23032022">LIANA 0.0.9 (23.03.2022)<a class="anchor" aria-label="anchor" href="#liana-009-23032022"></a></h2>
 <div class="section level3">
 <h3 id="new-implementations-0-0-9">New Implementations<a class="anchor" aria-label="anchor" href="#new-implementations-0-0-9"></a></h3>
-<ul><li>We now provide a tutorial dedicated to <code>orthology conversion</code> of the resources in LIANA</li></ul></div>
+<ul><li>We now provide a tutorial dedicated to <code>orthology conversion</code> of the resources in LIANA</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-0-9">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-0-9"></a></h3>
 <p>LIANA will now check if: - There is enough of a gene intesect between the resource and the data (i.e. if they are both for human)</p>
@@ -222,7 +239,8 @@
 <h2 class="pkg-version" data-toc-text="0.0.8" id="liana-008-05032022">LIANA 0.0.8 (05.03.2022)<a class="anchor" aria-label="anchor" href="#liana-008-05032022"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-0-8">Changes<a class="anchor" aria-label="anchor" href="#changes-0-0-8"></a></h3>
-<ul><li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li></ul></div>
+<ul><li>Reduced dependencies (specifically <code>Seurat</code> and <code>OmniPathR</code>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-0-8">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-0-8"></a></h3>
 <ul><li>testthat tests external methods only if requested explicitly</li>
@@ -280,10 +298,12 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-6">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-6"></a></h3>
-<ul><li>Fixed a bug where incorrectly passing method names in different cases results in an error.</li></ul></div>
+<ul><li>Fixed a bug where incorrectly passing method names in different cases results in an error.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="deprecated-0-0-6">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-0-6"></a></h3>
-<ul><li>External LIANA methods (i.e. <code>call_</code>) are now deprecated. The pipelines will be maintained solely for power users, who intend to benchmark the original implementations, but will not be the focus of any downstream analyses. These will be solely developed for the internal (or re-implemented methods). These still rely on a <code>SeuratObject</code> as interface, but will now accept both sce and seurat as input.</li></ul></div>
+<ul><li>External LIANA methods (i.e. <code>call_</code>) are now deprecated. The pipelines will be maintained solely for power users, who intend to benchmark the original implementations, but will not be the focus of any downstream analyses. These will be solely developed for the internal (or re-implemented methods). These still rely on a <code>SeuratObject</code> as interface, but will now accept both sce and seurat as input.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="liana-005">LIANA 0.0.5<a class="anchor" aria-label="anchor" href="#liana-005"></a></h2>
@@ -309,14 +329,16 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-3"></a></h3>
-<ul><li>Fixed an issue where logFC was assigned only the value of the ligand</li></ul></div>
+<ul><li>Fixed an issue where logFC was assigned only the value of the ligand</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="liana-002">LIANA 0.0.2<a class="anchor" aria-label="anchor" href="#liana-002"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-0-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-0-2"></a></h3>
 <ul><li>
-<code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)" class="external-link">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li></ul></div>
+<code>Crosstalk scores</code> inspired by <a href="(https://advances.sciencemag.org/content/7/16/eabf1356)" class="external-link">Cytotalk</a> were added. In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk scores calculated in CytoTalk to also allow for autocrine signalling interactions, and thus make Crosstalk scores comparable to the rest of the methods in LIANA. Finally, as part of LIANA, CytoTalk’s re-implemented scores would not take account of complexes and we also apply liana-specifc filtering such as according to <code>expr_prop</code>. Worth noting, we only re-implement the cross-talk scores, but we don’t include the intracellular part of Cytotalk.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="changes-0-0-2">Changes<a class="anchor" aria-label="anchor" href="#changes-0-0-2"></a></h3>
 <ul><li>Changed <code>expr_thresh</code> to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default<br></li>

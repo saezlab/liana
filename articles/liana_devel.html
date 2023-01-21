@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,12 +89,14 @@
 
 
 
-<script src="liana_devel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>LIANA++ for Benchmarks and Developers</h1>
-                        <h4 data-toc-skip class="author">Daniel Dimitrov</h4>
+                        <h4 data-toc-skip class="author">Daniel
+Dimitrov</h4>
             
-            <h4 data-toc-skip class="date">2022-12-13</h4>
+            <h4 data-toc-skip class="date">2023-01-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/saezlab/liana/blob/HEAD/vignettes/liana_devel.Rmd" class="external-link"><code>vignettes/liana_devel.Rmd</code></a></small>
       <div class="d-none name"><code>liana_devel.Rmd</code></div>
@@ -105,7 +107,9 @@
 <div class="section level2">
 <h2 id="liana">LIANA ++<a class="anchor" aria-label="anchor" href="#liana"></a>
 </h2>
-<p>To facilitate further method development and the benchmarks of current and future methods, in this vignette we provide further instructions relevant for method developers.</p>
+<p>To facilitate further method development and the benchmarks of
+current and future methods, in this vignette we provide further
+instructions relevant for method developers.</p>
 <div class="section level3">
 <h3 id="load-prerequisites">Load prerequisites<a class="anchor" aria-label="anchor" href="#load-prerequisites"></a>
 </h3>
@@ -122,8 +126,15 @@
 <h3 id="liana_pipe-and-contributions">
 <code>liana_pipe</code> and Contributions<a class="anchor" aria-label="anchor" href="#liana_pipe-and-contributions"></a>
 </h3>
-<p>To facilitate method development, we provide a guide how to make use of the architecture already implemented in LIANA.</p>
-<p>First, we start by converting the object to SCE (if Seurat) and basic checks via <code>liana_rep</code>. Then we generate a LR_res table with many relevant columns, such as stats for ligands and receptors per cell type. Note that liana_pipe also takes complexes into account by dissociating them into subunits (see ?<code>liana:::decomplexify</code>). These are later re-assembled back into complexes using the <code>recomplexify</code> function.</p>
+<p>To facilitate method development, we provide a guide how to make use
+of the architecture already implemented in LIANA.</p>
+<p>First, we start by converting the object to SCE (if Seurat) and basic
+checks via <code>liana_rep</code>. Then we generate a LR_res table with
+many relevant columns, such as stats for ligands and receptors per cell
+type. Note that liana_pipe also takes complexes into account by
+dissociating them into subunits (see
+?<code>liana:::decomplexify</code>). These are later re-assembled back
+into complexes using the <code>recomplexify</code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_prep.html">liana_prep</a></span><span class="op">(</span><span class="va">testdata</span><span class="op">)</span></span>
 <span></span>
@@ -163,8 +174,12 @@
 <span><span class="co">## $ ligand.complex   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "DLL1", "CCL5", "CCL4", "TNFSF14", "CD40LG", "LTA", "…</span></span>
 <span><span class="co">## $ receptor.complex <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "NOTCH1", "CCR5", "CCR5", "LTBR", "CD40", "TNFRSF1A",…</span></span></code></pre>
 <p>``</p>
-<p>The LR result summary is then passed to the <code>get_*</code> functions then provide ways to summarize this information into a score (<code>LRscore</code> in this case) that can be used to the prioritize interactions.</p>
-<p>We also need to pass the function that we wish to use to account for heteromeric complexes</p>
+<p>The LR result summary is then passed to the <code>get_*</code>
+functions then provide ways to summarize this information into a score
+(<code>LRscore</code> in this case) that can be used to the prioritize
+interactions.</p>
+<p>We also need to pass the function that we wish to use to account for
+heteromeric complexes</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_sca.html">get_sca</a></span><span class="op">(</span><span class="va">lr_res</span>, complex_policy<span class="op">=</span><span class="st">"mean"</span>,</span>
 <span>        expr_prop<span class="op">=</span><span class="fu"><a href="../reference/liana_defaults.html">liana_defaults</a></span><span class="op">(</span><span class="op">)</span><span class="op">[[</span><span class="st">"expr_prop"</span><span class="op">]</span><span class="op">]</span>,</span>
@@ -183,13 +198,17 @@
 <span><span class="co">## $ receptor.expr    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.5182538, 4.5311493, 0.1062514, 0.2230945, 0.2157197…</span></span>
 <span><span class="co">## $ global_mean      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.1990563, 0.1990563, 0.1990563, 0.1990563, 0.1990563…</span></span>
 <span><span class="co">## $ LRscore          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.6941424, 0.9107452, 0.5068361, 0.5931461, 0.5879491…</span></span></code></pre>
-<p><code>get_*</code> functions refer to <code>liana_call</code> and <code>liana_score</code> functions behind the scenes, so please refer to those for more info.</p>
+<p><code>get_*</code> functions refer to <code>liana_call</code> and
+<code>liana_score</code> functions behind the scenes, so please refer to
+those for more info.</p>
 </div>
 <div class="section level3">
 <h3 id="install-liana">Install LIANA++<a class="anchor" aria-label="anchor" href="#install-liana"></a>
 </h3>
-<p>Install a LIANA++ environment with all original software as a way to minimize bias for benchmark studies.</p>
-<p>LIANA++ uses CCC methods from both R and Python, as such dependencies for both need to be installed.</p>
+<p>Install a LIANA++ environment with all original software as a way to
+minimize bias for benchmark studies.</p>
+<p>LIANA++ uses CCC methods from both R and Python, as such dependencies
+for both need to be installed.</p>
 <p>To install the LIANA++ framework run the following code in R:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
@@ -214,22 +233,29 @@
 <span></span>
 <span><span class="co"># Finally, install LIANA</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'saezlab/liana'</span><span class="op">)</span></span></code></pre></div>
-<p>Squidpy and NATMI are written in Python, as such a python environment with the prerequisites of these methods needs to be set up.</p>
-<p>If you also wish to run the CellPhoneDB re-implementation from Squidpy, please set up a <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/index.html" class="external-link">conda</a> environment by running the following lines in the terminal:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="ex">conda</span> create -n liana_env</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="ex">conda</span> activate liana_env</span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="ex">conda</span> install -c anaconda python=3.8.5</span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="ex">pip</span> install squidpy</span></code></pre></div>
-<p>Please use the <a href="https://github.com/saezlab/liana/blob/master/liana_env.yml" class="external-link">.yml</a> file to set up a conda environment:</p>
+<p>Squidpy and NATMI are written in Python, as such a python environment
+with the prerequisites of these methods needs to be set up.</p>
+<p>If you also wish to run the CellPhoneDB re-implementation from
+Squidpy, please set up a <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/index.html" class="external-link">conda</a>
+environment by running the following lines in the terminal:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> liana_env</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate liana_env</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> anaconda python=3.8.5</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install squidpy</span></code></pre></div>
+<p>Please use the <a href="https://github.com/saezlab/liana/blob/master/liana_env.yml" class="external-link">.yml</a>
+file to set up a conda environment:</p>
 <pre><code>conda env create -f liana_env.yml</code></pre>
-<p>Note! NATMI and Squidpy are set by default to look for this conda environment (“liana_env”).</p>
+<p>Note! NATMI and Squidpy are set by default to look for this conda
+environment (“liana_env”).</p>
 <div class="section level5">
-<h5 id="to-use-natmi-with-liana-clone-the-modified-natmi-repo-into-liana-path-by-running-the-following-in-the-terminal">To use NATMI with LIANA, clone the modified NATMI repo into liana path by running the following in the terminal:<a class="anchor" aria-label="anchor" href="#to-use-natmi-with-liana-clone-the-modified-natmi-repo-into-liana-path-by-running-the-following-in-the-terminal"></a>
+<h5 id="to-use-natmi-with-liana-clone-the-modified-natmi-repo-into-liana-path-by-running-the-following-in-the-terminal">To use NATMI with LIANA, clone the modified NATMI repo into liana
+path by running the following in the terminal:<a class="anchor" aria-label="anchor" href="#to-use-natmi-with-liana-clone-the-modified-natmi-repo-into-liana-path-by-running-the-following-in-the-terminal"></a>
 </h5>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="bu">cd</span> *insert fullpath*/liana</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">git</span> clone https://github.com/saezlab/NATMI</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="pp">*</span>insert fullpath<span class="pp">*</span>/liana</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/saezlab/NATMI</span></code></pre></div>
 <div class="section level6">
-<h6 id="note-that-natmi-was-forked-from-asrhounatmi-and-changed-to-be-agnostic-of-the-working-directory-when-loading-the-resources-">Note that, NATMI was forked from <a href="https://github.com/asrhou/NATMI.git" class="external-link">asrhou/NATMI</a> and changed to be agnostic of the working directory when loading the resources.<a class="anchor" aria-label="anchor" href="#note-that-natmi-was-forked-from-asrhounatmi-and-changed-to-be-agnostic-of-the-working-directory-when-loading-the-resources-"></a>
+<h6 id="note-that-natmi-was-forked-from-asrhounatmi-and-changed-to-be-agnostic-of-the-working-directory-when-loading-the-resources-">Note that, NATMI was forked from <a href="https://github.com/asrhou/NATMI.git" class="external-link">asrhou/NATMI</a> and changed
+to be agnostic of the working directory when loading the resources.<a class="anchor" aria-label="anchor" href="#note-that-natmi-was-forked-from-asrhounatmi-and-changed-to-be-agnostic-of-the-working-directory-when-loading-the-resources-"></a>
 </h6>
 </div>
 </div>
@@ -245,7 +271,11 @@
 <h5 id="call_-functions">
 <code>call_*</code> functions<a class="anchor" aria-label="anchor" href="#call_-functions"></a>
 </h5>
-<p>Use the <em>call_</em> functions to run the pipelines of the original methods, rather than their re-implementations. These functions work with Seurat objects and they are instead converted to SCE. These are largely getting <strong>deprecated</strong> and will be moved to a seperate repository in the future.</p>
+<p>Use the <em>call_</em> functions to run the pipelines of the original
+methods, rather than their re-implementations. These functions work with
+Seurat objects and they are instead converted to SCE. These are largely
+getting <strong>deprecated</strong> and will be moved to a seperate
+repository in the future.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># RUN cellchat alone with OmniPath's Consensus</span></span>
 <span><span class="va">sca_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/call_sca.html">call_sca</a></span><span class="op">(</span></span>
@@ -255,7 +285,8 @@
 <span></span>
 <span><span class="co"># Show CellChat Results</span></span>
 <span><span class="va">sca_res</span></span></code></pre></div>
-<p>Similarly one could call all <code>call_*</code> functions via <code>liana_wrap</code></p>
+<p>Similarly one could call all <code>call_*</code> functions via
+<code>liana_wrap</code></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">liana_calls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/liana_wrap.html">liana_wrap</a></span><span class="op">(</span><span class="va">testdata</span>,</span>
 <span>                          method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'call_connectome'</span>,</span>

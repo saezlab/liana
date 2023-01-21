@@ -14,7 +14,7 @@ within a factor"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -328,10 +328,10 @@ within a factor</p>
 <dd><p>Whether resize the matrix to let the dimension of the matrix the same as the dimension of the raster image? The value can be logical. If it is <code>TRUE</code>, <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></code> is used to summarize the sub matrix which corresponds to a single pixel. The value can also be a summary function, e.g. <code>max</code>.</p></dd>
 
     <dt><code>raster_by_magick</code></dt>
-<dd><p>Whether to use <code>image_resize</code> to scale the image.</p></dd>
+<dd><p>Whether to use <code><a href="https://docs.ropensci.org/magick/reference/transform.html" class="external-link">image_resize</a></code> to scale the image.</p></dd>
 
     <dt><code>raster_magick_filter</code></dt>
-<dd><p>Pass to <code>filter</code> argument of <code>image_resize</code>. A character scalar and all possible values are in <code>filter_types</code>. The default is <code>"Lanczos"</code>.</p></dd>
+<dd><p>Pass to <code>filter</code> argument of <code><a href="https://docs.ropensci.org/magick/reference/transform.html" class="external-link">image_resize</a></code>. A character scalar and all possible values are in <code><a href="https://docs.ropensci.org/magick/reference/options.html" class="external-link">filter_types</a></code>. The default is <code>"Lanczos"</code>.</p></dd>
 
     <dt><code>post_fun</code></dt>
 <dd><p>A function which will be executed after the heatmap list is drawn.</p></dd>

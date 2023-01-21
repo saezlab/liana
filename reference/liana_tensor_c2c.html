@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,11 +85,12 @@
 <span>  rank <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1337</span>,</span>
 <span>  upper_rank <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  runs <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  runs <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  init <span class="op">=</span> <span class="st">"svd"</span>,</span>
 <span>  build_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  factors_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  conda_env <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_available <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  inplace <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sender_col <span class="op">=</span> <span class="st">"source"</span>,</span>
@@ -176,7 +177,8 @@ If NULL, then rank selection is performed using the `elbow_rank_selection` funct
 
 <dt>runs</dt>
 <dd><p>Number of tensor factorization performed for a given rank.
-Each factorization varies in the seed of initialization.</p></dd>
+Each factorization varies in the seed of initialization. Consider increasing
+the number of runs, in order to obtain a more robust rank estimate.</p></dd>
 
 
 <dt>init</dt>
@@ -191,6 +193,15 @@ selection and no factorization.</p></dd>
 
 <dt>factors_only</dt>
 <dd><p>whether to return only the factors after factorization</p></dd>
+
+
+<dt>conda_env</dt>
+<dd><p>name of existing conda environment</p></dd>
+
+
+<dt>use_available</dt>
+<dd><p>whether to use c2c if available in current env.
+False by default.</p></dd>
 
 
 <dt>verbose</dt>
