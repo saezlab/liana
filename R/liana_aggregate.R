@@ -2,7 +2,7 @@
 #'
 #' @param liana_res LIANA results
 #' @param aggregate_how way to aggregate, by default (NULL) will aggregate
-#'  all passed methods with the approach specified in `liana:::..score_specs`.
+#'  all passed methods with the approach specified in `liana:::.score_specs`.
 #'  Alternative options are `magnitude` and `specificity`.
 #' @param set_cap Function used to set ranked cap (i.e. the value that is
 #'    assigned to interactions with NA for scores);
