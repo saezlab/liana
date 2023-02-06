@@ -322,7 +322,8 @@ get_c2c_factors <- function(sce, group_col=NULL, sample_col){
     factors$contexts <- .join_meta(sce,
                                    factors$contexts,
                                    sample_col = sample_col,
-                                   group_col = group_col)
+                                   group_col = group_col,
+                                   .left_col="context")
     return(factors)
 
 }

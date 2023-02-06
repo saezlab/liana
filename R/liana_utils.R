@@ -67,12 +67,18 @@ liana_bysample <- function(sce,
 
 #' Join sample descriptor column from SCE to another table
 #' @param sce SingleCellExperiment
-#' @param right (df) to join to colData per sample
+#' @param left (df) to join to colData per sample
 #' @param sample_col unique identifier column from colData
 #' @param group_col sample_col descriptor column
+#' @param .left_col The columns by which we map `sample_col` if NULL, its set to
+#' the same as `sample_col`.
 #'
 #' @noRd
-.join_meta <- function(sce, right, sample_col, group_col){
+.join_meta <- function(sce, left, sample_col, group_col, .left_col=NULL){
+
+    if(is.null(.left_col)){
+        .left_col <- sample_col
+    }
 
     meta <- colData(sce) %>%
         as_tibble() %>%
@@ -80,7 +86,10 @@ liana_bysample <- function(sce,
         distinct() %>%
         mutate( {{ group_col }} := as.factor(.data[[group_col]]))
 
-    left_join(right, meta, by=sample_col)
+    by <- sample_col
+    names(by) <- .left_col
+
+    left_join(left, meta, by=by)
 }
 
 
