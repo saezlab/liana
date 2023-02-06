@@ -377,6 +377,10 @@ show_resources <- function(){
   # set to value of expr_prop from defaults, or 0 if not to filter
   expr_prop <- liana_defaults(...)$expr_prop * filt_or_not
 
+  if (!is.numeric(expr_prop) | expr_prop < 0 | expr_prop > 1) {
+    stop("Expression Proportion should be a numeric value between 0 and 1")
+  }
+  
   if(expr_prop > 0){
     # If we filter missing subunits here, they are
     # then not aggregated in the method

@@ -77,6 +77,7 @@ liana_prep.Seurat <- function(sce,
 #' Helper function to perform basic filterin on the SCE object prior to feeding it to LIANA
 #'
 #' @param sce SingleCellExperiment Object
+#' @param min_cells minimum cell per cell identity to be considered for analysis
 #' @param verbose logical for verbosity
 #'
 #' @return SingleCellExperiment object
@@ -88,6 +89,10 @@ liana_prep.Seurat <- function(sce,
         stop("NAs found in Idents/Labels!")
     }
 
+    if (!is.numeric(min_cells) | min_cells <= 0) {
+      stop("min_cells parameter should be a numeric value greater than 0")
+    }
+    
     # Remove any cell types with less than X cells
     remove_labels <- colData(sce) %>%
         as_tibble() %>%
