@@ -4,7 +4,7 @@
 #'
 #' @param method method(s) to be run via liana
 #'
-#' @param resource resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
+#' @param resource resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all `human` resources in one go),
 #'   or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`
 #'
 #' @param idents_col the cell identities/labels to be used. By default set to NULL, and will used the active
@@ -268,7 +268,7 @@ select_resource <- function(resource){
         readRDS(system.file(package = 'liana', "omni_resources.rds"))
 
     if(tolower(resource)=="all"){
-        omni_resources[show_resources()]
+        omni_resources[show_resources()!="MouseConsensus"]
     } else{
         omni_resources[resource]
     }
