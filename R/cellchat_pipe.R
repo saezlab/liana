@@ -171,6 +171,8 @@ cellchat_formatDB <- function(ccDB, op_resource, exclude_anns){
                  "co_I_receptor")
     # if not add them
     if(any(!colnames(op_resource) %in% reqcols)){
+        reqcols <- setdiff(reqcols, colnames(op_resource))
+
         op_resource %<>%
             # add cols
             add_column(., !!! reqcols, .name_repair="universal") %>%

@@ -22,7 +22,7 @@ liana_aggregate(
 \item{liana_res}{LIANA results}
 
 \item{aggregate_how}{way to aggregate, by default (NULL) will aggregate
-all passed methods with the approach specified in `liana:::..score_specs`.
+all passed methods with the approach specified in `liana:::.score_specs`.
 Alternative options are `magnitude` and `specificity`.}
 
 \item{resource}{If methods are ran with multiple resources, the name of the

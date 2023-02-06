@@ -1,4 +1,11 @@
-# LIANA 0.1.10
+# LIANA 0.1.11 (06.02.22)
+
+- Fixed issue with sample_col in `liana_tensor` functions
+- Removed redundant scconnect code
+- Merged #89 to fix typo in `liana_aggregate` documentation
+- Fix bug with column duplicates in `cellchat_formatDB`.
+
+# LIANA 0.1.10 (23.01.22)
 
 - Fixed issues in the `generate_lr_geneset` function, and other typos and
 by mistake hardcoded values.
