@@ -89,10 +89,10 @@ liana_prep.Seurat <- function(sce,
         stop("NAs found in Idents/Labels!")
     }
 
-    if (!is.numeric(min_cells) | min_cells <= 0) {
-      stop("min_cells parameter should be a numeric value greater than 0")
+    if (!is.numeric(min_cells) | min_cells < 0) {
+      stop("min_cells parameter should be a positive number")
     }
-    
+
     # Remove any cell types with less than X cells
     remove_labels <- colData(sce) %>%
         as_tibble() %>%
