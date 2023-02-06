@@ -4,10 +4,12 @@
 \alias{plot_context_boxplot}
 \title{Generate boxplots with significance}
 \usage{
-plot_context_boxplot(sce, group_col, test = "t.test", ...)
+plot_context_boxplot(sce, sample_col, group_col, test = "t.test", ...)
 }
 \arguments{
 \item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
+
+\item{sample_col}{context/sample names - obtained from `colData(sce)`}
 
 \item{group_col}{context descriptor - to be obtained from `colData(sce)`}
 

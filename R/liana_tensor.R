@@ -311,9 +311,10 @@ format_c2c_factors <- function(factors,
 #' Returns tensor cell2cell results
 #' @param sce SingleCellExperiment with factors output from tensor-cell2cell
 #' @param group_col context descriptor - to be obtained from `colData(sce)`
+#' @param sample_col context/sample names - obtained from `colData(sce)`
 #'
 #' @export
-get_c2c_factors <- function(sce, group_col=NULL, sample_col="context"){
+get_c2c_factors <- function(sce, group_col=NULL, sample_col){
     factors <- sce@metadata$tensor_res
 
     if(is.null(group_col)) return(factors)
@@ -334,9 +335,9 @@ get_c2c_factors <- function(sce, group_col=NULL, sample_col="context"){
 #'
 #' @export
 #'
-plot_c2c_overview <- function(sce, group_col){
+plot_c2c_overview <- function(sce, group_col, sample_col){
 
-    factors <- get_c2c_factors(sce, group_col)
+    factors <- get_c2c_factors(sce, group_col, sample_col)
 
     # Contexts
     contexts <- factors$contexts %>%
@@ -433,15 +434,18 @@ plot_c2c_overview <- function(sce, group_col){
 #'
 #' @export
 plot_context_boxplot <- function(sce,
+                                 sample_col,
                                  group_col,
                                  test="t.test",
                                  ...){
 
-    factors <- get_c2c_factors(sce, group_col)
+    factors <- get_c2c_factors(sce,
+                               sample_col=sample_col,
+                               group_col=group_col)
 
     ### Alternative
     contexts_data <- factors$contexts %>%
-        select(!!group_col, starts_with("Factor")) %>%
+        select(!!all_of(group_col), starts_with("Factor")) %>%
         pivot_longer(-group_col,
                      names_to = "fact",
                      values_to = "loadings") %>%
@@ -485,10 +489,13 @@ plot_context_boxplot <- function(sce,
 #'
 #' @export
 plot_context_heat <- function(sce,
+                              sample_col,
                               group_col,
                               ...){
 
-    factors <- get_c2c_factors(sce, group_col)
+    factors <- get_c2c_factors(sce,
+                               sample_col = sample_col,
+                               group_col = group_col)
 
     # Samples dictionary
     meta_dict <- factors$contexts %>%

@@ -291,7 +291,6 @@ select_resource <- function(resource){
             logfc = expr(get_logfc),
             natmi = expr(get_natmi),
             sca = expr(get_sca),
-            scconnect = expr(get_scconnect),
             # liana_permutes
             cellphonedb = expr(get_cellphonedb),
             # cytotalk

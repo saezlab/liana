@@ -4,12 +4,14 @@
 \alias{plot_c2c_overview}
 \title{Function to plot an Overview of tensor-c2c results}
 \usage{
-plot_c2c_overview(sce, group_col)
+plot_c2c_overview(sce, group_col, sample_col)
 }
 \arguments{
 \item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
 
 \item{group_col}{context descriptor - to be obtained from `colData(sce)`}
+
+\item{sample_col}{context/sample names - obtained from `colData(sce)`}
 }
 \description{
 Function to plot an Overview of tensor-c2c results

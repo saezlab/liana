@@ -259,7 +259,7 @@ or four vectors corresponding to the initial dimensions of the tensor.
 * `receivers` - loadings for receivers/target cell identities
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # get the factors
-factors <- get_c2c_factors(sce)
+factors <- get_c2c_factors(sce, group_col = "stim", sample_col = "context")
 
 # show them
 glimpse(factors)
@@ -274,7 +274,7 @@ cell types are involved in the CCC events that distinguish the conditions.
 
 ```{r, message=FALSE, warning=FALSE, fig.width=16, fig.height=12}
 # Plot overview
-plot_c2c_overview(sce, group_col="stim")
+plot_c2c_overview(sce, group_col="stim", sample_col="context")
 ```
 
 ### Statistical comparison of Communication Patterns
@@ -289,6 +289,7 @@ and after IFN-beta stimulation.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 # Get all boxplots
 all_facts_boxes <- plot_context_boxplot(sce,
+                                        sample_col = "context",
                                         group_col = "stim",
                                         test="t.test", # applicable only to two groups
                                         paired=TRUE #! Is this the case for your data?
@@ -313,7 +314,7 @@ Again, we see a clear seperation between STIM and CTRL, further suggesting the
 relevance of the changes in the inferred interactions.
 ```{r, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
 
-plot_context_heat(sce, group_col = "stim")
+plot_context_heat(sce, group_col = "stim", sample_col="context")
 
 ```
 
@@ -367,6 +368,8 @@ plot_lr_heatmap(sce,  n = 5, cluster_columns=FALSE)
   
   
 ## LR loadings Pathway Enrichment
+
+### Footprint Enrichment Analysis
 
 Here, we will use pathways from [PROGENy](https://github.com/saezlab/progeny),
 together with [decoupleR](https://github.com/saezlab/decoupleR), to do an 
@@ -455,8 +458,6 @@ lrs %>%
   scale_colour_manual(values = c("royalblue3", "red")) +
   labs(x="Pathway Weight", y="LR Loading")
 ```
-
-
 
 ## Citation
 

@@ -4,12 +4,14 @@
 \alias{get_c2c_factors}
 \title{Returns tensor cell2cell results}
 \usage{
-get_c2c_factors(sce, group_col = NULL, sample_col = "context")
+get_c2c_factors(sce, group_col = NULL, sample_col)
 }
 \arguments{
 \item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
 
 \item{group_col}{context descriptor - to be obtained from `colData(sce)`}
+
+\item{sample_col}{context/sample names - obtained from `colData(sce)`}
 }
 \description{
 Returns tensor cell2cell results

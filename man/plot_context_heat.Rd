@@ -4,10 +4,12 @@
 \alias{plot_context_heat}
 \title{Plot a Heatmap of context loadings}
 \usage{
-plot_context_heat(sce, group_col, ...)
+plot_context_heat(sce, sample_col, group_col, ...)
 }
 \arguments{
 \item{sce}{SingleCellExperiment with factors output from tensor-cell2cell}
+
+\item{sample_col}{context/sample names - obtained from `colData(sce)`}
 
 \item{group_col}{context descriptor - to be obtained from `colData(sce)`}
 
