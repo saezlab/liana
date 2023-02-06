@@ -28,7 +28,7 @@ to the SingleCellExperiment object (`sce@metadata$liana_res`)}
   \describe{
     \item{\code{sce}}{`SingleCellExperiment` object or `SeuratObject`}
     \item{\code{method}}{method(s) to be run via liana}
-    \item{\code{resource}}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
+    \item{\code{resource}}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all `human` resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
     \item{\code{external_resource}}{external resource in OmniPath tibble format}
     \item{\code{min_cells}}{minimum cell per cell identity to be considered for analysis}

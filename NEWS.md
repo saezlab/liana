@@ -4,6 +4,7 @@
 - Removed redundant scconnect code
 - Merged #89 to fix typo in `liana_aggregate` documentation
 - Fix bug with column duplicates in `cellchat_formatDB`.
+- passing "all" to `select_resource` will now only return human resources.
 
 # LIANA 0.1.10 (23.01.22)
 

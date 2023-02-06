@@ -250,7 +250,8 @@ liana_wrap <- function(sce,
 
 #' Helper Function to Handle resource choices
 #'
-#' @param resource names of the resources
+#' @param resource names of the resources. Passing `all` will return all
+#' human resources (i.e. all resources, except MouseConsensus)
 #'
 #' @details This function simply reads omni_resources.rds and returns the resources.
 #'    Any of the resources can also be obtained via the same file.

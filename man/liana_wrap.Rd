@@ -26,7 +26,7 @@ liana_wrap(
 
 \item{method}{method(s) to be run via liana}
 
-\item{resource}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
+\item{resource}{resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all `human` resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`}
 
 \item{idents_col}{the cell identities/labels to be used. By default set to NULL, and will used the active

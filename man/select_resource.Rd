@@ -7,7 +7,8 @@
 select_resource(resource)
 }
 \arguments{
-\item{resource}{names of the resources}
+\item{resource}{names of the resources. Passing `all` will return all
+human resources (i.e. all resources, except MouseConsensus)}
 }
 \description{
 Helper Function to Handle resource choices
