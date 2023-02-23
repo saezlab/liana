@@ -9,6 +9,8 @@ to `liana_dotplot`.
 pre-built Tensor.
 - Aggregation can now be performed also via `liana_bysample`, takes `aggregate_how` 
 parameter, which allows `magnitude`, `specificity`, or `both`.
+- Added `preprocess_scores` function that handles the conversion of liana's
+scores to Tensor format.
 
 
 # LIANA 0.1.11 (06.02.22)
