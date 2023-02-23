@@ -180,7 +180,7 @@ liana_aggregate <- function(liana_res,
 #' # run liana
 #' liana_res <- liana_wrap(testdata, method=c("sca", "natmi"))
 #' # aggregate results from multiple methods
-#' liana_res <- liana_consensus(liana_res)
+#' liana_res <- rank_aggregate(liana_res)
 rank_aggregate <- function(liana_res, ...){
     dots <- list(...)
     if("aggregate_how" %in% names(dots)){
