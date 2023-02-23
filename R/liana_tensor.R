@@ -811,6 +811,7 @@ preprocess_scores <- function(context_df_dict,
 #' Otherwise, returns a tensor with factorization results.
 #'
 #' @export
+#'
 decompose_tensor <- function(prebuilt_tensor,
                              rank=NULL,
                              tf_optimization = 'robust',

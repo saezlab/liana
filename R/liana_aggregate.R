@@ -165,8 +165,7 @@ liana_aggregate <- function(liana_res,
 }
 
 
-#' Function to Aggregate CCC Method results and provide both magnitude and
-#' specificity ranks.
+#' Aggregate CCC Method results and by both magnitude and specificity ranks
 #'
 #' @param liana_res LIANA results
 #' @inheritDotParams liana_aggregate
