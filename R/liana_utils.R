@@ -9,6 +9,9 @@
 #' @param inplace logical (TRUE by default) if liana results are to be saved
 #'  to the SingleCellExperiment object (`sce@metadata$liana_res`)
 #'
+#' @param aggregate_how if running multiple methods (default), then one cal
+#' also choose to aggregate the CCC results by sample.
+#'
 #' @details takes a Seurat/SCE object and runs LIANA by sample/condition. The
 #' key by which the samples are separated is build from the `condition_col` and
 #' `sample_col`, separated by the `key_sep`.
@@ -26,6 +29,7 @@ liana_bysample <- function(sce,
                            sample_col,
                            verbose = TRUE,
                            inplace=TRUE,
+                           aggregate_how=NULL,
                            ...){
 
     if(!is.factor(colData(sce)[[sample_col]])){
@@ -37,6 +41,11 @@ liana_bysample <- function(sce,
         }
     sce[[sample_col]] <- as.factor(sce[[sample_col]])
 
+    if (!is.null(aggregate_how)){
+        if(!(aggregate_how %in% c("both", "magnitude", "specificity"))){
+            stop("Invalid `aggregate_how` parameter")
+        }
+    }
 
     # Map over key col
     liana_res <- map(levels(sce[[sample_col]]),
@@ -52,7 +61,20 @@ liana_bysample <- function(sce,
                          colLabels(sce_temp) <- sce_temp[[idents_col]]
 
                          # Run LIANA on each
-                         liana_wrap(sce=sce_temp, ...)
+                         lr <- liana_wrap(sce=sce_temp, verbose = verbose, ...)
+
+                         if(!is.null(aggregate_how)){
+                             if(aggregate_how!="both"){
+                                 lr <- lr %>%
+                                     liana_aggregate(aggregate_how=aggregate_how,
+                                                     verbose = verbose)
+                             } else{
+                                 lr <- lr %>%
+                                     rank_aggregate(verbose = verbose)
+                             }
+                         }
+
+                         return(lr)
 
                      }) %>%
         setNames(levels(sce[[sample_col]]))
@@ -266,3 +288,4 @@ plot_abundance_summary <- function(ctqc, ncol = 3){
         theme_bw() +
         theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 }
+

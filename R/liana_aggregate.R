@@ -164,6 +164,52 @@ liana_aggregate <- function(liana_res,
     return(liana_aggr)
 }
 
+
+#' Function to Aggregate CCC Method results and provide both magnitude and
+#' specificity ranks.
+#'
+#' @param liana_res LIANA results
+#' @inheritDotParams liana_aggregate
+#'
+#' @export
+#'
+#' @examples
+#' liana_path <- system.file(package = "liana")
+#' # load testdata
+#' testdata <- readRDS(file.path(liana_path , "testdata", "input", "testdata.rds"))
+#' # run liana
+#' liana_res <- liana_wrap(testdata, method=c("sca", "natmi"))
+#' # aggregate results from multiple methods
+#' liana_res <- liana_consensus(liana_res)
+rank_aggregate <- function(liana_res, ...){
+    dots <- list(...)
+    if("aggregate_how" %in% names(dots)){
+        stop("A consensus for both magnitude and specificity will be assigned!")
+    }
+
+    keys <- c("source", "target",
+              "ligand.complex",
+              "receptor.complex")
+
+    magnitude_rank <- liana_aggregate(liana_res,
+                                      aggregate_how="magnitude",
+                                      ...) %>%
+        dplyr::rename(magnitude_rank = aggregate_rank)
+    specificity_rank <- liana_aggregate(liana_res,
+                                        aggregate_how="specificity",
+                                        ...) %>%
+        select(all_of(keys),
+               specificity_rank = aggregate_rank)
+
+    consensus_rank <- left_join(magnitude_rank, specificity_rank, by=keys) %>%
+        select(all_of(keys), magnitude_rank, specificity_rank, everything()) %>%
+        arrange(magnitude_rank)
+
+    return(consensus_rank)
+}
+
+
+
 #' Helper function to execute a function on the vector representing the number
 #'  of rows in the results for each method
 #'

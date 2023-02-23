@@ -10,13 +10,15 @@ liana_aggr <- readRDS(file.path(liana_path, "testdata",
 test_that("Test liana dotplot", {
     exp1 <- readRDS(file.path(liana_path, "testdata",
                               "output", "liana_dotplot_out.RDS"))
-    res1 <- liana_dotplot(liana_cpdb %>% # invert
-                              mutate(pvalue = -log10(pvalue+1e10)),
+    res1 <- liana_dotplot(liana_cpdb,
                           source_groups = "B",
                           target_groups = c("NK", "CD8 T"),
                           magnitude = "lr.mean",
                           specificity = "pvalue",
-                          show_complex = TRUE)
+                          invert_specificity = TRUE,
+                          show_complex = TRUE,
+                          invert_function = function(x) -log10(x+1e-10)
+                          )
 
     expect_identical(res1$data, exp1$data)
 })

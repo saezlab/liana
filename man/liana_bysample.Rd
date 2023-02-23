@@ -10,6 +10,7 @@ liana_bysample(
   sample_col,
   verbose = TRUE,
   inplace = TRUE,
+  aggregate_how = NULL,
   ...
 )
 }
@@ -22,6 +23,9 @@ liana_bysample(
 
 \item{inplace}{logical (TRUE by default) if liana results are to be saved
 to the SingleCellExperiment object (`sce@metadata$liana_res`)}
+
+\item{aggregate_how}{if running multiple methods (default), then one cal
+also choose to aggregate the CCC results by sample.}
 
 \item{...}{
   Arguments passed on to \code{\link[=liana_wrap]{liana_wrap}}

@@ -1,3 +1,16 @@
+# LIANA 0.1.12 (24.02.22)
+
+- Added `rank_aggregate` to generate both specificity and magnitude rank
+aggregates. Essentially runs `liana_aggregate` twice with different `aggregate_how`
+parameters and joins.
+- Added `invert_specificity`, `invert_magnitude`, `invert_function` parameters
+to `liana_dotplot`.
+- Added `decompose_tensor` as a function to run only the decomposition on a 
+pre-built Tensor.
+- Aggregation can now be performed also via `liana_bysample`, takes `aggregate_how` 
+parameter, which allows `magnitude`, `specificity`, or `both`.
+
+
 # LIANA 0.1.11 (06.02.22)
 
 - Fixed issue with sample_col in `liana_tensor` functions

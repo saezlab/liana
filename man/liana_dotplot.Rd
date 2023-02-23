@@ -15,7 +15,10 @@ liana_dotplot(
   size.label = "Interaction\\nSpecificity",
   colour.label = "Expression\\nMagnitude",
   show_complex = TRUE,
-  size_range = c(2, 10)
+  size_range = c(2, 10),
+  invert_specificity = FALSE,
+  invert_magnitude = FALSE,
+  invert_function = function(x) -log10(x + 1e-10)
 )
 }
 \arguments{

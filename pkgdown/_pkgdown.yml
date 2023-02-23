@@ -29,6 +29,7 @@ reference:
     desc: "`liana`-wrapper and related functions"
     contents:
       - starts_with("liana_")
+      - rank_aggregate
   - title: (External) Method calling functions [Deprecated]
     desc: >
     contents:
@@ -60,6 +61,8 @@ reference:
       - plot_context_heat
       - plot_lr_heatmap
       - plot_c2c_cells
+      - decompose_tensor
+      - preprocess_scores
   - title: Others
     desc: "Other potentially relevant functions"
     contents:

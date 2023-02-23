@@ -23,3 +23,6 @@ test_that("Test tensor wrapper", {
     expect_true(all_equal(res1$senders, exp1$senders))
     expect_true(all_equal(res1$receivers, exp1$receivers))
 })
+
+
+

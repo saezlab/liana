@@ -99,7 +99,7 @@
 #'
 liana_tensor_c2c <- function(sce=NULL,
                              context_df_dict = NULL,
-                             score_col = 'LRscore',
+                             score_col = "LRscore",
                              how='inner',
                              lr_fill=NaN,
                              cell_fill=NaN,
@@ -178,7 +178,7 @@ liana_tensor_c2c <- function(sce=NULL,
     c2c <- reticulate::import(module = "cell2cell", as="c2c")
 
     # Format scores to tensor
-    liana_message(str_glue("Building the tensor..."),
+    liana_message(str_glue("Building the tensor using {score_col}..."),
                   verbose = verbose,
                   output = "message")
 
@@ -707,6 +707,188 @@ plot_c2c_cells <- function(sce,
     res <- n / (n - 1) * res
 
     return(max(0, res))
+}
+
+
+#' Helper function to deal with tensor sparsity and liana's scores as in Python
+#' @inheritParams liana_tensor_c2c
+#' @param lr_sep ligand-receptor separator; `^` by default.
+#' @param invert boolean wheter to invert the score (TRUE by defeault)
+#' @param invert_fun function used to invert scores
+#' @param non_negative whether to set negative scores to 0
+#' @param non_negative_fill the value to be used to fill negative values
+#' @param outer_fraction controls the elements to include in the union scenario of the `how` options.
+#' Only elements that are present at least in this fraction of samples/contexts will be included.
+#' When this value is 0, considers all elements across the samples. When this value is 1, it acts as using `how='inner'`
+preprocess_scores <- function(context_df_dict,
+                              score_col = "magnitude_rank",
+                              sender_col = "source",
+                              receiver_col = "target",
+                              ligand_col = "ligand.complex",
+                              receptor_col = "receptor.complex",
+                              outer_fraction = 0,
+                              invert = TRUE,
+                              invert_fun = function(x) 1 - x,
+                              non_negative = TRUE,
+                              non_negative_fill = 0,
+                              lr_sep = '^',
+                              verbose=TRUE
+                              ){
+
+    if(!score_col %in% colnames(context_df_dict[[1]])){
+        stop(str_glue("{score_col} does not exist!"))
+    }
+
+    source.cells <- unique(context_df_dict[[sender_col]])
+    target.cells <-  unique(context_df_dict[[receiver_col]])
+
+    all.cells.persample <- sapply(names(source.cells),
+                                  function(sample.name) union(source.cells[[sample.name]], target.cells[[sample.name]]))
+    all.cells <- Reduce(union, unname(unlist(all.cells.persample)))
+
+    cell.counts.persample <- sapply(all.cells,
+                                    function(ct) length(which(sapply(all.cells.persample, function(x) ct %in% x))))
+    cells.todrop <- names(which(cell.counts.persample < (outer_fraction*length(context_df_dict))))
+
+
+    lrs.persample <- map(context_df_dict, function(sample){
+        paste(sample[[ligand_col]], sample[[receptor_col]], sep = lr_sep)
+    } )
+    all.lrs <- Reduce(union, unname(unlist(lrs.persample)))
+    lr.counts.persample <- sapply(all.lrs, function (lr) length(which(sapply(lrs.persample, function(x) lr %in% x))))
+    lrs.todrop <- names(which(lr.counts.persample < (outer_fraction*length(context_df_dict))))
+
+    context_df_dict <- map(names(context_df_dict), function(sample.name){
+        ccc.sample <- context_df_dict[[sample.name]]
+
+        if(invert){ # invert score
+            liana_message(str_glue("Inverting `{score_col}`!"),
+                          verbose = verbose,
+                          output = "message")
+
+            ccc.sample %<>%
+                mutate({{ score_col }} := invert_fun(.data[[score_col]]))
+        }
+
+        if(non_negative){ # make non-negative
+            ccc.sample[[score_col]][ccc.sample[[score_col]] < 0] <- non_negative_fill
+        }
+
+        # apply the outer_frac parameter
+        ccc.sample[(!(ccc.sample[[sender_col]] %in% cells.todrop)) &
+                       (!(ccc.sample[[receiver_col]] %in% cells.todrop)), ]
+        ccc.sample<-ccc.sample[!(paste(ccc.sample[[ligand_col]], ccc.sample[[receptor_col]],
+                                       sep = lr_sep) %in% lrs.todrop), ]
+        return(ccc.sample)
+
+    }) %>%
+        setNames(names(context_df_dict))
+
+    return(context_df_dict)
+}
+
+#' Wrapper function to run `cell2cell_tensor` decomposition on a prebuilt tensor.
+#'
+#' @inheritParams liana_tensor_c2c
+#'
+#' @param prebuilt_tensor Tensor-cell2cell Prebuilt.Tensor class instance
+#' @param tf_optimization indicates whether running the analysis in the
+#' `'regular'` or the `'robust'` way. The regular way means that the
+#' tensor decomposition is run 10 times per rank evaluated in the elbow analysis,
+#' and 1 time in the final decomposition. Additionally,
+#' the optimization algorithm has less number of iterations in the regular than the
+#' robust case (100 vs 500) and less precision (tolerance of 1e-7 vs 1e-8).
+#' The robust case runs the tensor decomposition 20 times per rank evaluated in the elbow analysis,
+#' and 100 times in the final decomposition. Here we could use the `tf_optimization='regular'`,
+#' which is faster but generates less robust results. We recommend using `tf_optimization='robust`,
+#' which takes longer to run (more iteractions and more precise too).
+#'
+#' @param ... Dictionary containing keyword arguments for the c2c.compute_tensor_factorization function.
+#' The function deals with `random_state` (seed) and `rank` internally.
+#'
+#' @returns an instance of the cell2cell.tensor.BaseTensor class (via reticulate).
+#' If build_only is TRUE, then no rank selection or tensor decomposition is returned.
+#' Otherwise, returns a tensor with factorization results.
+#'
+#' @export
+decompose_tensor <- function(prebuilt_tensor,
+                             rank=NULL,
+                             tf_optimization = 'robust',
+                             seed = 1337,
+                             upper_rank = 25,
+                             elbow_metric = 'error',
+                             smooth_elbow = FALSE,
+                             init = 'svd',
+                             svd = 'numpy_svd',
+                             factors_only = TRUE,
+                             verbose = TRUE,
+                             ...){
+
+    # Deal with rank
+    rank <- if(is.null(rank)){ NULL } else {as.integer(rank)}
+
+    reticulate::py_set_seed(seed)
+
+    if (tf_optimization == 'robust'){
+        elbow_runs = 20
+        tf_runs = 100
+        tol = 1e-8
+        n_iter_max = 500
+    }else if (tf_optimization == 'regular'){
+        elbow_runs = 10
+        tf_runs = 1
+        tol = 1e-7
+        n_iter_max = 100
+    }
+
+    # estimate factor rank
+    elbow_metric_raw <- NULL
+    if(is.null(rank)){
+        liana_message(str_glue("Estimating ranks..."),
+                      verbose = verbose,
+                      output = "message")
+        py$temp <- tensor$elbow_rank_selection(upper_rank=as.integer(upper_rank),
+                                               init=init,
+                                               svd=svd,
+                                               automatic_elbow=TRUE,
+                                               metric=elbow_metric,
+                                               smooth=smooth_elbow,
+                                               runs=as.integer(elbow_runs),
+                                               n_iter_max=as.integer(n_iter_max),
+                                               tol = as.numeric(tol),
+                                               random_state=as.integer(seed))
+
+        elbow_metric_raw <- tensor$elbow_metric_raw
+
+        rank <- as.integer(tensor$rank)
+    }
+
+    # Compute tensor factorization
+    liana_message(str_glue("Decomposing the tensor..."),
+                  verbose = verbose,
+                  output = "message")
+    tensor$compute_tensor_factorization(rank = as.integer(rank),
+                                        init = init,
+                                        svd=svd,
+                                        runs=as.integer(tf_runs),
+                                        tol = as.numeric(tol),
+                                        n_iter_max=as.integer(n_iter_max),
+                                        random_state=as.integer(seed),
+                                        normalize_loadings=TRUE,
+                                        ...)
+
+    if(factors_only){
+        res <- format_c2c_factors(tensor$factors)
+
+        if(!is.null(elbow_metric_raw)){
+            res$elbow_metric_raw <- elbow_metric_raw
+        }
+
+    } else{
+        res <- tensor
+    }
+
+    return(res)
 }
 
 

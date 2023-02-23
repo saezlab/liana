@@ -139,7 +139,7 @@ sce <- liana_bysample(sce = sce,
                       idents_col = "cell",
                       method = "sca", # we use SingleCellSignalR's score alone
                       expr_prop = 0, # expression proportion threshold
-                      inplace=TRUE, # saves to sce
+                      inplace=TRUE, # saves inplace to sce
                       return_all = FALSE # whether to return non-expressed interactions 
                       )
 ```

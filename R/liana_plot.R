@@ -48,7 +48,10 @@ liana_dotplot <- function(liana_res,
                           size.label = "Interaction\nSpecificity",
                           colour.label = "Expression\nMagnitude",
                           show_complex = TRUE,
-                          size_range = c(2, 10)
+                          size_range = c(2, 10),
+                          invert_specificity = FALSE,
+                          invert_magnitude = FALSE,
+                          invert_function = function(x) -log10(x + 1e-10)
                           ){
 
     if(show_complex){
@@ -74,6 +77,12 @@ liana_dotplot <- function(liana_res,
         liana_mod %<>% inner_join(top_int, by=entities)
     }
 
+    if(invert_magnitude){
+        liana_mod %<>% mutate(!!magnitude := invert_function(.data[[magnitude]]))
+    }
+    if(invert_specificity){
+        liana_mod %<>% mutate(!!specificity := invert_function(.data[[specificity]]))
+    }
 
     liana_mod %<>%
         rename(magnitude = !!magnitude) %>%
