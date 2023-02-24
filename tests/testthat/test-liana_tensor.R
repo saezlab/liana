@@ -24,5 +24,17 @@ test_that("Test tensor wrapper", {
     expect_true(all_equal(res1$receivers, exp1$receivers))
 })
 
-
+test_that("Test decompose_tensor", {
+    tensor <- liana_tensor_c2c(context_df_dict = context_df_dict,
+                             score_col = 'score',
+                             rank = 5,
+                             how='outer',
+                             build_only = TRUE,
+                             inplace = FALSE
+    )
+    res1 <- decompose_tensor(tensor =  tensor,
+                             tf_optimization='regular',
+                             upper_rank = 5)
+    expect_equal(dim(res1$contexts), c(2, 2))
+})
 

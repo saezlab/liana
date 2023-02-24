@@ -796,7 +796,7 @@ preprocess_scores <- function(context_df_dict,
 #'
 #' @inheritParams liana_tensor_c2c
 #'
-#' @param prebuilt_tensor Tensor-cell2cell Prebuilt.Tensor class instance
+#' @param tensor Tensor-cell2cell Prebuilt.Tensor class instance
 #' @param tf_optimization indicates whether running the analysis in the
 #' `'regular'` or the `'robust'` way. The regular way means that the
 #' tensor decomposition is run 10 times per rank evaluated in the elbow analysis,
@@ -817,7 +817,7 @@ preprocess_scores <- function(context_df_dict,
 #'
 #' @export
 #'
-decompose_tensor <- function(prebuilt_tensor,
+decompose_tensor <- function(tensor,
                              rank=NULL,
                              tf_optimization = 'robust',
                              seed = 1337,
