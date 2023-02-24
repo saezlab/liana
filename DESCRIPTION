@@ -38,7 +38,7 @@ Authors@R: c(
         email = "jshinitinaga@ukaachen.de",
         comment = c(ORCID = "0000-0002-7655-7206")
     ))
-Description: LIANA provides a number of methods and resource for ligand-receptor interaction inference from scRNA-seq data.
+Description: LIANA provides a number of methods and resources for ligand-receptor interaction inference from scRNA-seq data.
 License: GPL-3 + file LICENSE
 URL: https://saezlab.github.io/liana/
 BugReports: https://github.com/saezlab/liana/issues
