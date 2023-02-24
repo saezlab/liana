@@ -11,6 +11,7 @@ pre-built Tensor.
 parameter, which allows `magnitude`, `specificity`, or `both`.
 - Added `preprocess_scores` function that handles the conversion of liana's
 scores to Tensor format.
+- Added additional tests related to Tensor-cell2cell
 
 
 # LIANA 0.1.11 (06.02.22)
