@@ -88,7 +88,8 @@ Suggests:
     decoupleR,
     ExperimentHub,
     muscData,
-    broom
+    broom,
+    Matrix (>= 1.5-0)
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, muscData, ExperimentHub
 Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
 RoxygenNote: 7.2.1

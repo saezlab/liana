@@ -739,15 +739,19 @@ preprocess_scores <- function(context_df_dict,
         stop(str_glue("{score_col} does not exist!"))
     }
 
-    source.cells <- unique(context_df_dict[[sender_col]])
-    target.cells <-  unique(context_df_dict[[receiver_col]])
+    source.cells <- map(context_df_dict, function(sample) unique(sample[[sender_col]]))
+    target.cells <- map(context_df_dict, function(sample) unique(sample[[receiver_col]]))
 
     all.cells.persample <- sapply(names(source.cells),
-                                  function(sample.name) union(source.cells[[sample.name]], target.cells[[sample.name]]))
+                                  function(sample.name) union(source.cells[[sample.name]],
+                                                              target.cells[[sample.name]]))
+
     all.cells <- Reduce(union, unname(unlist(all.cells.persample)))
 
     cell.counts.persample <- sapply(all.cells,
-                                    function(ct) length(which(sapply(all.cells.persample, function(x) ct %in% x))))
+                                    function(ct) length(which(sapply(all.cells.persample,
+                                                                     function(x) ct %in% x))
+                                                        ))
     cells.todrop <- names(which(cell.counts.persample < (outer_fraction*length(context_df_dict))))
 
 
@@ -775,9 +779,10 @@ preprocess_scores <- function(context_df_dict,
         }
 
         # apply the outer_frac parameter
-        ccc.sample[(!(ccc.sample[[sender_col]] %in% cells.todrop)) &
-                       (!(ccc.sample[[receiver_col]] %in% cells.todrop)), ]
-        ccc.sample<-ccc.sample[!(paste(ccc.sample[[ligand_col]], ccc.sample[[receptor_col]],
+        ccc.sample <- ccc.sample[(!(ccc.sample[[sender_col]] %in% cells.todrop)) &
+                                     (!(ccc.sample[[receiver_col]] %in% cells.todrop)), ]
+
+        ccc.sample <- ccc.sample[!(paste(ccc.sample[[ligand_col]], ccc.sample[[receptor_col]],
                                        sep = lr_sep) %in% lrs.todrop), ]
         return(ccc.sample)
 
