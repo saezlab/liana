@@ -34,7 +34,9 @@ Additional tutorials:
 
 * [LIANA for developers and benchmarks](https://saezlab.github.io/liana/articles/liana_devel.html)  
   
-  
+
+We also refer users to the Cell-cell communication chapter in the best-practices book from Theis lab, as it provides an overview of the common limitations and assumptions in CCC inference from (single-cell) transcriptomics data.
+
   
 ## LIANA Framework
 
