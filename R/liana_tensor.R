@@ -124,10 +124,6 @@ liana_tensor_c2c <- function(sce=NULL,
                              receptor_col = "receptor.complex",
                              ...){
 
-    if(is.null(context_df_dict)){
-        context_df_dict <- sce@metadata$liana_res
-    }
-
     if(is.null(context_df_dict) & is.null(sce)){
         stop("Please provide a valid `sce` OR `context_df_dict` object")
     }
@@ -139,9 +135,12 @@ liana_tensor_c2c <- function(sce=NULL,
                       )
     }
 
+    if(is.null(context_df_dict)){
+        context_df_dict <- sce@metadata$liana_res
+    }
+
     # Deal with rank
     rank <- if(is.null(rank)){ NULL } else {as.integer(rank)}
-
 
     c2c_available <-
     # Load correct conda env
