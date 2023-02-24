@@ -130,6 +130,9 @@
     <loc>/reference/decomplexify.html</loc>
   </url>
   <url>
+    <loc>/reference/decompose_tensor.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-aggregate_rank.html</loc>
   </url>
   <url>
@@ -365,6 +368,12 @@
   </url>
   <url>
     <loc>/reference/plot_lr_heatmap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/preprocess_scores.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rank_aggregate.html</loc>
   </url>
   <url>
     <loc>/reference/rank_method.html</loc>

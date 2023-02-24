@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.12</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,10 +65,21 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.12" id="liana-0112-240222">LIANA 0.1.12 (24.02.22)<a class="anchor" aria-label="anchor" href="#liana-0112-240222"></a></h2>
+<ul><li>Added <code>rank_aggregate</code> to generate both specificity and magnitude rank aggregates. Essentially runs <code>liana_aggregate</code> twice with different <code>aggregate_how</code> parameters and joins.</li>
+<li>Added <code>invert_specificity</code>, <code>invert_magnitude</code>, <code>invert_function</code> parameters to <code>liana_dotplot</code>.</li>
+<li>Added <code>decompose_tensor</code> as a function to run only the decomposition on a pre-built Tensor.</li>
+<li>Aggregation can now be performed also via <code>liana_bysample</code>, takes <code>aggregate_how</code> parameter, which allows <code>magnitude</code>, <code>specificity</code>, or <code>both</code>.</li>
+<li>Added <code>preprocess_scores</code> function that handles the conversion of liana’s scores to Tensor format.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.11" id="liana-0111-060222">LIANA 0.1.11 (06.02.22)<a class="anchor" aria-label="anchor" href="#liana-0111-060222"></a></h2>
 <ul><li>Fixed issue with sample_col in <code>liana_tensor</code> functions</li>
 <li>Removed redundant scconnect code</li>
 <li>Merged <a href="https://github.com/saezlab/liana/issues/89" class="external-link">#89</a> to fix typo in <code>liana_aggregate</code> documentation</li>
+<li>Fix bug with column duplicates in <code>cellchat_formatDB</code>.</li>
+<li>passing “all” to <code>select_resource</code> will now only return human resources.</li>
+<li>add minor condition improvements to <code>liana_wrap</code> PR#92</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.10" id="liana-0110-230122">LIANA 0.1.10 (23.01.22)<a class="anchor" aria-label="anchor" href="#liana-0110-230122"></a></h2>

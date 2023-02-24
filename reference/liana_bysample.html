@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">liana</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.12</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,6 +77,7 @@
 <span>  <span class="va">sample_col</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  inplace <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  aggregate_how <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -100,6 +101,11 @@
 to the SingleCellExperiment object (`sce@metadata$liana_res`)</p></dd>
 
 
+<dt>aggregate_how</dt>
+<dd><p>if running multiple methods (default), then one cal
+also choose to aggregate the CCC results by sample.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="liana_wrap.html">liana_wrap</a></code></p><dl><dt><code>sce</code></dt>
 <dd><p>`SingleCellExperiment` object or `SeuratObject`</p></dd>
@@ -108,7 +114,7 @@ to the SingleCellExperiment object (`sce@metadata$liana_res`)</p></dd>
 <dd><p>method(s) to be run via liana</p></dd>
 
     <dt><code>resource</code></dt>
-<dd><p>resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all resources in one go),
+<dd><p>resource(s) to be used by the methods (`Consensus` by default), Use `all` to run all `human` resources in one go),
 or `custom` to run liana_wrap with an appropriately formatted custom resource, passed via `exernal_resource`</p></dd>
 
     <dt><code>external_resource</code></dt>
