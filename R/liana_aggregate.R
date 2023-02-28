@@ -193,12 +193,16 @@ rank_aggregate <- function(liana_res, ...){
     magnitude_rank <- liana_aggregate(liana_res,
                                       aggregate_how="magnitude",
                                       ...) %>%
-        dplyr::rename(magnitude_rank = aggregate_rank)
+        dplyr::rename(magnitude_rank = aggregate_rank,
+                      magnitude_mean_rank = mean_rank) %>%
+        select(!ends_with(".rank"))
     specificity_rank <- liana_aggregate(liana_res,
                                         aggregate_how="specificity",
                                         ...) %>%
         select(all_of(keys),
-               specificity_rank = aggregate_rank)
+               specificity_rank = aggregate_rank,
+               specificity_mean_rank = mean_rank,
+               !ends_with(".rank"))
 
     consensus_rank <- left_join(magnitude_rank, specificity_rank, by=keys) %>%
         select(all_of(keys), magnitude_rank, specificity_rank, everything()) %>%

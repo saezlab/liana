@@ -5,7 +5,7 @@
 \title{Wrapper function to run `cell2cell_tensor` decomposition on a prebuilt tensor.}
 \usage{
 decompose_tensor(
-  prebuilt_tensor,
+  tensor,
   rank = NULL,
   tf_optimization = "robust",
   seed = 1337,
@@ -20,7 +20,7 @@ decompose_tensor(
 )
 }
 \arguments{
-\item{prebuilt_tensor}{Tensor-cell2cell Prebuilt.Tensor class instance}
+\item{tensor}{Tensor-cell2cell Prebuilt.Tensor class instance}
 
 \item{rank}{Ranks for the Tensor Factorization (number of factors to deconvolve the original tensor).
 If NULL, then rank selection is performed using the `elbow_rank_selection` function.}
