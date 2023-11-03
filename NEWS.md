@@ -1,4 +1,16 @@
-# LIANA 0.1.12 (24.02.22)
+# LIANA 0.1.13 (03.11.23)
+
+- Changed the way that `max` rank is imputed when NAs are presented, or when `return_all` is true. 
+Essentially, `RobustRankAggregate` will use the max rank in the matrix, rather than the size of the dataframe.
+
+- Fixed a bug related to newer versions of CellChat with unused argument #75
+
+- Bumped `cell2cell` to its latest `0.6.8` version.
+
+- LIANA's `source` and `target` will not inherit the levels of `idents_col` #99
+
+
+# LIANA 0.1.12 (24.02.23)
 
 - Added `rank_aggregate` to generate both specificity and magnitude rank
 aggregates. Essentially runs `liana_aggregate` twice with different `aggregate_how`
@@ -14,7 +26,7 @@ scores to Tensor format.
 - Added additional tests related to Tensor-cell2cell
 
 
-# LIANA 0.1.11 (06.02.22)
+# LIANA 0.1.11 (06.02.23)
 
 - Fixed issue with sample_col in `liana_tensor` functions
 - Removed redundant scconnect code
@@ -23,7 +35,7 @@ scores to Tensor format.
 - passing "all" to `select_resource` will now only return human resources.
 - add minor condition improvements to `liana_wrap` PR#92
 
-# LIANA 0.1.10 (23.01.22)
+# LIANA 0.1.10 (23.01.23)
 
 - Fixed issues in the `generate_lr_geneset` function, and other typos and
 by mistake hardcoded values.

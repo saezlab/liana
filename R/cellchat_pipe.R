@@ -120,7 +120,6 @@ call_cellchat <- function(sce,
     cellchat.omni <- CellChat::computeCommunProb(cellchat.omni,
                                                  raw.use = .raw_use,
                                                  seed.use = .seed,
-                                                 do.fast = TRUE,
                                                  nboot = nboot)
 
     # Filter out the cell-cell communication if there are only few number of cells in certain cell groups

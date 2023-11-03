@@ -12,5 +12,5 @@ test_that("Test Cytotalk Wrap", {
                        method = c('cytotalk'),
                        resource = c('OmniPath'))
 
-    expect_equal(exp1, res1)
+    expect_equal(res1, exp1)
 })

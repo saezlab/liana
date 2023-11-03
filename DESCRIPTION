@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.12
+Version: 0.1.13
 Authors@R: c(
     person(
         given = "Daniel",
@@ -91,5 +91,5 @@ Suggests:
     broom
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, muscData, ExperimentHub
 Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3

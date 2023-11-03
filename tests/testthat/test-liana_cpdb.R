@@ -14,3 +14,4 @@ test_that("Test liana cpdb", {
 
     expect_equal(exp1, res1)
 })
+

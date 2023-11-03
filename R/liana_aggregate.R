@@ -276,16 +276,22 @@ rank_aggregate <- function(liana_res, ...){
 .aggregate_rank <- function(liana_mlist, join_cols, verbose, ...){
     liana_message("Aggregating Ranks", output = "message", verbose = verbose)
 
-    liana_mlist %>%
+    rankmat <- liana_mlist %>%
         map(function(res){
-            # bad practice, but almost unavoidable here...
             res %>%
                 unite(join_cols,
                       col = "interaction",
                       sep = "⊎") %>%
-                pull("interaction")
+                select(interaction, ends_with("rank"))
         }) %>%
-        .rank_matrix %>%
+        reduce(full_join,  by="interaction")  %>%
+        column_to_rownames(var = "interaction") %>%
+        as.matrix()
+
+    rankmat[is.na(rankmat)] <- max(rankmat, na.rm=TRUE)
+
+    rankmat %>%
+        {. / max(.)} %>%
         .robust_rank_agg(.,
                          ...) %>%
         separate(col = "interaction", sep = "⊎",
@@ -293,54 +299,9 @@ rank_aggregate <- function(liana_res, ...){
 }
 
 
-
-#' Function to convert a list of characters to a ranked matrix [0,1]
-#'
-#' @param glist a list of ranked/ordered characters
-#'
-#' @return a matrix filled with 0-1 values depending on the position order
-#' of the characters.
-#'
-#' @details Adated from Kolde et al., 2012.
-#' Required due to the removal of the RobustRankAggregate package from CRAN.
-#'
-#' @references Kolde, R., Laur, S., Adler, P. and Vilo, J., 2012.
-#'  Robust rank aggregation for gene list integration and meta-analysis.
-#'  Bioinformatics, 28(4), pp.573-580.
-#'
-#' @keywords internal
-.rank_matrix <- function(glist, ...){
-
-    # Get unique entities
-    u.ents <- unique(c(glist, recursive = TRUE))
-
-    # num of entities per col
-    num.ents <- length(u.ents)
-
-    # get position for each vect
-    pos.mat <- sapply(FUN = match,
-                      X = glist,
-                      x = u.ents,
-                      nomatch = num.ents) %>%
-        matrix(nrow = num.ents,
-               ncol = length(glist),
-               dimnames = list(u.ents, names(glist)))
-
-    # Fill mat /w total ents
-    rank.mat <- matrix(num.ents,
-                       nrow = num.ents,
-                       ncol = length(glist),
-                       dimnames = list(u.ents, names(glist)))
-
-    # return rank/total_rank by pos
-    return(pos.mat / rank.mat)
-
-}
-
-
 #' Function to calculate and format aggregate ranks
 #'
-#' @param rmat ranked matrix formated with `.rank_matrix`
+#' @param rmat a ranked matrix [0,1]
 #'
 #' @details Adated from Kolde et al., 2012.
 #' Required due to the removal of the RobustRankAggregate package from CRAN.

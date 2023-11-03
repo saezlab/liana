@@ -902,5 +902,5 @@ decompose_tensor <- function(tensor,
                        "pandas==1.4.2",
                        "rpy2==3.4.5")
 
-.liana_pips <- c("cell2cell==0.6.3",
+.liana_pips <- c("cell2cell==0.6.8",
                  "anndata2ri==1.0.6")

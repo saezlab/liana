@@ -10,7 +10,7 @@ test_that("Test liana aggregate", {
                               "output", "liana_res.RDS")) %>%
         liana_aggregate()
 
-    expect_equal(exp1, res1)
+    expect_equal(res1, exp1)
 })
 
 
@@ -27,7 +27,7 @@ test_that("Test liana aggregate (housekeep)", {
     )
 
 
-    expect_equal(exp2, res2)
+    expect_equal(res2, exp2)
 })
 
 

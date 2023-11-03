@@ -196,7 +196,6 @@ liana_pipe <- function(sce,
             .sp_costrain(cell.adj)
     }
 
-
     # Join complexes (recomplexify) to lr_res
     cmplx <- op_resource %>%
         select(
@@ -210,6 +209,10 @@ liana_pipe <- function(sce,
         left_join(., cmplx,
                   by=c("ligand", "receptor")) %>%
         distinct()
+
+    # Inherit levels of idents
+    levels(lr_res$source) <- levels(colLabels(sce))
+    levels(lr_res$target) <- levels(colLabels(sce))
 
     return(lr_res)
 }
