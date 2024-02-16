@@ -57,7 +57,7 @@ Imports:
     dplyr,
     readr,
     rlang,
-    OmnipathR,
+    OmnipathR (>= 3.11.3),
     SingleCellExperiment,
     scran,
     scater,
@@ -91,5 +91,5 @@ Suggests:
     broom
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, muscData, ExperimentHub
 Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Config/testthat/edition: 3
