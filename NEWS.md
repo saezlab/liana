@@ -1,6 +1,10 @@
+# LIANA 0.1.14 (15.02.24)
+
+- Orthology translation uses OMA instead of the outdated NCBI HomoloGene
+
 # LIANA 0.1.13 (03.11.23)
 
-- Changed the way that `max` rank is imputed when NAs are presented, or when `return_all` is true. 
+- Changed the way that `max` rank is imputed when NAs are presented, or when `return_all` is true.
 Essentially, `RobustRankAggregate` will use the max rank in the matrix, rather than the size of the dataframe.
 
 - Fixed a bug related to newer versions of CellChat with unused argument #75
@@ -17,9 +21,9 @@ aggregates. Essentially runs `liana_aggregate` twice with different `aggregate_h
 parameters and joins.
 - Added `invert_specificity`, `invert_magnitude`, `invert_function` parameters
 to `liana_dotplot`.
-- Added `decompose_tensor` as a function to run only the decomposition on a 
+- Added `decompose_tensor` as a function to run only the decomposition on a
 pre-built Tensor.
-- Aggregation can now be performed also via `liana_bysample`, takes `aggregate_how` 
+- Aggregation can now be performed also via `liana_bysample`, takes `aggregate_how`
 parameter, which allows `magnitude`, `specificity`, or `both`.
 - Added `preprocess_scores` function that handles the conversion of liana's
 scores to Tensor format.
@@ -73,8 +77,8 @@ by specificity and magnitude scores.
 
 
 # LIANA 0.1.8 (08.11.22)
-## New Implementations 
-- Untargeted between-condition (context/sample) decomposition of cell-cell 
+## New Implementations
+- Untargeted between-condition (context/sample) decomposition of cell-cell
 communication latent patterns /w `tensor_cell2cell`. Makes use of `basilisk` to
 automatically set-up a conda env for liana.
 - added `min_cells` parameter to `liana_wrap`, to exclude any cell identity
@@ -82,7 +86,7 @@ which does not pass a minimum cells threshold.
 
 ## Changes
 - Mouse Consensus resource is now provided by default.
-- The intracellular OmniPath vignette was removed. An updated and more user-friendly one 
+- The intracellular OmniPath vignette was removed. An updated and more user-friendly one
 will be provided in next updates. In the meantime, the old one can still be downloaded
 from [drive](https://drive.google.com/file/d/1lqxHhmz0Jq7eIuQAe0SxvInGgo2U-RlC/view?usp=share_link)
 - Source and Target titles are now plotted by the `liana_dotplot`
@@ -118,7 +122,7 @@ are additional - no need to account for complexes (e.g. also `global_mean`).
 ## Changes
 - Fixed an issue where interactions with complexes will not filtered be according to
 `expr_prop` for some methods. I now filter twice - once via `.filt_liana_pipe`
-for computational speed, and once after `recomplexify` to also remove the 
+for computational speed, and once after `recomplexify` to also remove the
 complexes with `expr_prop` <= X. Will now also filter `crosstalk_scores` to `expr_prop`.
 
 - In the edgecase of complexes with subunits with equal expression, LIANA's internal
@@ -129,7 +133,7 @@ discarded by `liana_aggregate`.
 
 - `liana_doplot` function is now more explicit in the way interactions are
 selected. Will now take `topn` and return the highest ranked interactions.
-Size of dots is also more distinguishable by default and the user can now 
+Size of dots is also more distinguishable by default and the user can now
 pass a customizable value for the size range.
 
 - Added a `rank_method` helper function to rank single methods according to
@@ -161,16 +165,16 @@ complicated cases, such as complex subunits with one-to-many mapping homologs.
 NATMI suggest for between-condition comparisons. Add NATMI to the housekeeping
 aggregate ranking.
 
-- Enable weighing of interactions by cell pairs (using a DF in which each 
+- Enable weighing of interactions by cell pairs (using a DF in which each
 cell pair has  an assigned weight). This would typically be done by spatial
 constraints, etc. These weights can also be used to mask any cell-pair interactions
 which are not relevant (by assigning weights of 0). This currently assumes that
 the weights would be between 0 to 1 - to be extended. Tutorial on this /w appropriate
-spatial weight generation to be written. 
+spatial weight generation to be written.
 
 
 ## Minor Changes
-- By default, the base for logFC will now be automatically assigned depending 
+- By default, the base for logFC will now be automatically assigned depending
 on the object passed to LIANA, i.e. `.antilog1m` for SCE will use 2 as base,
 and Euler's number for Seurat. One could also pass the base they wish to use
 via `liana_wrap`.
@@ -183,16 +187,16 @@ via `liana_wrap`.
 - Changed the aggregation columns of `liana_aggregate`, as in some cases
 methods would assign different subunits as the minimum, which results in
 redundancies for the same complex. As such, `liana_aggregate` will now
-return only the complex columns, nevertheless, the methods will still return 
+return only the complex columns, nevertheless, the methods will still return
 both the minimum (lowest expressed subunit) and it's corresponding complex.
 
-- `base` used to calculate logFC (via `get_log2FC`) can now be passed as 
+- `base` used to calculate logFC (via `get_log2FC`) can now be passed as
 a parameter to `liana_wrap` via `liana_pipe.params`.
 Passing `NaN` to base would result in log2FC calculation using the raw counts
 without any pre-processing (e.g. no batch correction, etc).
 
 The base is by default set to 2, assuming that log2 transformation is performed
-following library size normalization, and thus preserving the normalization, 
+following library size normalization, and thus preserving the normalization,
 while reverting back to ~counts.
 
 ## Minor Changes
@@ -221,7 +225,7 @@ This heatmap was inspired by CellPhoneDB and CellChat.
 # LIANA 0.1.1 (26.04.22)
 
 ## Changes
-- Change the order of  non-expressed genes and empty droplet filtering. 
+- Change the order of  non-expressed genes and empty droplet filtering.
 I now appropriately filter cells in the `sce` object *after* limiting the gene
 universe to ligands and receptors in the resource.
 
@@ -294,7 +298,7 @@ idents/colLabels for SCE and Seurat, respectively.
 ## Changes
 
 - LIANA will now use the `Consensus` resource by default. This is a highly-literature supported resource, generated using similar
-filtering steps as the 'OmniPath' (old default) resource. This resource is similar in size (~4,700 interactions), but contains a 
+filtering steps as the 'OmniPath' (old default) resource. This resource is similar in size (~4,700 interactions), but contains a
 higher complex and curation content.
 
 - All resources might show some very minor changes related to an update of UniProt IDs and homology-conversion improvements.
@@ -325,9 +329,9 @@ and hence returns a all of those columns
 
 - Complexes with missing subunits are not correctly assigned as 'missing' and hence filtered/treated as non-expressed.
 
-- Fixed a bug where LIANA will return the minimum subunit expression, instead of the mean for some methods. 
+- Fixed a bug where LIANA will return the minimum subunit expression, instead of the mean for some methods.
   This stemmed from not properly passing the incorrect `complex_policy` to certain methods, i.e. they were getting a hard-coded value instead.
-  
+
 - Remove `decomplexify` logical from `liana_call` and `liana_pipe` -> redundant.
 
 - edge case fix: liana_aggregate should now rank interactions with the same subunits, but coming from different complexes seperately
@@ -344,7 +348,7 @@ the BioConductor single-cell framework (for all internal methods).
 
 - added `liana_dotplot` as a basic, but flexible, dotplot function for LIANA output. (+ tests)
 
-## Changes  
+## Changes
 
 - LIANA will now perform a basic filtering step, where all genes and cells with 0 summed counts are removed.
 
@@ -353,7 +357,7 @@ the BioConductor single-cell framework (for all internal methods).
 - `assay.type` in `liana_pipe` was passed to `get_logFC` would
 result in using the logcounts, rather than the library-normalized counts.
 
-## Bug Fixes  
+## Bug Fixes
 
 - Fixed a bug where incorrectly passing method names in different cases results in an error.
 
@@ -362,7 +366,7 @@ result in using the logcounts, rather than the library-normalized counts.
 
 - External LIANA methods (i.e. `call_`) are now deprecated. The pipelines will be maintained solely for power users,
 who intend to benchmark the original implementations, but will not be the focus of any downstream analyses.
-These will be solely developed for the internal (or re-implemented methods). These still rely on a `SeuratObject` as 
+These will be solely developed for the internal (or re-implemented methods). These still rely on a `SeuratObject` as
 interface, but will now accept both sce and seurat as input.
 
 
@@ -376,7 +380,7 @@ would be simply NAs and 0s for Crosstalk scores. Should do the same for Connecto
 * `CellChat` and Crosstalk scores/`cytotalk` will no longer by called by default by liana_wrap.
 However, it both are available as an option to be passed to the `method` parameter.
 
-* I now filter all methods by `expr_prop`. This is done in a slightly different manner for Connectome's 
+* I now filter all methods by `expr_prop`. This is done in a slightly different manner for Connectome's
 scaled weights and crosstalk scores, since they require all pairs/clusters to be present to appropriately
 calculate their scores. Thus, for them we filter after we calculate the scores, while for the others methods
 we pre-filter.
@@ -391,7 +395,7 @@ how to [combine LIANA with NicheNet](https://saezlab.github.io/liana/articles/li
 
 * `CellCall` and `Cellinker` resources were added, while talklr was removed. The OmniPath resources itself was filtered further and 1,000
 lower quality interactions were excluded. Further improvements were made to all resources,
-most of which were minor. Changes worth mentioning were made to ICELLNET (updated to latest resource version), 
+most of which were minor. Changes worth mentioning were made to ICELLNET (updated to latest resource version),
 CellPhoneDB (was filtered for ambigous interactions), and CellChatDB was filtered for mislaballed interactions.
 
 
@@ -399,16 +403,16 @@ CellPhoneDB (was filtered for ambigous interactions), and CellChatDB was filtere
 ## Improvements
 * The R re-implementation of CellPhoneDBv2's permutation algorithm was optimized
 to work with sparse matrices (and is now uqicker), and set as the default option
-in LIANA (replacing the re-implementation of the same algorithm from squidpy)  
+in LIANA (replacing the re-implementation of the same algorithm from squidpy)
 
 * Custom proportion filtering - Connectome and CytoTalk are now not filtered by
-expr_prop as this affects the way that their scores are calculated, since they 
+expr_prop as this affects the way that their scores are calculated, since they
 require all clusters/cluster pairs to be present to appropriately scale or
 normalize their scores.
 
 
 ## Bug Fixes
-* Fixed an issue where logFC was assigned only the value of the ligand   
+* Fixed an issue where logFC was assigned only the value of the ligand
 
 
 
@@ -420,15 +424,15 @@ In contrast to the CytoTalk, in our calculation CTS with ligand or receptor with
 PEM of 0 are assigned 0 CTS. Furthermore, we use the inverse of the non-self-talk
 scores calculated in CytoTalk to also allow for autocrine signalling interactions,
 and thus make Crosstalk scores comparable to the rest of the methods in LIANA.
-Finally, as part of LIANA, CytoTalk's re-implemented scores would not take 
+Finally, as part of LIANA, CytoTalk's re-implemented scores would not take
 account of complexes and we also apply liana-specifc filtering such as according
 to `expr_prop`. Worth noting, we only re-implement the cross-talk scores, but we
 don't include the intracellular part of Cytotalk.
 
 ## Changes
 
-* Changed `expr_thresh` to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default   
-* Changed the way that default parameters are passed to each method  
+* Changed `expr_thresh` to 0.1, based on lack of improvement in performance when using 0.2, hence opted out for the less conservative threshold as default
+* Changed the way that default parameters are passed to each method
 * Enabled housekeeping score aggregation for external methods (needed for revisions) via `.score_housekeep`
 * Fixed Bug where external methods could not be called with their default DB. The resource is now always decomplexified
 * Seurat Testdata is now properly normalized
@@ -442,12 +446,12 @@ don't include the intracellular part of Cytotalk.
 
 `liana_wrap` and `liana_aggragate` as the two highest level functions to run all the methods in liana and aggragate them, respectively.
 
-### Re-implemented the following scores in LIANA:   
+### Re-implemented the following scores in LIANA:
 
-* logFC  
-* NATMI specificity edges  
-* Connectome scaled_weights    
-* CellPhoneDB algorithm   
+* logFC
+* NATMI specificity edges
+* Connectome scaled_weights
+* CellPhoneDB algorithm
 * SingleCellSignalR LRScore
 
 each called via `liana_call`, which leverages the statistics provided by `liana_pipe`,
@@ -456,14 +460,14 @@ each called via `liana_call`, which leverages the statistics provided by `liana_
 
 * Not re-implemented method score names now start with `call_*`
 
-* `decomplexify` and `recomplexify` as functions used to dissociate complexes in resources and 
-account for complexes of the re-implemented methods above   
+* `decomplexify` and `recomplexify` as functions used to dissociate complexes in resources and
+account for complexes of the re-implemented methods above
 
-* `liana_aggragate` - a handy wrapper to aggregate results   
+* `liana_aggragate` - a handy wrapper to aggregate results
 
-* `LIANA` and `LIANA++` are now the user-friendly and benchmark version of LIANA, respectively   
+* `LIANA` and `LIANA++` are now the user-friendly and benchmark version of LIANA, respectively
 
-* A webpage with vignettes showing the validity of the re-implemented methods, a developer/benchmark-focused vignette, and a vignette to customize OmniPath  
+* A webpage with vignettes showing the validity of the re-implemented methods, a developer/benchmark-focused vignette, and a vignette to customize OmniPath
 
 ## Bug fixes
 
