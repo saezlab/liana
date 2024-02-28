@@ -62,15 +62,13 @@ remotes::install_github("saezlab/OmnipathR")
 
 ## Internally available organisms
 
-LIANA's `generate_homologs` function uses OmnipathR's `homologene_download` 
-function to obtain a human to x species dictionary.
+LIANA's `generate_homologs` function uses OmnipathR's API to [OMA](https://omabrowser.org/oma/about/) via `oma_pairwise_genesymbols`
+function to obtain a human to x species dictionary. 
 
 Here, we check the organisms which are currently available.
 
-One must simply choose the `ncbi_taxid` and pass it as `target_organism` parameter
-to the `generate_homologs` function below.
 ```{r show_taxid}
-show_homologene()
+OmnipathR::oma_organisms() %>% pull(oma_version) %>% unique() %>% head()
 ```
 
 
@@ -81,7 +79,7 @@ op_resource <- select_resource("Consensus")[[1]]
 
 # Generate orthologous resource
 ortholog_resource <- generate_homologs(op_resource = op_resource,
-                                       target_organism = 10090) # mouse
+                                       target_organism = "mouse")
 
 # Run LIANA with the orthologous resource
 liana_res <- liana_wrap(testdata,
@@ -93,14 +91,7 @@ liana_res <- liana_wrap(testdata,
 # aggregate
 liana_res <- liana_res %>%
     liana_aggregate()
-
-# Plot example
-liana_res %>%
-    filter(source=="B") %>%
-    filter(target %in% c("NK", "CD8 T")) %>%
-    liana_dotplot(source_groups = "B",
-                  target_groups = c("NK", "CD8 T"),
-                  ntop = 15)
+liana_res %>% head()
 ```
 
 
