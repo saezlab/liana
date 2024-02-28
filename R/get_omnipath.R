@@ -779,7 +779,8 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                             "MT-RNR2",
                             "IL13_IL13RA1_IL4R",
                             "IL22_IL22RA1",
-                            "IL18BP"
+                            "IL18BP",
+                            "SMAD3"
 
     )
 
@@ -798,7 +799,8 @@ get_curated_omni <- function(curated_resources = c("CellPhoneDB",
                          "IFNA2_IFNAR1_IFNAR2",
                          "ACVR1C_ACVR2B_CFC1",
                          "CSF2_CSF2RA_CSF2RB",
-                         "GP1BA_GP1BB_GP5_GP9")
+                         "GP1BA_GP1BB_GP5_GP9",
+                         "SMAD3")
 
 
     # Remove those from our curated omnipath

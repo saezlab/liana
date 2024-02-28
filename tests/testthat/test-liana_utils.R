@@ -11,10 +11,10 @@ sce@colData$sample <- sample(LETTERS[4:5], 90, replace=TRUE)
 symbols_dict <- readRDS(file.path(liana_path, "human_mouse_orthologues.RDS"))
 
 # Test Liana Pipe
-test_that("Test liana pipe", {
+test_that("Test generate_homologs", {
     op_ortho <- generate_homologs(op_resource = op_resource,
                                   symbols_dict = symbols_dict,
-                                  target_organism = 10090)
+                                  target_organism = "mouse")
     res1 <- readRDS(file.path(liana_path,
                               "testdata",
                               "output",

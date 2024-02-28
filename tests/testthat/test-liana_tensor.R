@@ -12,7 +12,7 @@ test_that("Test tensor wrapper", {
                              rank = 5,
                              how='outer',
                              inplace = FALSE
-                             )
+    )
 
     # fix random bs exceptions
     exp1 <- map(exp1, ~.x %>% mutate(across(where(is.factor), ~as.character(.x))))
@@ -26,11 +26,11 @@ test_that("Test tensor wrapper", {
 
 test_that("Test decompose_tensor", {
     tensor <- liana_tensor_c2c(context_df_dict = context_df_dict,
-                             score_col = 'score',
-                             rank = 5,
-                             how='outer',
-                             build_only = TRUE,
-                             inplace = FALSE
+                               score_col = 'score',
+                               rank = 5,
+                               how='outer',
+                               build_only = TRUE,
+                               inplace = FALSE
     )
     res1 <- decompose_tensor(tensor =  tensor,
                              tf_optimization='regular',

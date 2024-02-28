@@ -405,8 +405,6 @@ recode.character2 <- function(.x,
 #' @param mappings Character vector: control ambiguous mappings.
 #'
 #' @keywords internal
-#'
-#' @importFrom OmnipathR oma_pairwise
 homology_dict <- function(
         entities,
         target_organism,
@@ -414,8 +412,8 @@ homology_dict <- function(
         mappings = c("1:1", "1:m", "n:1", "n:m")
     ){
 
-    oma_pairwise(
-        organism_b = target_organism,
+    OmnipathR::oma_pairwise_genesymbols(
+        organism_b = as.character(target_organism),
         id_type = id_type,
         mappings = mappings
     ) %>%
