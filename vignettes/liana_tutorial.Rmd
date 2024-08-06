@@ -40,6 +40,11 @@ corresponding resources.
 
 ![](ligrec_pipe.png)
 
+## LIANA's development continous as LIANA+
+
+We recommend all users to consider using [LIANA+](https://liana-py.readthedocs.io/en/latest/index.html), instead of LIANA, due to it's increased efficiency and completeness.
+We plan to eventually port all LIANA+ functionalities and backend to R, but in the meantime [LIANA+ in Python](https://liana-py.readthedocs.io/en/latest/index.html) is recommended.
+
 ## Load required packages
 ```{r load_pkgs, message=FALSE, warning=FALSE}
 library(tidyverse)

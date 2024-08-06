@@ -1,3 +1,10 @@
+# LIANA 0.1.14 (06.08.24)
+
+- Minor tutorial improvements.
+
+- Remove non-standard symbols from description.
+
+
 # LIANA 0.1.13 (03.11.23)
 
 - Changed the way that `max` rank is imputed when NAs are presented, or when `return_all` is true. 
