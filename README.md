@@ -7,7 +7,7 @@
 LIANA enables the use of any combination of ligand-receptor methods and resources, and their consensus. A faster and memory efficient Python implementation is available [here](https://github.com/saezlab/liana-py).
     
 ## Install LIANA  
-```{r}
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
