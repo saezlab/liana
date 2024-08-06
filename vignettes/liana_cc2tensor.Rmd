@@ -40,6 +40,21 @@ This tensor is then decomposed into a set of factors, which can be interpreted a
 low dimensionality latent variables (vectors) that capture the
 CCC patterns across contexts.
   
+  
+## Updated Tutorials
+
+  
+We have written extensive in both Python and R: 
+https://ccc-protocols.readthedocs.io/en/latest/notebooks/ccc_R/QuickStart.html
+
+We recommend following those, after you setup a conda environment with both LIANA and Tensor-cell2cell following the instructions here:
+https://github.com/saezlab/ccc_protocols/tree/main/env_setup
+
+We also recommend using the more efficient and completele version of LIANA - i.e. LIANA+ (in Python): 
+https://ccc-protocols.readthedocs.io/en/latest/notebooks/ccc_python/QuickStart.html
+
+
+## Simple (Outdated) Example
 
 Here, we will combine `LIANA` with `tensor_cell2cell` to decipher potential ligand-receptor
 interaction changes.

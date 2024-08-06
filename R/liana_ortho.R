@@ -20,7 +20,7 @@
 #' Hence, increasing the number of matches, but likely introducing some
 #' mismatches.
 #'
-#' @param symbols_dict `NULL` by default, then `get_homologene_dict` is called
+#' @param symbols_dict `NULL` by default, then `homology_dict` is called
 #' to generate a dictionary from OmniPathR's homologene resource. Alternatively,
 #' one can pass their own symbols_dictionary.
 #'
@@ -29,6 +29,8 @@
 #' @param target name of the target (receptor) column
 #'
 #' @param verbose logical for verbosity
+#'
+#' @param mappings Character vector: control ambiguous mappings.
 #'
 #' @return a converted ligand-receptor resource
 #'
@@ -40,7 +42,8 @@ generate_homologs <- function(op_resource,
                               symbols_dict = NULL,
                               columns = c("source_genesymbol",
                                           "target_genesymbol"),
-                              verbose = TRUE){
+                              verbose = TRUE,
+                              mappings = c("1:1", "1:m", "n:1", "n:m")){
 
     op_resource %<>% mutate(across(all_of(columns),
                                    ~str_replace(., "COMPLEX:", "")))
@@ -55,8 +58,12 @@ generate_homologs <- function(op_resource,
     entities <- purrr::reduce(map(columns, function(col) decomp[[col]]), union)
 
     # generate homology geneset
-    symbols_dict <- get_homologene_dict(entities = entities,
-                                        target_organism = target_organism)
+    symbols_dict <-
+        homology_dict(
+            entities = entities,
+            target_organism = target_organism,
+            mappings = mappings
+        )
 
 
     # Remove any missing antities
@@ -67,7 +74,7 @@ generate_homologs <- function(op_resource,
                                     names(symbols_dict))
 
         liana_message(
-            str_glue("Entries without homologs:
+            str_glue("Entries without homologs ({length(missing_entities)}):
                      {paste(missing_entities, collapse = '; ')}"),
             verbose = verbose
         )
@@ -100,7 +107,12 @@ generate_homologs <- function(op_resource,
         pull(genesymbol_source)
 
     liana_message(
-        stringr::str_glue("One-to-many homolog matches: {paste(entity_2many, collapse = '; ')}"),
+        stringr::str_glue(
+            paste0(
+                "One-to-many homolog matches ({length(entity_2many)}): ",
+                "{paste(entity_2many, collapse = '; ')}"
+            )
+        ),
         verbose = verbose
     )
 
@@ -386,28 +398,29 @@ recode.character2 <- function(.x,
 
 #' Helper function to get homologene dictionary
 #'
-#' @param entities genes to be converted - function will return a dictionary
-#' with only those.
-#'
-#' @param target_organism target organism (obtain tax id from `show_homologene`)
+#' @param entities Character vector: symbols of genes to be converted - this
+#'     function returns a dictionary restricted to these genes.
+#' @param target_organism Character or numeric: name or NCBI Taxonomy ID of the
+#'     target organism.
+#' @param mappings Character vector: control ambiguous mappings.
 #'
 #' @keywords internal
-#'
-#' @importFrom OmnipathR homologene_download
-get_homologene_dict <- function(entities,
-                                target_organism,
-                                id_type = "genesymbol"){
+homology_dict <- function(
+        entities,
+        target_organism,
+        id_type = "genesymbol",
+        mappings = c("1:1", "1:m", "n:1", "n:m")
+    ){
 
-    # Load homology geneset
-    hg_gs <- homologene_download(target = !!target_organism,
-                                 source = 9606L, # always human
-                                 id_type = !!id_type) %>%
-        select(-hgroup) %>%
-        # Limit to the universe of the resource
-        filter(.data[[str_glue("{id_type}_source")]] %in% entities)
+    OmnipathR::oma_pairwise_genesymbols(
+        organism_b = as.character(target_organism),
+        id_type = id_type,
+        mappings = mappings
+    ) %>%
+    # Limit to the universe of the resource
+    filter(.data[["id_organism_a"]] %in% entities) %>%
+    deframe
 
-    # Convert to dictionary
-    return(hg_gs %>% deframe())
 }
 
 

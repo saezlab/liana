@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.13
+Version: 0.1.15
 Authors@R: c(
     person(
         given = "Daniel",
@@ -19,7 +19,7 @@ Authors@R: c(
     ),
     person(
         given = "Martin",
-        family = "Garrido Rodríguez",
+        family = "Garrido Rodriguez",
         role = c("aut"),
         email = "martin.garrido@uni-heidelberg.de",
         comment = c(ORCID = "0000-0003-4125-5643")
@@ -57,7 +57,7 @@ Imports:
     dplyr,
     readr,
     rlang,
-    OmnipathR,
+    OmnipathR (>= 3.11.3),
     SingleCellExperiment,
     scran,
     scater,
@@ -91,5 +91,5 @@ Suggests:
     broom
 biocViews: scater, scran, SingleCellExperiment, ComplexHeatmap, muscData, ExperimentHub
 Remotes: sqjin/CellChat, saezlab/OmnipathR, saezlab/decoupleR, LTLA/basilisk.utils, LTLA/basilisk
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Config/testthat/edition: 3
