@@ -1,7 +1,7 @@
 Package: liana
 Type: Package
 Title: LIANA: a LIgand-receptor ANalysis frAmework
-Version: 0.1.14
+Version: 0.1.15
 Authors@R: c(
     person(
         given = "Daniel",
@@ -19,7 +19,7 @@ Authors@R: c(
     ),
     person(
         given = "Martin",
-        family = "Garrido Rodríguez",
+        family = "Garrido Rodriguez",
         role = c("aut"),
         email = "martin.garrido@uni-heidelberg.de",
         comment = c(ORCID = "0000-0003-4125-5643")
