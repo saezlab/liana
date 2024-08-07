@@ -4,7 +4,7 @@
 
 # LIANA: a LIgand-receptor ANalysis frAmework <img src="https://www.dropbox.com/s/ecrxuy5f6ccdvl0/liana_small.png?raw=1" align="right">
     
-LIANA enables the use of any combination of ligand-receptor methods and resources, and their consensus. A faster and memory efficient Python implementation is available [here](https://github.com/saezlab/liana-py).
+LIANA enables the use of any combination of ligand-receptor methods and resources, and their consensus. The faster, memory-efficient, and more comprehensive LIANA+ framework is available [here](https://github.com/saezlab/liana-py).
     
 ## Install LIANA  
 ```r
@@ -24,7 +24,7 @@ The tutorial with the test data takes minutes to complete!
   
 Additional tutorials:  
 
-* [LIANA across Conditions with cell2cell-Tensor](https://saezlab.github.io/liana/articles/liana_cc2tensor.html)
+* [LIANA across Conditions with cell2cell-Tensor](https://ccc-protocols.readthedocs.io/en/latest/). To setup an environment with Tensor-cell2cell and LIANA, please follow the instructions here: https://github.com/saezlab/ccc_protocols/tree/main/env_setup 
 
 * [How to combine LIANA and NicheNet](https://saezlab.github.io/liana/articles/liana_nichenet.html)  
 
